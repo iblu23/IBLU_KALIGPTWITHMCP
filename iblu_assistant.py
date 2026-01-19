@@ -2121,8 +2121,12 @@ Provide step-by-step technical details while maintaining educational context and
         print(f"\n{self._colorize('🔧 Installing Gemini Model Locally', Fore.CYAN)}")
         print("=" * 50)
         
+        # Show loading animation
+        self.show_loading_animation("Initializing Docker environment...")
+        
         try:
             # Check if Docker is installed
+            self.show_loading_animation("Checking Docker availability...")
             docker_check = subprocess.run(['docker', '--version'], capture_output=True, text=True)
             if docker_check.returncode != 0:
                 return f"❌ Docker not found. Install Docker first: https://docs.docker.com/get-docker/"
@@ -2130,6 +2134,7 @@ Provide step-by-step technical details while maintaining educational context and
             print("✅ Docker found")
             
             # Pull Gemini model image
+            self.show_loading_animation("Connecting to Docker registry...")
             print("📥 Pulling Gemini model image...")
             # Try alternative image sources
             images_to_try = [
@@ -2140,9 +2145,33 @@ Provide step-by-step technical details while maintaining educational context and
             ]
             
             pull_success = False
-            for image in images_to_try:
-                print(f"  Trying: {image}")
+            for i, image in enumerate(images_to_try, 1):
+                self.show_loading_animation(f"Trying image source {i}/{len(images_to_try)}: {image}")
+                print(f"  📦 Downloading: {image}")
+                
+                # Create a progress animation
+                import threading
+                import time
+                
+                stop_event = threading.Event()
+                progress_chars = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏']
+                
+                def progress_animation():
+                    idx = 0
+                    while not stop_event.is_set():
+                        print(f"\r  {progress_chars[idx % len(progress_chars)] Pulling...", end='', flush=True)
+                        idx += 1
+                        time.sleep(0.1)
+                
+                progress_thread = threading.Thread(target=progress_animation)
+                progress_thread.daemon = True
+                progress_thread.start()
+                
                 pull_cmd = subprocess.run(['docker', 'pull', image], capture_output=True, text=True)
+                stop_event.set()
+                progress_thread.join()
+                print("\r  " + " " * 20 + "\r", end='', flush=True)
+                
                 if pull_cmd.returncode == 0:
                     print(f"✅ Successfully pulled: {image}")
                     pull_success = True
@@ -2153,6 +2182,7 @@ Provide step-by-step technical details while maintaining educational context and
             if not pull_success:
                 return f"❌ Failed to pull any Gemini image. Try manual installation."
             
+            self.show_loading_animation("Configuring local Gemini instance...")
             if pull_cmd.returncode == 0:
                 print("✅ Gemini model image pulled successfully")
                 print(f"\n{self._colorize('🚀 To run Gemini locally:', Fore.GREEN)}")
@@ -2162,16 +2192,106 @@ Provide step-by-step technical details while maintaining educational context and
                 return "✅ Gemini model installed locally!"
             else:
                 return f"❌ Failed to pull Gemini image: {pull_cmd.stderr}"
-                
-        except Exception as e:
-            return f"❌ Installation error: {e}"
+    
+    def show_loading_animation(self, message: str):
+        """Show a loading animation with spinner"""
+        import threading
+        import time
+        
+        stop_event = threading.Event()
+        spinner_chars = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏']
+        
+        def animation():
+            idx = 0
+            while not stop_event.is_set():
+                print(f"\r{spinner_chars[idx]} {message}...", end='', flush=True)
+                idx = (idx + 1) % len(spinner_chars)
+                time.sleep(0.1)
+        
+        print()
+        animation_thread = threading.Thread(target=animation)
+        animation_thread.daemon = True
+        animation_thread.start()
+        
+        # Stop animation after 3 seconds or when function completes
+        def stop_animation():
+            stop_event.set()
+            animation_thread.join()
+            print("\r" + " " * 50 + "\r", end='', flush=True)
+        
+        # Schedule stop animation
+        import threading as _thread
+        timer = _thread.Timer(3.0, stop_animation)
+        timer.start()
+        
+        return timer
     
     def install_llama_local(self) -> str:
         """Install Llama model locally via Ollama"""
         print(f"\n{self._colorize('🔧 Installing Llama Model Locally via Ollama', Fore.CYAN)}")
         print("=" * 50)
         
+        # Show loading animation
+        self.show_loading_animation("Initializing Ollama environment...")
+        
         try:
+            # Check if Ollama is installed
+            self.show_loading_animation("Checking Ollama availability...")
+            ollama_check = subprocess.run(['which', 'ollama'], capture_output=True, text=True)
+            
+            if ollama_check.returncode != 0:
+                print("📦 Installing Ollama...")
+                # Try multiple installation methods
+                install_methods = [
+                    "curl -fsSL https://ollama.ai/install.sh | sh",
+                    "wget -qO- https://ollama.ai/install.sh | sh",
+                    "bash -c 'curl -fsSL https://ollama.ai/install.sh | sh'"
+                ]
+                
+                install_success = False
+                for method in install_methods:
+                    print(f"  Trying: {method}")
+                    install_cmd = subprocess.run(method, shell=True, capture_output=True, text=True, timeout=300)
+                    if install_cmd.returncode == 0:
+                        print("✅ Ollama installed successfully")
+                        install_success = True
+                        break
+                    else:
+                        print(f"  ❌ Failed: {method}")
+                
+                if not install_success:
+                    return f"❌ Failed to install Ollama. Try manual installation: https://ollama.ai/download"
+                
+                if install_cmd.returncode != 0:
+                    return f"❌ Failed to install Ollama: {install_cmd.stderr}"
+                
+                print("✅ Ollama installed successfully")
+            else:
+                print("✅ Ollama already installed")
+            
+            # Start Ollama service
+            self.show_loading_animation("Starting Ollama service...")
+            print("🚀 Starting Ollama service...")
+            serve_cmd = subprocess.run(['ollama', 'serve'], capture_output=True, text=True, timeout=5)
+            
+            # Pull Llama model
+            self.show_loading_animation("Downloading Llama 2 model...")
+            print("📥 Pulling Llama 2 model...")
+            pull_cmd = subprocess.run(['ollama', 'pull', 'llama2'], capture_output=True, text=True)
+            
+            if pull_cmd.returncode == 0:
+                print("✅ Llama 2 model pulled successfully")
+                print(f"\n{self._colorize('🚀 Ollama is running on localhost:11434', Fore.GREEN)}")
+                print(f"\n{self._colorize('💡 Update config.json:', Fore.YELLOW)}")
+                print('"llama_keys": ["local"]')
+                return "✅ Llama model installed locally!"
+            else:
+                return f"❌ Failed to pull Llama model: {pull_cmd.stderr}"
+                
+        except Exception as e:
+            return f"❌ Installation error: {e}"
+    
+    def install_all_local_models(self) -> str:
             # Check if Ollama is installed
             ollama_check = subprocess.run(['which', 'ollama'], capture_output=True, text=True)
             
