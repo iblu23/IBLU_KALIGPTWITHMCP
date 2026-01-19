@@ -98,6 +98,7 @@ class Provider(Enum):
     GEMINI = "gemini"
     MISTRAL = "mistral"
     LLAMA = "llama"
+    GEMINI_CLI = "gemini_cli"
 
 @dataclass
 class APIConfig:
@@ -107,6 +108,7 @@ class APIConfig:
     gemini_keys: List[str] = None
     mistral_keys: List[str] = None
     llama_keys: List[str] = None
+    gemini_cli_keys: List[str] = None
 
 class IBLUCommandHelper:
     """
@@ -1731,8 +1733,8 @@ Provide step-by-step technical details while maintaining educational context and
             system_prompt = self.SYSTEM_PROMPT
             user_message = message
         
-        # Get all available providers with configured keys, prioritizing Gemini with fallback chain
-        provider_priority = [Provider.GEMINI, Provider.MISTRAL, Provider.OPENAI, Provider.PERPLEXITY, Provider.LLAMA]
+        # Get all available providers with configured keys, prioritizing cloud then local models
+        provider_priority = [Provider.GEMINI, Provider.PERPLEXITY, Provider.OPENAI, Provider.MISTRAL, Provider.LLAMA, Provider.GEMINI_CLI]
         available_providers = []
         for provider in provider_priority:
             provider_keys = self.get_provider_keys(provider)
@@ -1854,7 +1856,8 @@ Provide step-by-step technical details while maintaining educational context and
                 Provider.PERPLEXITY: 'perplexity_keys',
                 Provider.OPENAI: 'openai_keys',
                 Provider.MISTRAL: 'mistral_keys',
-                Provider.LLAMA: 'llama_keys'
+                Provider.LLAMA: 'llama_keys',
+                Provider.GEMINI_CLI: 'gemini_cli_keys'
             }
             
             key_field = provider_key_map.get(provider)
@@ -1908,6 +1911,8 @@ Provide step-by-step technical details while maintaining educational context and
                     result = self.call_mistral_api(system_prompt, user_message, api_key)
                 elif provider == Provider.LLAMA:
                     result = self.call_llama_api(system_prompt, user_message, api_key)
+                elif provider == Provider.GEMINI_CLI:
+                    result = self.call_gemini_cli_api(system_prompt, user_message, api_key)
                 else:
                     result = f"❌ Provider {provider.value} not implemented yet"
                 
@@ -1929,6 +1934,8 @@ Provide step-by-step technical details while maintaining educational context and
                     result = self.call_mistral_api(system_prompt, user_message, api_key)
                 elif provider == Provider.LLAMA:
                     result = self.call_llama_api(system_prompt, user_message, api_key)
+                elif provider == Provider.GEMINI_CLI:
+                    result = self.call_gemini_cli_api(system_prompt, user_message, api_key)
                 else:
                     result = f"❌ Provider {provider.value} not implemented yet"
                 return result
@@ -1947,6 +1954,8 @@ Provide step-by-step technical details while maintaining educational context and
             return [k for k in (self.config.mistral_keys or []) if k and k != "your-mistral-api-key-here"]
         elif provider == Provider.LLAMA:
             return [k for k in (self.config.llama_keys or []) if k and k != "your-llama-api-key-here"]
+        elif provider == Provider.GEMINI_CLI:
+            return [k for k in (self.config.gemini_cli_keys or []) if k and k != "your-gemini-cli-api-key-here"]
         return []
     
     def call_perplexity_api(self, system_prompt: str, user_message: str, api_key: str) -> str:
@@ -2108,6 +2117,59 @@ Provide step-by-step technical details while maintaining educational context and
             return f"❌ Llama API Error: {e}\n\n💡 Check Ollama configuration and model availability"
         except Exception as e:
             return f"❌ Llama API Error: {e}\n\n💡 Check Ollama installation and setup"
+    
+    def call_gemini_cli_api(self, system_prompt: str, user_message: str, api_key: str) -> str:
+        """Call local Gemini CLI API"""
+        try:
+            # Check if gemini-cli is available
+            import subprocess
+            
+            # Try to find gemini-cli command
+            gemini_cmd = None
+            possible_paths = [
+                "gemini-cli",
+                "gemini",
+                "/usr/local/bin/gemini-cli",
+                "/usr/bin/gemini-cli"
+            ]
+            
+            for cmd_path in possible_paths:
+                try:
+                    result = subprocess.run(['which', cmd_path], capture_output=True, text=True, timeout=5)
+                    if result.returncode == 0:
+                        gemini_cmd = cmd_path
+                        break
+                except:
+                    continue
+            
+            if not gemini_cmd:
+                return f"❌ Gemini CLI not found. Install with: pip install google-generativeai[cli]"
+            
+            # Prepare the prompt
+            combined_message = f"{system_prompt}\n\nUser Query: {user_message}"
+            
+            # Call Gemini CLI
+            try:
+                result = subprocess.run([
+                    gemini_cmd, 
+                    "generate",
+                    "--model", "gemini-pro",
+                    "--prompt", combined_message
+                ], capture_output=True, text=True, timeout=120)
+                
+                if result.returncode == 0:
+                    ai_response = result.stdout.strip()
+                    return f"🤖 IBLU (Gemini CLI):\n\n{ai_response}"
+                else:
+                    return f"❌ Gemini CLI Error: {result.stderr}"
+                    
+            except subprocess.TimeoutExpired:
+                return f"❌ Gemini CLI timeout after 120 seconds"
+            except Exception as e:
+                return f"❌ Gemini CLI Error: {e}"
+                
+        except Exception as e:
+            return f"❌ Gemini CLI Error: {e}\n\n💡 Install Gemini CLI: pip install google-generativeai[cli]"
 
     def call_mistral_api(self, system_prompt: str, user_message: str, api_key: str) -> str:
         """Call Mistral API"""
@@ -2701,7 +2763,8 @@ def load_config():
             openai_keys=config_data.get('openai_keys', []),
             gemini_keys=config_data.get('gemini_keys', []),
             mistral_keys=config_data.get('mistral_keys', []),
-            llama_keys=config_data.get('llama_keys', [])
+            llama_keys=config_data.get('llama_keys', []),
+            gemini_cli_keys=config_data.get('gemini_cli_keys', [])
         )
     except Exception as e:
         print(f"❌ Error loading config: {e}")
