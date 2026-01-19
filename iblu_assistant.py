@@ -49,6 +49,7 @@ try:
     console = Console()
 except ImportError:
     RICH_AVAILABLE = False
+    console = None
 
 # Optional transformers for Hugging Face integration
 try:
@@ -58,14 +59,13 @@ try:
     HUGGINGFACE_AVAILABLE = True
 except ImportError:
     HUGGINGFACE_AVAILABLE = False
-    console = None
 
 # Universal Rich Progress Bar Utility
 def create_rich_progress_bar(title: str, total: int = 100, style: str = "bold cyan", 
                            emoji: str = "🔄", show_percentage: bool = True, 
                            show_time: bool = True, bar_width: int = 40) -> Progress:
     """Create a universal Rich progress bar with customizable styling"""
-    if not RICH_AVAILABLE:
+    if not RICH_AVAILABLE or not console:
         return None
     
     columns = [SpinnerColumn(style=style)]
@@ -3378,6 +3378,14 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
     
     def format_ai_response(self, response: str) -> str:
         """Format AI response with colors and effects"""
+        if not response:
+            return response
+            
+        # If response contains colorama codes, print directly and return
+        if COLORAMA_AVAILABLE and (Fore.RESET_ALL in response or Style.BRIGHT in response or Back.RESET in response):
+            print(response)
+            return ""
+        
         if not RICH_AVAILABLE:
             return response
         
