@@ -1174,15 +1174,109 @@ You are integrated with advanced security testing capabilities through MCP integ
     
     def call_openai_api(self, system_prompt: str, user_message: str, api_key: str) -> str:
         """Call OpenAI API"""
-        return f"🔧 OpenAI integration coming soon!\n\n💡 Install with: pip install openai\n\nFor now, use Perplexity provider."
+        try:
+            import requests
+            
+            url = "https://api.openai.com/v1/chat/completions"
+            headers = {
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json"
+            }
+            
+            payload = {
+                "model": "gpt-4o-mini",
+                "messages": [
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_message}
+                ],
+                "temperature": 0.7,
+                "max_tokens": 2000
+            }
+            
+            response = requests.post(url, json=payload, headers=headers, timeout=30)
+            response.raise_for_status()
+            
+            result = response.json()
+            ai_response = result['choices'][0]['message']['content']
+            
+            return f"🤖 IBLU (OpenAI GPT-4o-mini):\n\n{ai_response}"
+            
+        except requests.exceptions.HTTPError as e:
+            return f"❌ OpenAI API Error: {e}\n\n💡 Response: {e.response.text if hasattr(e, 'response') else 'No details'}\n\n🔑 Check your API key at https://platform.openai.com/api-keys"
+        except Exception as e:
+            return f"❌ OpenAI API Error: {e}\n\n💡 Check your API key at https://platform.openai.com/api-keys"
     
     def call_gemini_api(self, system_prompt: str, user_message: str, api_key: str) -> str:
         """Call Gemini API"""
-        return f"🔧 Gemini integration coming soon!\n\n💡 Install with: pip install google-generativeai\n\nFor now, use Perplexity provider."
+        try:
+            import requests
+            
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
+            headers = {
+                "Content-Type": "application/json"
+            }
+            
+            # Gemini uses a different format - combine system and user message
+            combined_message = f"{system_prompt}\n\nUser Query: {user_message}"
+            
+            payload = {
+                "contents": [{
+                    "parts": [{
+                        "text": combined_message
+                    }]
+                }],
+                "generationConfig": {
+                    "temperature": 0.7,
+                    "maxOutputTokens": 2000
+                }
+            }
+            
+            response = requests.post(url, json=payload, headers=headers, timeout=30)
+            response.raise_for_status()
+            
+            result = response.json()
+            ai_response = result['candidates'][0]['content']['parts'][0]['text']
+            
+            return f"🤖 IBLU (Gemini 1.5 Flash):\n\n{ai_response}"
+            
+        except requests.exceptions.HTTPError as e:
+            return f"❌ Gemini API Error: {e}\n\n💡 Response: {e.response.text if hasattr(e, 'response') else 'No details'}\n\n🔑 Check your API key at https://aistudio.google.com/app/apikey"
+        except Exception as e:
+            return f"❌ Gemini API Error: {e}\n\n💡 Check your API key at https://aistudio.google.com/app/apikey"
     
     def call_mistral_api(self, system_prompt: str, user_message: str, api_key: str) -> str:
         """Call Mistral API"""
-        return f"🔧 Mistral integration coming soon!\n\n💡 Install with: pip install mistralai\n\nFor now, use Perplexity provider."
+        try:
+            import requests
+            
+            url = "https://api.mistral.ai/v1/chat/completions"
+            headers = {
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json"
+            }
+            
+            payload = {
+                "model": "mistral-large-latest",
+                "messages": [
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_message}
+                ],
+                "temperature": 0.7,
+                "max_tokens": 2000
+            }
+            
+            response = requests.post(url, json=payload, headers=headers, timeout=30)
+            response.raise_for_status()
+            
+            result = response.json()
+            ai_response = result['choices'][0]['message']['content']
+            
+            return f"🤖 IBLU (Mistral Large):\n\n{ai_response}"
+            
+        except requests.exceptions.HTTPError as e:
+            return f"❌ Mistral API Error: {e}\n\n💡 Response: {e.response.text if hasattr(e, 'response') else 'No details'}\n\n🔑 Check your API key at https://console.mistral.ai/api-keys"
+        except Exception as e:
+            return f"❌ Mistral API Error: {e}\n\n💡 Check your API key at https://console.mistral.ai/api-keys"
     
     def get_status(self) -> str:
         """Get system status"""
