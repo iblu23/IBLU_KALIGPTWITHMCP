@@ -13,9 +13,14 @@ import subprocess
 import asyncio
 import shutil
 import time
+import sys
+import readline
+import atexit
 from typing import List, Dict, Optional
 from dataclasses import dataclass
 from enum import Enum
+from pathlib import Path
+from datetime import datetime
 
 # Import colorama for terminal colors
 try:
@@ -41,13 +46,170 @@ class APIConfig:
 
 class IBLUCommandHelper:
     """
-    🔥 Basic IBLU Command Helper 🔥
-    🚀 Simple command system without external dependencies 🚀
+    🔥 Enhanced IBLU Command Helper 🔥
+    🚀 Simple command system with chat history and suggestions 🚀
+    📋 Complete command completion and suggestion system 📋
     """
     
     def __init__(self):
-        """Initialize the basic command helper"""
+        """Initialize the enhanced command helper"""
         self.command_history: List[str] = []
+        self.chat_history_file = "iblu_chat_history.json"
+        self.user_input_history: List[str] = []
+        self.conversation_history: List[Dict] = []
+        
+        # Load existing chat history
+        self.load_chat_history()
+        
+        # Setup readline for command history and tab completion
+        self.setup_readline()
+    
+    def setup_readline(self):
+        """Setup readline for command history and tab completion"""
+        try:
+            # Load command history
+            history_file = Path.home() / ".iblu_history"
+            if history_file.exists():
+                readline.read_history_file(history_file)
+            
+            # Set history length
+            readline.set_history_length(1000)
+            
+            # Save history on exit
+            atexit.register(lambda: readline.write_history_file(history_file))
+            
+            # Setup tab completion
+            readline.set_completer(self.tab_complete)
+            readline.parse_and_bind("tab: complete")
+            
+        except ImportError:
+            # Fallback if readline not available
+            pass
+    
+    def tab_complete(self, text, state):
+        """Tab completion for commands"""
+        if text.startswith('/'):
+            # Get command suggestions
+            suggestions = []
+            basic_commands = ['/help', '/exit', '/clear', '/status', '/scan', '/payload', 
+                            '/autopentest', '/mcp_connect', '/mcp_disconnect', '/perplexity', 
+                            '/openai', '/gemini', '/mistral', '/history']
+            
+            for cmd in basic_commands:
+                if cmd.startswith(text):
+                    suggestions.append(cmd)
+            
+            # Remove duplicates and sort
+            suggestions = list(set(suggestions))
+            suggestions.sort()
+            
+            if state < len(suggestions):
+                return suggestions[state]
+        
+        return None
+    
+    def load_chat_history(self):
+        """Load chat history from file"""
+        try:
+            if os.path.exists(self.chat_history_file):
+                with open(self.chat_history_file, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                    self.conversation_history = data.get('conversation_history', [])
+                    self.user_input_history = data.get('user_input_history', [])
+        except Exception as e:
+            print(f"⚠️  Could not load chat history: {e}")
+    
+    def save_chat_history(self):
+        """Save chat history to file"""
+        try:
+            data = {
+                'conversation_history': self.conversation_history[-100:],  # Keep last 100 messages
+                'user_input_history': self.user_input_history[-200:],  # Keep last 200 inputs
+                'last_saved': datetime.now().isoformat()
+            }
+            with open(self.chat_history_file, 'w', encoding='utf-8') as f:
+                json.dump(data, f, indent=2, ensure_ascii=False)
+        except Exception as e:
+            print(f"⚠️  Could not save chat history: {e}")
+    
+    def show_chat_history(self, count: int = 10):
+        """Display chat history"""
+        if not self.conversation_history:
+            print("💬 No chat history available")
+            return
+        
+        print(f"\n📜 Recent Chat History (Last {count} messages):")
+        print("=" * 60)
+        
+        recent_history = self.conversation_history[-count:]
+        for i, msg in enumerate(recent_history, 1):
+            role_emoji = "👤" if msg['role'] == 'user' else "🤖"
+            timestamp = msg.get('timestamp', datetime.now().strftime('%H:%M'))
+            content = msg['content'][:100] + "..." if len(msg['content']) > 100 else msg['content']
+            print(f"  {i}. {role_emoji} [{timestamp}] {content}")
+        print("=" * 60)
+    
+    def get_input_suggestions(self, current_input: str, max_suggestions: int = 5) -> List[str]:
+        """Get intelligent suggestions based on previous input and context"""
+        suggestions = []
+        
+        # If input starts with '/', provide command suggestions
+        if current_input.startswith('/'):
+            command_suggestions = self.get_suggestions(current_input[1:], max_suggestions)
+            suggestions.extend([f"/{suggestion}" for suggestion in command_suggestions])
+        
+        # Get suggestions from user input history
+        if len(current_input) > 2:
+            history_matches = []
+            for hist_input in reversed(self.user_input_history[-50:]):  # Check last 50 inputs
+                if current_input.lower() in hist_input.lower() and hist_input not in suggestions:
+                    history_matches.append(hist_input)
+                    if len(history_matches) >= max_suggestions - len(suggestions):
+                        break
+            suggestions.extend(history_matches)
+        
+        # Get suggestions from conversation history
+        if len(current_input) > 3:
+            conversation_matches = []
+            for msg in reversed(self.conversation_history[-20:]):  # Check last 20 messages
+                if msg['role'] == 'user' and current_input.lower() in msg['content'].lower():
+                    if msg['content'] not in suggestions and len(msg['content']) < 100:
+                        conversation_matches.append(msg['content'])
+                        if len(conversation_matches) >= 2:  # Limit conversation suggestions
+                            break
+            suggestions.extend(conversation_matches)
+        
+        return suggestions[:max_suggestions]
+    
+    def display_command_selection(self, current_input: str):
+        """Display scrolling command selection for '/' commands"""
+        if not current_input.startswith('/'):
+            return
+        
+        suggestions = self.get_suggestions(current_input[1:], 10)
+        if not suggestions:
+            return
+        
+        print("\n🔧 Command Suggestions (Available commands):")
+        print("─" * 50)
+        
+        for i, suggestion in enumerate(suggestions):
+            print(f"  {i+1}. /{suggestion}")
+        
+        print("─" * 50)
+        print("💡 Type the full command or use Tab completion")
+    
+    def add_user_input(self, user_input: str):
+        """Add user input to history and save"""
+        if user_input and user_input.strip():
+            self.user_input_history.append(user_input.strip())
+            # Keep history manageable
+            if len(self.user_input_history) > 500:
+                self.user_input_history = self.user_input_history[-400:]
+            
+            # Save periodically
+            if len(self.user_input_history) % 10 == 0:
+                self.save_chat_history()
     
     def _colorize(self, text: str, color: str = "") -> str:
         """Apply color to text if colorama is available"""
@@ -161,8 +323,10 @@ You are integrated with advanced security testing capabilities through MCP integ
         self.mcp_server_process = None
         self.mcp_connected = False
         
-        # Initialize basic command helper
+        # Initialize enhanced command helper
         self.command_helper = IBLUCommandHelper()
+        # Share conversation history with command helper
+        self.command_helper.conversation_history = self.conversation_history
     
     def process_command(self, user_input: str) -> str:
         """Process user commands"""
@@ -234,18 +398,43 @@ You are integrated with advanced security testing capabilities through MCP integ
             return "🤖 Switched to Gemini provider"
         elif cmd == "mistral":
             return "🤖 Switched to Mistral provider"
+        elif cmd == "history":
+            self.command_helper.show_chat_history()
+            return ""
         else:
-            return f"❌ Unknown command: {command}"
+            # Show command suggestions for unknown commands
+            suggestions = self.command_helper.get_suggestions(cmd, 5)
+            if suggestions:
+                return f"❌ Unknown command: /{cmd}\n💡 Did you mean: {', '.join([f'/{s}' for s in suggestions[:3]])}"
+            else:
+                return f"❌ Unknown command: {command}"
     
     def handle_chat_message(self, message: str) -> str:
         """Handle regular chat messages"""
-        # Add to conversation history
-        self.conversation_history.append({"role": "user", "content": message})
+        # Add to conversation history with timestamp
+        self.conversation_history.append({
+            "role": "user", 
+            "content": message,
+            "timestamp": datetime.now().strftime('%H:%M:%S')
+        })
+        
+        # Add user input to history
+        self.command_helper.add_user_input(message)
         
         # Simple response for now (in real version, this would call AI APIs)
         response = f"🤖 IBLU: I understand you want help with: {message}\n\nIn the full version, I would provide detailed technical assistance for your cybersecurity needs using advanced AI models."
         
-        self.conversation_history.append({"role": "assistant", "content": response})
+        # Add assistant response to history with timestamp
+        self.conversation_history.append({
+            "role": "assistant", 
+            "content": response,
+            "timestamp": datetime.now().strftime('%H:%M:%S')
+        })
+        
+        # Save chat history periodically
+        if len(self.conversation_history) % 5 == 0:
+            self.command_helper.save_chat_history()
+        
         return response
     
     def get_status(self) -> str:
@@ -355,9 +544,23 @@ def main():
     # Initialize assistant
     assistant = KaliGPTMCPAssistant(config)
     
-    print("✅ Basic Command Helper: Available")
+    print("✅ Enhanced Command Helper: Available")
     print("✅ Total Commands: 10 (1-10)")
     print("✅ MCP Integration: Available")
+    print("✅ Chat History: Persistent storage")
+    print("✅ Word Suggestions: Intelligent learning")
+    print("✅ Tab Completion: Available")
+    print()
+    print("🎯 Enhanced Features:")
+    print("  • 💬 Persistent chat history with timestamps")
+    print("  • 🧠 Intelligent typing suggestions based on previous input")
+    print("  • 🔧 Tab completion for '/' commands")
+    print("  • 📜 Command history with arrow keys")
+    print("  • 🚀 Enhanced UI with professional banner")
+    print()
+    print("💡 Type '/' and press Tab for command suggestions!")
+    print("💡 Type '/history' to see your chat history!")
+    print("🔥 Assistant ready! Let's start hacking... ethically! 🔥")
     print()
     
     # Main loop
@@ -370,7 +573,15 @@ def main():
             
             if user_input.lower() in ['exit', 'quit', 'q']:
                 print("👋 Goodbye! Stay secure!")
+                # Save final chat history
+                assistant.command_helper.save_chat_history()
                 break
+            
+            # Show suggestions if input starts with '/'
+            if user_input.startswith('/') and len(user_input) > 1:
+                suggestions = assistant.command_helper.get_input_suggestions(user_input)
+                if suggestions:
+                    print(f"💡 Suggestions: {', '.join(suggestions[:3])}")
             
             # Process the command
             response = assistant.process_command(user_input)
@@ -382,6 +593,8 @@ def main():
             
         except KeyboardInterrupt:
             print("\n👋 Goodbye! Stay secure!")
+            # Save chat history before exit
+            assistant.command_helper.save_chat_history()
             break
         except Exception as e:
             print(f"❌ Error: {e}")
