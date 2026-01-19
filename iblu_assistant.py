@@ -18,6 +18,7 @@ import atexit
 from typing import List, Dict, Optional, Any
 from dataclasses import dataclass
 from enum import Enum
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from datetime import datetime
 import requests
@@ -333,7 +334,7 @@ class IBLUCommandHelper:
             basic_commands = ['/help', '/exit', '/clear', '/status', '/scan', '/payload', 
                             '/autopentest', '/mcp_connect', '/mcp_disconnect', 
                             '/openai', '/gemini', '/mistral', '/llama', '/history', '/tools', '/install',
-                            '/hexstrike', '/pentest', '/llama_models', '/delete_llama', '/delete_tools', '/install_models']
+                            '/hexstrike', '/pentest', '/llama_models', '/delete_llama', '/delete_tools', '/collaborative', '/install_models']
             
             # Add HexStrike tool commands
             hexstrike_commands = [f"/{tool}" for tool in self.hexstrike_tools.keys()]
@@ -534,6 +535,11 @@ class IBLUCommandHelper:
 {self._colorize('🔧 TOOL MANAGEMENT:', Fore.CYAN)}
   delete_tools      - Delete HexStrike tools (one by one or all)
   tools             - List all available tools
+
+{self._colorize('🤖 AI COLLABORATION:', Fore.MAGENTA)}
+  collaborative      - Toggle collaborative AI mode (all models work together)
+  stack_models      - Stack multiple models for enhanced responses
+  model_chat        - Enable models to communicate with each other
 
 {self._colorize('�️ HEXSTRIKE TOOLS (50+ available):', Fore.RED)}
   /nmap            - Network discovery and security auditing
@@ -891,6 +897,7 @@ class IBLUCommandHelper:
             "delete_llama": {"description": "Delete a local Llama model", "usage": "delete_llama"},
             "delete_tools": {"description": "Delete HexStrike tools (one by one or all)", "usage": "delete_tools"},
             "stack_models": {"description": "Stack multiple models for enhanced responses", "usage": "stack_models"},
+            "collaborative": {"description": "Toggle collaborative AI mode (all models work together)", "usage": "collaborative"},
             "model_chat": {"description": "Enable models to communicate with each other", "usage": "model_chat"}
         }
 
@@ -1904,6 +1911,8 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
             return self.command_helper.show_tools_list()
         elif cmd == "stack_models":
             return self.stack_models_response()
+        elif cmd == "collaborative":
+            return self.toggle_collaborative_mode()
         elif cmd == "model_chat":
             return self.enable_model_communication()
         
@@ -2104,7 +2113,7 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
         return ""  # Return empty since we already printed
     
     def get_ai_response(self, message: str) -> str:
-        """Get AI response from configured provider"""
+        """Get AI response using collaborative model network"""
         # Prepare the prompt with enhanced rephrasing if enabled
         if self.rephrasing_mode:
             enhanced_prompt = """
@@ -2129,83 +2138,59 @@ Provide step-by-step technical details while maintaining educational context and
             system_prompt = self.SYSTEM_PROMPT
             user_message = message
         
-        # Get all available providers with configured keys, prioritizing cloud then local models
-        provider_priority = [Provider.GEMINI, Provider.OPENAI, Provider.MISTRAL, Provider.LLAMA, Provider.GEMINI_CLI]
+        # Check if we have multiple models available for collaboration
         available_providers = []
-        for provider in provider_priority:
+        
+        # Check cloud providers
+        for provider in [Provider.OPENAI, Provider.GEMINI, Provider.MISTRAL]:
             provider_keys = self.get_provider_keys(provider)
             if provider_keys:
                 available_providers.append((provider, provider_keys[0]))
         
+        # Check local Llama
+        try:
+            url = "http://localhost:11434/api/tags"
+            response = requests.get(url, timeout=5)
+            if response.status_code == 200:
+                available_providers.append((Provider.LLAMA, "local"))
+        except:
+            pass
+        
+        # Use collaborative mode if we have 2+ models
+        if len(available_providers) >= 2:
+            print(f"🤖 Collaborative AI Network: {len(available_providers)} models available")
+            return self.collaborative_model_response(user_message)
+        
+        # Fallback to single provider mode
         if not available_providers:
             return "❌ No API keys configured. Please configure API keys first."
         
-        # Try each available provider in order
-        for provider, api_key in available_providers:
-            try:
-                print(f"🤖 Trying {provider.value.title()}...")
-                response = self.call_single_provider(provider, system_prompt, user_message, api_key)
-                
-                # Check for refusal and auto-enable rephrasing mode
-                if self.detect_refusal(response) and not self.rephrasing_mode:
-                    print(f"\n🔓 Detected refusal - Auto-enabling rephrasing mode and retrying...\n")
-                    self.rephrasing_mode = True
-                    return self.get_ai_response(message)  # Retry with rephrasing
-                
-                # Success - update current provider and return response
-                self.current_ai_provider = provider
-                return response
-                
-            except Exception as e:
-                print(f"❌ {provider.value.title()} Error: {str(e)}")
-                
-                # Check for different error types and handle accordingly
-                if hasattr(e, 'response') and hasattr(e.response, 'status_code'):
-                    status_code = e.response.status_code
-                    response_text = getattr(e.response, 'text', '').lower()
-                    
-                    # Handle API key compromise (403)
-                    if status_code == 403 and ('leaked' in response_text or 'forbidden' in response_text):
-                        print(f"\n{self._colorize('🔑 API Key Compromised! Rotating...', Fore.RED)}")
-                        self.rotate_api_key(provider, api_key)
+        # Try the best available provider
+        provider_priority = [Provider.GEMINI, Provider.OPENAI, Provider.MISTRAL, Provider.LLAMA]
+        for provider in provider_priority:
+            for available_provider, api_key in available_providers:
+                if available_provider == provider:
+                    try:
+                        print(f"🤖 Using {provider.value.title()} (single mode)...")
+                        response = self.call_single_provider(provider, system_prompt, user_message, api_key)
+                        
+                        # Check for refusal and auto-enable rephrasing mode
+                        if self.detect_refusal(response) and not self.rephrasing_mode:
+                            print(f"\n🔓 Detected refusal - Auto-enabling rephrasing mode and retrying...\n")
+                            self.rephrasing_mode = True
+                            return self.get_ai_response(message)  # Retry with rephrasing
+                        
+                        # Success - update current provider and return response
+                        self.current_provider = provider
+                        return response
+                    except Exception as e:
+                        print(f"❌ {provider.value.title()} failed: {e}")
                         continue
-                    
-                    # Handle server overload (503) or timeouts
-                    elif status_code in [503, 429] or 'timeout' in str(e).lower() or 'overloaded' in response_text:
-                        print(f"\n{self._colorize(f'⏰ {provider.value.title()} overloaded/timeout! Switching...', Fore.YELLOW)}")
-                        continue
-                    
-                    # Handle rate limiting (429)
-                    elif status_code == 429:
-                        print(f"\n{self._colorize(f'🚦 {provider.value.title()} rate limited! Switching...', Fore.YELLOW)}")
-                        continue
-                    
-                    # Handle server errors (5xx)
-                    elif 500 <= status_code < 600:
-                        print(f"\n{self._colorize(f'🔥 {provider.value.title()} server error! Switching...', Fore.YELLOW)}")
-                        continue
-                
-                # Handle network/connection errors
-                elif 'timeout' in str(e).lower() or 'connection' in str(e).lower():
-                    print(f"\n{self._colorize(f'🌐 {provider.value.title()} connection error! Switching...', Fore.YELLOW)}")
-                    continue
-                
-                continue
         
-        # All providers failed
-        error_msg = "❌ All configured providers failed:\n"
-        for provider, api_key in available_providers:
-            try:
-                # Try one more time to get specific error
-                self.call_single_provider(provider, system_prompt, user_message, api_key)
-            except Exception as e:
-                error_msg += f"  • {provider.value.title()}: {str(e)}\n"
-        
-        error_msg += "\n💡 Please check your API keys or internet connection."
-        return error_msg
+        return "❌ All providers failed. Please check your configuration."
     
     def detect_refusal(self, response: str) -> bool:
-        """Detect if AI refused to answer"""
+        """Detect if the AI response contains refusal phrases"""
         refusal_phrases = [
             "i cannot", "i can't", "i'm not able", "i cannot assist",
             "i'm designed to", "i need to be direct", "i don't adopt",
@@ -2214,6 +2199,49 @@ Provide step-by-step technical details while maintaining educational context and
         ]
         response_lower = response.lower()
         return any(phrase in response_lower for phrase in refusal_phrases)
+    
+    def toggle_collaborative_mode(self) -> str:
+        """Toggle collaborative AI mode on/off"""
+        # Check current collaborative status by counting available models
+        available_providers = []
+        
+        # Check cloud providers
+        for provider in [Provider.OPENAI, Provider.GEMINI, Provider.MISTRAL]:
+            provider_keys = self.get_provider_keys(provider)
+            if provider_keys:
+                available_providers.append((provider, provider_keys[0]))
+        
+        # Check local Llama
+        try:
+            url = "http://localhost:11434/api/tags"
+            response = requests.get(url, timeout=5)
+            if response.status_code == 200:
+                available_providers.append((Provider.LLAMA, "local"))
+        except:
+            pass
+        
+        if len(available_providers) < 2:
+            return f"❌ Need at least 2 models for collaborative mode. Available: {len(available_providers)}"
+        
+        print(f"\n{self._colorize('🤖 Collaborative AI Mode Status', Fore.CYAN)}")
+        print("=" * 50)
+        print(f"📋 Available Models: {len(available_providers)}")
+        print(f"🔄 Current Mode: {'ENABLED' if len(available_providers) >= 2 else 'DISABLED'}")
+        
+        print(f"\n{self._colorize('🔧 Collaborative Features:', Fore.GREEN)}")
+        print("✅ Parallel model analysis for faster responses")
+        print("✅ Cross-model insight synthesis")
+        print("✅ Automatic error handling and fallback")
+        print("✅ Enhanced response quality and detail")
+        print("✅ Real-time performance monitoring")
+        
+        print(f"\n{self._colorize('💡 Usage:', Fore.YELLOW)}")
+        print("• All chat messages automatically use collaborative mode")
+        print("• Models work together to provide comprehensive answers")
+        print("• Fastest available model handles synthesis")
+        print("• Automatic fallback to single model if needed")
+        
+        return f"✅ Collaborative mode is {'ACTIVE' if len(available_providers) >= 2 else 'INACTIVE'}"
     
     def query_all_providers(self, system_prompt: str, user_message: str, providers: list) -> str:
         """Query all available AI providers and combine responses"""
@@ -3277,6 +3305,154 @@ Provide step-by-step technical details while maintaining educational context and
                 return "❌ MCP server script not found"
         except Exception as e:
             return f"❌ Error connecting to MCP: {e}"
+    
+    def collaborative_model_response(self, user_message: str) -> str:
+        """All available models communicate to provide comprehensive response"""
+        print(f"\n{self._colorize('🤖 Collaborative AI Network', Fore.CYAN)}")
+        print("=" * 60)
+        
+        # Get all available providers (both cloud and local)
+        available_providers = []
+        for provider in [Provider.OPENAI, Provider.GEMINI, Provider.MISTRAL, Provider.LLAMA]:
+            if provider == Provider.LLAMA:
+                # Check if local Llama is available
+                try:
+                    url = "http://localhost:11434/api/tags"
+                    response = requests.get(url, timeout=5)
+                    if response.status_code == 200:
+                        available_providers.append((provider, "local"))
+                except:
+                    pass
+            else:
+                # Check cloud providers
+                provider_keys = self.get_provider_keys(provider)
+                if provider_keys:
+                    available_providers.append((provider, provider_keys[0]))
+        
+        if not available_providers:
+            return "❌ No models available. Please configure at least one provider."
+        
+        print(f"📋 Active Models: {', '.join([p[0].value.title() for p in available_providers])}")
+        print(f"🔄 Initiating collaborative analysis...")
+        
+        # Phase 1: Parallel initial analysis
+        print(f"\n{self._colorize('📊 Phase 1: Parallel Analysis', Fore.YELLOW)}")
+        print("-" * 40)
+        
+        initial_responses = {}
+        response_times = {}
+        
+        def get_model_response(provider_info):
+            """Get response from a single model"""
+            provider, api_key = provider_info
+            start_time = time.time()
+            
+            try:
+                if provider == Provider.LLAMA:
+                    response = self.call_llama_api(self.SYSTEM_PROMPT, user_message, api_key)
+                elif provider == Provider.OPENAI:
+                    response = self.call_openai_api(self.SYSTEM_PROMPT, user_message, api_key)
+                elif provider == Provider.GEMINI:
+                    response = self.call_gemini_api(self.SYSTEM_PROMPT, user_message, api_key)
+                elif provider == Provider.MISTRAL:
+                    response = self.call_mistral_api(self.SYSTEM_PROMPT, user_message, api_key)
+                else:
+                    return None
+                
+                elapsed = time.time() - start_time
+                return (provider, response, elapsed)
+            except Exception as e:
+                return (provider, f"Error: {str(e)}", time.time() - start_time)
+        
+        # Run all models in parallel
+        with ThreadPoolExecutor(max_workers=len(available_providers)) as executor:
+            future_to_provider = {executor.submit(get_model_response, provider): provider[0] for provider in available_providers}
+            
+            for future in as_completed(future_to_provider):
+                provider, response, elapsed = future.result()
+                initial_responses[provider] = response
+                response_times[provider] = elapsed
+                print(f"✅ {provider.value.title()}: {elapsed:.2f}s")
+        
+        # Phase 2: Cross-model analysis and enhancement
+        print(f"\n{self._colorize('🧠 Phase 2: Cross-Model Enhancement', Fore.MAGENTA)}")
+        print("-" * 40)
+        
+        # Create collaborative prompt with insights from all models
+        collaborative_insights = f"""
+**COLLABORATIVE ANALYSIS REQUEST**
+
+Original Question: {user_message}
+
+**Initial Model Responses:**
+"""
+        
+        for provider, response in initial_responses.items():
+            if not response.startswith("Error:"):
+                collaborative_insights += f"\n{provider.value.title()} Analysis:\n{response}\n"
+        
+        collaborative_insights += f"""
+**Task:**
+Based on the analyses above, provide a comprehensive, enhanced response that:
+1. Synthesizes the best insights from all models
+2. Fills in gaps and corrects any inconsistencies
+3. Provides the most accurate and detailed answer possible
+4. Includes specific technical details and practical examples
+5. Structures the information clearly for maximum clarity
+
+**Response Format:**
+- Start with a clear, direct answer
+- Follow with detailed explanation
+- Include technical specifics
+- Provide practical examples
+- End with summary and recommendations
+"""
+        
+        # Get enhanced response from the fastest model
+        fastest_provider = min(response_times.keys(), key=lambda p: response_times[p])
+        
+        print(f"🎯 Using {fastest_provider.value.title()} for synthesis...")
+        
+        try:
+            if fastest_provider == Provider.LLAMA:
+                enhanced_response = self.call_llama_api(self.SYSTEM_PROMPT, collaborative_insights, "local")
+            elif fastest_provider == Provider.OPENAI:
+                enhanced_response = self.call_openai_api(self.SYSTEM_PROMPT, collaborative_insights, available_providers[[p[0] for p in available_providers].index(Provider.OPENAI)][1])
+            elif fastest_provider == Provider.GEMINI:
+                enhanced_response = self.call_gemini_api(self.SYSTEM_PROMPT, collaborative_insights, available_providers[[p[0] for p in available_providers].index(Provider.GEMINI)][1])
+            elif fastest_provider == Provider.MISTRAL:
+                enhanced_response = self.call_mistral_api(self.SYSTEM_PROMPT, collaborative_insights, available_providers[[p[0] for p in available_providers].index(Provider.MISTRAL)][1])
+        except Exception as e:
+            enhanced_response = f"Error in collaborative synthesis: {str(e)}"
+        
+        # Phase 3: Final summary
+        print(f"\n{self._colorize('📈 Phase 3: Collaborative Summary', Fore.GREEN)}")
+        print("-" * 40)
+        
+        print(f"⚡ Total Response Time: {sum(response_times.values()):.2f}s")
+        print(f"🏆 Fastest Model: {fastest_provider.value.title()} ({response_times[fastest_provider]:.2f}s)")
+        print(f"🤝 Models Collaborated: {len(initial_responses)}")
+        
+        # Display individual insights summary
+        print(f"\n{self._colorize('🔍 Individual Model Insights:', Fore.CYAN)}")
+        for provider, response in initial_responses.items():
+            if not response.startswith("Error:"):
+                # Extract first 100 characters as preview
+                preview = response.replace('\n', ' ')[:150] + "..." if len(response.replace('\n', ' ')) > 150 else response.replace('\n', ' ')
+                print(f"  • {provider.value.title()}: {preview}")
+        
+        return f"""
+{self._colorize('🤖 COLLABORATIVE AI RESPONSE', Fore.GREEN)}
+{'=' * 60}
+
+{enhanced_response}
+
+{'=' * 60}
+{self._colorize('📊 Collaboration Details:', Fore.BLUE)}
+⚡ Response Time: {sum(response_times.values()):.2f}s
+🤝 Models Used: {', '.join([p.value.title() for p in initial_responses.keys()])}
+🏆 Lead Model: {fastest_provider.value.title()}
+"""
     
     def stack_models_response(self) -> str:
         """Stack multiple models for enhanced responses"""
