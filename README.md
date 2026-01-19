@@ -6,7 +6,7 @@
 
 ### 🚀 **Key Features**
 - 🤖 **Multi-AI Support** - Chat with Perplexity, OpenAI, Gemini, or Mistral
-- 🛡️ **50+ Security Tools** - Integrated HexStrike professional tools
+- 🛡️ **50+ Security Tools** - Integrated professional tools
 - 💬 **Smart Chat Interface** - Persistent conversations with context awareness
 - ⚡ **Tab Completion** - Intelligent command suggestions and auto-completion
 - 📊 **Real-time Status** - Monitor tools and use tools along with KaliGPT to
