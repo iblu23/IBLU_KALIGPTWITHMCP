@@ -132,7 +132,6 @@ MODEL_PROGRESS_THEMES = {
     "openai": {"style": "bold green", "emoji": "🤖", "color": "bright_green"},
     "gemini": {"style": "bold magenta", "emoji": "🌟", "color": "bright_magenta"},
     "mistral": {"style": "bold red", "emoji": "🔥", "color": "bright_red"},
-    "llama": {"style": "bold cyan", "emoji": "🦙", "color": "bright_cyan"},
     "installation": {"style": "bold yellow", "emoji": "📦", "color": "bright_yellow"},
     "deletion": {"style": "bold red", "emoji": "🗑️", "color": "bright_red"},
     "configuration": {"style": "bold blue", "emoji": "⚙️", "color": "bright_blue"},
@@ -894,7 +893,6 @@ class APIConfig:
     openai_keys: List[str] = None
     gemini_keys: List[str] = None
     mistral_keys: List[str] = None
-    llama_keys: List[str] = None
     gemini_cli_keys: List[str] = None
     huggingface_models: List[dict] = None  # Store HF model configs
 
@@ -3438,7 +3436,7 @@ Provide step-by-step technical details while maintaining educational context and
             return "❌ No API keys configured. Please configure API keys first."
         
         # Try the best available provider
-        provider_priority = [Provider.GEMINI, Provider.OPENAI, Provider.MISTRAL, Provider.LLAMA]
+        provider_priority = [Provider.GEMINI, Provider.OPENAI, Provider.MISTRAL]
         for provider in provider_priority:
             for available_provider, api_key in available_providers:
                 if available_provider == provider:
@@ -3551,7 +3549,6 @@ Provide step-by-step technical details while maintaining educational context and
                 Provider.GEMINI: 'gemini_keys',
                 Provider.OPENAI: 'openai_keys',
                 Provider.MISTRAL: 'mistral_keys',
-                Provider.LLAMA: 'llama_keys',
                 Provider.GEMINI_CLI: 'gemini_cli_keys'
             }
             
@@ -3682,8 +3679,6 @@ Provide step-by-step technical details while maintaining educational context and
             return [k for k in (self.config.gemini_keys or []) if k and k != "your-gemini-api-key-here"]
         elif provider == Provider.MISTRAL:
             return [k for k in (self.config.mistral_keys or []) if k and k != "your-mistral-api-key-here"]
-        elif provider == Provider.LLAMA:
-            return [k for k in (self.config.llama_keys or []) if k and k != "your-llama-api-key-here"]
         elif provider == Provider.GEMINI_CLI:
             return [k for k in (self.config.gemini_cli_keys or []) if k and k != "your-gemini-cli-api-key-here"]
         return []
@@ -5069,21 +5064,11 @@ Provide step-by-step technical details while maintaining educational context and
         
         # Get all available providers (both cloud and local)
         available_providers = []
-        for provider in [Provider.OPENAI, Provider.GEMINI, Provider.MISTRAL, Provider.LLAMA]:
-            if provider == Provider.LLAMA:
-                # Check if local Llama is available
-                try:
-                    url = "http://localhost:11434/api/tags"
-                    response = requests.get(url, timeout=5)
-                    if response.status_code == 200:
-                        available_providers.append((provider, "local"))
-                except:
-                    pass
-            else:
-                # Check cloud providers
-                provider_keys = self.get_provider_keys(provider)
-                if provider_keys:
-                    available_providers.append((provider, provider_keys[0]))
+        for provider in [Provider.OPENAI, Provider.GEMINI, Provider.MISTRAL]:
+            # Check cloud providers
+            provider_keys = self.get_provider_keys(provider)
+            if provider_keys:
+                available_providers.append((provider, provider_keys[0]))
         
         if not available_providers:
             return "❌ No models available. Please configure at least one provider."
@@ -5092,8 +5077,7 @@ Provide step-by-step technical details while maintaining educational context and
         model_themes = {
             Provider.OPENAI: {"style": "bold green", "emoji": "🤖", "name": "OpenAI", "color": "bright_green"},
             Provider.GEMINI: {"style": "bold magenta", "emoji": "🌟", "name": "Gemini", "color": "bright_magenta"},
-            Provider.MISTRAL: {"style": "bold red", "emoji": "🔥", "name": "Mistral", "color": "bright_red"},
-            Provider.LLAMA: {"style": "bold cyan", "emoji": "🦙", "name": "Llama", "color": "bright_cyan"}
+            Provider.MISTRAL: {"style": "bold red", "emoji": "🔥", "name": "Mistral", "color": "bright_red"}
         }
         
         print(f"📋 Active Models: {', '.join([p[0].value.title() for p in available_providers])}")
