@@ -1079,48 +1079,6 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
             print(f"{Fore.GREEN}┌─ {Style.BRIGHT}{Fore.YELLOW}[1]{Style.RESET_ALL}{Fore.GREEN} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
             print(f"{Fore.GREEN}│{Style.RESET_ALL}  {Style.BRIGHT}{Fore.YELLOW}🧠 IBLU KALIGPT{Style.RESET_ALL} - Multi-AI Assistant                                {Fore.GREEN}│{Style.RESET_ALL}")
             print(f"{Fore.GREEN}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} Auto-rephrasing on refusal detection                        {Fore.GREEN}│{Style.RESET_ALL}")
-            print(f"{Fore.GREEN}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} Query multiple AI providers simultaneously                  {Fore.GREEN}│{Style.RESET_ALL}")
-            print(f"{Fore.GREEN}└───────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
-            
-            # Menu option 2
-            print(f"{Fore.BLUE}┌─ {Style.BRIGHT}{Fore.YELLOW}[2]{Style.RESET_ALL}{Fore.BLUE} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
-            print(f"{Fore.BLUE}│{Style.RESET_ALL}  {Style.BRIGHT}{Fore.YELLOW}🎮 HACKING TOYS{Style.RESET_ALL} - Install 50+ Security Tools                      {Fore.BLUE}│{Style.RESET_ALL}")
-            print(f"{Fore.BLUE}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} Install all tools at once                                   {Fore.BLUE}│{Style.RESET_ALL}")
-            print(f"{Fore.BLUE}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} Install one-by-one with descriptions                       {Fore.BLUE}│{Style.RESET_ALL}")
-            print(f"{Fore.BLUE}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} Delete tools individually or all at once                     {Fore.BLUE}│{Style.RESET_ALL}")
-            print(f"{Fore.BLUE}└───────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
-            
-            # Menu option 3
-            print(f"{Fore.MAGENTA}┌─ {Style.BRIGHT}{Fore.YELLOW}[3]{Style.RESET_ALL}{Fore.MAGENTA} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
-            print(f"{Fore.MAGENTA}│{Style.RESET_ALL}  {Style.BRIGHT}{Fore.YELLOW}🎯 HACKING TOYS{Style.RESET_ALL} - Installation & Management                     {Fore.MAGENTA}│{Style.RESET_ALL}")
-            print(f"{Fore.MAGENTA}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} /tools - List all hacking tools with categories            {Fore.MAGENTA}│{Style.RESET_ALL}")
-            print(f"{Fore.MAGENTA}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} /delete_tools - Remove hacking tools from database           {Fore.MAGENTA}│{Style.RESET_ALL}")
-            print(f"{Fore.MAGENTA}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} /delete_llama - Remove local Llama models                 {Fore.MAGENTA}│{Style.RESET_ALL}")
-            print(f"{Fore.MAGENTA}└───────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
-            
-            # Menu option 4
-            print(f"{Fore.CYAN}┌─ {Style.BRIGHT}{Fore.YELLOW}[4]{Style.RESET_ALL}{Fore.CYAN} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
-            print(f"{Fore.CYAN}│{Style.RESET_ALL}  {Style.BRIGHT}{Fore.YELLOW}⚙️  CONFIGURATION{Style.RESET_ALL} - Settings & Preferences                        {Fore.CYAN}│{Style.RESET_ALL}")
-            print(f"{Fore.CYAN}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} Manage API keys for AI providers                           {Fore.CYAN}│{Style.RESET_ALL}")
-            print(f"{Fore.CYAN}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} Toggle rephrasing mode                                     {Fore.CYAN}│{Style.RESET_ALL}")
-            print(f"{Fore.CYAN}└───────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
-            
-            # Menu option 5
-            print(f"{Fore.RED}┌─ {Style.BRIGHT}{Fore.YELLOW}[5]{Style.RESET_ALL}{Fore.RED} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
-            print(f"{Fore.RED}│{Style.RESET_ALL}  {Style.BRIGHT}{Fore.YELLOW}🚪 EXIT{Style.RESET_ALL} - Close the assistant                                      {Fore.RED}│{Style.RESET_ALL}")
-            print(f"{Fore.RED}└───────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
-            
-            # Menu option 6
-            print(f"{Fore.BLUE}┌─ {Style.BRIGHT}{Fore.YELLOW}[6]{Style.RESET_ALL}{Fore.BLUE} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
-            print(f"{Fore.BLUE}│{Style.RESET_ALL}  {Style.BRIGHT}{Fore.YELLOW}📋 LIST MODELS{Style.RESET_ALL} - Show available AI models                    {Fore.BLUE}│{Style.RESET_ALL}")
-            print(f"{Fore.BLUE}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} Display all configured and local models               {Fore.BLUE}│{Style.RESET_ALL}")
-            print(f"{Fore.BLUE}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} Show model status and capabilities                      {Fore.BLUE}│{Style.RESET_ALL}")
-            print(f"{Fore.BLUE}└───────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
-            
-            print(f"{Style.BRIGHT}{Fore.YELLOW}💡 TIP:{Style.RESET_ALL} Type a number (1-6) or just start chatting with your question!\n")
-        else:
-            # Fallback for no color support - simple menu options
-            print(f"\n{'='*60}")
             print(f"{'='*20} IBLU KALIGPT MAIN MENU {'='*20}")
             print(f"{'='*60}\n")
             
@@ -1128,18 +1086,15 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
             print(f"    • Auto-rephrasing on refusal")
             print(f"    • Multi-AI querying\n")
             
-            print(f"[2] 🎮 HACKING TOYS - Install Security Tools")
-            print(f"    • Install all or one-by-one")
-            print(f"    • Browse by category\n")
+            print(f"[2] 🎮 HACKING TOYS - Installation & Management")
+            print(f"    • Install, list, and delete security tools\n")
             
-            print(f"[3] 🎯 HACKING TOYS - Installation & Management")
-            print(f"    • List/delete hacking tools and models\n")
-            
-            print(f"[4] ⚙️  CONFIGURATION - Settings")
+            print(f"[3] ⚙️  CONFIGURATION - Settings")
             print(f"    • API keys, rephrasing mode\n")
             
-            print(f"[5] 🚪 EXIT\n")
-            print(f"[6] 📋 LIST MODELS - Show available AI models\n")
+            print(f"[4] 🚪 EXIT\n")
+            print(f"[5] 📋 LIST MODELS - Show available AI models\n")
+            print(f"[6] 🗑️  DELETE MODELS - Remove local models\n")
             print(f"{'='*60}")
             print(f"Type a number (1-6) or start chatting!\n")
             print(f"{'='*60}\n")
@@ -1150,24 +1105,24 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
         
         if choice in ['1', 'iblu', 'kali', 'kaligpt']:
             return self.handle_iblu_kaligpt()
-        elif choice in ['2', 'toys', 'tools', 'install', 'hacking']:
+        elif choice in ['2', 'toys', 'tools', 'install', 'hacking', 'manage']:
             return self.handle_hacking_toys()
-        elif choice in ['3', 'manage', 'delete', 'tool']:
-            return self.handle_tool_management()
-        elif choice in ['4', 'config', 'settings']:
+        elif choice in ['3', 'config', 'settings']:
             return self.handle_configuration()
-        elif choice in ['5', 'exit', 'quit']:
+        elif choice in ['4', 'exit', 'quit']:
             return "👋 Goodbye! Stay secure!"
-        elif choice in ['6', 'models', 'list']:
+        elif choice in ['5', 'models', 'list']:
             return self.list_available_models()
+        elif choice in ['6', 'delete', 'remove', 'models_delete']:
+            return self.handle_delete_models()
         else:
             return f"❌ Invalid choice: {choice}\n💡 Please choose 1-6 or type 'menu'"
     
     def handle_hacking_toys(self):
-        """Handle Hacking Toys menu - install tools with descriptions"""
+        """Handle Hacking Toys menu - install and manage tools"""
         if COLORAMA_AVAILABLE:
             print(f"\n{Fore.CYAN}╔{'═' * 78}╗{Style.RESET_ALL}")
-            print(f"{Fore.CYAN}║{Style.RESET_ALL}{Fore.YELLOW}{' ' * 20}🎮 HACKING TOYS INSTALLATION 🎮{' ' * 20}{Style.RESET_ALL}{Fore.CYAN}║{Style.RESET_ALL}")
+            print(f"{Fore.CYAN}║{Style.RESET_ALL}{Fore.YELLOW}{' ' * 20}🎮 HACKING TOYS - INSTALLATION & MANAGEMENT 🎮{' ' * 20}{Style.RESET_ALL}{Fore.CYAN}║{Style.RESET_ALL}")
             print(f"{Fore.CYAN}╚{'═' * 78}╝{Style.RESET_ALL}\n")
             
             print(f"{Fore.GREEN}┌─ {Fore.YELLOW}[1]{Fore.GREEN} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
@@ -1182,26 +1137,77 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
             print(f"{Fore.BLUE}└───────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
             
             print(f"{Fore.MAGENTA}┌─ {Fore.YELLOW}[3]{Fore.MAGENTA} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
-            print(f"{Fore.MAGENTA}│{Style.RESET_ALL}  {Fore.YELLOW}🔙 BACK{Style.RESET_ALL} - Return to main menu                                    {Fore.MAGENTA}│{Style.RESET_ALL}")
+            print(f"{Fore.MAGENTA}│{Style.RESET_ALL}  {Fore.YELLOW}📋 LIST TOOLS{Style.RESET_ALL} - View all installed hacking tools                {Fore.MAGENTA}│{Style.RESET_ALL}")
+            print(f"{Fore.MAGENTA}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} Show tools organized by category                           {Fore.MAGENTA}│{Style.RESET_ALL}")
+            print(f"{Fore.MAGENTA}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} Display tool descriptions and usage                        {Fore.MAGENTA}│{Style.RESET_ALL}")
             print(f"{Fore.MAGENTA}└───────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
+            
+            print(f"{Fore.RED}┌─ {Fore.YELLOW}[4]{Fore.RED} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
+            print(f"{Fore.RED}│{Style.RESET_ALL}  {Fore.YELLOW}🗑️  DELETE TOOLS{Style.RESET_ALL} - Remove hacking tools                           {Fore.RED}│{Style.RESET_ALL}")
+            print(f"{Fore.RED}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} Delete individual tools or all at once                      {Fore.RED}│{Style.RESET_ALL}")
+            print(f"{Fore.RED}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} Free up disk space by removing unused tools                 {Fore.RED}│{Style.RESET_ALL}")
+            print(f"{Fore.RED}└───────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
+            
+            print(f"{Fore.LIGHTYELLOW_EX}┌─ {Fore.YELLOW}[5]{Fore.LIGHTYELLOW_EX} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}  {Fore.YELLOW}🔙 BACK{Style.RESET_ALL} - Return to main menu                                    {Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTYELLOW_EX}└───────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
         else:
             print("\n" + "=" * 70)
-            print("    HACKING TOYS - SECURITY TOOLS INSTALLATION")
+            print("    HACKING TOYS - INSTALLATION & MANAGEMENT")
             print("=" * 70 + "\n")
             print("[1] Install ALL tools at once (50+ tools)")
             print("[2] Install ONE-BY-ONE (choose by number)")
-            print("[3] Back to main menu\n")
+            print("[3] LIST TOOLS (view installed tools)")
+            print("[4] DELETE TOOLS (remove tools)")
+            print("[5] Back to main menu\n")
         
-        choice = input(f"{self._colorize('🎯 Choose option (1-3):', Fore.YELLOW)} ").strip()
+        choice = input(f"{self._colorize('🎯 Choose option (1-5):', Fore.YELLOW)} ").strip()
         
         if choice == '1':
             return self.install_all_tools()
         elif choice == '2':
             return self.install_tools_one_by_one_with_descriptions()
         elif choice == '3':
+            return self.command_helper.show_tools_list()
+        elif choice == '4':
+            return self.command_helper.show_tools_list()  # This will show delete options
+        elif choice == '5':
             return ""
         else:
-            return "❌ Invalid choice!"
+            return f"❌ Invalid choice: {choice}\n💡 Please choose 1-5"
+    
+    def handle_delete_models(self):
+        """Handle model deletion menu"""
+        if COLORAMA_AVAILABLE:
+            print(f"\n{Fore.LIGHTMAGENTA_EX}╔{'═' * 78}╗{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTMAGENTA_EX}║{Style.RESET_ALL}{Fore.YELLOW}{' ' * 20}🗑️  DELETE MODELS - REMOVE LOCAL MODELS 🗑️{' ' * 20}{Style.RESET_ALL}{Fore.LIGHTMAGENTA_EX}║{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTMAGENTA_EX}╚{'═' * 78}╝{Style.RESET_ALL}\n")
+            
+            print(f"{Fore.RED}┌─ {Fore.YELLOW}[1]{Fore.RED} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
+            print(f"{Fore.RED}│{Style.RESET_ALL}  {Fore.YELLOW}🗑️  DELETE LLAMA MODELS{Style.RESET_ALL} - Remove local Llama models                {Fore.RED}│{Style.RESET_ALL}")
+            print(f"{Fore.RED}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} Free up disk space by removing Llama models                 {Fore.RED}│{Style.RESET_ALL}")
+            print(f"{Fore.RED}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} Select specific models or delete all                          {Fore.RED}│{Style.RESET_ALL}")
+            print(f"{Fore.RED}└───────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
+            
+            print(f"{Fore.LIGHTYELLOW_EX}┌─ {Fore.YELLOW}[2]{Fore.LIGHTYELLOW_EX} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}  {Fore.YELLOW}🔙 BACK{Style.RESET_ALL} - Return to main menu                                    {Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTYELLOW_EX}└───────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
+        else:
+            print("\n" + "=" * 70)
+            print("    DELETE MODELS - REMOVE LOCAL MODELS")
+            print("=" * 70 + "\n")
+            print("[1] Delete Llama models")
+            print("[2] Back to main menu\n")
+        
+        choice = input(f"{self._colorize('🗑️  Choose option (1-2):', Fore.YELLOW)} ").strip()
+        
+        if choice == '1':
+            available_models = self.get_available_llama_models()
+            return self.delete_llama_model(available_models)
+        elif choice == '2':
+            return ""
+        else:
+            return f"❌ Invalid choice: {choice}\n💡 Please choose 1-2"
     
     def list_available_models(self) -> str:
         """List all available AI models (both cloud and local)"""
