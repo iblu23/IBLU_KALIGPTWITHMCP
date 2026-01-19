@@ -526,6 +526,8 @@ You are integrated with advanced security testing capabilities through MCP integ
         self.command_history: List[str] = []
         self.mcp_server_process = None
         self.mcp_connected = False
+        self.current_ai_provider = Provider.PERPLEXITY
+        self.rephrasing_mode = False
         
         # Initialize enhanced command helper
         self.command_helper = IBLUCommandHelper()
@@ -1169,7 +1171,7 @@ def main():
 ╠══════════════════════════════════════════════════════════════════════════════╣
 ║  🧩 PLATFORM                                                                  ║
 ║  • 🤖 Multiple AI providers (Perplexity, OpenAI, Gemini, Mistral)             ║
-║  • 🔗 HexStrike MCP integration (150+ security tools)                         ║
+║  • 🔗 HexStrike MCP integration (50+ security tools)                         ║
 ║                                                                              ║
 ║  🚀 CAPABILITIES                                                              ║
 ║  • 🛡️ 100+ professional security commands                                     ║
