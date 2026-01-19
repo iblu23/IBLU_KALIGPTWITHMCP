@@ -595,33 +595,23 @@ Focus on technical accuracy and completeness. Students learn best from detailed,
 {self._colorize('🔥 IBLU PROFESSIONAL HACKING ASSISTANT - MAIN MENU 🔥', Fore.YELLOW)}
 {self._colorize('=' * 60, Fore.CYAN)}
 
-{self._colorize('1. 🧠 IBLU KALIGPT', Fore.GREEN)}  - Multi-AI Assistant (Perplexity, OpenAI, Gemini, Mistral)
-{self._colorize('   • Bypass jailbreak settings with rephrasing mode', Fore.CYAN)}
-{self._colorize('   • All AI models available simultaneously', Fore.CYAN)}
+{self._colorize('1. 🧠 IBLU KALIGPT', Fore.GREEN)}  - Multi-AI Assistant (Perplexity, OpenAI, Gemini)
+{self._colorize('   • Auto-rephrasing on refusal detection', Fore.CYAN)}
+{self._colorize('   • Multi-AI simultaneous querying', Fore.CYAN)}
 
-{self._colorize('2. � HexStrike Tools List', Fore.BLUE)}  - View all 50+ available security tools
+{self._colorize('2. 🎮 Hacking Toys', Fore.BLUE)}  - Install 50+ security tools
+{self._colorize('   • Install all tools at once', Fore.CYAN)}
+{self._colorize('   • Install tools one-by-one with descriptions', Fore.CYAN)}
 {self._colorize('   • Browse tools by category', Fore.CYAN)}
-{self._colorize('   • See tool descriptions and usage', Fore.CYAN)}
-{self._colorize('   • Type "/" to use tool commands', Fore.CYAN)}
 
-{self._colorize('3. �️ HexStrike Tools Installation', Fore.BLUE)}  - Install security tools
-{self._colorize('   • Option A: Install all tools at once', Fore.CYAN)}
-{self._colorize('   • Option B: Install tools one-by-one', Fore.CYAN)}
-{self._colorize('   • Automated dependency management', Fore.CYAN)}
-
-{self._colorize('4. 🔗 MCP Connection Status', Fore.MAGENTA)}  - Verify HexStrike MCP server
-{self._colorize('   • Manual connection check', Fore.CYAN)}
-{self._colorize('   • Service status verification', Fore.CYAN)}
-{self._colorize('   • Troubleshooting assistance', Fore.CYAN)}
-
-{self._colorize('5. ⚙️  Configuration', Fore.RED)}  - Settings and preferences
+{self._colorize('3. ⚙️  Configuration', Fore.RED)}  - Settings and preferences
 {self._colorize('   • API key management', Fore.CYAN)}
 {self._colorize('   • Rephrasing mode toggle', Fore.CYAN)}
 {self._colorize('   • System configuration', Fore.CYAN)}
 
-{self._colorize('6. 🚪 Exit', Fore.WHITE)}  - Exit the assistant
+{self._colorize('4. 🚪 Exit', Fore.WHITE)}  - Exit the assistant
 
-{self._colorize('💡 Usage:', Fore.YELLOW)} Type the number (1-6), command name, or "/" for tool commands
+{self._colorize('💡 Usage:', Fore.YELLOW)} Type the number (1-4) or command name
 {self._colorize('🔥 Ready for professional cybersecurity testing! 🔥', Fore.RED)}
 """
         print(menu_text)
@@ -632,60 +622,117 @@ Focus on technical accuracy and completeness. Students learn best from detailed,
         
         if choice in ['1', 'iblu', 'kali', 'kaligpt']:
             return self.handle_iblu_kaligpt()
-        elif choice in ['2', 'list', 'toolslist']:
-            return self.show_hexstrike_tools_list()
-        elif choice in ['3', 'tools', 'install', 'hexstrike']:
-            return self.handle_tools_installation()
-        elif choice in ['4', 'mcp', 'connection', 'status']:
-            return self.handle_mcp_verification()
-        elif choice in ['5', 'config', 'settings']:
+        elif choice in ['2', 'toys', 'tools', 'install', 'hacking']:
+            return self.handle_hacking_toys()
+        elif choice in ['3', 'config', 'settings']:
             return self.handle_configuration()
-        elif choice in ['6', 'exit', 'quit']:
+        elif choice in ['4', 'exit', 'quit']:
             return "👋 Goodbye! Stay secure!"
         else:
-            return f"❌ Invalid choice: {choice}\n💡 Please choose 1-6 or type 'menu'"
+            return f"❌ Invalid choice: {choice}\n💡 Please choose 1-4 or type 'menu'"
     
-    def show_hexstrike_tools_list(self):
-        """Display comprehensive HexStrike tools list organized by category"""
-        print(f"\n{self._colorize('🔧 HEXSTRIKE SECURITY TOOLS - COMPLETE LIST', Fore.YELLOW)}")
+    def handle_hacking_toys(self):
+        """Handle Hacking Toys menu - install tools with descriptions"""
+        print(f"\n{self._colorize('🎮 HACKING TOYS - SECURITY TOOLS INSTALLATION', Fore.YELLOW)}")
         print(self._colorize('=' * 70, Fore.CYAN))
-        print(f"\n{self._colorize('💡 Type "/" followed by tool name to use (e.g., /nmap, /sqlmap)', Fore.GREEN)}\n")
         
-        # Organize tools by category
-        categories = {
-            'recon': '🔍 RECONNAISSANCE TOOLS',
-            'web': '🌐 WEB APPLICATION TESTING',
-            'auth': '🔐 PASSWORD & AUTHENTICATION',
-            'network': '📡 NETWORK ANALYSIS',
-            'vuln': '🛡️ VULNERABILITY SCANNING',
-            'exploit': '💣 EXPLOITATION FRAMEWORKS',
-            'post': '🎯 POST-EXPLOITATION',
-            'forensics': '🔬 DIGITAL FORENSICS',
-            'social': '🎭 SOCIAL ENGINEERING',
-            'wireless': '📶 WIRELESS SECURITY'
-        }
+        menu = f"""
+{self._colorize('Installation Options:', Fore.GREEN)}
+  {self._colorize('1.', Fore.YELLOW)} Install ALL tools at once (50+ tools)
+  {self._colorize('2.', Fore.YELLOW)} Install tools ONE-BY-ONE (choose by number with descriptions)
+  {self._colorize('3.', Fore.YELLOW)} Back to main menu
+
+{self._colorize('💡 Tip:', Fore.CYAN)} Each tool includes a short description of what it does
+"""
+        print(menu)
         
-        for cat_key, cat_name in categories.items():
-            tools_in_cat = {k: v for k, v in self.command_helper.hexstrike_tools.items() if v['category'] == cat_key}
+        choice = input(f"{self._colorize('🎯 Choose option (1-3):', Fore.YELLOW)} ").strip()
+        
+        if choice == '1':
+            return self.install_all_tools()
+        elif choice == '2':
+            return self.install_tools_one_by_one_with_descriptions()
+        elif choice == '3':
+            return ""
+        else:
+            return "❌ Invalid choice!"
+    
+    def install_all_tools(self):
+        """Install all tools at once"""
+        print(f"\n{self._colorize('� INSTALL ALL HACKING TOYS', Fore.YELLOW)}")
+        print(self._colorize('=' * 70, Fore.CYAN))
+        print(f"\n{self._colorize('⚠️  This will install 50+ security tools', Fore.RED)}")
+        print(f"{self._colorize('⏱️  Estimated time: 15-30 minutes', Fore.YELLOW)}")
+        print(f"{self._colorize('🔑 Requires: sudo privileges', Fore.YELLOW)}\n")
+        
+        confirm = input(f"{self._colorize('Continue? (yes/no):', Fore.YELLOW)} ").strip().lower()
+        
+        if confirm in ['yes', 'y']:
+            if os.path.exists('install_hexstrike_tools.sh'):
+                print(f"\n{self._colorize('🚀 Starting installation...', Fore.GREEN)}")
+                print(f"💡 Run: sudo ./install_hexstrike_tools.sh\n")
+                return "📦 Execute: sudo ./install_hexstrike_tools.sh"
+            else:
+                return "❌ Installation script not found!"
+        else:
+            return "❌ Installation cancelled"
+    
+    def install_tools_one_by_one_with_descriptions(self):
+        """Install tools one by one with full descriptions"""
+        print(f"\n{self._colorize('🎮 SELECT HACKING TOY TO INSTALL', Fore.YELLOW)}")
+        print(self._colorize('=' * 70, Fore.CYAN))
+        
+        # Get all tools sorted by category
+        tools_by_category = {}
+        for tool, info in self.command_helper.hexstrike_tools.items():
+            cat = info['category']
+            if cat not in tools_by_category:
+                tools_by_category[cat] = []
+            tools_by_category[cat].append((tool, info))
+        
+        # Display all tools with numbers and descriptions
+        tool_list = []
+        counter = 1
+        
+        for cat, tools in sorted(tools_by_category.items()):
+            cat_names = {
+                'recon': '🔍 RECONNAISSANCE',
+                'web': '🌐 WEB TESTING',
+                'auth': '🔐 PASSWORD CRACKING',
+                'network': '📡 NETWORK ANALYSIS',
+                'vuln': '🛡️ VULNERABILITY SCANNING',
+                'exploit': '💣 EXPLOITATION',
+                'post': '🎯 POST-EXPLOITATION',
+                'forensics': '🔬 FORENSICS',
+                'social': '🎭 SOCIAL ENGINEERING',
+                'wireless': '📶 WIRELESS HACKING'
+            }
             
-            if tools_in_cat:
-                print(f"\n{self._colorize(cat_name, Fore.YELLOW)}")
-                print(self._colorize('-' * 70, Fore.CYAN))
-                
-                for tool_name, tool_info in sorted(tools_in_cat.items()):
-                    installed = "✅" if self.check_tool_installed(tool_name) else "❌"
-                    print(f"  {installed} {self._colorize(f'/{tool_name}', Fore.GREEN)} - {tool_info['name']}")
-                    print(f"      {self._colorize(tool_info['desc'], Fore.CYAN)}")
+            print(f"\n{self._colorize(cat_names.get(cat, cat.upper()), Fore.YELLOW)}")
+            print(self._colorize('-' * 70, Fore.CYAN))
+            
+            for tool, info in sorted(tools, key=lambda x: x[0]):
+                installed = "✅" if self.check_tool_installed(tool) else "❌"
+                print(f"  {self._colorize(f'{counter:2d}.', Fore.GREEN)} {installed} {self._colorize(tool, Fore.CYAN)} - {info['desc']}")
+                tool_list.append(tool)
+                counter += 1
         
         print(f"\n{self._colorize('=' * 70, Fore.CYAN)}")
-        print(f"{self._colorize('📊 Total Tools:', Fore.YELLOW)} {len(self.command_helper.hexstrike_tools)}")
-        print(f"\n{self._colorize('💡 Usage Examples:', Fore.YELLOW)}")
-        print(f"  {self._colorize('/nmap 192.168.1.1', Fore.GREEN)} - Run nmap scan")
-        print(f"  {self._colorize('/sqlmap -u http://target.com', Fore.GREEN)} - Run SQLMap")
-        print(f"  {self._colorize('/help', Fore.GREEN)} - Show all commands")
-        print(f"\n{self._colorize('🔧 Installation:', Fore.YELLOW)} Use menu option 3 to install tools\n")
+        print(f"{self._colorize('📊 Total Tools:', Fore.YELLOW)} {len(tool_list)}")
         
-        return ""
+        try:
+            choice = input(f"\n{self._colorize('🎯 Enter tool number to install (or 0 to cancel):', Fore.YELLOW)} ").strip()
+            tool_num = int(choice)
+            
+            if tool_num == 0:
+                return "❌ Cancelled"
+            elif 1 <= tool_num <= len(tool_list):
+                selected_tool = tool_list[tool_num - 1]
+                return self.install_single_tool(selected_tool)
+            else:
+                return "❌ Invalid tool number!"
+        except ValueError:
+            return "❌ Please enter a valid number!"
     
     def handle_iblu_kaligpt(self):
         """Handle IBLU KALIGPT multi-AI setup"""
