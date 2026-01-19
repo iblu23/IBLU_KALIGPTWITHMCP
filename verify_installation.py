@@ -230,7 +230,7 @@ def test_launcher():
     
     launcher_file = Path('launch_iblu.sh')
     if launcher_file.exists():
-        if os.access(launch_file, os.X_OK):
+        if os.access(launcher_file, os.X_OK):
             print("✅ launch_iblu.sh - Executable")
             
             # Test launcher help
