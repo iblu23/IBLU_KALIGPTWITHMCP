@@ -1,0 +1,78 @@
+{
+  "_comment": "🔥 KaliGPT MCP Enhanced - 150 Automated Scans - Configuration Template 🔥",
+  "_version": "2.3 - Enhanced MCP Integration",
+  "_description": "🚀 Advanced cybersecurity automation platform with 150+ automated scans through MCP integration",
+  "_note": "This is a template file - copy to config.json and add your API keys",
+  
+  "perplexity_keys": ["your-perplexity-api-key-here"],
+  "openai_keys": ["your-openai-api-key-here"],
+  "gemini_keys": ["your-gemini-api-key-here"],
+  "mistral_keys": ["your-mistral-api-key-here"],
+  
+  "hexstrike_mcp": {
+    "enabled": true,
+    "auto_connect": true,
+    "server_path": "mcp_server.py",
+    "timeout": 30,
+    "retry_attempts": 3,
+    "_description": "🔗 Model Context Protocol server settings"
+  },
+  
+  "pentesting": {
+    "default_payload_ip": "192.168.1.100",
+    "default_payload_port": 4444,
+    "report_directory": "./pentest_reports",
+    "auto_save_reports": true,
+    "_description": "🛡️ Penetration testing configuration"
+  },
+  
+  "logging": {
+    "level": "INFO",
+    "file": "./iblu.log",
+    "console": true,
+    "_description": "📝 Logging configuration"
+  },
+  
+  "ui": {
+    "show_emojis": true,
+    "colored_output": true,
+    "compact_mode": false,
+    "command_helper": true,
+    "autocomplete": true,
+    "_description": "🎨 User interface preferences"
+  },
+  
+  "performance": {
+    "api_key_rotation": true,
+    "load_balancing": true,
+    "rate_limiting": true,
+    "performance_tracking": true,
+    "cache_results": true,
+    "_description": "📊 Performance and optimization settings"
+  },
+  
+  "tools": {
+    "auto_install": false,
+    "verify_installation": true,
+    "update_check": true,
+    "categories": ["network_recon", "web_security", "auth_security", "binary_analysis", "cloud_security", "ctf_forensics"],
+    "_description": "🛠️ Security tools management"
+  },
+  
+  "security": {
+    "require_authorization": true,
+    "log_all_commands": true,
+    "audit_mode": false,
+    "responsible_disclosure": true,
+    "_description": "🔐 Security and compliance settings"
+  },
+  
+  "enhanced_features": {
+    "fixed_scan_functionality": true,
+    "advanced_api_management": true,
+    "enhanced_reporting": true,
+    "tools_installer": true,
+    "command_autocomplete": true,
+    "_description": "🚀 Enhanced feature flags"
+  }
+}
