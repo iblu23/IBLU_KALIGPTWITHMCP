@@ -13,6 +13,7 @@ import time
 import random
 import subprocess
 import threading
+import readline
 from typing import List, Dict, Optional, Any
 from dataclasses import dataclass
 from enum import Enum
