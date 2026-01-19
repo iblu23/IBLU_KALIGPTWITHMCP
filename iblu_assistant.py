@@ -30,6 +30,13 @@ try:
 except ImportError:
     COLORAMA_AVAILABLE = False
 
+# Optional prompt_toolkit for rich input
+try:
+    from prompt_toolkit import prompt
+    PROMPT_TOOLKIT_AVAILABLE = True
+except ImportError:
+    PROMPT_TOOLKIT_AVAILABLE = False
+
 class Provider(Enum):
     PERPLEXITY = "perplexity"
     OPENAI = "openai"
@@ -1223,7 +1230,10 @@ def main():
     # Main loop
     while True:
         try:
-            user_input = input("🤖 IBLU> ").strip()
+            if PROMPT_TOOLKIT_AVAILABLE:
+                user_input = prompt("🤖 IBLU> ").strip()
+            else:
+                user_input = input("🤖 IBLU> ").strip()
             
             if not user_input:
                 continue

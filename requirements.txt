@@ -3,6 +3,7 @@
 # Core Dependencies
 colorama>=0.4.0                  # 🎨 Terminal colors and formatting
 requests>=2.31.0                 # 🌐 HTTP requests library
+prompt_toolkit>=3.0.47           # ⌨️ Rich CLI input and menus
 
 # Built-in modules (no installation needed):
 # - asyncio, pathlib, dataclasses, time, enum, sys, os, json, subprocess
