@@ -1734,7 +1734,7 @@ I assume students are working in authorized lab environments or have proper test
         try:
             import requests
             
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key={api_key}"
+            url = f"https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key={api_key}"
             headers = {
                 "Content-Type": "application/json"
             }
@@ -1763,6 +1763,17 @@ I assume students are working in authorized lab environments or have proper test
             return f"🤖 IBLU (Gemini 1.5 Flash):\n\n{ai_response}"
             
         except requests.exceptions.HTTPError as e:
+            # Try fallback to gemini-pro-vision if gemini-pro fails
+            if "404" in str(e) or "not found" in str(e).lower():
+                try:
+                    fallback_url = f"https://generativelanguage.googleapis.com/v1/models/gemini-pro-vision:generateContent?key={api_key}"
+                    response = requests.post(fallback_url, headers=headers, json=payload, timeout=30)
+                    response.raise_for_status()
+                    result = response.json()
+                    ai_response = result['candidates'][0]['content']['parts'][0]['text']
+                    return f"🤖 IBLU (Gemini Pro Vision):\n\n{ai_response}"
+                except:
+                    pass
             return f"❌ Gemini API Error: {e}\n\n💡 Response: {e.response.text if hasattr(e, 'response') else 'No details'}\n\n🔑 Check your API key at https://aistudio.google.com/app/apikey"
         except Exception as e:
             return f"❌ Gemini API Error: {e}\n\n💡 Check your API key at https://aistudio.google.com/app/apikey"
