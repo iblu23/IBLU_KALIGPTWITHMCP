@@ -824,13 +824,13 @@ You are integrated with advanced security testing capabilities through MCP integ
         """Switch between AI providers"""
         providers = []
         if self.config.perplexity_keys:
-            providers.append("perplexity")
+            providers.append(Provider.PERPLEXITY)
         if self.config.openai_keys:
-            providers.append("openai")
+            providers.append(Provider.OPENAI)
         if self.config.gemini_keys:
-            providers.append("gemini")
+            providers.append(Provider.GEMINI)
         if self.config.mistral_keys:
-            providers.append("mistral")
+            providers.append(Provider.MISTRAL)
         
         if not providers:
             return f"❌ No API keys configured in config.json"
@@ -838,15 +838,15 @@ You are integrated with advanced security testing capabilities through MCP integ
         print(f"\n{self._colorize('🤖 Available AI Providers:', Fore.GREEN)}")
         for i, provider in enumerate(providers, 1):
             status = "✅" if provider == self.current_ai_provider else "  "
-            print(f"  {i}. {status} {provider.title()}")
+            print(f"  {i}. {status} {provider.value.title()}")
         
         try:
-            choice = input(f"\n{self._colorize('🎯 Choose provider (1-{len(providers)}):', Fore.YELLOW)}").strip()
+            choice = input(f"\n{self._colorize('🎯 Choose provider (1-' + str(len(providers)) + '):', Fore.YELLOW)}").strip()
             provider_index = int(choice) - 1
             selected_provider = providers[provider_index]
             
             self.current_ai_provider = selected_provider
-            return f"🤖 Switched to {selected_provider.title()} AI provider"
+            return f"🤖 Switched to {selected_provider.value.title()} AI provider"
             
         except (ValueError, IndexError):
             return f"❌ Invalid choice!"
@@ -1146,11 +1146,14 @@ You are integrated with advanced security testing capabilities through MCP integ
                 "Content-Type": "application/json"
             }
             
+            # Perplexity API doesn't support system messages in the same way
+            # Combine system prompt with user message
+            combined_message = f"{system_prompt}\n\nUser Query: {user_message}"
+            
             payload = {
                 "model": "llama-3.1-sonar-large-128k-online",
                 "messages": [
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_message}
+                    {"role": "user", "content": combined_message}
                 ],
                 "temperature": 0.7,
                 "max_tokens": 2000
@@ -1164,6 +1167,8 @@ You are integrated with advanced security testing capabilities through MCP integ
             
             return f"🤖 IBLU (Perplexity):\n\n{ai_response}"
             
+        except requests.exceptions.HTTPError as e:
+            return f"❌ Perplexity API Error: {e}\n\n💡 Response: {e.response.text if hasattr(e, 'response') else 'No details'}\n\n🔑 Check your API key at https://www.perplexity.ai/settings/api"
         except Exception as e:
             return f"❌ Perplexity API Error: {e}\n\n💡 Check your API key at https://www.perplexity.ai/settings/api"
     
