@@ -16,6 +16,7 @@ import time
 import sys
 import readline
 import atexit
+import threading
 from typing import List, Dict, Optional
 from dataclasses import dataclass
 from enum import Enum
@@ -36,6 +37,38 @@ try:
     PROMPT_TOOLKIT_AVAILABLE = True
 except ImportError:
     PROMPT_TOOLKIT_AVAILABLE = False
+
+class Spinner:
+    """Loading spinner for AI thinking animation"""
+    def __init__(self, message="🤖 IBLU is thinking"):
+        self.spinner_chars = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏']
+        self.message = message
+        self.running = False
+        self.thread = None
+    
+    def spin(self):
+        """Spinner animation loop"""
+        idx = 0
+        while self.running:
+            sys.stdout.write(f'\r{self.spinner_chars[idx]} {self.message}...')
+            sys.stdout.flush()
+            idx = (idx + 1) % len(self.spinner_chars)
+            time.sleep(0.1)
+        sys.stdout.write('\r' + ' ' * (len(self.message) + 10) + '\r')
+        sys.stdout.flush()
+    
+    def start(self):
+        """Start the spinner"""
+        self.running = True
+        self.thread = threading.Thread(target=self.spin)
+        self.thread.daemon = True
+        self.thread.start()
+    
+    def stop(self):
+        """Stop the spinner"""
+        self.running = False
+        if self.thread:
+            self.thread.join()
 
 class Provider(Enum):
     PERPLEXITY = "perplexity"
@@ -1237,17 +1270,24 @@ Focus on technical accuracy and completeness. Students learn best from detailed,
             return "❌ All providers failed or refused. Try enabling rephrasing mode."
     
     def call_single_provider(self, provider: Provider, system_prompt: str, user_message: str, api_key: str) -> str:
-        """Call a single AI provider"""
-        if provider == Provider.PERPLEXITY:
-            return self.call_perplexity_api(system_prompt, user_message, api_key)
-        elif provider == Provider.OPENAI:
-            return self.call_openai_api(system_prompt, user_message, api_key)
-        elif provider == Provider.GEMINI:
-            return self.call_gemini_api(system_prompt, user_message, api_key)
-        elif provider == Provider.MISTRAL:
-            return self.call_mistral_api(system_prompt, user_message, api_key)
-        else:
-            return f"❌ Provider {provider.value} not implemented yet"
+        """Call a single AI provider with loading animation"""
+        spinner = Spinner(f"🤖 {provider.value.title()} is thinking")
+        spinner.start()
+        
+        try:
+            if provider == Provider.PERPLEXITY:
+                result = self.call_perplexity_api(system_prompt, user_message, api_key)
+            elif provider == Provider.OPENAI:
+                result = self.call_openai_api(system_prompt, user_message, api_key)
+            elif provider == Provider.GEMINI:
+                result = self.call_gemini_api(system_prompt, user_message, api_key)
+            elif provider == Provider.MISTRAL:
+                result = self.call_mistral_api(system_prompt, user_message, api_key)
+            else:
+                result = f"❌ Provider {provider.value} not implemented yet"
+            return result
+        finally:
+            spinner.stop()
     
     def get_provider_keys(self, provider: Provider) -> List[str]:
         """Get API keys for a specific provider"""
