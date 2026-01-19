@@ -2159,7 +2159,7 @@ Provide step-by-step technical details while maintaining educational context and
                 def progress_animation():
                     idx = 0
                     while not stop_event.is_set():
-                        print(f"\r  {progress_chars[idx % len(progress_chars)] Pulling...", end='', flush=True)
+                        print(f"\r  {progress_chars[idx % len(progress_chars)]} Pulling...", end='', flush=True)
                         idx += 1
                         time.sleep(0.1)
                 
