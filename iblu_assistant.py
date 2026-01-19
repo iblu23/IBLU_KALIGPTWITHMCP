@@ -1075,29 +1075,42 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
         print(banner)
         
         if COLORAMA_AVAILABLE:
-            # Menu option 1
-            print(f"{Fore.GREEN}┌─ {Style.BRIGHT}{Fore.YELLOW}[1]{Style.RESET_ALL}{Fore.GREEN} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
-            print(f"{Fore.GREEN}│{Style.RESET_ALL}  {Style.BRIGHT}{Fore.YELLOW}🧠 IBLU KALIGPT{Style.RESET_ALL} - Multi-AI Assistant                                {Fore.GREEN}│{Style.RESET_ALL}")
-            print(f"{Fore.GREEN}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} Auto-rephrasing on refusal detection                        {Fore.GREEN}│{Style.RESET_ALL}")
-            print(f"{'='*20} IBLU KALIGPT MAIN MENU {'='*20}")
-            print(f"{'='*60}\n")
+            # Beautiful menu header
+            menu_header = f"{Fore.LIGHTCYAN_EX}┌─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}"
+            menu_title = f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL} {Style.BRIGHT}{Back.CYAN}{Fore.WHITE}🧠 IBLU KALIGPT MAIN MENU 🧠{Style.RESET_ALL} {Fore.LIGHTCYAN_EX}{' ' * 43}│{Style.RESET_ALL}"
+            menu_footer = f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}"
             
-            print(f"[1] 🧠 IBLU KALIGPT - Multi-AI Assistant")
-            print(f"    • Auto-rephrasing on refusal")
-            print(f"    • Multi-AI querying\n")
+            print(f"\n{menu_header}")
+            print(f"{menu_title}")
+            print(f"{menu_footer}\n")
             
-            print(f"[2] 🎮 HACKING TOYS - Installation & Management")
-            print(f"    • Install, list, and delete security tools\n")
+            # Menu options with beautiful colors
+            options = [
+                ("[1] 🧠 IBLU KALIGPT", "Multi-AI Assistant", Fore.GREEN, "• Auto-rephrasing on refusal", "• Multi-AI querying"),
+                ("[2] 🎮 HACKING TOYS", "Installation & Management", Fore.BLUE, "• Install, list, and delete security tools", ""),
+                ("[3] ⚙️  CONFIGURATION", "Settings", Fore.CYAN, "• API keys, rephrasing mode", ""),
+                ("[4] 📋 LIST MODELS", "Show available AI models", Fore.MAGENTA, "", ""),
+                ("[5] 🗑️  DELETE MODELS", "Remove local models", Fore.RED, "", ""),
+                ("[6] 🚪 EXIT", "Leave the program", Fore.YELLOW, "", "")
+            ]
             
-            print(f"[3] ⚙️  CONFIGURATION - Settings")
-            print(f"    • API keys, rephrasing mode\n")
+            for i, (option, title, color, desc1, desc2) in enumerate(options):
+                print(f"{color}┌─ {Style.BRIGHT}{Fore.WHITE}{option}{Style.RESET_ALL}{color} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
+                print(f"{color}│{Style.RESET_ALL}  {Style.BRIGHT}{Fore.WHITE}{title}{Style.RESET_ALL}{' ' * (55 - len(title))}{color}│{Style.RESET_ALL}")
+                if desc1:
+                    print(f"{color}│{Style.RESET_ALL}  {Fore.CYAN}{desc1}{Style.RESET_ALL}{' ' * (55 - len(desc1))}{color}│{Style.RESET_ALL}")
+                if desc2:
+                    print(f"{color}│{Style.RESET_ALL}  {Fore.CYAN}{desc2}{Style.RESET_ALL}{' ' * (55 - len(desc2))}{color}│{Style.RESET_ALL}")
+                print(f"{color}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
             
-            print(f"[4] 📋 LIST MODELS - Show available AI models\n")
-            print(f"[5] 🗑️  DELETE MODELS - Remove local models\n")
-            print(f"[6] 🚪 EXIT\n")
-            print(f"{'='*60}")
-            print(f"Type a number (1-6) or start chatting!\n")
-            print(f"{'='*60}\n")
+            # Footer with instructions
+            footer_border = f"{Fore.LIGHTGREEN_EX}┌─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}"
+            footer_text = f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL} {Style.BRIGHT}{Fore.WHITE}💡 Type a number (1-6) or start chatting!{Style.RESET_ALL} {Fore.LIGHTGREEN_EX}{' ' * 35}│{Style.RESET_ALL}"
+            footer_border2 = f"{Fore.LIGHTGREEN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}"
+            
+            print(f"{footer_border}")
+            print(f"{footer_text}")
+            print(f"{footer_border2}\n")
     
     def handle_menu_choice(self, choice: str) -> str:
         """Handle menu choice"""
