@@ -5106,14 +5106,35 @@ Provide step-by-step technical details while maintaining educational context and
         
         # Phase 1: Parallel initial analysis with Rich progress
         if RICH_AVAILABLE:
+            from rich.progress import (
+                Progress, SpinnerColumn, TextColumn, BarColumn, 
+                TimeElapsedColumn, TimeRemainingColumn, MofNCompleteColumn,
+                TaskProgressColumn, DownloadColumn, TransferSpeedColumn
+            )
+            from rich.style import Style
+            from rich.text import Text
+            
+            # Create enhanced progress with multiple columns and effects
             with Progress(
-                SpinnerColumn(),
+                SpinnerColumn("dots12", style="bold cyan", speed=0.5),
                 TextColumn("[bold cyan]🤖 Collaborative Analysis: {task.description}"),
-                BarColumn(bar_width=40, complete_style="bright_cyan", finished_style="bold cyan"),
-                TextColumn("[progress.percentage]{task.percentage:>3.1f}%"),
-                TimeElapsedColumn(),
+                BarColumn(
+                    bar_width=50, 
+                    complete_style=Style(color="bright_cyan", bold=True),
+                    finished_style=Style(color="bold cyan", blink=True),
+                    pulse_style=Style(color="cyan", dim=True)
+                ),
+                TaskProgressColumn(
+                    text_format="• {task.completed}/{task.total}",
+                    style="bright_yellow",
+                    show_speed=True
+                ),
+                TextColumn("[progress.percentage]{task.percentage:>3.1f}%", style="bold magenta"),
+                MofNCompleteColumn(),
+                TimeElapsedColumn(elapsed_when_finished=True, style="dim green"),
                 console=console,
-                transient=False
+                transient=False,
+                refresh_per_second=10
             ) as progress:
                 
                 # Create main collaborative task
@@ -5138,33 +5159,54 @@ Provide step-by-step technical details while maintaining educational context and
                     theme = model_themes.get(provider, {"style": "bold cyan", "emoji": "🤖", "name": "Model"})
                     
                     try:
-                        # Create individual model progress with proper total
-                        model_task = progress.add_task(f"[{theme['style']}]{theme['emoji']} {theme['name']} responding...", total=100)
+                        # Create individual model progress with enhanced effects
+                        model_color = theme.get('color', 'bright_cyan')
+                        model_emoji = theme.get('emoji', '🤖')
+                        model_name = theme.get('name', 'Model')
                         
-                        # Simulate progress during API call
-                        progress.update(model_task, advance=20, description=f"[{theme['style']}]{theme['emoji']} {theme['name']} connecting...")
+                        # Create animated progress task with model-specific styling
+                        model_task = progress.add_task(
+                            f"[{theme['style']}]{model_emoji} {model_name} initializing...", 
+                            total=100,
+                            style=Style(color=model_color, bold=True)
+                        )
+                        
+                        # Stage 1: Initialization (0-20%)
+                        progress.update(model_task, advance=5, description=f"[{theme['style']}]{model_emoji} {model_name} 🔌 connecting...")
+                        time.sleep(0.05)
+                        progress.update(model_task, advance=10, description=f"[{theme['style']}]{model_emoji} {model_name} 🌐 establishing link...")
+                        time.sleep(0.05)
+                        progress.update(model_task, advance=5, description=f"[{theme['style']}]{model_emoji} {model_name} ✨ link established!")
+                        time.sleep(0.05)
+                        
+                        # Stage 2: Processing (20-80%)
+                        progress.update(model_task, advance=20, description=f"[{theme['style']}]{model_emoji} {model_name} 🧠 analyzing query...")
                         time.sleep(0.1)
                         
                         if provider == Provider.LLAMA:
-                            progress.update(model_task, advance=30, description=f"[{theme['style']}]{theme['emoji']} {theme['name']} processing...")
+                            progress.update(model_task, advance=20, description=f"[{theme['style']}]{model_emoji} {model_name} 🦙 processing locally...")
                             response = self.call_llama_api(self.SYSTEM_PROMPT, user_message, api_key)
                         elif provider == Provider.OPENAI:
-                            progress.update(model_task, advance=30, description=f"[{theme['style']}]{theme['emoji']} {theme['name']} processing...")
+                            progress.update(model_task, advance=20, description=f"[{theme['style']}]{model_emoji} {model_name} 🤖 GPT thinking...")
                             response = self.call_openai_api(self.SYSTEM_PROMPT, user_message, api_key)
                         elif provider == Provider.GEMINI:
-                            progress.update(model_task, advance=30, description=f"[{theme['style']}]{theme['emoji']} {theme['name']} processing...")
+                            progress.update(model_task, advance=20, description=f"[{theme['style']}]{model_emoji} {model_name} 🌟 Gemini analyzing...")
                             response = self.call_gemini_api(self.SYSTEM_PROMPT, user_message, api_key)
                         elif provider == Provider.MISTRAL:
-                            progress.update(model_task, advance=30, description=f"[{theme['style']}]{theme['emoji']} {theme['name']} processing...")
+                            progress.update(model_task, advance=20, description=f"[{theme['style']}]{model_emoji} {model_name} 🔥 Mistral processing...")
                             response = self.call_mistral_api(self.SYSTEM_PROMPT, user_message, api_key)
                         
-                        progress.update(model_task, completed=100, description=f"[{theme['style']}✅ {theme['name']} completed")
+                        # Stage 3: Finalization (80-100%)
+                        progress.update(model_task, advance=10, description=f"[{theme['style']}]{model_emoji} {model_name} ⚡ finalizing response...")
+                        time.sleep(0.05)
+                        progress.update(model_task, advance=10, description=f"[{theme['style']}✅ {model_name} completed!", style=Style(color=model_color, bold=True, blink=True))
                         
                         response_time = time.time() - start_time
                         return provider, response, response_time
                         
                     except Exception as e:
-                        progress.update(model_task, completed=100, description=f"[{theme['style']}❌ {theme['name']} failed")
+                        model_color = theme.get('color', 'bright_red')
+                        progress.update(model_task, completed=100, description=f"[bold red]❌ {model_name} failed!", style=Style(color=model_color, bold=True, dim=True))
                         return provider, f"Error: {str(e)}", time.time() - start_time
                 
                 # Execute parallel model responses
