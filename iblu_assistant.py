@@ -1386,31 +1386,40 @@ def load_config():
 
 def main():
     """Main function"""
-    # Display custom banner
-    banner = """
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                                                                              ║
-║   ☠️  ╦ ╦╔═╗╔═╗╦╔═  ╔╦╗╦ ╦╔═╗      ╦ ╦╔═╗╔═╗╦  ╔╦╗   ⚡                     ║
-║      ╠═╣╠═╣║  ╠╩╗   ║ ╠═╣║╣       ║║║║ ║╠╦╝║   ║║                          ║
-║      ╩ ╩╩ ╩╚═╝╩ ╩   ╩ ╩ ╩╚═╝      ╚╩╝╚═╝╩╚═╩═╝═╩╝   🧠                     ║
-║                                                                              ║
-║        🔥 IBLU PROFESSIONAL HACKING ASSISTANT v2.0 🔥                        ║
-║        🐍 Advanced Python Cybersecurity Toolkit                              ║
-║                                                                              ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║  🧩 PLATFORM                                                                  ║
-║  • 🤖 Multiple AI providers (Perplexity, OpenAI, Gemini, Mistral)             ║
-║  • 🔗 HexStrike MCP integration (50+ security tools)                         ║
-║                                                                              ║
-║  🚀 CAPABILITIES                                                              ║
-║  • 🛡️ 100+ professional security commands                                     ║
-║  • 📡 Real-time vulnerability assessment                                      ║
-║  • 💣 Automated payload generation                                            ║
-║  • 🗺️ Network reconnaissance & mapping                                        ║
-║  • 📊 Reporting & documentation                                               ║
-║                                                                              ║
-║  ⚠️ AUTHORIZED USE ONLY — professional security testing platform              ║
-╚══════════════════════════════════════════════════════════════════════════════╝
+    # Display colorful ASCII art banner
+    if COLORAMA_AVAILABLE:
+        banner = f"""{Fore.RED}
+██╗  ██╗ █████╗  ██████╗██╗  ██╗    ████████╗██╗  ██╗███████╗
+██║  ██║██╔══██╗██╔════╝██║ ██╔╝    ╚══██╔══╝██║  ██║██╔════╝
+███████║███████║██║     █████╔╝        ██║   ███████║█████╗  
+██╔══██║██╔══██║██║     ██╔═██╗        ██║   ██╔══██║██╔══╝  
+██║  ██║██║  ██║╚██████╗██║  ██╗       ██║   ██║  ██║███████╗
+╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝       ╚═╝   ╚═╝  ╚═╝╚══════╝{Style.RESET_ALL}
+{Fore.CYAN}                    ██╗    ██╗ ██████╗ ██████╗ ██╗     ██████╗ 
+                    ██║    ██║██╔═══██╗██╔══██╗██║     ██╔══██╗
+                    ██║ █╗ ██║██║   ██║██████╔╝██║     ██║  ██║
+                    ██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║
+                    ╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
+                     ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝{Style.RESET_ALL}
+{Fore.YELLOW}🔥🔥🔥 IBLU PROFESSIONAL HACKING ASSISTANT v2.0 🔥🔥🔥{Style.RESET_ALL}
+{Fore.GREEN}🐍🐍🐍 Advanced Python Cybersecurity Toolkit 🐍🐍🐍{Style.RESET_ALL}
+"""
+    else:
+        banner = """
+██╗  ██╗ █████╗  ██████╗██╗  ██╗    ████████╗██╗  ██╗███████╗
+██║  ██║██╔══██╗██╔════╝██║ ██╔╝    ╚══██╔══╝██║  ██║██╔════╝
+███████║███████║██║     █████╔╝        ██║   ███████║█████╗  
+██╔══██║██╔══██║██║     ██╔═██╗        ██║   ██╔══██║██╔══╝  
+██║  ██║██║  ██║╚██████╗██║  ██╗       ██║   ██║  ██║███████╗
+╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝       ╚═╝   ╚═╝  ╚═╝╚══════╝
+                    ██╗    ██╗ ██████╗ ██████╗ ██╗     ██████╗ 
+                    ██║    ██║██╔═══██╗██╔══██╗██║     ██╔══██╗
+                    ██║ █╗ ██║██║   ██║██████╔╝██║     ██║  ██║
+                    ██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║
+                    ╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
+                     ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
+🔥🔥🔥 IBLU PROFESSIONAL HACKING ASSISTANT v2.0 🔥🔥🔥
+🐍🐍🐍 Advanced Python Cybersecurity Toolkit 🐍🐍🐍
 """
     print(banner)
     
