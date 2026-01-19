@@ -566,24 +566,29 @@ Focus on technical accuracy and completeness. Students learn best from detailed,
 {self._colorize('   • Bypass jailbreak settings with rephrasing mode', Fore.CYAN)}
 {self._colorize('   • All AI models available simultaneously', Fore.CYAN)}
 
-{self._colorize('2. 🛡️ HexStrike Tools Installation', Fore.BLUE)}  - Install 50+ security tools
+{self._colorize('2. � HexStrike Tools List', Fore.BLUE)}  - View all 50+ available security tools
+{self._colorize('   • Browse tools by category', Fore.CYAN)}
+{self._colorize('   • See tool descriptions and usage', Fore.CYAN)}
+{self._colorize('   • Type "/" to use tool commands', Fore.CYAN)}
+
+{self._colorize('3. �️ HexStrike Tools Installation', Fore.BLUE)}  - Install security tools
 {self._colorize('   • Option A: Install all tools at once', Fore.CYAN)}
 {self._colorize('   • Option B: Install tools one-by-one', Fore.CYAN)}
 {self._colorize('   • Automated dependency management', Fore.CYAN)}
 
-{self._colorize('3. 🔗 MCP Connection Status', Fore.MAGENTA)}  - Verify HexStrike MCP server
+{self._colorize('4. 🔗 MCP Connection Status', Fore.MAGENTA)}  - Verify HexStrike MCP server
 {self._colorize('   • Manual connection check', Fore.CYAN)}
 {self._colorize('   • Service status verification', Fore.CYAN)}
 {self._colorize('   • Troubleshooting assistance', Fore.CYAN)}
 
-{self._colorize('4. ⚙️  Configuration', Fore.RED)}  - Settings and preferences
+{self._colorize('5. ⚙️  Configuration', Fore.RED)}  - Settings and preferences
 {self._colorize('   • API key management', Fore.CYAN)}
 {self._colorize('   • Rephrasing mode toggle', Fore.CYAN)}
 {self._colorize('   • System configuration', Fore.CYAN)}
 
-{self._colorize('5. 🚪 Exit', Fore.WHITE)}  - Exit the assistant
+{self._colorize('6. 🚪 Exit', Fore.WHITE)}  - Exit the assistant
 
-{self._colorize('💡 Usage:', Fore.YELLOW)} Type the number (1-5) or command name
+{self._colorize('💡 Usage:', Fore.YELLOW)} Type the number (1-6), command name, or "/" for tool commands
 {self._colorize('🔥 Ready for professional cybersecurity testing! 🔥', Fore.RED)}
 """
         print(menu_text)
@@ -594,16 +599,60 @@ Focus on technical accuracy and completeness. Students learn best from detailed,
         
         if choice in ['1', 'iblu', 'kali', 'kaligpt']:
             return self.handle_iblu_kaligpt()
-        elif choice in ['2', 'tools', 'install', 'hexstrike']:
+        elif choice in ['2', 'list', 'toolslist']:
+            return self.show_hexstrike_tools_list()
+        elif choice in ['3', 'tools', 'install', 'hexstrike']:
             return self.handle_tools_installation()
-        elif choice in ['3', 'mcp', 'connection', 'status']:
+        elif choice in ['4', 'mcp', 'connection', 'status']:
             return self.handle_mcp_verification()
-        elif choice in ['4', 'config', 'settings']:
+        elif choice in ['5', 'config', 'settings']:
             return self.handle_configuration()
-        elif choice in ['5', 'exit', 'quit']:
+        elif choice in ['6', 'exit', 'quit']:
             return "👋 Goodbye! Stay secure!"
         else:
-            return f"❌ Invalid choice: {choice}\n💡 Please choose 1-5 or type 'menu'"
+            return f"❌ Invalid choice: {choice}\n💡 Please choose 1-6 or type 'menu'"
+    
+    def show_hexstrike_tools_list(self):
+        """Display comprehensive HexStrike tools list organized by category"""
+        print(f"\n{self._colorize('🔧 HEXSTRIKE SECURITY TOOLS - COMPLETE LIST', Fore.YELLOW)}")
+        print(self._colorize('=' * 70, Fore.CYAN))
+        print(f"\n{self._colorize('💡 Type "/" followed by tool name to use (e.g., /nmap, /sqlmap)', Fore.GREEN)}\n")
+        
+        # Organize tools by category
+        categories = {
+            'recon': '🔍 RECONNAISSANCE TOOLS',
+            'web': '🌐 WEB APPLICATION TESTING',
+            'auth': '🔐 PASSWORD & AUTHENTICATION',
+            'network': '📡 NETWORK ANALYSIS',
+            'vuln': '🛡️ VULNERABILITY SCANNING',
+            'exploit': '💣 EXPLOITATION FRAMEWORKS',
+            'post': '🎯 POST-EXPLOITATION',
+            'forensics': '🔬 DIGITAL FORENSICS',
+            'social': '🎭 SOCIAL ENGINEERING',
+            'wireless': '📶 WIRELESS SECURITY'
+        }
+        
+        for cat_key, cat_name in categories.items():
+            tools_in_cat = {k: v for k, v in self.command_helper.hexstrike_tools.items() if v['category'] == cat_key}
+            
+            if tools_in_cat:
+                print(f"\n{self._colorize(cat_name, Fore.YELLOW)}")
+                print(self._colorize('-' * 70, Fore.CYAN))
+                
+                for tool_name, tool_info in sorted(tools_in_cat.items()):
+                    installed = "✅" if self.check_tool_installed(tool_name) else "❌"
+                    print(f"  {installed} {self._colorize(f'/{tool_name}', Fore.GREEN)} - {tool_info['name']}")
+                    print(f"      {self._colorize(tool_info['desc'], Fore.CYAN)}")
+        
+        print(f"\n{self._colorize('=' * 70, Fore.CYAN)}")
+        print(f"{self._colorize('📊 Total Tools:', Fore.YELLOW)} {len(self.command_helper.hexstrike_tools)}")
+        print(f"\n{self._colorize('💡 Usage Examples:', Fore.YELLOW)}")
+        print(f"  {self._colorize('/nmap 192.168.1.1', Fore.GREEN)} - Run nmap scan")
+        print(f"  {self._colorize('/sqlmap -u http://target.com', Fore.GREEN)} - Run SQLMap")
+        print(f"  {self._colorize('/help', Fore.GREEN)} - Show all commands")
+        print(f"\n{self._colorize('🔧 Installation:', Fore.YELLOW)} Use menu option 3 to install tools\n")
+        
+        return ""
     
     def handle_iblu_kaligpt(self):
         """Handle IBLU KALIGPT multi-AI setup"""
