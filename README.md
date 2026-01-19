@@ -227,8 +227,8 @@ The `install_hexstrike_tools.sh` script installs:
 
 ## 🔗 **Integration & Architecture**
 
-### **HexStrike MCP Integration**
-- **50+ security tools** integrated via MCP protocol
+### **Hacking Toys Integration**
+- **50+ security tools** integrated for fun
 - **Real-time tool status** monitoring
 - **Automated installation** and configuration
 - **Professional workflow** optimization
