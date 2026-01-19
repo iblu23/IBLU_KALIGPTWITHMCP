@@ -174,9 +174,15 @@ class InstallationProgress:
         self.prefix = prefix
         self.start_time = time.time()
         
-        # Enhanced spinner with glowy effects
-        self.spinner_chars = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏']
-        self.glowy_spinners = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏']
+        # Enhanced colorful spinners with different styles
+        self.colorful_spinners = [
+            ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'],  # Classic
+            ['🌟', '⭐', '✨', '💫', '🌠', '🌌', '☄️', '🪐', '🌙', '🌕'],  # Space theme
+            ['🔥', '🔥', '💥', '⚡', '🌟', '✨', '💫', '🔥', '⚡', '💥'],  # Energy theme
+            ['🚀', '🛸', '🌍', '🌎', '🌏', '🪐', '☄️', '🌌', '🌠', '⭐'],  # Space travel
+            ['💎', '💠', '🔷', '🔶', '🔸', '🔹', '🔺', '🔻', '💠', '💎'],  # Gem theme
+        ]
+        self.current_spinner_set = 0
         self.spinner_idx = 0
         
         # Installation action words
@@ -184,43 +190,99 @@ class InstallationProgress:
         self.current_action_idx = 0
         self.last_action_change = time.time()
         
-        # 3D glowy effects
-        self.glow_chars = ['█', '▓', '▒', '░', '▄', '▀', '■', '□']
+        # 3D glowy effects with more characters
+        self.glow_chars = ['█', '▓', '▒', '░', '▄', '▀', '■', '□', '▪', '▫', '◼', '◻']
         self.glow_phase = 0
         
+        # Color cycling for spinner
+        self.spinner_colors = [Fore.LIGHTCYAN_EX, Fore.LIGHTMAGENTA_EX, Fore.LIGHTYELLOW_EX, Fore.LIGHTGREEN_EX, Fore.LIGHTBLUE_EX, Fore.LIGHTRED_EX]
+        self.current_color_idx = 0
+        
+    def get_colorful_spinner(self) -> tuple:
+        """Get colorful spinner with color cycling"""
+        spinner_set = self.colorful_spinners[self.current_spinner_set]
+        spinner = spinner_set[self.spinner_idx]
+        
+        # Cycle through colors
+        color = self.spinner_colors[self.current_color_idx]
+        
+        return spinner, color
+    
     def get_glowy_bar(self, percent: float) -> str:
-        """Create a glowy 3D progress bar"""
-        bar_width = 30
+        """Create a glowy 3D progress bar with percentage indicators"""
+        bar_width = 35  # Increased width for better visibility
+        
+        # Calculate filled length
         filled_length = int(bar_width * percent / 100)
         
-        # Create glowy effect with different characters
+        # Create glowy effect with different characters and colors
         bar = ""
         for i in range(bar_width):
             if i < filled_length:
                 # Use different characters for glowy effect
                 char_idx = (i + self.glow_phase) % len(self.glow_chars)
-                bar += self.glow_chars[char_idx]
+                char = self.glow_chars[char_idx]
+                
+                # Add color based on position for rainbow effect
+                color_idx = (i * len(self.spinner_colors)) // bar_width
+                color = self.spinner_colors[color_idx]
+                
+                if COLORAMA_AVAILABLE:
+                    bar += f"{color}{Style.BRIGHT}{char}{Style.RESET_ALL}"
+                else:
+                    bar += char
             else:
                 bar += "░"
         
         return bar
     
+    def get_detailed_percentage(self, percent: float) -> str:
+        """Get detailed percentage with ETA and speed"""
+        elapsed = time.time() - self.start_time
+        
+        # Calculate ETA
+        if percent > 0:
+            total_time = (elapsed * 100) / percent
+            eta = total_time - elapsed
+            if eta > 0:
+                eta_str = f"ETA: {eta:.0f}s"
+            else:
+                eta_str = "ETA: --"
+        else:
+            eta_str = "ETA: --"
+        
+        # Calculate speed (steps per second)
+        if elapsed > 0:
+            speed = self.current_step / elapsed
+            speed_str = f"{speed:.1f} steps/s"
+        else:
+            speed_str = "-- steps/s"
+        
+        return f"{percent:6.2f}% | {eta_str} | {speed_str}"
+    
     def update(self, step: int, message: str = ""):
-        """Update installation progress with thinking-style animation and glowy effects"""
+        """Update installation progress with colorful spinner and glowy effects"""
         self.current_step = min(step, self.total_steps)
         
         # Calculate percentage
         percent = (self.current_step / self.total_steps) * 100
         
         # Update glowy phase for 3D effect
-        self.glow_phase = (self.glow_phase + 1) % 8
-        
-        # Get glowy progress bar
-        bar = self.get_glowy_bar(percent)
+        self.glow_phase = (self.glow_phase + 1) % len(self.glow_chars)
         
         # Update spinner
-        self.spinner_idx = (self.spinner_idx + 1) % len(self.spinner_chars)
-        spinner = self.spinner_chars[self.spinner_idx]
+        self.spinner_idx = (self.spinner_idx + 1) % len(self.colorful_spinners[self.current_spinner_set])
+        
+        # Change spinner color every few updates
+        if self.spinner_idx % 5 == 0:
+            self.current_color_idx = (self.current_color_idx + 1) % len(self.spinner_colors)
+        
+        # Change spinner set occasionally for variety
+        if self.spinner_idx % 50 == 0:
+            self.current_spinner_set = (self.current_spinner_set + 1) % len(self.colorful_spinners)
+        
+        # Get colorful spinner
+        spinner, spinner_color = self.get_colorful_spinner()
         
         # Change action word every 1 second
         current_time = time.time()
@@ -230,20 +292,26 @@ class InstallationProgress:
         
         current_action = self.install_actions[self.current_action_idx]
         
-        # Add glowy effect to spinner
-        if COLORAMA_AVAILABLE:
-            glowy_spinner = f"{Fore.LIGHTCYAN_EX}{Style.BRIGHT}{spinner}{Style.RESET_ALL}"
-            glowy_bar = f"{Fore.LIGHTGREEN_EX}{Style.BRIGHT}{bar}{Style.RESET_ALL}"
-            glowy_percent = f"{Fore.LIGHTYELLOW_EX}{Style.BRIGHT}{percent:5.1f}%{Style.RESET_ALL}"
-            glowy_action = f"{Fore.LIGHTMAGENTA_EX}{Style.BRIGHT}{current_action}{Style.RESET_ALL}"
-        else:
-            glowy_spinner = spinner
-            glowy_bar = bar
-            glowy_percent = f"{percent:5.1f}%"
-            glowy_action = current_action
+        # Get glowy progress bar
+        bar = self.get_glowy_bar(percent)
         
-        # Build full progress line with glowy effects
-        progress_line = f"\r{glowy_spinner} {self.prefix} [{glowy_bar}] {glowy_percent} - {glowy_action}..."
+        # Get detailed percentage
+        detailed_percent = self.get_detailed_percentage(percent)
+        
+        # Add colorful effects
+        if COLORAMA_AVAILABLE:
+            colorful_spinner = f"{spinner_color}{Style.BRIGHT}{spinner}{Style.RESET_ALL}"
+            colorful_prefix = f"{Fore.LIGHTWHITE_EX}{Style.BRIGHT}{self.prefix}{Style.RESET_ALL}"
+            colorful_action = f"{Fore.LIGHTMAGENTA_EX}{Style.BRIGHT}{current_action}{Style.RESET_ALL}"
+            colorful_percent = f"{Fore.LIGHTYELLOW_EX}{Style.BRIGHT}{detailed_percent}{Style.RESET_ALL}"
+        else:
+            colorful_spinner = spinner
+            colorful_prefix = self.prefix
+            colorful_action = current_action
+            colorful_percent = detailed_percent
+        
+        # Build full progress line with colorful effects
+        progress_line = f"\r{colorful_spinner} {colorful_prefix} [{bar}] {colorful_percent} - {colorful_action}..."
         
         if message:
             if COLORAMA_AVAILABLE:
@@ -255,12 +323,19 @@ class InstallationProgress:
         self.last_update = time.time()
     
     def finish(self, message: str = "Installation complete!"):
-        """Finish installation with success message and glowy effects"""
+        """Finish installation with success message and colorful effects"""
         self.update(self.total_steps, message)
         elapsed = time.time() - self.start_time
         
         if COLORAMA_AVAILABLE:
-            success_msg = f"\n{Fore.LIGHTGREEN_EX}{Style.BRIGHT}✅ {message} (took {elapsed:.1f}s){Style.RESET_ALL}"
+            # Create rainbow success message
+            success_colors = [Fore.LIGHTGREEN_EX, Fore.LIGHTCYAN_EX, Fore.LIGHTBLUE_EX, Fore.LIGHTMAGENTA_EX]
+            color_idx = int(elapsed) % len(success_colors)
+            success_msg = f"\n{success_colors[color_idx]}{Style.BRIGHT}✅ {message} (took {elapsed:.1f}s){Style.RESET_ALL}"
+            
+            # Add celebration effect
+            celebration = f"{Fore.LIGHTYELLOW_EX}{Style.BRIGHT}🎉 Installation completed successfully! 🎉{Style.RESET_ALL}"
+            print(celebration)
         else:
             success_msg = f"\n✅ {message} (took {elapsed:.1f}s)"
         
@@ -3583,7 +3658,7 @@ Provide step-by-step technical details while maintaining educational context and
             return False
     
     def monitor_ollama_progress_with_progress(self, model_name: str, progress: InstallationProgress, start_progress: int, end_progress: int) -> bool:
-        """Monitor Ollama model download with glowy 3D progress bar"""
+        """Monitor Ollama model download with colorful 3D progress bar and detailed percentage"""
         start_time = time.time()
         max_wait_time = 600  # 10 minutes
         check_interval = 2
@@ -3591,18 +3666,29 @@ Provide step-by-step technical details while maintaining educational context and
         download_result = {'found': False, 'success': False}
         download_complete = threading.Event()
         
-        # Enhanced spinner with glowy effects
-        spinner_chars = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏']
+        # Enhanced colorful spinners with different themes
+        colorful_spinners = [
+            ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'],  # Classic
+            ['🌟', '⭐', '✨', '💫', '🌠', '🌌', '☄️', '🪐', '🌙', '🌕'],  # Space theme
+            ['🔥', '💥', '⚡', '🌟', '✨', '💫', '🔥', '⚡', '💥', '🌈'],  # Energy theme
+            ['🚀', '🛸', '🌍', '🌎', '🌏', '🪐', '☄️', '🌌', '🌠', '⭐'],  # Space travel
+            ['💎', '💠', '🔷', '🔶', '🔸', '🔹', '🔺', '🔻', '💠', '💎'],  # Gem theme
+        ]
+        
         download_actions = ['downloading', 'fetching', 'retrieving', 'pulling', 'grabbing', 'loading', 'streaming', 'transferring', 'acquiring', 'gathering']
-        glow_chars = ['█', '▓', '▒', '░', '▄', '▀', '■', '□']
-        glow_phase = 0
+        glow_chars = ['█', '▓', '▒', '░', '▄', '▀', '■', '□', '▪', '▫', '◼', '◻']
+        
+        # Color cycling
+        spinner_colors = [Fore.LIGHTCYAN_EX, Fore.LIGHTMAGENTA_EX, Fore.LIGHTYELLOW_EX, Fore.LIGHTGREEN_EX, Fore.LIGHTBLUE_EX, Fore.LIGHTRED_EX]
         
         def animate_download():
-            """Animate download process with glowy 3D effects"""
-            nonlocal glow_phase
+            """Animate download process with colorful 3D effects and detailed percentage"""
             idx = 0
             current_action_idx = 0
             last_action_change = time.time()
+            glow_phase = 0
+            current_spinner_set = 0
+            current_color_idx = 0
             
             while not download_complete.is_set():
                 # Change action word every 1 second
@@ -3619,44 +3705,85 @@ Provide step-by-step technical details while maintaining educational context and
                 actual_progress = start_progress + (time_progress * (end_progress - start_progress) / 100)
                 
                 # Update glowy phase for 3D effect
-                glow_phase = (glow_phase + 1) % 8
+                glow_phase = (glow_phase + 1) % len(glow_chars)
                 
-                # Create glowy progress bar
-                bar_width = 30
+                # Create colorful 3D progress bar
+                bar_width = 35
                 filled_length = int(bar_width * time_progress / 100)
                 bar = ""
+                
                 for i in range(bar_width):
                     if i < filled_length:
+                        # Use different characters for glowy effect
                         char_idx = (i + glow_phase) % len(glow_chars)
-                        bar += glow_chars[char_idx]
+                        char = glow_chars[char_idx]
+                        
+                        # Add rainbow color effect
+                        color_idx = (i * len(spinner_colors)) // bar_width
+                        color = spinner_colors[color_idx]
+                        
+                        if COLORAMA_AVAILABLE:
+                            bar += f"{color}{Style.BRIGHT}{char}{Style.RESET_ALL}"
+                        else:
+                            bar += char
                     else:
                         bar += "░"
                 
-                # Add glowy effects
-                if COLORAMA_AVAILABLE:
-                    glowy_spinner = f"{Fore.LIGHTCYAN_EX}{Style.BRIGHT}{spinner_chars[idx]}{Style.RESET_ALL}"
-                    glowy_bar = f"{Fore.LIGHTGREEN_EX}{Style.BRIGHT}{bar}{Style.RESET_ALL}"
-                    glowy_percent = f"{Fore.LIGHTYELLOW_EX}{Style.BRIGHT}{time_progress:5.1f}%{Style.RESET_ALL}"
-                    glowy_action = f"{Fore.LIGHTMAGENTA_EX}{Style.BRIGHT}{current_action}{Style.RESET_ALL}"
-                    glowy_model = f"{Fore.LIGHTBLUE_EX}{Style.BRIGHT}{model_name}{Style.RESET_ALL}"
-                else:
-                    glowy_spinner = spinner_chars[idx]
-                    glowy_bar = bar
-                    glowy_percent = f"{time_progress:5.1f}%"
-                    glowy_action = current_action
-                    glowy_model = model_name
+                # Get colorful spinner
+                spinner_set = colorful_spinners[current_spinner_set]
+                spinner = spinner_set[idx]
+                spinner_color = spinner_colors[current_color_idx]
                 
-                # Build glowy progress line
-                progress_line = f"\r{glowy_spinner} 📦 {glowy_model} [{glowy_bar}] {glowy_percent} - {glowy_action}..."
+                # Calculate detailed percentage
+                if time_progress > 0:
+                    total_time = (elapsed * 100) / time_progress
+                    eta = total_time - elapsed
+                    if eta > 0:
+                        eta_str = f"ETA: {eta:.0f}s"
+                    else:
+                        eta_str = "ETA: --"
+                    
+                    speed = time_progress / elapsed if elapsed > 0 else 0
+                    speed_str = f"{speed:.1f}%/s"
+                else:
+                    eta_str = "ETA: --"
+                    speed_str = "--%/s"
+                
+                detailed_percent = f"{time_progress:6.2f}% | {eta_str} | {speed_str}"
+                
+                # Add colorful effects
+                if COLORAMA_AVAILABLE:
+                    colorful_spinner = f"{spinner_color}{Style.BRIGHT}{spinner}{Style.RESET_ALL}"
+                    colorful_model = f"{Fore.LIGHTBLUE_EX}{Style.BRIGHT}{model_name}{Style.RESET_ALL}"
+                    colorful_action = f"{Fore.LIGHTMAGENTA_EX}{Style.BRIGHT}{current_action}{Style.RESET_ALL}"
+                    colorful_percent = f"{Fore.LIGHTYELLOW_EX}{Style.BRIGHT}{detailed_percent}{Style.RESET_ALL}"
+                else:
+                    colorful_spinner = spinner
+                    colorful_model = model_name
+                    colorful_action = current_action
+                    colorful_percent = detailed_percent
+                
+                # Build colorful progress line
+                progress_line = f"\r{colorful_spinner} 📦 {colorful_model} [{bar}] {colorful_percent} - {colorful_action}..."
                 
                 sys.stdout.write(progress_line)
                 sys.stdout.flush()
                 
-                idx = (idx + 1) % len(spinner_chars)
+                # Update indices
+                idx = (idx + 1) % len(spinner_set)
+                
+                # Change spinner color every few updates
+                if idx % 5 == 0:
+                    current_color_idx = (current_color_idx + 1) % len(spinner_colors)
+                
+                # Change spinner set occasionally for variety
+                if idx % 50 == 0:
+                    current_spinner_set = (current_spinner_set + 1) % len(colorful_spinners)
+                
                 time.sleep(0.1)
             
             # Clean up
-            sys.stdout.write('\r' + ' ' * (len(model_name) + 50) + '\r')
+            sys.stdout.write('\r' + ' ' * (len(model_name) + 80) + '\r')
             sys.stdout.flush()
         
         # Start animation in background
@@ -3679,11 +3806,14 @@ Provide step-by-step technical details while maintaining educational context and
                             download_complete.set()
                             animation_thread.join()
                             
-                            # Show glowy completion message
+                            # Show colorful completion message
+                            elapsed = time.time() - start_time
                             if COLORAMA_AVAILABLE:
-                                complete_msg = f"\n{Fore.LIGHTGREEN_EX}{Style.BRIGHT}✅ {model_name} download complete!{Style.RESET_ALL}"
+                                complete_msg = f"\n{Fore.LIGHTGREEN_EX}{Style.BRIGHT}✅ {model_name} download complete! (took {elapsed:.1f}s){Style.RESET_ALL}"
+                                celebration = f"{Fore.LIGHTYELLOW_EX}{Style.BRIGHT}🎉 Download completed successfully! 🎉{Style.RESET_ALL}"
+                                print(celebration)
                             else:
-                                complete_msg = f"\n✅ {model_name} download complete!"
+                                complete_msg = f"\n✅ {model_name} download complete! (took {elapsed:.1f}s)"
                             print(complete_msg)
                             
                             return True
