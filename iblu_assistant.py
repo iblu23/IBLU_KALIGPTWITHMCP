@@ -1092,9 +1092,9 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
             print(f"[3] ⚙️  CONFIGURATION - Settings")
             print(f"    • API keys, rephrasing mode\n")
             
-            print(f"[4] 🚪 EXIT\n")
-            print(f"[5] 📋 LIST MODELS - Show available AI models\n")
-            print(f"[6] 🗑️  DELETE MODELS - Remove local models\n")
+            print(f"[4] 📋 LIST MODELS - Show available AI models\n")
+            print(f"[5] 🗑️  DELETE MODELS - Remove local models\n")
+            print(f"[6] 🚪 EXIT\n")
             print(f"{'='*60}")
             print(f"Type a number (1-6) or start chatting!\n")
             print(f"{'='*60}\n")
@@ -1109,12 +1109,12 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
             return self.handle_hacking_toys()
         elif choice in ['3', 'config', 'settings']:
             return self.handle_configuration()
-        elif choice in ['4', 'exit', 'quit']:
-            return "👋 Goodbye! Stay secure!"
-        elif choice in ['5', 'models', 'list']:
+        elif choice in ['4', 'models', 'list']:
             return self.list_available_models()
-        elif choice in ['6', 'delete', 'remove', 'models_delete']:
+        elif choice in ['5', 'delete', 'remove', 'models_delete']:
             return self.handle_delete_models()
+        elif choice in ['6', 'exit', 'quit']:
+            return "👋 Goodbye! Stay secure!"
         else:
             return f"❌ Invalid choice: {choice}\n💡 Please choose 1-6 or type 'menu'"
     
