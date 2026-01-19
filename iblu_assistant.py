@@ -165,6 +165,228 @@ class ProgressBar:
         
         self.finish(f"{model_name} downloaded and installed successfully")
 
+class ConfigurationProgress:
+    """Configuration progress bar with colorful themes and glowy effects"""
+    
+    def __init__(self, total_steps: int = 100, prefix: str = "Configuring", config_type: str = "general"):
+        self.total_steps = total_steps
+        self.current_step = 0
+        self.prefix = prefix
+        self.config_type = config_type
+        self.start_time = time.time()
+        
+        # Configuration-specific spinner themes
+        self.config_themes = {
+            "general": {
+                'spinners': ['⚙️', '🔧', '🛠️', '🔩', '⚡', '🔌', '📡', '🔋', '🔌', '⚙️'],
+                'colors': [Fore.LIGHTCYAN_EX, Fore.LIGHTBLUE_EX, Fore.LIGHTGREEN_EX],
+                'actions': ['configuring', 'setting up', 'preparing', 'initializing', 'establishing', 'creating', 'building', 'constructing', 'assembling', 'organizing'],
+                'prefix': '⚙️ Configuration'
+            },
+            "api": {
+                'spinners': ['🔑', '🔐', '🔒', '🛡️', '🔓', '🔏', '🔑', '🔐', '🔒', '🛡️'],
+                'colors': [Fore.LIGHTYELLOW_EX, Fore.LIGHTMAGENTA_EX, Fore.LIGHTRED_EX],
+                'actions': ['authenticating', 'validating', 'securing', 'protecting', 'encrypting', 'verifying', 'checking', 'testing', 'confirming', 'authorizing'],
+                'prefix': '🔑 API Configuration'
+            },
+            "model": {
+                'spinners': ['🧠', '💡', '🔮', '🎯', '🎲', '🎪', '🎨', '🎭', '🎯', '🧠'],
+                'colors': [Fore.LIGHTGREEN_EX, Fore.LIGHTBLUE_EX, Fore.LIGHTCYAN_EX],
+                'actions': ['training', 'learning', 'adapting', 'optimizing', 'tuning', 'adjusting', 'calibrating', 'refining', 'improving', 'enhancing'],
+                'prefix': '🧠 Model Configuration'
+            },
+            "tool": {
+                'spinners': ['🔨', '🔧', '🛠️', '⚒️', '🔩', '⚙️', '🔌', '📡', '🔋', '🔨'],
+                'colors': [Fore.LIGHTRED_EX, Fore.LIGHTYELLOW_EX, Fore.LIGHTMAGENTA_EX],
+                'actions': ['installing', 'setting up', 'configuring', 'preparing', 'deploying', 'activating', 'enabling', 'starting', 'launching', 'initializing'],
+                'prefix': '🔨 Tool Configuration'
+            },
+            "system": {
+                'spinners': ['🖥️', '💻', '⌨️', '🖱️', '📱', '🌐', '🔌', '⚡', '💾', '🖥️'],
+                'colors': [Fore.LIGHTBLUE_EX, Fore.LIGHTCYAN_EX, Fore.LIGHTWHITE_EX],
+                'actions': ['systemizing', 'organizing', 'structuring', 'arranging', 'managing', 'coordinating', 'integrating', 'connecting', 'linking', 'networking'],
+                'prefix': '🖥️ System Configuration'
+            }
+        }
+        
+        # Get current theme
+        self.current_theme = self.config_themes.get(config_type, self.config_themes["general"])
+        
+        # Theme rotation
+        self.theme_rotation = 0
+        self.color_rotation = 0
+        self.spinner_idx = 0
+        
+        # 3D glowy effects
+        self.glow_chars = ['█', '▓', '▒', '░', '▄', '▀', '■', '□', '▪', '▫', '◼', '◻']
+        self.glow_phase = 0
+        
+        # Configuration action words
+        self.config_actions = self.current_theme['actions']
+        self.current_action_idx = 0
+        self.last_action_change = time.time()
+    
+    def get_current_theme(self):
+        """Get current theme with rotation"""
+        themes = [self.current_theme]
+        
+        # Add variation themes for more variety
+        if self.config_type == "general":
+            themes.extend([
+                {'spinners': ['📋', '📝', '📄', '📃', '📊', '📈', '📉', '🔧', '⚙️', '🛠️'], 'colors': [Fore.LIGHTCYAN_EX, Fore.LIGHTBLUE_EX], 'actions': self.current_theme['actions'], 'prefix': '📋 Setup'},
+                {'spinners': ['🎛️', '🎚️', '🎙️', '🎛️', '🎚️', '🎙️', '🎛️', '🎚️', '🎙️', '🎛️'], 'colors': [Fore.LIGHTGREEN_EX, Fore.LIGHTCYAN_EX], 'actions': self.current_theme['actions'], 'prefix': '🎛️ Controls'}
+            ])
+        elif self.config_type == "api":
+            themes.extend([
+                {'spinners': ['🔐', '🔑', '🔒', '🛡️', '🔓', '🔏', '🔐', '🔑', '🔒', '🛡️'], 'colors': [Fore.LIGHTYELLOW_EX, Fore.LIGHTRED_EX], 'actions': self.current_theme['actions'], 'prefix': '🔐 Security'},
+                {'spinners': ['🌐', '🔗', '🔌', '📡', '📶', '📡', '🔌', '🌐', '🔗', '📡'], 'colors': [Fore.LIGHTBLUE_EX, Fore.LIGHTCYAN_EX], 'actions': self.current_theme['actions'], 'prefix': '🌐 Network'}
+            ])
+        
+        current_theme = themes[self.theme_rotation % len(themes)]
+        self.theme_rotation += 1
+        return current_theme
+    
+    def create_glowy_config_bar(self, percent: float) -> str:
+        """Create a colorful 3D configuration progress bar"""
+        bar_width = 35  # Increased width for better visibility
+        
+        # Calculate filled length
+        filled_length = int(bar_width * percent / 100)
+        
+        # Get current theme colors
+        theme = self.get_current_theme()
+        colors = theme['colors']
+        
+        # Create rainbow progress bar
+        bar = ""
+        for i in range(bar_width):
+            if i < filled_length:
+                # Use different characters for glowy effect
+                char_idx = (i + self.glow_phase) % len(self.glow_chars)
+                char = self.glow_chars[char_idx]
+                
+                # Add color based on position for rainbow effect
+                color_idx = (i * len(colors)) // bar_width
+                color = colors[color_idx]
+                
+                if COLORAMA_AVAILABLE:
+                    bar += f"{color}{Style.BRIGHT}{char}{Style.RESET_ALL}"
+                else:
+                    bar += char
+            else:
+                bar += "░"
+        
+        return bar
+    
+    def get_detailed_config_percentage(self, percent: float) -> str:
+        """Get detailed percentage with ETA and speed for configuration"""
+        elapsed = time.time() - self.start_time
+        
+        # Calculate ETA
+        if percent > 0:
+            total_time = (elapsed * 100) / percent
+            eta = total_time - elapsed
+            if eta > 0:
+                eta_str = f"ETA: {eta:.0f}s"
+            else:
+                eta_str = "ETA: --"
+        else:
+            eta_str = "ETA: --"
+        
+        # Calculate speed (steps per second)
+        if elapsed > 0:
+            speed = self.current_step / elapsed
+            speed_str = f"{speed:.1f} steps/s"
+        else:
+            speed_str = "-- steps/s"
+        
+        return f"{percent:6.2f}% | {eta_str} | {speed_str}"
+    
+    def update(self, step: int, message: str = ""):
+        """Update configuration progress with colorful effects"""
+        self.current_step = min(step, self.total_steps)
+        
+        # Calculate percentage
+        percent = (self.current_step / self.total_steps) * 100
+        
+        # Update glowy phase for 3D effect
+        self.glow_phase = (self.glow_phase + 1) % len(self.glow_chars)
+        
+        # Get current theme
+        theme = self.get_current_theme()
+        spinners = theme['spinners']
+        colors = theme['colors']
+        actions = theme['actions']
+        prefix = theme['prefix']
+        
+        # Update spinner
+        self.spinner_idx = (self.spinner_idx + 1) % len(spinners)
+        
+        # Change spinner color every few updates
+        if self.spinner_idx % 5 == 0:
+            self.color_rotation = (self.color_rotation + 1) % len(colors)
+        
+        # Change action word every 1 second
+        current_time = time.time()
+        if current_time - self.last_action_change > 1.0:
+            self.current_action_idx = (self.current_action_idx + 1) % len(actions)
+            self.last_action_change = current_time
+        
+        current_action = actions[self.current_action_idx]
+        
+        # Get colorful progress bar
+        bar = self.create_glowy_config_bar(percent)
+        
+        # Get detailed percentage
+        detailed_percent = self.get_detailed_config_percentage(percent)
+        
+        # Get spinner and color
+        spinner = spinners[self.spinner_idx]
+        spinner_color = colors[self.color_rotation]
+        
+        # Add colorful effects
+        if COLORAMA_AVAILABLE:
+            colorful_spinner = f"{spinner_color}{Style.BRIGHT}{spinner}{Style.RESET_ALL}"
+            colorful_prefix = f"{Fore.LIGHTWHITE_EX}{Style.BRIGHT}{prefix}{Style.RESET_ALL}"
+            colorful_action = f"{Fore.LIGHTMAGENTA_EX}{Style.BRIGHT}{current_action}{Style.RESET_ALL}"
+            colorful_percent = f"{Fore.LIGHTYELLOW_EX}{Style.BRIGHT}{detailed_percent}{Style.RESET_ALL}"
+        else:
+            colorful_spinner = spinner
+            colorful_prefix = prefix
+            colorful_action = current_action
+            colorful_percent = detailed_percent
+        
+        # Build full progress line with colorful effects
+        progress_line = f"\r{colorful_spinner} {colorful_prefix} [{bar}] {colorful_percent} - {colorful_action}..."
+        
+        if message:
+            if COLORAMA_AVAILABLE:
+                progress_line += f" | {Fore.LIGHTBLUE_EX}{Style.BRIGHT}{message}{Style.RESET_ALL}"
+            else:
+                progress_line += f" | {message}"
+        
+        print(progress_line, end='', flush=True)
+        self.last_update = time.time()
+    
+    def finish(self, message: str = "Configuration complete!"):
+        """Finish configuration with success message and colorful effects"""
+        self.update(self.total_steps, message)
+        elapsed = time.time() - self.start_time
+        
+        if COLORAMA_AVAILABLE:
+            # Create rainbow success message
+            success_colors = [Fore.LIGHTGREEN_EX, Fore.LIGHTCYAN_EX, Fore.LIGHTBLUE_EX, Fore.LIGHTMAGENTA_EX]
+            color_idx = int(elapsed) % len(success_colors)
+            success_msg = f"\n{success_colors[color_idx]}{Style.BRIGHT}✅ {message} (took {elapsed:.1f}s){Style.RESET_ALL}"
+            
+            # Add celebration effect
+            celebration = f"{Fore.LIGHTYELLOW_EX}{Style.BRIGHT}🎉 Configuration completed successfully! 🎉{Style.RESET_ALL}"
+            print(celebration)
+        else:
+            success_msg = f"\n✅ {message} (took {elapsed:.1f}s)"
+        
+        print(success_msg)
+
 class InstallationProgress:
     """Installation progress bar with thinking animation style and glowy 3D effects"""
     
@@ -1161,8 +1383,8 @@ class IBLUCommandHelper:
         
         print(f"\n{self._colorize('🗑️  Deleting all {total_tools} tools...', Fore.RED)}")
         
-        # Create deletion progress tracker
-        delete_progress = InstallationProgress(total_steps=100, prefix="🗑️  Deleting")
+        # Create deletion progress tracker with system theme
+        delete_progress = ConfigurationProgress(total_steps=100, prefix="🗑️  Deleting", config_type="system")
         
         try:
             deleted_count = 0
@@ -1212,8 +1434,8 @@ class IBLUCommandHelper:
         print(f"\n{self._colorize(f'🔧 Installing {tool_name}...', Fore.CYAN)}")
         print("=" * 50)
         
-        # Create installation progress tracker
-        install_progress = InstallationProgress(total_steps=100, prefix=f"📦 {tool_name}")
+        # Create installation progress tracker with configuration theme
+        install_progress = ConfigurationProgress(total_steps=100, prefix=f"🔨 {tool_name}", config_type="tool")
         
         try:
             # Step 1-20: Prepare installation
@@ -4240,8 +4462,8 @@ Provide step-by-step technical details while maintaining educational context and
             if 0 <= model_index < len(available_models):
                 model_to_delete = available_models[model_index]
                 
-                # Create deletion progress tracker
-                delete_progress = InstallationProgress(total_steps=100, prefix=f"🗑️  {model_to_delete}")
+                # Create deletion progress tracker with model theme
+                delete_progress = ConfigurationProgress(total_steps=100, prefix=f"🗑️  {model_to_delete}", config_type="model")
                 
                 print(f"\n{self._colorize(f'🗑️  Deleting model: {model_to_delete}', Fore.RED)}")
                 print("=" * 50)
@@ -4333,8 +4555,8 @@ Provide step-by-step technical details while maintaining educational context and
         print(f"\n{self._colorize(f'🤗 Installing {model_name}...', Fore.CYAN)}")
         print("=" * 50)
         
-        # Create installation progress tracker
-        install_progress = InstallationProgress(total_steps=100, prefix=f"🤗 {model_name}")
+        # Create installation progress tracker with model theme
+        install_progress = ConfigurationProgress(total_steps=100, prefix=f"🤗 {model_name}", config_type="model")
         
         try:
             # Step 1-20: Validate model
