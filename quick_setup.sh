@@ -10,38 +10,15 @@ echo ""
 echo "📋 API Key Setup Instructions:"
 echo "=============================="
 echo ""
-echo "🔑 Get your API keys from these sources:"
-echo ""
-echo "1️⃣  Perplexity AI:"
-echo "   🔗 URL: https://www.perplexity.ai/settings/api"
-echo "   💡 Click 'Create API Key' and copy it"
-echo ""
-echo "2️⃣  OpenAI:"
-echo "   🔗 URL: https://platform.openai.com/api-keys"
-echo "   💡 Click 'Create new secret key' and copy it"
-echo ""
-echo "3️⃣  Gemini (Google AI):"
-echo "   🔗 URL: https://aistudio.google.com/app/apikey"
-echo "   💡 Click 'Create API Key' and copy it"
-echo ""
-echo "4️⃣  Mistral AI:"
-echo "   🔗 URL: https://console.mistral.ai/api-keys"
-echo "   💡 Click 'Create API Key' and copy it"
+echo "💡 You'll need to add API keys manually:"
+echo "   • OpenAI: https://platform.openai.com/api-keys"
+echo "   • Gemini: https://aistudio.google.com/app/apikey"
+echo "   • Mistral: https://console.mistral.ai/api-keys"
 echo ""
 
 # Interactive setup
 echo "🔧 Add your API keys (press Enter to skip):"
 echo "========================================="
-
-# Perplexity
-echo ""
-echo "🔑 Perplexity API Key:"
-read -p "➡️  Enter your Perplexity API key (or press Enter to skip): " perplexity_key
-if [ -n "$perplexity_key" ]; then
-    # Update config
-    sed -i "s/\"perplexity_keys\": \[\"your-perplexity-api-key-here\"\]/\"perplexity_keys\": [\"$perplexity_key\"]/" config.json
-    echo "✅ Perplexity key added!"
-fi
 
 # OpenAI
 echo ""
@@ -82,15 +59,13 @@ cat config.json
 echo ""
 
 # Count configured keys
-perplexity_count=$(grep -o "perplexity_keys.*your-perplexity-api-key-here" config.json | wc -l)
 openai_count=$(grep -o "openai_keys.*your-openai-api-key-here" config.json | wc -l)
 gemini_count=$(grep -o "gemini_keys.*your-gemini-api-key-here" config.json | wc -l)
 mistral_count=$(grep -o "mistral_keys.*your-mistral-api-key-here" config.json | wc -l)
 
-total_keys=$((4 - perplexity_count - openai_count - gemini_count - mistral_count))
+total_keys=$((3 - openai_count - gemini_count - mistral_count))
 
-echo "🔑 Configured API Keys: $total_keys/4"
-echo "   • Perplexity: $([ "$perplexity_count" -eq 0 ] && echo "✅" || echo "❌")"
+echo "🔑 Configured API Keys: $total_keys/3"
 echo "   • OpenAI: $([ "$openai_count" -eq 0 ] && echo "✅" || echo "❌")"
 echo "   • Gemini: $([ "$gemini_count" -eq 0 ] && echo "✅" || echo "❌")"
 echo "   • Mistral: $([ "$mistral_count" -eq 0 ] && echo "✅" || echo "❌")"

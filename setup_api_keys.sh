@@ -10,7 +10,7 @@ echo "======================================================"
 if [ ! -f "config.json" ]; then
     echo "❌ config.json not found!"
     echo "📁 Creating new config file..."
-    echo '{"perplexity_keys": [], "openai_keys": [], "gemini_keys": [], "mistral_keys": []}' > config.json
+    echo '{"openai_keys": [], "gemini_keys": [], "mistral_keys": []}' > config.json
     echo "✅ config.json created!"
 fi
 
@@ -20,7 +20,6 @@ echo "--------------------------------"
 
 # Show current keys (masked)
 if command -v jq >/dev/null 2>&1; then
-    echo "📋 Perplexity Keys: $(jq -r '.perplexity_keys | length' config.json) configured"
     echo "📋 OpenAI Keys: $(jq -r '.openai_keys | length' config.json) configured"
     echo "📋 Gemini Keys: $(jq -r '.gemini_keys | length' config.json) configured"
     echo "📋 Mistral Keys: $(jq -r '.mistral_keys | length' config.json) configured"
@@ -33,36 +32,16 @@ fi
 echo ""
 echo "🔧 API Key Setup Options:"
 echo "-------------------------"
-echo "1. Add Perplexity API Key"
-echo "2. Add OpenAI API Key"
-echo "3. Add Gemini API Key"
-echo "4. Add Mistral API Key"
-echo "5. Show current config"
-echo "6. Exit"
+echo "1. Add OpenAI API Key"
+echo "2. Add Gemini API Key"
+echo "3. Add Mistral API Key"
+echo "4. Show current config"
+echo "5. Exit"
 
-read -p "🎯 Choose option (1-6): " choice
+read -p "🎯 Choose option (1-5): " choice
 
 case $choice in
     1)
-        echo ""
-        echo "🔑 Perplexity API Key Setup"
-        echo "------------------------"
-        echo "💡 Get your API key from: https://www.perplexity.ai/settings/api"
-        read -p "🔑 Enter your Perplexity API key: " key
-        if [ -n "$key" ]; then
-            # Update config with jq if available, otherwise use sed
-            if command -v jq >/dev/null 2>&1; then
-                jq --arg key "$key" '.perplexity_keys += [$key]' config.json > temp.json && mv temp.json config.json
-            else
-                # Fallback to sed (less reliable but works)
-                sed -i "s/\"perplexity_keys\": \[\]/\"perplexity_keys\": [\"$key\"]/" config.json
-            fi
-            echo "✅ Perplexity API key added!"
-        else
-            echo "❌ No key provided!"
-        fi
-        ;;
-    2)
         echo ""
         echo "🔑 OpenAI API Key Setup"
         echo "---------------------"
@@ -72,6 +51,7 @@ case $choice in
             if command -v jq >/dev/null 2>&1; then
                 jq --arg key "$key" '.openai_keys += [$key]' config.json > temp.json && mv temp.json config.json
             else
+                # Fallback to sed (less reliable but works)
                 sed -i "s/\"openai_keys\": \[\]/\"openai_keys\": [\"$key\"]/" config.json
             fi
             echo "✅ OpenAI API key added!"
@@ -79,7 +59,7 @@ case $choice in
             echo "❌ No key provided!"
         fi
         ;;
-    3)
+    2)
         echo ""
         echo "🔑 Gemini API Key Setup"
         echo "---------------------"
@@ -96,7 +76,7 @@ case $choice in
             echo "❌ No key provided!"
         fi
         ;;
-    4)
+    3)
         echo ""
         echo "🔑 Mistral API Key Setup"
         echo "----------------------"
@@ -113,13 +93,13 @@ case $choice in
             echo "❌ No key provided!"
         fi
         ;;
-    5)
+    4)
         echo ""
         echo "📄 Current Configuration:"
         echo "----------------------"
         cat config.json
         ;;
-    6)
+    5)
         echo "👋 Goodbye!"
         exit 0
         ;;

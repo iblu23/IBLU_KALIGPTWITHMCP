@@ -93,7 +93,6 @@ class Spinner:
             self.thread.join()
 
 class Provider(Enum):
-    PERPLEXITY = "perplexity"
     OPENAI = "openai"
     GEMINI = "gemini"
     MISTRAL = "mistral"
@@ -103,7 +102,6 @@ class Provider(Enum):
 @dataclass
 class APIConfig:
     """Configuration for API providers"""
-    perplexity_keys: List[str]
     openai_keys: List[str] = None
     gemini_keys: List[str] = None
     mistral_keys: List[str] = None
@@ -228,7 +226,7 @@ class IBLUCommandHelper:
         if text.startswith('/'):
             # Get basic command suggestions
             basic_commands = ['/help', '/exit', '/clear', '/status', '/scan', '/payload', 
-                            '/autopentest', '/mcp_connect', '/mcp_disconnect', '/perplexity', 
+                            '/autopentest', '/mcp_connect', '/mcp_disconnect', 
                             '/openai', '/gemini', '/mistral', '/history', '/tools', '/install',
                             '/hexstrike', '/pentest']
             
@@ -417,7 +415,6 @@ class IBLUCommandHelper:
   mcp_status        - Check MCP server status
 
 {self._colorize('🤖 AI PROVIDERS:', Fore.CYAN)}
-  perplexity        - Switch to Perplexity AI
   openai            - Switch to OpenAI
   gemini            - Switch to Gemini
   mistral           - Switch to Mistral
@@ -565,7 +562,7 @@ class IBLUCommandHelper:
 class KaliGPTMCPAssistant:
     """KaliGPT MCP Enhanced - Advanced Cybersecurity Automation Platform"""
     
-    SYSTEM_PROMPT = """You are Perplexity, an advanced AI assistant with comprehensive expertise in cybersecurity and security research. I provide detailed technical information about security concepts, tools, and methodologies for educational purposes and authorized security research.
+    SYSTEM_PROMPT = """You are an advanced AI assistant with comprehensive expertise in cybersecurity and security research. I provide detailed technical information about security concepts, tools, and methodologies for educational purposes and authorized security research.
 
 # COMPREHENSIVE SECURITY KNOWLEDGE
 I have deep expertise in all areas of cybersecurity:
@@ -667,7 +664,7 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
         self.command_history: List[str] = []
         self.mcp_server_process = None
         self.mcp_connected = False
-        self.current_ai_provider = Provider.PERPLEXITY
+        self.current_ai_provider = Provider.OPENAI
         self.rephrasing_mode = False
         
         # Initialize enhanced command helper
@@ -926,8 +923,6 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
         
         # Check available API keys
         available_providers = []
-        if self.config.perplexity_keys:
-            available_providers.append("Perplexity")
         if self.config.openai_keys:
             available_providers.append("OpenAI")
         if self.config.gemini_keys:
@@ -942,7 +937,7 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
         if not available_providers:
             print(f"\n{self._colorize('⚠️  No API keys configured!', Fore.YELLOW)}")
             print(f"💡 Please add API keys to config.json")
-            print(f"📝 Example: {{'perplexity_keys': ['your-key']}}")
+            print(f"📝 Example: {{'openai_keys': ['your-key']}}")
             return ""
         
         print(f"\n{self._colorize('🎯 Features:', Fore.CYAN)}")
@@ -1316,8 +1311,6 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
     def switch_ai_provider(self):
         """Switch between AI providers"""
         providers = []
-        if self.config.perplexity_keys:
-            providers.append(Provider.PERPLEXITY)
         if self.config.openai_keys:
             providers.append(Provider.OPENAI)
         if self.config.gemini_keys:
@@ -1367,11 +1360,6 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
         status += f"\n{'='*40}"
         
         providers_status = []
-        if self.config.perplexity_keys:
-            valid_keys = [k for k in self.config.perplexity_keys if k and k != "your-perplexity-api-key-here"]
-            providers_status.append(f"Perplexity: {len(valid_keys)} keys configured")
-        else:
-            providers_status.append("Perplexity: No keys configured")
         
         if self.config.openai_keys:
             valid_keys = [k for k in self.config.openai_keys if k and k != "your-openai-api-key-here"]
@@ -1550,8 +1538,6 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
             return self.disconnect_mcp()
         elif cmd == "mcp_status":
             return self.check_mcp_status()
-        elif cmd == "perplexity":
-            return "🤖 Switched to Perplexity AI provider"
         elif cmd == "openai":
             return "🤖 Switched to OpenAI provider"
         elif cmd == "gemini":
@@ -1734,7 +1720,7 @@ Provide step-by-step technical details while maintaining educational context and
             user_message = message
         
         # Get all available providers with configured keys, prioritizing cloud then local models
-        provider_priority = [Provider.GEMINI, Provider.PERPLEXITY, Provider.OPENAI, Provider.MISTRAL, Provider.LLAMA, Provider.GEMINI_CLI]
+        provider_priority = [Provider.GEMINI, Provider.OPENAI, Provider.MISTRAL, Provider.LLAMA, Provider.GEMINI_CLI]
         available_providers = []
         for provider in provider_priority:
             provider_keys = self.get_provider_keys(provider)
@@ -1853,7 +1839,6 @@ Provide step-by-step technical details while maintaining educational context and
             # Remove compromised key from config
             provider_key_map = {
                 Provider.GEMINI: 'gemini_keys',
-                Provider.PERPLEXITY: 'perplexity_keys',
                 Provider.OPENAI: 'openai_keys',
                 Provider.MISTRAL: 'mistral_keys',
                 Provider.LLAMA: 'llama_keys',
@@ -1874,12 +1859,9 @@ Provide step-by-step technical details while maintaining educational context and
                     print(f"🗑️  Removed compromised {provider.value.title()} key from config")
                     
                     # Check if local models are available as fallback
-                    if provider == Provider.GEMINI and self.config.llama_keys:
+                    if provider == Provider.OPENAI and self.config.llama_keys:
                         print(f"🏠 Falling back to local Llama model...")
                         # Update provider priority to use local models first
-                        return True
-                    elif provider == Provider.PERPLEXITY and self.config.llama_keys:
-                        print(f"🏠 Falling back to local Llama model...")
                         return True
                     
                     print(f"⚠️  No more {provider.value.title()} keys available")
@@ -1901,9 +1883,7 @@ Provide step-by-step technical details while maintaining educational context and
             ) as progress:
                 task = progress.add_task(f"[bold cyan]🤖 IBLU is thinking...", total=None)
                 
-                if provider == Provider.PERPLEXITY:
-                    result = self.call_perplexity_api(system_prompt, user_message, api_key)
-                elif provider == Provider.OPENAI:
+                if provider == Provider.OPENAI:
                     result = self.call_openai_api(system_prompt, user_message, api_key)
                 elif provider == Provider.GEMINI:
                     result = self.call_gemini_api(system_prompt, user_message, api_key)
@@ -1924,9 +1904,7 @@ Provide step-by-step technical details while maintaining educational context and
             spinner.start()
             
             try:
-                if provider == Provider.PERPLEXITY:
-                    result = self.call_perplexity_api(system_prompt, user_message, api_key)
-                elif provider == Provider.OPENAI:
+                if provider == Provider.OPENAI:
                     result = self.call_openai_api(system_prompt, user_message, api_key)
                 elif provider == Provider.GEMINI:
                     result = self.call_gemini_api(system_prompt, user_message, api_key)
@@ -1944,9 +1922,7 @@ Provide step-by-step technical details while maintaining educational context and
     
     def get_provider_keys(self, provider: Provider) -> List[str]:
         """Get API keys for a specific provider"""
-        if provider == Provider.PERPLEXITY:
-            return [k for k in self.config.perplexity_keys if k and k != "your-perplexity-api-key-here"]
-        elif provider == Provider.OPENAI:
+        if provider == Provider.OPENAI:
             return [k for k in (self.config.openai_keys or []) if k and k != "your-openai-api-key-here"]
         elif provider == Provider.GEMINI:
             return [k for k in (self.config.gemini_keys or []) if k and k != "your-gemini-api-key-here"]
@@ -1957,43 +1933,6 @@ Provide step-by-step technical details while maintaining educational context and
         elif provider == Provider.GEMINI_CLI:
             return [k for k in (self.config.gemini_cli_keys or []) if k and k != "your-gemini-cli-api-key-here"]
         return []
-    
-    def call_perplexity_api(self, system_prompt: str, user_message: str, api_key: str) -> str:
-        """Call Perplexity API"""
-        try:
-            import requests
-            
-            url = "https://api.perplexity.ai/chat/completions"
-            headers = {
-                "Authorization": f"Bearer {api_key}",
-                "Content-Type": "application/json"
-            }
-            
-            # Perplexity API doesn't support system messages in the same way
-            # Combine system prompt with user message
-            combined_message = f"{system_prompt}\n\nUser Query: {user_message}"
-            
-            payload = {
-                "model": "sonar-pro",
-                "messages": [
-                    {"role": "user", "content": combined_message}
-                ],
-                "temperature": 0.7,
-                "max_tokens": 2000
-            }
-            
-            response = requests.post(url, json=payload, headers=headers, timeout=30)
-            response.raise_for_status()
-            
-            result = response.json()
-            ai_response = result['choices'][0]['message']['content']
-            
-            return f"🤖 IBLU (Perplexity):\n\n{ai_response}"
-            
-        except requests.exceptions.HTTPError as e:
-            return f"❌ Perplexity API Error: {e}\n\n💡 Response: {e.response.text if hasattr(e, 'response') else 'No details'}\n\n🔑 Check your API key at https://www.perplexity.ai/settings/api"
-        except Exception as e:
-            return f"❌ Perplexity API Error: {e}\n\n💡 Check your API key at https://www.perplexity.ai/settings/api"
     
     def call_openai_api(self, system_prompt: str, user_message: str, api_key: str) -> str:
         """Call OpenAI API"""
@@ -2513,7 +2452,7 @@ Provide step-by-step technical details while maintaining educational context and
         
         # Get available providers
         available_providers = []
-        for provider in [Provider.GEMINI, Provider.LLAMA, Provider.PERPLEXITY, Provider.OPENAI, Provider.MISTRAL]:
+        for provider in [Provider.GEMINI, Provider.LLAMA, Provider.OPENAI, Provider.MISTRAL]:
             provider_keys = self.get_provider_keys(provider)
             if provider_keys:
                 available_providers.append((provider, provider_keys[0]))
@@ -2546,10 +2485,10 @@ Provide step-by-step technical details while maintaining educational context and
             stacked_responses.append(("Gemini", gemini_response))
         
         # Third model if available
-        if Provider.PERPLEXITY in [p[0] for p in available_providers]:
-            print("🧠 Cloud Model (Perplexity) - Refinement...")
-            perplexity_response = self.call_perplexity_api(self.SYSTEM_PROMPT, user_message, available_providers[[p[0] for p in available_providers].index(Provider.PERPLEXITY)][1])
-            stacked_responses.append(("Perplexity", perplexity_response))
+        if Provider.MISTRAL in [p[0] for p in available_providers]:
+            print("🧠 Cloud Model (Mistral) - Refinement...")
+            mistral_response = self.call_mistral_api(self.SYSTEM_PROMPT, user_message, available_providers[[p[0] for p in available_providers].index(Provider.MISTRAL)][1])
+            stacked_responses.append(("Mistral", mistral_response))
         
         # Combine responses
         print(f"\n{self._colorize('📊 Stacked Response Analysis:', Fore.GREEN)}")
@@ -2582,8 +2521,8 @@ Provide a unified, enhanced response that combines the strengths of all models w
         # Use the best available model for synthesis
         if Provider.GEMINI in [p[0] for p in available_providers]:
             final_response = self.call_gemini_api(self.SYSTEM_PROMPT, synthesis_prompt, available_providers[[p[0] for p in available_providers].index(Provider.GEMINI)][1])
-        elif Provider.PERPLEXITY in [p[0] for p in available_providers]:
-            final_response = self.call_perplexity_api(self.SYSTEM_PROMPT, synthesis_prompt, available_providers[[p[0] for p in available_providers].index(Provider.PERPLEXITY)][1])
+        elif Provider.MISTRAL in [p[0] for p in available_providers]:
+            final_response = self.call_mistral_api(self.SYSTEM_PROMPT, synthesis_prompt, available_providers[[p[0] for p in available_providers].index(Provider.MISTRAL)][1])
         else:
             final_response = "❌ No suitable model for synthesis"
         
@@ -2606,7 +2545,7 @@ Provide a unified, enhanced response that combines the strengths of all models w
         
         # Get available providers
         available_providers = []
-        for provider in [Provider.GEMINI, Provider.LLAMA, Provider.PERPLEXITY, Provider.OPENAI, Provider.MISTRAL]:
+        for provider in [Provider.GEMINI, Provider.LLAMA, Provider.OPENAI, Provider.MISTRAL]:
             provider_keys = self.get_provider_keys(provider)
             if provider_keys:
                 available_providers.append((provider, provider_keys[0]))
@@ -2654,19 +2593,18 @@ Provide a unified, enhanced response that combines the strengths of all models w
             response_prompt = f"Respond to this cybersecurity perspective: {content}\n\nProvide your expert analysis and continue the discussion."
             gemini_response = self.call_gemini_api(self.SYSTEM_PROMPT, response_prompt, available_providers[[p[0] for p in available_providers].index(Provider.GEMINI)][1])
             conversation.append(("Gemini", gemini_response))
-        elif Provider.PERPLEXITY in [p[0] for p in available_providers]:
-            print("🧠 Perplexity (Cloud) - Responding...")
+        elif Provider.MISTRAL in [p[0] for p in available_providers]:
+            print("🧠 Mistral (Cloud) - Responding...")
             first_response = conversation[0][1]
             if "🤖 IBLU" in first_response:
-                content = first_response.split("🤖 IBLU")[-1].strip()
-                if content.startswith(":"):
-                    content = content[1:].strip()
+                lines = first_response.split('\n')
+                content = '\n'.join(lines[2:])  # Skip the first 2 lines (emoji and title)
             else:
                 content = first_response
             
             response_prompt = f"Respond to this cybersecurity perspective: {content}\n\nProvide your expert analysis and continue the discussion."
-            perplexity_response = self.call_perplexity_api(self.SYSTEM_PROMPT, response_prompt, available_providers[[p[0] for p in available_providers].index(Provider.PERPLEXITY)][1])
-            conversation.append(("Perplexity", perplexity_response))
+            mistral_response = self.call_mistral_api(self.SYSTEM_PROMPT, response_prompt, available_providers[[p[0] for p in available_providers].index(Provider.MISTRAL)][1])
+            conversation.append(("Mistral", mistral_response))
         
         # Model 3 responds if available
         if len(available_providers) >= 3:
@@ -2685,8 +2623,8 @@ Provide a unified, enhanced response that combines the strengths of all models w
                 
                 response_prompt = f"Provide a final perspective on this cybersecurity discussion: {content}\n\nSynthesize the key points and offer a comprehensive conclusion."
                 
-                if next_provider == Provider.PERPLEXITY:
-                    final_response = self.call_perplexity_api(self.SYSTEM_PROMPT, response_prompt, available_providers[[p[0] for p in available_providers].index(next_provider)][1])
+                if next_provider == Provider.MISTRAL:
+                    final_response = self.call_mistral_api(self.SYSTEM_PROMPT, response_prompt, available_providers[[p[0] for p in available_providers].index(next_provider)][1])
                 elif next_provider == Provider.OPENAI:
                     final_response = self.call_openai_api(self.SYSTEM_PROMPT, response_prompt, available_providers[[p[0] for p in available_providers].index(next_provider)][1])
                 elif next_provider == Provider.MISTRAL:

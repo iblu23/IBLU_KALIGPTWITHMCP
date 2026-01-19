@@ -144,7 +144,7 @@ def check_config():
                 config = json.load(f)
             
             has_keys = False
-            for provider in ['perplexity_keys', 'openai_keys', 'gemini_keys', 'mistral_keys']:
+            for provider in ['openai_keys', 'gemini_keys', 'mistral_keys']:
                 if provider in config and config[provider]:
                     if config[provider] and len(config[provider]) > 0:
                         has_keys = True

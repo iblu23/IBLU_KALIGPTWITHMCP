@@ -27,11 +27,6 @@ validate_key() {
                 return 0
             fi
             ;;
-        "Perplexity")
-            if [[ $key =~ ^pplx-[a-zA-Z0-9_-]{48}$ ]]; then
-                return 0
-            fi
-            ;;
         "Mistral")
             if [[ $key =~ ^[a-zA-Z0-9_-]{32,}$ ]]; then
                 return 0
@@ -69,30 +64,18 @@ for file in "${config_files[@]}"; do
                 fi
             done
         fi
-        
-        # Search for Perplexity keys
-        if grep -q "pplx-" "$file" 2>/dev/null; then
-            keys=$(grep -o 'pplx-[a-zA-Z0-9_-]{48}' "$file" 2>/dev/null | head -3)
-            for key in $keys; do
-                if validate_key "$key" "Perplexity"; then
-                    found_keys+=("Perplexity:$key")
-                    echo "  ✅ Found Perplexity key: ${key:0:8}...${key: -4}"
-                fi
-            done
-        fi
     fi
 done
 
 # Search environment variables
 echo ""
 echo "🔍 Checking environment variables..."
-env_vars=("PERPLEXITY_API_KEY" "OPENAI_API_KEY" "GEMINI_API_KEY" "MISTRAL_API_KEY")
+env_vars=("OPENAI_API_KEY" "GEMINI_API_KEY" "MISTRAL_API_KEY")
 for var in "${env_vars[@]}"; do
     if [ -n "${!var}" ]; then
         key="${!var}"
         provider=""
         case "$var" in
-            "PERPLEXITY_API_KEY") provider="Perplexity" ;;
             "OPENAI_API_KEY") provider="OpenAI" ;;
             "GEMINI_API_KEY") provider="Gemini" ;;
             "MISTRAL_API_KEY") provider="Mistral" ;;
@@ -151,7 +134,6 @@ if [ ${#found_keys[@]} -eq 0 ]; then
     echo "❌ No API keys found automatically"
     echo ""
     echo "💡 You'll need to add API keys manually:"
-    echo "   • Perplexity: https://www.perplexity.ai/settings/api"
     echo "   • OpenAI: https://platform.openai.com/api-keys"
     echo "   • Gemini: https://aistudio.google.com/app/apikey"
     echo "   • Mistral: https://console.mistral.ai/api-keys"
@@ -177,9 +159,6 @@ else
         key="${key_info##*:}"
         
         case "$provider" in
-            "Perplexity")
-                sed -i "s/\"perplexity_keys\": \[\]/\"perplexity_keys\": [\"$key\"]/" config.json
-                ;;
             "OpenAI")
                 sed -i "s/\"openai_keys\": \[\]/\"openai_keys\": [\"$key\"]/" config.json
                 ;;

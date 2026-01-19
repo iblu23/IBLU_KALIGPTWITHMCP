@@ -55,8 +55,7 @@ helper.show_interactive_menu()
 
 ## 🎯 **Core Features**
 
-### 🤖 **Multi-Provider AI Support**
-- **Perplexity AI** - Advanced security analysis (primary)
+### 🤖 **Multi-AI Support**
 - **OpenAI** - General purpose AI assistance
 - **Google Gemini** - Google's advanced AI model
 - **Mistral AI** - Efficient, fast responses
@@ -157,7 +156,6 @@ nano config.json
 **Configuration Example:**
 ```json
 {
-  "perplexity_keys": ["your-perplexity-api-key"],
   "openai_keys": ["your-openai-api-key"],
   "gemini_keys": ["your-gemini-api-key"],
   "mistral_keys": ["your-mistral-api-key"],
@@ -245,7 +243,6 @@ helper.show_interactive_menu()
 
 ### **AI Provider Switching**
 ```bash
-/perplexity     # Switch to Perplexity AI
 /openai         # Switch to OpenAI
 /gemini         # Switch to Gemini
 /mistral        # Switch to Mistral

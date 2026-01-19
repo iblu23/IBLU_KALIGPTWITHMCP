@@ -5,7 +5,7 @@
 **IBLU** is a professional cybersecurity assistant that combines **AI intelligence** with **50+ security tools** for authorized penetration testing and security research. It's your personal hacking assistant that helps you perform security assessments efficiently.
 
 ### 🚀 **Key Features**
-- 🤖 **Multi-AI Support** - Chat with Perplexity, OpenAI, Gemini, or Mistral
+- 🤖 **Multi-AI Support** - Chat with OpenAI, Gemini, or Mistral
 - 🛡️ **50+ Security Tools** - Integrated professional tools
 - 💬 **Smart Chat Interface** - Persistent conversations with context awareness
 - ⚡ **Tab Completion** - Intelligent command suggestions and auto-completion
@@ -46,7 +46,6 @@ IBLU supports multiple AI providers. Get your keys from:
 
 | Provider | URL | Cost |
 |----------|-----|------|
-| **Perplexity** | https://www.perplexity.ai/settings/api | Free tier available |
 | **OpenAI** | https://platform.openai.com/api-keys | Pay-as-you-go |
 | **Gemini** | https://aistudio.google.com/app/apikey | Free tier available |
 | **Mistral** | https://console.mistral.ai/api-keys | Pay-as-you-go |
@@ -131,7 +130,6 @@ Type `/` and press **Tab** to see all available commands:
 - `/mcp_status` - Check MCP server status
 
 #### **AI Provider Commands**
-- `/perplexity` - Switch to Perplexity AI
 - `/openai` - Switch to OpenAI
 - `/gemini` - Switch to Gemini
 - `/mistral` - Switch to Mistral
@@ -293,7 +291,7 @@ sudo ./install_hexstrike_tools.sh
 ./setup_api_keys.sh
 
 # Test with different provider
-/perplexity  # Switch to Perplexity
+/openai  # Switch to OpenAI
 ```
 
 #### **"Tool not found"**

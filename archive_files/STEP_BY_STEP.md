@@ -99,7 +99,6 @@ code config.json
 ### **Add API Keys**
 ```json
 {
-  "perplexity_keys": ["pplx-your-api-key-here"],
   "openai_keys": ["sk-your-api-key-here"],
   "gemini_keys": ["AIzaSy-your-api-key-here"],
   "mistral_keys": ["mistral-your-api-key-here"]
@@ -107,10 +106,9 @@ code config.json
 ```
 
 ### **Get API Keys:**
-1. **Perplexity AI**: https://www.perplexity.ai/
-2. **OpenAI**: https://platform.openai.com/
-3. **Google Gemini**: https://aistudio.google.com/
-4. **Mistral AI**: https://mistral.ai/
+1. **OpenAI**: https://platform.openai.com/
+2. **Google Gemini**: https://aistudio.google.com/
+3. **Mistral AI**: https://mistral.ai/
 
 ---
 

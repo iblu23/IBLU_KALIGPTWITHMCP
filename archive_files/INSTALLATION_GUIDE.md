@@ -126,9 +126,6 @@ nano config.json
 **Configuration Example:**
 ```json
 {
-  "perplexity_keys": [
-    "pplx-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-  ],
   "openai_keys": [
     "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
   ],
@@ -191,16 +188,8 @@ print('✅ Main program imports successfully!')
 
 ### **API Keys Setup**
 
-#### **Perplexity AI (Primary)**
-1. Visit [Perplexity AI](https://www.perplexity.ai/)
-2. Create account and get API key
-3. Add to `config.json`:
-```json
-"perplexity_keys": ["pplx-your-api-key-here"]
-```
-
-#### **OpenAI**
-1. Visit [OpenAI Platform](https://platform.openai.com/)
+#### **OpenAI (Primary)**
+1. Visit [OpenAI](https://platform.openai.com/)
 2. Create account and get API key
 3. Add to `config.json`:
 ```json
@@ -212,7 +201,7 @@ print('✅ Main program imports successfully!')
 2. Create project and get API key
 3. Add to `config.json`:
 ```json
-"gemini_keys": ["AIzaSy-your-api-key-here"]
+"gemini_keys": ["AIza-your-api-key-here"]
 ```
 
 #### **Mistral AI**
