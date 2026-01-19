@@ -5059,6 +5059,19 @@ Provide step-by-step technical details while maintaining educational context and
     
     def collaborative_model_response(self, user_message: str) -> str:
         """All available models communicate to provide comprehensive response with Rich progress"""
+        # Import Rich components at the very top for availability throughout entire function
+        try:
+            from rich.progress import (
+                Progress, SpinnerColumn, TextColumn, BarColumn, 
+                TimeElapsedColumn, TimeRemainingColumn, MofNCompleteColumn,
+                TaskProgressColumn, DownloadColumn, TransferSpeedColumn
+            )
+            from rich.style import Style
+            from rich.text import Text
+            RICH_PROGRESS_AVAILABLE = True
+        except ImportError:
+            RICH_PROGRESS_AVAILABLE = False
+        
         if COLORAMA_AVAILABLE:
             # Beautiful collaborative header
             collab_header = f"{Fore.LIGHTCYAN_EX}╔{'═' * 78}╗{Style.RESET_ALL}"
@@ -5105,16 +5118,7 @@ Provide step-by-step technical details while maintaining educational context and
         print(f"🔄 Initiating collaborative analysis...")
         
         # Phase 1: Parallel initial analysis with Rich progress
-        # Import Rich components at function level for availability throughout
-        from rich.progress import (
-            Progress, SpinnerColumn, TextColumn, BarColumn, 
-            TimeElapsedColumn, TimeRemainingColumn, MofNCompleteColumn,
-            TaskProgressColumn, DownloadColumn, TransferSpeedColumn
-        )
-        from rich.style import Style
-        from rich.text import Text
-        
-        if RICH_AVAILABLE:
+        if RICH_PROGRESS_AVAILABLE:
             # Create enhanced progress with multiple columns and effects
             with Progress(
                 SpinnerColumn("dots12", style="bold cyan", speed=0.5),
