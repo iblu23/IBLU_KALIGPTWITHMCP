@@ -165,6 +165,94 @@ class ProgressBar:
         
         self.finish(f"{model_name} downloaded and installed successfully")
 
+class InstallationProgress:
+    """Installation progress bar with thinking animation style"""
+    
+    def __init__(self, total_steps: int = 100, prefix: str = "Installing"):
+        self.total_steps = total_steps
+        self.current_step = 0
+        self.prefix = prefix
+        self.start_time = time.time()
+        
+        # Same spinner as thinking animation
+        self.spinner_chars = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏']
+        self.spinner_idx = 0
+        
+        # Installation action words
+        self.install_actions = ['downloading', 'configuring', 'setting up', 'preparing', 'installing', 'verifying', 'finalizing', 'optimizing', 'checking', 'processing']
+        self.current_action_idx = 0
+        self.last_action_change = time.time()
+        
+    def update(self, step: int, message: str = ""):
+        """Update installation progress with thinking-style animation"""
+        self.current_step = min(step, self.total_steps)
+        
+        # Calculate percentage
+        percent = (self.current_step / self.total_steps) * 100
+        
+        # Progress bar
+        bar_width = 30
+        filled_length = int(bar_width * self.current_step // self.total_steps)
+        bar = "█" * filled_length + "░" * (bar_width - filled_length)
+        
+        # Update spinner
+        self.spinner_idx = (self.spinner_idx + 1) % len(self.spinner_chars)
+        spinner = self.spinner_chars[self.spinner_idx]
+        
+        # Change action word every 1 second
+        current_time = time.time()
+        if current_time - self.last_action_change > 1.0:
+            self.current_action_idx = (self.current_action_idx + 1) % len(self.install_actions)
+            self.last_action_change = current_time
+        
+        current_action = self.install_actions[self.current_action_idx]
+        
+        # Build progress line
+        progress_line = f"\r{spinner} {self.prefix} [{bar}] {percent:5.1f}% - {current_action}..."
+        
+        if message:
+            progress_line += f" | {message}"
+        
+        print(progress_line, end='', flush=True)
+    
+    def finish(self, message: str = "Installation complete!"):
+        """Finish installation with success message"""
+        self.update(self.total_steps, message)
+        elapsed = time.time() - self.start_time
+        print(f"\n✅ {message} (took {elapsed:.1f}s)")
+    
+    def simulate_installation(self, item_name: str, steps: list = None):
+        """Simulate installation with realistic progress"""
+        if steps is None:
+            steps = [
+                (0, 10, "Checking dependencies"),
+                (10, 30, "Downloading files"),
+                (30, 60, "Installing components"),
+                (60, 80, "Configuring settings"),
+                (80, 95, "Verifying installation"),
+                (95, 100, "Finalizing setup")
+            ]
+        
+        print(f"\n📦 Installing: {item_name}")
+        print("=" * 60)
+        
+        for start, end, step_msg in steps:
+            step_progress = end - start
+            for i in range(step_progress):
+                progress = start + i
+                
+                # Add realistic timing
+                if "Downloading" in step_msg:
+                    time.sleep(0.05)  # Slower for downloads
+                elif "Installing" in step_msg:
+                    time.sleep(0.03)
+                else:
+                    time.sleep(0.02)
+                
+                self.update(progress, step_msg)
+        
+        self.finish(f"{item_name} installed successfully")
+
 class Spinner:
     """Loading spinner for AI thinking animation"""
     def __init__(self, message="🤖 IBLU is thinking"):
@@ -3327,16 +3415,24 @@ Provide step-by-step technical details while maintaining educational context and
         
         print(f"\n{self._colorize(f'📦 Installing: {", ".join(model_names)}', Fore.GREEN)}")
         
-        # Show loading animation
-        self.show_loading_animation("Initializing Ollama environment...")
+        # Create installation progress tracker
+        install_progress = InstallationProgress(total_steps=100, prefix="🔧 Installing")
         
         try:
-            # Check if Ollama is installed
-            self.show_loading_animation("Checking Ollama availability...")
+            # Step 1: Initialize Ollama environment
+            install_progress.update(5, "Initializing Ollama environment")
+            time.sleep(0.5)
+            
+            # Step 2: Check Ollama availability
+            install_progress.update(10, "Checking Ollama availability")
             ollama_check = subprocess.run(['which', 'ollama'], capture_output=True, text=True)
+            time.sleep(0.5)
             
             if ollama_check.returncode != 0:
+                # Step 3-15: Install Ollama
+                install_progress.update(15, "Installing Ollama")
                 print("📦 Installing Ollama...")
+                
                 # Try multiple installation methods
                 install_methods = [
                     "curl -fsSL https://ollama.ai/install.sh | sh",
@@ -3345,76 +3441,61 @@ Provide step-by-step technical details while maintaining educational context and
                 ]
                 
                 install_success = False
-                for method in install_methods:
+                for i, method in enumerate(install_methods):
+                    install_progress.update(20 + i * 5, f"Trying installation method {i+1}")
                     print(f"  Trying: {method}")
                     install_cmd = subprocess.run(method, shell=True, capture_output=True, text=True, timeout=300)
                     if install_cmd.returncode == 0:
-                        print("✅ Ollama installed successfully")
                         install_success = True
                         break
-                    else:
-                        print(f"  ❌ Failed: {method}")
                 
                 if not install_success:
-                    return f"❌ Failed to install Ollama. Try manual installation: https://ollama.ai/download"
+                    install_progress.finish("Failed to install Ollama")
+                    return "❌ Failed to install Ollama. Please install manually."
                 
-                if install_cmd.returncode != 0:
-                    return f"❌ Failed to install Ollama: {install_cmd.stderr}"
-                
-                print("✅ Ollama installed successfully")
+                install_progress.update(35, "Ollama installed successfully")
             else:
-                print("✅ Ollama already installed")
+                install_progress.update(35, "✅ Ollama already installed")
             
-            # Start Ollama service
-            self.show_loading_animation("Starting Ollama service...")
+            # Step 36-45: Start Ollama service
+            install_progress.update(40, "Starting Ollama service")
             print("🚀 Starting Ollama service...")
-            serve_cmd = subprocess.run(['ollama', 'serve'], capture_output=True, text=True, timeout=5)
             
-            # Install selected models
-            installed_models = []
-            failed_models = []
+            # Check if Ollama service is running
+            try:
+                service_check = subprocess.run(['ollama', 'list'], capture_output=True, text=True, timeout=10)
+                if service_check.returncode != 0:
+                    # Start Ollama service
+                    subprocess.run(['ollama', 'serve'], capture_output=True, text=True, timeout=10)
+                    time.sleep(2)
+                install_progress.update(45, "✅ Ollama service ready")
+            except:
+                install_progress.update(45, "⚠️ Ollama service may need manual start")
             
-            for model, model_name in zip(models_to_install, model_names):
-                try:
-                    print(f"\n{'='*60}")
-                    print(f"📥 Installing {model_name} model...")
-                    print(f"{'='*60}")
-                    
-                    # Start the actual pull command in background
-                    import threading
-                    pull_result = {'success': False, 'error': None}
-                    
-                    def pull_model():
-                        try:
-                            pull_cmd = subprocess.run(['ollama', 'pull', model], 
-                                                   capture_output=True, text=True, timeout=600)
-                            pull_result['success'] = pull_cmd.returncode == 0
-                            pull_result['error'] = pull_cmd.stderr if pull_cmd.returncode != 0 else None
-                        except Exception as e:
-                            pull_result['success'] = False
-                            pull_result['error'] = str(e)
-                    
-                    # Start the download in background
-                    pull_thread = threading.Thread(target=pull_model)
-                    pull_thread.start()
-                    
-                    # Monitor progress with enhanced progress bar
-                    download_success = self.monitor_ollama_progress(model_name)
-                    
-                    # Wait for the actual download to complete
-                    pull_thread.join()
-                    
-                    if download_success and pull_result['success']:
-                        print(f"✅ {model_name} model installed successfully")
-                        installed_models.append(model_name)
-                    else:
-                        error_msg = pull_result['error'] or "Unknown error"
-                        print(f"❌ Failed to install {model_name}: {error_msg}")
-                        failed_models.append(model_name)
-                        
-                except Exception as e:
-                    print(f"❌ Error installing {model_name}: {e}")
-                    failed_models.append(model_name)
+            # Step 46-100: Install models
+            for i, (model, model_name) in enumerate(zip(models_to_install, model_names)):
+                model_start_progress = 50 + (i * 50 // len(models_to_install))
+                model_end_progress = 50 + ((i + 1) * 50 // len(models_to_install))
+                
+                print(f"\n{'='*60}")
+                print(f"📥 Installing {model_name} model...")
+                print(f"{'='*60}")
+                
+                # Create model-specific progress
+                model_progress = InstallationProgress(
+                    total_steps=(model_end_progress - model_start_progress),
+                    prefix=f"📦 {model_name}"
+                )
+                
+                # Start model installation animation
+                model_install_success = self._install_model_with_progress(
+                    model, model_progress, model_start_progress, model_end_progress
+                )
+                
+                if model_install_success:
+                    install_progress.update(model_end_progress, f"✅ {model_name} installed")
+                else:
+                    install_progress.update(model_end_progress, f"❌ {model_name} failed")
             
             # Summary
             if installed_models:
@@ -3431,6 +3512,106 @@ Provide step-by-step technical details while maintaining educational context and
                 
         except Exception as e:
             return f"❌ Installation error: {e}"
+    
+    def _install_model_with_progress(self, model: str, progress: InstallationProgress, start_progress: int, end_progress: int) -> bool:
+        """Install a single model with progress tracking"""
+        try:
+            # Start the download in background
+            def pull_model():
+                subprocess.run(['ollama', 'pull', model], capture_output=True, text=True, timeout=600)
+            
+            pull_thread = threading.Thread(target=pull_model)
+            pull_thread.start()
+            
+            # Monitor progress with enhanced progress bar
+            download_success = self.monitor_ollama_progress_with_progress(model, progress, start_progress, end_progress)
+            
+            # Wait for the actual download to complete
+            pull_thread.join()
+            
+            return download_success
+            
+        except Exception as e:
+            print(f"❌ Error installing {model}: {e}")
+            return False
+    
+    def monitor_ollama_progress_with_progress(self, model_name: str, progress: InstallationProgress, start_progress: int, end_progress: int) -> bool:
+        """Monitor Ollama model download with custom progress bar"""
+        start_time = time.time()
+        max_wait_time = 600  # 10 minutes
+        check_interval = 2
+        
+        download_result = {'found': False, 'success': False}
+        download_complete = threading.Event()
+        
+        # Create spinner animation
+        spinner_chars = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏']
+        download_actions = ['downloading', 'fetching', 'retrieving', 'pulling', 'grabbing', 'loading', 'streaming', 'transferring', 'acquiring', 'gathering']
+        
+        def animate_download():
+            """Animate download process with spinner"""
+            idx = 0
+            current_action_idx = 0
+            last_action_change = time.time()
+            
+            while not download_complete.is_set():
+                # Change action word every 1 second
+                current_time = time.time()
+                if current_time - last_action_change > 1.0:
+                    current_action_idx = (current_action_idx + 1) % len(download_actions)
+                    last_action_change = current_time
+                
+                current_action = download_actions[current_action_idx]
+                
+                # Update progress based on time elapsed
+                elapsed = time.time() - start_time
+                time_progress = min((elapsed / max_wait_time) * 100, 95)
+                actual_progress = start_progress + (time_progress * (end_progress - start_progress) / 100)
+                
+                progress.update(int(actual_progress), f"{current_action}...")
+                
+                idx = (idx + 1) % len(spinner_chars)
+                time.sleep(0.1)
+            
+            # Clean up
+            sys.stdout.write('\r' + ' ' * (len(model_name) + 20) + '\r')
+            sys.stdout.flush()
+        
+        # Start animation in background
+        animation_thread = threading.Thread(target=animate_download)
+        animation_thread.start()
+        
+        try:
+            while time.time() - start_time < max_wait_time:
+                # Check if model is available by querying Ollama API
+                url = "http://localhost:11434/api/tags"
+                response = requests.get(url, timeout=5)
+                
+                if response.status_code == 200:
+                    models_data = response.json()
+                    for model in models_data.get('models', []):
+                        if model_name.replace(':8b', '').replace(':latest', '') in model.get('name', '').replace(':8b', '').replace(':latest', ''):
+                            # Model found - download complete
+                            download_result['found'] = True
+                            download_result['success'] = True
+                            download_complete.set()
+                            animation_thread.join()
+                            progress.update(end_progress, "✅ Download complete")
+                            return True
+                
+                time.sleep(check_interval)
+            
+            # Timeout reached
+            download_complete.set()
+            animation_thread.join()
+            progress.update(end_progress, "❌ Download timeout")
+            return False
+            
+        except Exception as e:
+            download_complete.set()
+            animation_thread.join()
+            progress.update(end_progress, f"❌ Error: {str(e)}")
+            return False
     
     def install_mistral_dolphin_local(self) -> str:
         """Install Mistral Dolphin model locally via Ollama"""
