@@ -5507,7 +5507,6 @@ def load_config():
             openai_keys=config_data.get('openai_keys', []),
             gemini_keys=config_data.get('gemini_keys', []),
             mistral_keys=config_data.get('mistral_keys', []),
-            llama_keys=config_data.get('llama_keys', []),
             gemini_cli_keys=config_data.get('gemini_cli_keys', [])
         )
     except Exception as e:
@@ -5516,7 +5515,6 @@ def load_config():
             openai_keys=[],
             gemini_keys=[],
             mistral_keys=[],
-            llama_keys=[],
             gemini_cli_keys=[]
         )
 
