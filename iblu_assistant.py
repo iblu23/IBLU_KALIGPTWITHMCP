@@ -1092,9 +1092,9 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
             
             # Menu option 3
             print(f"{Fore.MAGENTA}┌─ {Style.BRIGHT}{Fore.YELLOW}[3]{Style.RESET_ALL}{Fore.MAGENTA} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
-            print(f"{Fore.MAGENTA}│{Style.RESET_ALL}  {Style.BRIGHT}{Fore.YELLOW}🔧 TOOL MANAGEMENT{Style.RESET_ALL} - Advanced Options                          {Fore.MAGENTA}│{Style.RESET_ALL}")
-            print(f"{Fore.MAGENTA}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} /tools - List all tools with categories                     {Fore.MAGENTA}│{Style.RESET_ALL}")
-            print(f"{Fore.MAGENTA}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} /delete_tools - Remove tools from database                {Fore.MAGENTA}│{Style.RESET_ALL}")
+            print(f"{Fore.MAGENTA}│{Style.RESET_ALL}  {Style.BRIGHT}{Fore.YELLOW}🎯 HACKING TOYS{Style.RESET_ALL} - Installation & Management                     {Fore.MAGENTA}│{Style.RESET_ALL}")
+            print(f"{Fore.MAGENTA}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} /tools - List all hacking tools with categories            {Fore.MAGENTA}│{Style.RESET_ALL}")
+            print(f"{Fore.MAGENTA}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} /delete_tools - Remove hacking tools from database           {Fore.MAGENTA}│{Style.RESET_ALL}")
             print(f"{Fore.MAGENTA}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} /delete_llama - Remove local Llama models                 {Fore.MAGENTA}│{Style.RESET_ALL}")
             print(f"{Fore.MAGENTA}└───────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
             
@@ -1132,8 +1132,8 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
             print(f"    • Install all or one-by-one")
             print(f"    • Browse by category\n")
             
-            print(f"[3] 🔧 TOOL MANAGEMENT - Advanced Options")
-            print(f"    • List/delete tools and models\n")
+            print(f"[3] 🎯 HACKING TOYS - Installation & Management")
+            print(f"    • List/delete hacking tools and models\n")
             
             print(f"[4] ⚙️  CONFIGURATION - Settings")
             print(f"    • API keys, rephrasing mode\n")
