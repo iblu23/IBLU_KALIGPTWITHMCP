@@ -1261,9 +1261,10 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
         print(f"  2. Toggle Rephrasing Mode")
         print(f"  3. Check MCP Status")
         print(f"  4. Show API Keys Status")
-        print(f"  5. Back to main menu")
+        print(f"  5. Install Local Models")
+        print(f"  6. Back to main menu")
         
-        choice = input(f"\n{self._colorize('🎯 Choose option (1-5):', Fore.YELLOW)}").strip()
+        choice = input(f"\n{self._colorize('🎯 Choose option (1-6):', Fore.YELLOW)}").strip()
         
         if choice == '1':
             return self.switch_ai_provider()
@@ -1274,6 +1275,8 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
         elif choice == '4':
             return self.show_api_keys_status()
         elif choice == '5':
+            return self.install_local_models_menu()
+        elif choice == '6':
             return self.show_main_menu()
         else:
             return f"❌ Invalid choice: {choice}"
@@ -1327,29 +1330,77 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
         return f"🔓 Rephrasing mode {status}"
     
     def show_api_keys_status(self):
-        """Show API keys configuration status"""
-        print(f"\n{self._colorize('🔑 API Keys Configuration', Fore.GREEN)}")
+        """Show API keys status"""
+        status = f"\n{self._colorize('🔑 API Keys Status:', Fore.CYAN)}"
+        status += f"\n{'='*40}"
+        
+        providers_status = []
+        if self.config.perplexity_keys:
+            valid_keys = [k for k in self.config.perplexity_keys if k and k != "your-perplexity-api-key-here"]
+            providers_status.append(f"Perplexity: {len(valid_keys)} keys configured")
+        else:
+            providers_status.append("Perplexity: No keys configured")
+        
+        if self.config.openai_keys:
+            valid_keys = [k for k in self.config.openai_keys if k and k != "your-openai-api-key-here"]
+            providers_status.append(f"OpenAI: {len(valid_keys)} keys configured")
+        else:
+            providers_status.append("OpenAI: No keys configured")
+        
+        if self.config.gemini_keys:
+            valid_keys = [k for k in self.config.gemini_keys if k and k != "your-gemini-api-key-here"]
+            providers_status.append(f"Gemini: {len(valid_keys)} keys configured")
+        else:
+            providers_status.append("Gemini: No keys configured")
+        
+        if self.config.llama_keys:
+            valid_keys = [k for k in self.config.llama_keys if k and k != "your-llama-api-key-here"]
+            providers_status.append(f"Llama: {len(valid_keys)} keys configured")
+        else:
+            providers_status.append("Llama: No keys configured")
+        
+        if self.config.mistral_keys:
+            valid_keys = [k for k in self.config.mistral_keys if k and k != "your-mistral-api-key-here"]
+            providers_status.append(f"Mistral: {len(valid_keys)} keys configured")
+        else:
+            providers_status.append("Mistral: No keys configured")
+        
+        status += "\n".join(providers_status)
+        status += f"\n\n{self._colorize('💡 Edit config.json to add API keys', Fore.YELLOW)}"
+        return status
+    
+    def install_local_models_menu(self):
+        """Show local model installation menu"""
+        print(f"\n{self._colorize('🔧 Install Local Models', Fore.CYAN)}")
         print("=" * 40)
+        print(f"  1. Install Gemini Model (Docker)")
+        print(f"  2. Install Llama Model (Ollama)")
+        print(f"  3. Install All Models")
+        print(f"  4. Back to configuration")
         
-        providers = {
-            'perplexity': self.config.perplexity_keys,
-            'openai': self.config.openai_keys,
-            'gemini': self.config.gemini_keys,
-            'mistral': self.config.mistral_keys
-        }
+        choice = input(f"\n{self._colorize('🎯 Choose option (1-4):', Fore.YELLOW)}").strip()
         
-        for provider, keys in providers.items():
-            if keys:
-                print(f"{Fore.GREEN}✅ {provider.title()}: {len(keys)} key(s) configured")
-                for i, key in enumerate(keys[:3], 1):
-                    masked_key = key[:8] + "..." + key[-4:] if len(key) > 15 else key
-                    print(f"   {i}. {masked_key}")
-                if len(keys) > 3:
-                    print(f"   ... and {len(keys)-3} more key(s)")
-            else:
-                print(f"{Fore.RED}❌ {provider.title()}: No keys configured")
-        
-        return f"🔑 API keys status displayed above"
+        if choice == '1':
+            result = self.install_gemini_local()
+            print(f"\n{result}")
+            input(f"\n{self._colorize('Press Enter to continue...', Fore.YELLOW)}")
+            return self.handle_configuration()
+        elif choice == '2':
+            result = self.install_llama_local()
+            print(f"\n{result}")
+            input(f"\n{self._colorize('Press Enter to continue...', Fore.YELLOW)}")
+            return self.handle_configuration()
+        elif choice == '3':
+            result = self.install_all_local_models()
+            print(f"\n{result}")
+            input(f"\n{self._colorize('Press Enter to continue...', Fore.YELLOW)}")
+            return self.handle_configuration()
+        elif choice == '4':
+            return self.handle_configuration()
+        else:
+            print(f"❌ Invalid choice: {choice}")
+            input(f"\n{self._colorize('Press Enter to continue...', Fore.YELLOW)}")
+            return self.install_local_models_menu()
     
     def _colorize(self, text: str, color: str = "") -> str:
         """Apply color to text if colorama is available"""
