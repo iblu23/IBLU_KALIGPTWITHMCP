@@ -1732,6 +1732,15 @@ Provide step-by-step technical details while maintaining educational context and
                 
             except Exception as e:
                 print(f"❌ {provider.value.title()} Error: {str(e)}")
+                
+                # Check if API key is compromised (403 Forbidden with leaked key message)
+                if hasattr(e, 'response') and hasattr(e.response, 'status_code') and e.response.status_code == 403:
+                    response_text = getattr(e.response, 'text', '').lower()
+                    if 'leaked' in response_text or 'forbidden' in response_text:
+                        print(f"\n{self._colorize('🔑 API Key Compromised! Rotating...', Fore.RED)}")
+                        self.rotate_api_key(provider, api_key)
+                        continue
+                
                 continue
         
         # All providers failed
@@ -1778,6 +1787,52 @@ Provide step-by-step technical details while maintaining educational context and
             return combined
         else:
             return "❌ All providers failed or refused. Try enabling rephrasing mode."
+    
+    def rotate_api_key(self, provider: Provider, compromised_key: str):
+        """Rotate compromised API key and update config"""
+        try:
+            config_file = 'config.json'
+            
+            # Read current config
+            with open(config_file, 'r') as f:
+                config_data = json.load(f)
+            
+            # Remove compromised key from config
+            provider_key_map = {
+                Provider.GEMINI: 'gemini_keys',
+                Provider.PERPLEXITY: 'perplexity_keys',
+                Provider.OPENAI: 'openai_keys',
+                Provider.MISTRAL: 'mistral_keys',
+                Provider.LLAMA: 'llama_keys'
+            }
+            
+            key_field = provider_key_map.get(provider)
+            if key_field and key_field in config_data:
+                keys = config_data[key_field]
+                if isinstance(keys, list) and compromised_key in keys:
+                    keys.remove(compromised_key)
+                    config_data[key_field] = keys
+                    
+                    # Write updated config
+                    with open(config_file, 'w') as f:
+                        json.dump(config_data, f, indent=2)
+                    
+                    print(f"🗑️  Removed compromised {provider.value.title()} key from config")
+                    
+                    # Check if local models are available as fallback
+                    if provider == Provider.GEMINI and self.config.llama_keys:
+                        print(f"🏠 Falling back to local Llama model...")
+                        # Update provider priority to use local models first
+                        return True
+                    elif provider == Provider.PERPLEXITY and self.config.llama_keys:
+                        print(f"🏠 Falling back to local Llama model...")
+                        return True
+                    
+                    print(f"⚠️  No more {provider.value.title()} keys available")
+                    return True
+        except Exception as e:
+            print(f"❌ Error rotating API key: {e}")
+            return False
     
     def call_single_provider(self, provider: Provider, system_prompt: str, user_message: str, api_key: str) -> str:
         """Call a single AI provider with progress animation"""
