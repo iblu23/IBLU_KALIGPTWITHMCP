@@ -46,8 +46,8 @@ class APIConfig:
 
 class IBLUCommandHelper:
     """
-    🔥 Enhanced IBLU Command Helper 🔥
-    🚀 Simple command system with chat history and suggestions 🚀
+    🔥 Enhanced IBLU Command Helper with HexStrike Integration 🔥
+    🚀 150+ Security Tools Command System with Suggestions 🚀
     📋 Complete command completion and suggestion system 📋
     """
     
@@ -57,12 +57,81 @@ class IBLUCommandHelper:
         self.chat_history_file = "iblu_chat_history.json"
         self.user_input_history: List[str] = []
         self.conversation_history: List[Dict] = []
+        self.hexstrike_tools = self.get_hexstrike_tools()
         
         # Load existing chat history
         self.load_chat_history()
         
         # Setup readline for command history and tab completion
         self.setup_readline()
+    
+    def get_hexstrike_tools(self) -> Dict[str, Dict]:
+        """Get comprehensive HexStrike tools database"""
+        return {
+            # Reconnaissance Tools
+            "nmap": {"name": "Nmap", "desc": "Network discovery and security auditing", "category": "recon"},
+            "masscan": {"name": "Masscan", "desc": "Fast port scanner", "category": "recon"},
+            "zmap": {"name": "ZMap", "desc": "Internet-scale network scanner", "category": "recon"},
+            "dnsenum": {"name": "DNSenum", "desc": "DNS enumeration tool", "category": "recon"},
+            "dnsrecon": {"name": "DNSRecon", "desc": "DNS reconnaissance script", "category": "recon"},
+            "fierce": {"name": "Fierce", "desc": "DNS reconnaissance tool", "category": "recon"},
+            "recon-ng": {"name": "Recon-ng", "desc": "Web reconnaissance framework", "category": "recon"},
+            
+            # Web Application Testing
+            "nikto": {"name": "Nikto", "desc": "Web server scanner", "category": "web"},
+            "dirb": {"name": "Dirb", "desc": "Web content scanner", "category": "web"},
+            "gobuster": {"name": "Gobuster", "desc": "Directory/file & DNS busting tool", "category": "web"},
+            "ffuf": {"name": "FFuf", "desc": "Fast web fuzzer", "category": "web"},
+            "wfuzz": {"name": "Wfuzz", "desc": "Web application fuzzer", "category": "web"},
+            "sqlmap": {"name": "SQLMap", "desc": "SQL injection testing tool", "category": "web"},
+            "burpsuite": {"name": "Burp Suite", "desc": "Web application security testing", "category": "web"},
+            "wpscan": {"name": "WPScan", "desc": "WordPress security scanner", "category": "web"},
+            
+            # Password Cracking
+            "john": {"name": "John the Ripper", "desc": "Password cracker", "category": "auth"},
+            "hashcat": {"name": "Hashcat", "desc": "Advanced password recovery", "category": "auth"},
+            "hydra": {"name": "Hydra", "desc": "Online password cracking tool", "category": "auth"},
+            "medusa": {"name": "Medusa", "desc": "Parallel brute force tool", "category": "auth"},
+            "crunch": {"name": "Crunch", "desc": "Password wordlist generator", "category": "auth"},
+            
+            # Network Analysis
+            "wireshark": {"name": "Wireshark", "desc": "Network protocol analyzer", "category": "network"},
+            "tcpdump": {"name": "TCPdump", "desc": "Network traffic analyzer", "category": "network"},
+            "ettercap": {"name": "Ettercap", "desc": "Network sniffer/man-in-the-middle", "category": "network"},
+            "aircrack-ng": {"name": "Aircrack-ng", "desc": "Wireless security suite", "category": "network"},
+            "kismet": {"name": "Kismet", "desc": "Wireless network detector", "category": "network"},
+            "wifite": {"name": "Wifite", "desc": "Wireless attack tool", "category": "network"},
+            
+            # Vulnerability Scanning
+            "openvas": {"name": "OpenVAS", "desc": "Vulnerability scanner", "category": "vuln"},
+            "nuclei": {"name": "Nuclei", "desc": "Vulnerability scanner", "category": "vuln"},
+            "nessus": {"name": "Nessus", "desc": "Vulnerability scanner", "category": "vuln"},
+            
+            # Exploitation
+            "metasploit": {"name": "Metasploit Framework", "desc": "Penetration testing framework", "category": "exploit"},
+            "msfconsole": {"name": "MSFConsole", "desc": "Metasploit console", "category": "exploit"},
+            "msfvenom": {"name": "MSFvenom", "desc": "Payload generator", "category": "exploit"},
+            
+            # Post-Exploitation
+            "mimikatz": {"name": "Mimikatz", "desc": "Windows credential extractor", "category": "post"},
+            "pth-toolkit": {"name": "PTH Toolkit", "desc": "Pass-the-hash toolkit", "category": "post"},
+            
+            # Forensics
+            "autopsy": {"name": "Autopsy", "desc": "Digital forensics platform", "category": "forensics"},
+            "sleuthkit": {"name": "Sleuth Kit", "desc": "Forensics tool kit", "category": "forensics"},
+            "volatility": {"name": "Volatility", "desc": "Memory forensics framework", "category": "forensics"},
+            
+            # Social Engineering
+            "setoolkit": {"name": "Social Engineer Toolkit", "desc": "Social engineering framework", "category": "social"},
+            "phishing": {"name": "Phishing Kit", "desc": "Phishing campaign tools", "category": "social"},
+            
+            # Utilities
+            "netcat": {"name": "Netcat", "desc": "Network utility", "category": "util"},
+            "ncat": {"name": "Ncat", "desc": "Netcat alternative", "category": "util"},
+            "socat": {"name": "Socat", "desc": "Multipurpose relay", "category": "util"},
+            "hping3": {"name": "Hping3", "desc": "Network scanner", "category": "util"},
+            "netdiscover": {"name": "Netdiscover", "desc": "ARP-based scanner", "category": "util"}
+        }
     
     def setup_readline(self):
         """Setup readline for command history and tab completion"""
@@ -87,15 +156,23 @@ class IBLUCommandHelper:
             pass
     
     def tab_complete(self, text, state):
-        """Tab completion for commands"""
+        """Tab completion for commands including HexStrike tools"""
+        suggestions = []
+        
         if text.startswith('/'):
-            # Get command suggestions
-            suggestions = []
+            # Get basic command suggestions
             basic_commands = ['/help', '/exit', '/clear', '/status', '/scan', '/payload', 
                             '/autopentest', '/mcp_connect', '/mcp_disconnect', '/perplexity', 
-                            '/openai', '/gemini', '/mistral', '/history']
+                            '/openai', '/gemini', '/mistral', '/history', '/tools', '/install',
+                            '/hexstrike', '/pentest']
             
-            for cmd in basic_commands:
+            # Add HexStrike tool commands
+            hexstrike_commands = [f"/{tool}" for tool in self.hexstrike_tools.keys()]
+            
+            # Combine all commands
+            all_commands = basic_commands + hexstrike_commands
+            
+            for cmd in all_commands:
                 if cmd.startswith(text):
                     suggestions.append(cmd)
             
@@ -227,25 +304,51 @@ class IBLUCommandHelper:
         return suggestions[:max_suggestions]
     
     def show_command_help(self, command: str = None):
-        """Show help for commands"""
+        """Show help for commands including HexStrike tools"""
+        if command:
+            # Show help for specific command
+            if command.startswith('/'):
+                cmd = command[1:]
+                if cmd in self.hexstrike_tools:
+                    tool = self.hexstrike_tools[cmd]
+                    print(f"\n🔧 {tool['name']} ({cmd})")
+                    print(f"📋 Description: {tool['desc']}")
+                    print(f"🏷️  Category: {tool['category']}")
+                    print(f"💡 Usage: /{cmd} [options]")
+                    print(f"🔧 Install: sudo apt install {cmd}")
+                    return
+                elif cmd == "tools":
+                    self.show_tools_list()
+                    return
+                elif cmd == "hexstrike":
+                    self.show_hexstrike_commands()
+                    return
+            
+        # Show general help with all commands
         help_text = f"""
 {self._colorize('🔥 IBLU PROFESSIONAL HACKING ASSISTANT - COMMANDS 🔥', Fore.YELLOW)}
-{self._colorize('=' * 50, Fore.CYAN)}
+{self._colorize('=' * 60, Fore.CYAN)}
 
 {self._colorize('📋 BASIC COMMANDS:', Fore.GREEN)}
   help              - Show this help message
   exit              - Exit the assistant
   clear             - Clear screen
   status            - Show system status
+  history           - Show chat history
 
 {self._colorize('🔍 SECURITY COMMANDS:', Fore.BLUE)}
   scan <target>     - Perform security scan
   payload <type>    - Generate payload
   autopentest <target> - Run automated penetration test
+  pentest <target>  - Quick penetration test
+  hexstrike         - Show HexStrike tools overview
+  tools             - List all available tools
+  install <tool>   - Install a specific tool
 
 {self._colorize('🔗 MCP COMMANDS:', Fore.MAGENTA)}
-  mcp_connect       - Connect to MCP server
-  mcp_disconnect    - Disconnect from MCP server
+  mcp_connect       - Connect to HexStrike MCP server
+  mcp_disconnect    - Disconnect from HexStrike MCP server
+  mcp_status        - Check MCP server status
 
 {self._colorize('🤖 AI PROVIDERS:', Fore.CYAN)}
   perplexity        - Switch to Perplexity AI
@@ -253,11 +356,105 @@ class IBLUCommandHelper:
   gemini            - Switch to Gemini
   mistral           - Switch to Mistral
 
-{self._colorize('💡 USAGE:', Fore.YELLOW)}
-  Just type your command or ask a cybersecurity question!
-  Example: "How do I perform a port scan?"
+{self._colorize('�️ HEXSTRIKE TOOLS (50+ available):', Fore.RED)}
+  /nmap            - Network discovery and security auditing
+  /metasploit      - Penetration testing framework
+  /burpsuite       - Web application security testing
+  /sqlmap          - SQL injection testing tool
+  /nikto           - Web server scanner
+  /hydra           - Online password cracking tool
+  /john            - Password cracker
+  /hashcat         - Advanced password recovery
+  /wireshark       - Network protocol analyzer
+  /aircrack-ng     - Wireless security suite
+  /autopsy         - Digital forensics platform
+  /volatility      - Memory forensics framework
+  /setoolkit       - Social engineering framework
+  [50+ more tools - use Tab completion to explore]
+
+{self._colorize('�💡 USAGE TIPS:', Fore.YELLOW)}
+  • Type '/' and press Tab to see all commands
+  • Use Tab completion for tool names
+  • Chat history persists between sessions
+  • Assistant learns from your input patterns
         """
         print(help_text)
+    
+    def show_tools_list(self):
+        """Show categorized list of HexStrike tools"""
+        categories = {}
+        for tool, info in self.hexstrike_tools.items():
+            cat = info['category']
+            if cat not in categories:
+                categories[cat] = []
+            categories[cat].append((tool, info['name'], info['desc']))
+        
+        print(f"\n{self._colorize('🛡️ HEXSTRIKE SECURITY TOOLS DATABASE', Fore.RED)}")
+        print("=" * 60)
+        
+        category_colors = {
+            'recon': Fore.BLUE,
+            'web': Fore.GREEN,
+            'auth': Fore.YELLOW,
+            'network': Fore.CYAN,
+            'vuln': Fore.MAGENTA,
+            'exploit': Fore.RED,
+            'post': Fore.WHITE,
+            'forensics': Fore.BLUE,
+            'social': Fore.YELLOW,
+            'util': Fore.GREEN
+        }
+        
+        for category, tools in sorted(categories.items()):
+            color = category_colors.get(category, Fore.WHITE)
+            print(f"\n{color}📂 {category.upper()} TOOLS:{Style.RESET_ALL}")
+            for tool, name, desc in sorted(tools):
+                print(f"  • {color}/{tool}{Style.RESET_ALL} - {name}")
+                print(f"    {desc}")
+        
+        print(f"\n{Fore.CYAN}📊 Total Tools: {len(self.hexstrike_tools)}{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}💡 Use Tab completion after '/' to explore!{Style.RESET_ALL}")
+    
+    def show_hexstrike_commands(self):
+        """Show HexStrike command overview"""
+        print(f"\n{self._colorize('🔥 HEXSTRIKE PROFESSIONAL SECURITY TOOLS 🔥', Fore.RED)}")
+        print("=" * 60)
+        
+        print(f"\n{Fore.BLUE}🔍 RECONNAISSANCE TOOLS:{Style.RESET_ALL}")
+        recon_tools = [t for t, info in self.hexstrike_tools.items() if info['category'] == 'recon']
+        for tool in sorted(recon_tools[:5]):
+            print(f"  /{tool} - {self.hexstrike_tools[tool]['name']}")
+        print(f"  ... (+{len(recon_tools)-5} more)")
+        
+        print(f"\n{Fore.GREEN}🌐 WEB APPLICATION TESTING:{Style.RESET_ALL}")
+        web_tools = [t for t, info in self.hexstrike_tools.items() if info['category'] == 'web']
+        for tool in sorted(web_tools[:5]):
+            print(f"  /{tool} - {self.hexstrike_tools[tool]['name']}")
+        print(f"  ... (+{len(web_tools)-5} more)")
+        
+        print(f"\n{Fore.YELLOW}🔐 PASSWORD CRACKING:{Style.RESET_ALL}")
+        auth_tools = [t for t, info in self.hexstrike_tools.items() if info['category'] == 'auth']
+        for tool in sorted(auth_tools):
+            print(f"  /{tool} - {self.hexstrike_tools[tool]['name']}")
+        
+        print(f"\n{Fore.CYAN}📡 NETWORK ANALYSIS:{Style.RESET_ALL}")
+        network_tools = [t for t, info in self.hexstrike_tools.items() if info['category'] == 'network']
+        for tool in sorted(network_tools[:5]):
+            print(f"  /{tool} - {self.hexstrike_tools[tool]['name']}")
+        print(f"  ... (+{len(network_tools)-5} more)")
+        
+        print(f"\n{Fore.RED}💣 EXPLOITATION FRAMEWORKS:{Style.RESET_ALL}")
+        exploit_tools = [t for t, info in self.hexstrike_tools.items() if info['category'] == 'exploit']
+        for tool in sorted(exploit_tools):
+            print(f"  /{tool} - {self.hexstrike_tools[tool]['name']}")
+        
+        print(f"\n{Fore.MAGENTA}🔧 QUICK COMMANDS:{Style.RESET_ALL}")
+        print("  /install <tool>    - Install a specific tool")
+        print("  /scan <target>     - Quick nmap scan")
+        print("  /pentest <target> - Automated pentest")
+        print("  /mcp_status        - Check HexStrike MCP server")
+        
+        print(f"\n{Fore.GREEN}💡 Type '/' and Tab to explore all {len(self.hexstrike_tools)} tools!{Style.RESET_ALL}")
     
     def add_to_history(self, command: str):
         """Add command to history"""
@@ -367,9 +564,10 @@ You are integrated with advanced security testing capabilities through MCP integ
             return f"❌ Command {number} not found. Available: 1-10"
     
     def handle_traditional_command(self, command: str) -> str:
-        """Handle traditional commands"""
+        """Handle traditional commands including HexStrike tools"""
         cmd = command[1:]  # Remove '/'
         
+        # Basic commands
         if cmd == "help":
             self.command_helper.show_command_help()
             return ""
@@ -386,10 +584,23 @@ You are integrated with advanced security testing capabilities through MCP integ
             return "💣 Usage: payload <type> - Generate security payload"
         elif cmd == "autopentest":
             return "🚀 Usage: autopentest <target> - Run automated penetration test"
+        elif cmd == "pentest":
+            return "🎯 Usage: pentest <target> - Quick penetration test"
+        elif cmd == "history":
+            self.command_helper.show_chat_history()
+            return ""
+        elif cmd == "tools":
+            self.command_helper.show_tools_list()
+            return ""
+        elif cmd == "hexstrike":
+            self.command_helper.show_hexstrike_commands()
+            return ""
         elif cmd == "mcp_connect":
             return self.connect_mcp()
         elif cmd == "mcp_disconnect":
             return self.disconnect_mcp()
+        elif cmd == "mcp_status":
+            return self.check_mcp_status()
         elif cmd == "perplexity":
             return "🤖 Switched to Perplexity AI provider"
         elif cmd == "openai":
@@ -398,9 +609,11 @@ You are integrated with advanced security testing capabilities through MCP integ
             return "🤖 Switched to Gemini provider"
         elif cmd == "mistral":
             return "🤖 Switched to Mistral provider"
-        elif cmd == "history":
-            self.command_helper.show_chat_history()
-            return ""
+        elif cmd.startswith("install "):
+            tool_name = cmd[8:]  # Remove "install "
+            return self.install_tool(tool_name)
+        elif cmd in self.command_helper.hexstrike_tools:
+            return self.handle_hexstrike_tool(cmd)
         else:
             # Show command suggestions for unknown commands
             suggestions = self.command_helper.get_suggestions(cmd, 5)
@@ -408,6 +621,72 @@ You are integrated with advanced security testing capabilities through MCP integ
                 return f"❌ Unknown command: /{cmd}\n💡 Did you mean: {', '.join([f'/{s}' for s in suggestions[:3]])}"
             else:
                 return f"❌ Unknown command: {command}"
+    
+    def handle_hexstrike_tool(self, tool_name: str) -> str:
+        """Handle HexStrike tool commands"""
+        tool_info = self.command_helper.hexstrike_tools.get(tool_name)
+        if not tool_info:
+            return f"❌ Unknown tool: {tool_name}"
+        
+        response = f"\n🔧 {tool_info['name']} ({tool_info['category']})\n"
+        response += f"📋 Description: {tool_info['desc']}\n"
+        response += f"💡 Usage: {tool_name} [options]\n"
+        response += f"🔧 Install: sudo apt install {tool_name}\n"
+        response += f"📊 Status: {'✅ Installed' if self.check_tool_installed(tool_name) else '❌ Not installed'}\n"
+        
+        # If tool is installed, show basic usage
+        if self.check_tool_installed(tool_name):
+            response += f"\n🚀 Quick Examples:\n"
+            if tool_name == "nmap":
+                response += f"  nmap -sS target.com\n"
+                response += f"  nmap -p- 1-65535 target.com\n"
+                response += f"  nmap -A target.com"
+            elif tool_name == "nikto":
+                response += f"  nikto -h target.com\n"
+                response += f"  nikto -h target.com -p 8080"
+            elif tool_name == "sqlmap":
+                response += f"  sqlmap -u 'http://target.com'\n"
+                response += f"  sqlmap -u 'http://target.com' --dbs"
+            elif tool_name == "hydra":
+                response += f"  hydra -l admin -P passwords.txt target.com ssh\n"
+                response += f"  hydra -L users.txt -P passwords.txt target.com ftp"
+            else:
+                response += f"  {tool_name} --help"
+        
+        return response
+    
+    def check_tool_installed(self, tool_name: str) -> bool:
+        """Check if a tool is installed"""
+        try:
+            result = subprocess.run(['which', tool_name], 
+                                  capture_output=True, text=True)
+            return result.returncode == 0
+        except Exception:
+            return False
+    
+    def install_tool(self, tool_name: str) -> str:
+        """Install a HexStrike tool"""
+        if tool_name in self.command_helper.hexstrike_tools:
+            tool_info = self.command_helper.hexstrike_tools[tool_name]
+            return f"📦 Installing {tool_info['name']}...\n🔧 Run: sudo apt install {tool_name}\n⚠️  This requires root privileges."
+        else:
+            return f"❌ Unknown tool: {tool_name}\n💡 Use '/tools' to see available tools."
+    
+    def check_mcp_status(self) -> str:
+        """Check HexStrike MCP server status"""
+        status = f"🔗 HexStrike MCP Server Status:\n"
+        status += f"📊 Connection: {'✅ Connected' if self.mcp_connected else '❌ Disconnected'}\n"
+        status += f"🛠️  Available Tools: {len(self.command_helper.hexstrike_tools)}\n"
+        status += f"📁 Installation Script: install_hexstrike_tools.sh\n"
+        status += f"🚀 MCP Server: hexstrike_mcp_server.py\n"
+        
+        if self.mcp_connected:
+            status += f"\n✅ MCP server is running and ready to serve HexStrike tools!"
+        else:
+            status += f"\n❌ MCP server is not running.\n"
+            status += f"💡 Start it with: python3 hexstrike_mcp_server.py"
+        
+        return status
     
     def handle_chat_message(self, message: str) -> str:
         """Handle regular chat messages"""
@@ -550,6 +829,7 @@ def main():
     print("✅ Chat History: Persistent storage")
     print("✅ Word Suggestions: Intelligent learning")
     print("✅ Tab Completion: Available")
+    print(f"✅ HexStrike Tools: {len(assistant.command_helper.hexstrike_tools)} security tools")
     print()
     print("🎯 Enhanced Features:")
     print("  • 💬 Persistent chat history with timestamps")
@@ -557,9 +837,21 @@ def main():
     print("  • 🔧 Tab completion for '/' commands")
     print("  • 📜 Command history with arrow keys")
     print("  • 🚀 Enhanced UI with professional banner")
+    print("  • 🛡️ 50+ HexStrike security tools integration")
     print()
-    print("💡 Type '/' and press Tab for command suggestions!")
-    print("💡 Type '/history' to see your chat history!")
+    print("🔥 HexStrike Security Tools Available:")
+    print("  • 🔍 Reconnaissance: nmap, masscan, dnsenum, recon-ng")
+    print("  • 🌐 Web Testing: nikto, sqlmap, burpsuite, gobuster")
+    print("  • � Password Cracking: john, hashcat, hydra, medusa")
+    print("  • 📡 Network Analysis: wireshark, tcpdump, aircrack-ng")
+    print("  • 💣 Exploitation: metasploit, msfconsole, msfvenom")
+    print("  • 🔬 Forensics: autopsy, volatility, sleuthkit")
+    print("  • 🎭 Social Engineering: setoolkit, phishing")
+    print()
+    print("�💡 Type '/' and press Tab for command suggestions!")
+    print("💡 Type '/tools' to see all HexStrike tools!")
+    print("💡 Type '/hexstrike' for tools overview!")
+    print("💡 Type '/install <tool>' to install tools!")
     print("🔥 Assistant ready! Let's start hacking... ethically! 🔥")
     print()
     

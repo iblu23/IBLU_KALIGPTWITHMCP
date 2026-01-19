@@ -1,60 +1,116 @@
-# 🔥 IBLU Professional Hacking Assistant v2.3 🔥
+# 🔥 IBLU Professional Hacking Assistant with HexStrike Integration 🔥
 
-## 🚀 **Simple Setup - One Command Launch!**
+## 🚀 **Professional Cybersecurity Platform with 50+ Security Tools**
 
 ### **Quick Start:**
 ```bash
-# Clone and run
+# Clone and setup
 git clone https://github.com/iblu23/IBLU_KALIGPTWITHMCP
 cd IBLU_KALIGPTWITHMCP
-./launch_iblu.sh
+chmod +x install_hexstrike_tools.sh
+sudo ./install_hexstrike_tools.sh  # Install HexStrike tools
+python3 iblu_assistant.py
 ```
 
 That's it! 🎉
 
-## ✨ **Features:**
+## ✨ **Enhanced Features:**
 
 ### 🎨 **Professional ASCII Banner**
 - Custom skull and crossbones design
 - Complete platform overview
 - Professional cybersecurity theme
 
-### 💡 **Simple Command System**
-- **10 core commands** (1-10)
-- **Basic command structure**
-- **No complex dependencies**
+### 💡 **Intelligent Command System**
+- **50+ HexStrike security tools** integrated
+- **Tab completion** for all commands
+- **Intelligent suggestions** based on previous input
+- **Command history** with arrow key navigation
 
-### 🔗 **MCP Integration**
-- Connect to HexStrike MCP server
-- 150+ security tools integration
-- Automated vulnerability scanning
+### 💬 **Advanced Chat Features**
+- **Persistent chat history** with timestamps
+- **Smart word suggestions** that learn from you
+- **Conversation persistence** across sessions
+- **Context-aware responses**
 
-### 🛡️ **Core Security Commands**
-- Network reconnaissance
-- Vulnerability scanning  
-- Payload generation
-- Post-exploitation tools
+### 🔗 **HexStrike MCP Integration**
+- **50+ professional security tools**
+- **Automated tool installation**
+- **Real-time tool status checking**
+- **MCP server connectivity**
+
+## 🛡️ **HexStrike Security Tools (50+ Available)**
+
+### 🔍 **Reconnaissance Tools:**
+- `nmap` - Network discovery and security auditing
+- `masscan` - Fast port scanner
+- `zmap` - Internet-scale network scanner
+- `dnsenum` - DNS enumeration tool
+- `dnsrecon` - DNS reconnaissance script
+- `fierce` - DNS reconnaissance tool
+- `recon-ng` - Web reconnaissance framework
+
+### 🌐 **Web Application Testing:**
+- `nikto` - Web server scanner
+- `sqlmap` - SQL injection testing tool
+- `burpsuite` - Web application security testing
+- `gobuster` - Directory/file & DNS busting tool
+- `ffuf` - Fast web fuzzer
+- `wfuzz` - Web application fuzzer
+- `wpscan` - WordPress security scanner
+
+### 🔐 **Password Cracking:**
+- `john` - John the Ripper password cracker
+- `hashcat` - Advanced password recovery
+- `hydra` - Online password cracking tool
+- `medusa` - Parallel brute force tool
+- `crunch` - Password wordlist generator
+
+### 📡 **Network Analysis:**
+- `wireshark` - Network protocol analyzer
+- `tcpdump` - Network traffic analyzer
+- `ettercap` - Network sniffer/man-in-the-middle
+- `aircrack-ng` - Wireless security suite
+- `kismet` - Wireless network detector
+- `wifite` - Wireless attack tool
+
+### 💣 **Exploitation Frameworks:**
+- `metasploit` - Penetration testing framework
+- `msfconsole` - Metasploit console
+- `msfvenom` - Payload generator
+
+### 🔬 **Forensics Tools:**
+- `autopsy` - Digital forensics platform
+- `sleuthkit` - Forensics tool kit
+- `volatility` - Memory forensics framework
+
+### 🎭 **Social Engineering:**
+- `setoolkit` - Social engineering framework
+- `phishing` - Phishing campaign tools
 
 ## 📋 **Available Commands:**
 
-### **Numbered Commands (1-10):**
-- `1` - Show help
-- `2` - System status
-- `3` - Security scan
-- `4` - Generate payload
-- `5` - Connect MCP
-- `6` - Disconnect MCP
-- `7` - Clear screen
-- `8` - Show history
-- `9` - Auto pentest
-- `10` - Exit
+### **Basic Commands:**
+- `/help` - Show comprehensive help
+- `/exit` - Exit the assistant
+- `/clear` - Clear screen
+- `/status` - Show system status
+- `/history` - Show chat history
 
-### **Traditional Commands:**
-- `/help` - Show all commands
+### **HexStrike Commands:**
+- `/tools` - List all 50+ security tools
+- `/hexstrike` - Show tools overview
+- `/install <tool>` - Install a specific tool
+- `/mcp_status` - Check MCP server status
+- `/<tool_name>` - Get tool info and usage
+
+### **Security Commands:**
 - `/scan <target>` - Security scan
 - `/payload <type>` - Generate payload
-- `/mcp_connect` - Connect to HexStrike
-- `/mcp_disconnect` - Disconnect from MCP
+- `/pentest <target>` - Automated pentest
+- `/autopentest <target>` - Full pentest workflow
+
+### **AI Provider Commands:**
 - `/perplexity` - Switch to Perplexity AI
 - `/openai` - Switch to OpenAI
 - `/gemini` - Switch to Gemini
@@ -64,28 +120,44 @@ That's it! 🎉
 
 ```bash
 # Start the assistant
-./launch_iblu.sh
+python3 iblu_assistant.py
 
-# Try commands
+# Try Tab completion
+🤖 IBLU> /n<TAB>        # Shows nmap, nikto, etc.
+🤖 IBLU> /help          # Comprehensive help
+🤖 IBLU> /tools         # All 50+ tools
+🤖 IBLU> /nmap         # Nmap tool info
+🤖 IBLU> /install nmap # Install nmap
+🤖 IBLU> /mcp_status   # MCP server status
+
+# Chat with AI
+🤖 IBLU> How do I perform a port scan?
+🤖 IBLU> What is SQL injection?
+🤖 IBLU> Explain Metasploit framework
+
+# Use numbered commands
 🤖 IBLU> 1              # Show help
-🤖 IBLU> /scan target  # Security scan
-🤖 IBLU> /payload reverse_shell  # Generate payload
-🤖 IBLU> How do I perform a port scan?  # Chat with AI
+🤖 IBLU> 3              # Quick scan
+🤖 IBLU> 4              # Generate payload
 ```
 
 ## 📁 **Core Files:**
 
-- `iblu_assistant.py` - Main simplified assistant
-- `launch_iblu.sh` - One-command launcher
+- `iblu_assistant.py` - Main enhanced assistant
+- `hexstrike_mcp_server.py` - MCP server integration
+- `install_hexstrike_tools.sh` - Tools installer
 - `requirements.txt` - Minimal dependencies
-- `config.json.example` - API configuration template
-- `mcp_server.py` - MCP server integration
+- `config.json.example` - Configuration template
 
-## 🔧 **Setup:**
+## 🔧 **Installation:**
 
 ### **Automatic (Recommended):**
 ```bash
-./launch_iblu.sh
+# Install all HexStrike tools
+sudo ./install_hexstrike_tools.sh
+
+# Run the assistant
+python3 iblu_assistant.py
 ```
 
 ### **Manual:**
@@ -103,22 +175,24 @@ python3 iblu_assistant.py
 ## 🎨 **UI Features:**
 
 - **Professional ASCII banner** with full feature overview
-- **Simple command system** with numbered and traditional commands
-- **Clean interface** with professional IBLU branding
-- **MCP integration** for advanced security tools
+- **Tab completion** for all 50+ HexStrike tools
+- **Intelligent suggestions** that learn from your typing
+- **Command history** with arrow key navigation
+- **Persistent chat** across sessions
+- **Colorized output** with professional appearance
 
 ## 🔗 **Integration:**
 
-- **HexStrike MCP** - 150+ security tools
+- **HexStrike MCP** - 50+ security tools
 - **Multiple AI providers** - OpenAI, Gemini, Perplexity, Mistral
-- **Basic command helper** - 10 professional commands
-- **MCP server** - Automated security workflows
+- **Tool installation** - Automated setup script
+- **MCP server** - Real-time tool management
 
 ## ⚡ **Performance:**
 
-- **Fast startup** - < 2 seconds
-- **Low memory** - ~50MB usage
-- **Minimal dependencies** - Only required packages
+- **Fast startup** - < 3 seconds
+- **Low memory** - ~60MB usage
+- **Minimal dependencies** - Only 2 required packages
 - **Cross-platform** - Linux, macOS, Windows
 
 ## 🔒 **Security:**
@@ -127,10 +201,34 @@ python3 iblu_assistant.py
 - **No data tracking** - All processing local
 - **Configurable API keys** - You control access
 - **Secure MCP connections** - Encrypted communication
+- **Ethical hacking** - Professional security testing only
+
+## 🚀 **Advanced Features:**
+
+### **Tab Completion:**
+- Type `/` and press Tab to see all commands
+- Intelligent filtering as you type
+- 50+ HexStrike tools included
+
+### **Smart Suggestions:**
+- Learns from your previous input
+- Context-aware recommendations
+- Conversation history integration
+
+### **Chat History:**
+- Persistent storage between sessions
+- Timestamped messages
+- Searchable conversation log
+
+### **Tool Management:**
+- Real-time installation status
+- Usage examples for each tool
+- Category-based organization
 
 ---
 
-🔥 **IBLU Professional Hacking Assistant v2.3 - Simplified Version**  
-🚀 *Clean, Professional, Self-Contained*  
+🔥 **IBLU Professional Hacking Assistant with HexStrike Integration**  
+🚀 *50+ Security Tools • Intelligent Suggestions • Professional Interface*  
 
-💡 **Type '1' for help or start chatting with the AI!**
+💡 **Type '/' and Tab to explore all 50+ security tools!**  
+🛡️ **Professional cybersecurity testing platform for authorized use only**
