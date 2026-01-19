@@ -3,7 +3,7 @@
 🔥 IBLU PROFESSIONAL HACKING ASSISTANT v2.3 🔥
 🚀 Advanced Cybersecurity Automation Platform 🚀
 🧠 Intelligent AI Assistant with MCP Integration 🧠
-🔗 150+ Automated Security Scans & Workflows 🔗
+🔗 50+ Automated Security Scans & Workflows 🔗
 """
 
 import os
@@ -1236,7 +1236,7 @@ You are integrated with HexStrike MCP providing 50+ professional security testin
             combined_message = f"{system_prompt}\n\nUser Query: {user_message}"
             
             payload = {
-                "model": "llama-3.1-sonar-small-128k-online",
+                "model": "sonar-pro",
                 "messages": [
                     {"role": "user", "content": combined_message}
                 ],
@@ -1296,7 +1296,7 @@ You are integrated with HexStrike MCP providing 50+ professional security testin
         try:
             import requests
             
-            url = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={api_key}"
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key={api_key}"
             headers = {
                 "Content-Type": "application/json"
             }
