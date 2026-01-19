@@ -25,7 +25,7 @@ import requests
 
 # Import colorama for terminal colors
 try:
-    from colorama import Fore, Style, init
+    from colorama import Fore, Style, Back, init
     init(autoreset=True)
     COLORAMA_AVAILABLE = True
 except ImportError:
