@@ -1087,7 +1087,14 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
             print(f"{Fore.RED}│{Style.RESET_ALL}  {Style.BRIGHT}{Fore.YELLOW}🚪 EXIT{Style.RESET_ALL} - Close the assistant                                      {Fore.RED}│{Style.RESET_ALL}")
             print(f"{Fore.RED}└───────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
             
-            print(f"{Style.BRIGHT}{Fore.YELLOW}💡 TIP:{Style.RESET_ALL} Type a number (1-5) or just start chatting with your question!\n")
+            # Menu option 6
+            print(f"{Fore.BLUE}┌─ {Style.BRIGHT}{Fore.YELLOW}[6]{Style.RESET_ALL}{Fore.BLUE} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
+            print(f"{Fore.BLUE}│{Style.RESET_ALL}  {Style.BRIGHT}{Fore.YELLOW}📋 LIST MODELS{Style.RESET_ALL} - Show available AI models                    {Fore.BLUE}│{Style.RESET_ALL}")
+            print(f"{Fore.BLUE}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} Display all configured and local models               {Fore.BLUE}│{Style.RESET_ALL}")
+            print(f"{Fore.BLUE}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} Show model status and capabilities                      {Fore.BLUE}│{Style.RESET_ALL}")
+            print(f"{Fore.BLUE}└───────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
+            
+            print(f"{Style.BRIGHT}{Fore.YELLOW}💡 TIP:{Style.RESET_ALL} Type a number (1-6) or just start chatting with your question!\n")
         else:
             # Fallback for no color support - simple menu options
             print(f"\n{'='*60}")
@@ -1109,8 +1116,9 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
             print(f"    • API keys, rephrasing mode\n")
             
             print(f"[5] 🚪 EXIT\n")
+            print(f"[6] 📋 LIST MODELS - Show available AI models\n")
             print(f"{'='*60}")
-            print(f"Type a number (1-5) or start chatting!\n")
+            print(f"Type a number (1-6) or start chatting!\n")
             print(f"{'='*60}\n")
     
     def handle_menu_choice(self, choice: str) -> str:
@@ -1127,8 +1135,10 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
             return self.handle_configuration()
         elif choice in ['5', 'exit', 'quit']:
             return "👋 Goodbye! Stay secure!"
+        elif choice in ['6', 'models', 'list']:
+            return self.list_available_models()
         else:
-            return f"❌ Invalid choice: {choice}\n💡 Please choose 1-5 or type 'menu'"
+            return f"❌ Invalid choice: {choice}\n💡 Please choose 1-6 or type 'menu'"
     
     def handle_hacking_toys(self):
         """Handle Hacking Toys menu - install tools with descriptions"""
@@ -1169,6 +1179,145 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
             return ""
         else:
             return "❌ Invalid choice!"
+    
+    def list_available_models(self) -> str:
+        """List all available AI models (both cloud and local)"""
+        print(f"\n{self._colorize('🤖 Available AI Models', Fore.CYAN)}")
+        print("=" * 60)
+        
+        # Check cloud providers
+        cloud_models = []
+        for provider in [Provider.OPENAI, Provider.GEMINI, Provider.MISTRAL]:
+            provider_keys = self.get_provider_keys(provider)
+            if provider_keys:
+                cloud_models.append((provider, provider_keys[0]))
+        
+        # Check local models
+        local_models = []
+        try:
+            url = "http://localhost:11434/api/tags"
+            response = requests.get(url, timeout=5)
+            if response.status_code == 200:
+                models_data = response.json()
+                for model in models_data.get('models', []):
+                    model_name = model.get('name', '')
+                    if 'llama' in model_name.lower():
+                        local_models.append((Provider.LLAMA, model_name, model.get('size', 0)))
+        except:
+            pass
+        
+        print(f"\n{self._colorize('📊 Model Status Overview:', Fore.GREEN)}")
+        print("-" * 40)
+        
+        total_models = len(cloud_models) + len(local_models)
+        
+        if total_models == 0:
+            print(f"\n❌ No models configured!")
+            print(f"💡 Configure API keys for cloud models or install local models")
+            print(f"   • /config - Configure API keys")
+            print(f"   • /install_llama - Install local Llama models")
+            return "❌ No models available"
+        
+        # Display cloud models
+        if cloud_models:
+            print(f"\n{self._colorize('☁️ Cloud Models:', Fore.BLUE)}")
+            for i, (provider, api_key) in enumerate(cloud_models, 1):
+                status = "✅ Configured" if api_key else "❌ Not configured"
+                print(f"  {i}. {provider.value.title()} - {status}")
+        
+        # Display local models
+        if local_models:
+            print(f"\n{self._colorize('🏠 Local Models:', Fore.GREEN)}")
+            for i, (provider, model_name, model_size) in enumerate(local_models, 1):
+                size_str = f"({model_size/1024:.1f}GB)" if model_size > 0 else "(Unknown size)"
+                status = "✅ Available" if model_name else "❌ Not available"
+                print(f"  {i}. {model_name} - {status} {size_str}")
+        
+        # Display model capabilities
+        print(f"\n{self._colorize('🔧 Model Capabilities:', Fore.YELLOW)}")
+        print("-" * 40)
+        
+        capabilities = {
+            Provider.OPENAI: "Advanced reasoning, code generation, analysis",
+            Provider.GEMINI: "Multimodal, creative tasks, large context window",
+            Provider.MISTRAL: "Fast responses, code generation, analysis",
+            Provider.LLAMA: "Privacy-focused, local processing, cybersecurity"
+        }
+        
+        for provider in [Provider.OPENAI, Provider.GEMINI, Provider.MISTRAL, Provider.LLAMA]:
+            if provider in [p[0] for p in cloud_models] or provider == Provider.LLAMA and local_models:
+                capability = capabilities.get(provider, "Unknown")
+                status = "✅" if (provider in [p[0] for p in cloud_models]) or (provider == Provider.LLAMA and local_models) else "❌"
+                print(f"  • {provider.value.title()} - {capability} {status}")
+        
+        # Show collaborative status
+        print(f"\n{self._colorize('🤝 Collaborative Status:', Fore.MAGENTA)}")
+        print("-" * 40)
+        
+        if total_models >= 2:
+            print(f"✅ Collaborative mode: ACTIVE")
+            print(f"   • Models will work together for comprehensive responses")
+            print(f"   • Parallel processing for faster answers")
+            print(f"   • Cross-model insight synthesis enabled")
+        else:
+            print(f"❌ Collaborative mode: INACTIVE")
+            print(f"   • Need 2+ models for collaborative mode")
+            print(f"   • Single model mode will be used")
+        
+        # Show usage tips
+        print(f"\n{self._colorize('💡 Usage Tips:', Fore.CYAN)}")
+        print(f"  • Chat normally - collaborative mode activates automatically")
+        print(f"  • /collaborative - Check collaborative status")
+        print(f"  • /stack_models - Manual model stacking")
+        print(f"  • /model_chat - Enable model communication")
+        
+        return f"\n✅ Total models available: {total_models}"
+    
+    def handle_iblu_kaligpt(self):
+        """Handle IBLU KALIGPT main menu option"""
+        print(f"\n{self._colorize('🧠 IBLU KALIGPT - Multi-AI Assistant', Fore.CYAN)}")
+        print("=" * 50)
+        
+        print(f"\n{self._colorize('🤖 Available AI Providers:', Fore.GREEN)}")
+        
+        # Check available providers
+        available_providers = []
+        for provider in [Provider.OPENAI, Provider.GEMINI, Provider.MISTRAL]:
+            provider_keys = self.get_provider_keys(provider)
+            if provider_keys:
+                available_providers.append((provider, provider_keys[0]))
+        
+        # Check local Llama
+        try:
+            url = "http://localhost:11434/api/tags"
+            response = requests.get(url, timeout=5)
+            if response.status_code == 200:
+                available_providers.append((Provider.LLAMA, "local"))
+        except:
+            pass
+        
+        if available_providers:
+            print(f"✅ {len(available_providers)} providers configured:")
+            for provider, _ in available_providers:
+                print(f"  • {provider.value.title()}")
+            
+            if len(available_providers) >= 2:
+                print(f"\n{self._colorize('🤝 Collaborative Mode: ACTIVE', Fore.MAGENTA)}")
+                print(f"• All models will work together for comprehensive responses")
+                print(f"• Parallel processing for faster answers")
+            else:
+                print(f"\n{self._colorize('🔄 Single Model Mode', Fore.YELLOW)}")
+                print(f"• Configure more providers for collaborative mode")
+        else:
+            print(f"❌ No providers configured")
+            print(f"💡 Use /config to set up API keys")
+        
+        print(f"\n{self._colorize('💡 Usage:', Fore.CYAN)}")
+        print(f"• Type your questions directly")
+        print(f"• Use /help to see all commands")
+        print(f"• Use /config to manage providers")
+        
+        return ""
     
     def handle_tool_management(self):
         """Handle Tool Management menu"""
