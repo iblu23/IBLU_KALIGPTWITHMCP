@@ -2192,6 +2192,9 @@ Provide step-by-step technical details while maintaining educational context and
                 return "✅ Gemini model installed locally!"
             else:
                 return f"❌ Failed to pull Gemini image: {pull_cmd.stderr}"
+        
+        except Exception as e:
+            return f"❌ Installation error: {e}"
     
     def show_loading_animation(self, message: str):
         """Show a loading animation with spinner"""
