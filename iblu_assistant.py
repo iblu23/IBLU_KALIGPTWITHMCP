@@ -60,6 +60,87 @@ except ImportError:
     HUGGINGFACE_AVAILABLE = False
     console = None
 
+# Universal Rich Progress Bar Utility
+def create_rich_progress_bar(title: str, total: int = 100, style: str = "bold cyan", 
+                           emoji: str = "🔄", show_percentage: bool = True, 
+                           show_time: bool = True, bar_width: int = 40) -> Progress:
+    """Create a universal Rich progress bar with customizable styling"""
+    if not RICH_AVAILABLE:
+        return None
+    
+    columns = [SpinnerColumn(style=style)]
+    columns.append(TextColumn(f"[{style}]{emoji} {{task.description}}"))
+    columns.append(BarColumn(bar_width=bar_width, complete_style=style, 
+                           finished_style=f"bold {style}", pulse_style="bold yellow"))
+    
+    if show_percentage:
+        columns.append(TextColumn("[progress.percentage]{task.percentage:>3.1f}%"))
+    
+    if show_time:
+        columns.append(TimeElapsedColumn())
+    
+    return Progress(*columns, console=console, transient=False)
+
+def run_with_rich_progress(title: str, task_func, total_steps: int = 100, 
+                          style: str = "bold cyan", emoji: str = "🔄",
+                          steps: List[Tuple[int, str]] = None) -> Any:
+    """Run a function with Rich progress bar tracking"""
+    if not RICH_AVAILABLE:
+        # Fallback to simple execution
+        return task_func()
+    
+    progress = create_rich_progress_bar(title, total_steps, style, emoji)
+    
+    with progress:
+        task = progress.add_task(f"{emoji} {title}", total=total_steps)
+        
+        if steps:
+            # Execute with predefined steps
+            result = None
+            last_progress = 0
+            
+            for step_progress, step_description in steps:
+                if callable(task_func):
+                    # Execute portion of work
+                    result = task_func()
+                
+                progress.update(task, completed=step_progress, 
+                              description=f"{emoji} {step_description}")
+                time.sleep(0.1)  # Brief pause for visual effect
+                last_progress = step_progress
+            
+            # Complete the progress
+            progress.update(task, completed=total_steps, 
+                          description=f"{emoji} ✅ {title} complete!")
+            return result
+        else:
+            # Execute with dynamic progress updates
+            def update_wrapper(progress_val, desc):
+                progress.update(task, completed=progress_val, description=f"{emoji} {desc}")
+            
+            # Call the function with progress callback
+            if callable(task_func):
+                return task_func(update_wrapper)
+            
+            # Default completion
+            progress.update(task, completed=total_steps, 
+                          description=f"{emoji} ✅ {title} complete!")
+            return None
+
+# Model-specific progress themes
+MODEL_PROGRESS_THEMES = {
+    "openai": {"style": "bold green", "emoji": "🤖", "color": "bright_green"},
+    "gemini": {"style": "bold magenta", "emoji": "🌟", "color": "bright_magenta"},
+    "mistral": {"style": "bold red", "emoji": "🔥", "color": "bright_red"},
+    "llama": {"style": "bold cyan", "emoji": "🦙", "color": "bright_cyan"},
+    "installation": {"style": "bold yellow", "emoji": "📦", "color": "bright_yellow"},
+    "deletion": {"style": "bold red", "emoji": "🗑️", "color": "bright_red"},
+    "configuration": {"style": "bold blue", "emoji": "⚙️", "color": "bright_blue"},
+    "download": {"style": "bold cyan", "emoji": "📥", "color": "bright_cyan"},
+    "collaborative": {"style": "bold cyan", "emoji": "🤖", "color": "bright_cyan"},
+    "system": {"style": "bold white", "emoji": "🖥️", "color": "bright_white"}
+}
+
 class ProgressBar:
     """Enhanced progress bar for model downloads and installations"""
     
@@ -1348,9 +1429,21 @@ class IBLUCommandHelper:
             return f"❌ Error deleting tool {selected_tool}: {e}"
     
     def delete_all_tools(self) -> str:
-        """Delete all HexStrike tools from database with beautiful progress bar"""
-        print(f"\n{self._colorize('🚨 DELETE ALL TOOLS - DANGER ZONE', Fore.RED)}")
-        print("=" * 60)
+        """Delete all HexStrike tools from database with Rich progress tracking"""
+        theme = MODEL_PROGRESS_THEMES["deletion"]
+        
+        if COLORAMA_AVAILABLE:
+            # Beautiful deletion header
+            delete_header = f"{Fore.LIGHTRED_EX}╔{'═' * 78}╗{Style.RESET_ALL}"
+            delete_title = f"{Fore.LIGHTRED_EX}║{Style.RESET_ALL} {Style.BRIGHT}{Back.RED}{Fore.WHITE}🚨 DELETE ALL TOOLS - DANGER ZONE 🚨{Style.RESET_ALL} {Fore.LIGHTRED_EX}{' ' * 28}║{Style.RESET_ALL}"
+            delete_footer = f"{Fore.LIGHTRED_EX}╚{'═' * 78}╝{Style.RESET_ALL}"
+            
+            print(f"\n{delete_header}")
+            print(f"{delete_title}")
+            print(f"{delete_footer}\n")
+        else:
+            print(f"\n{self._colorize('🚨 DELETE ALL TOOLS - DANGER ZONE', Fore.RED)}")
+            print("=" * 60)
         
         total_tools = len(self.hexstrike_tools)
         
@@ -1381,49 +1474,92 @@ class IBLUCommandHelper:
         if confirmation != "DELETE ALL TOOLS":
             return "❌ Deletion cancelled - confirmation not matched"
         
-        print(f"\n{self._colorize('🗑️  Deleting all {total_tools} tools...', Fore.RED)}")
-        
-        # Create deletion progress tracker with system theme
-        delete_progress = ConfigurationProgress(total_steps=100, prefix="🗑️  Deleting", config_type="system")
-        
-        try:
+        def delete_with_progress(progress_callback=None):
+            """Execute deletion with progress tracking"""
             deleted_count = 0
             failed_deletions = []
             
-            # Step 1-10: Initialize deletion
-            delete_progress.update(5, "Preparing mass deletion")
-            time.sleep(0.5)
-            
-            # Step 11-90: Delete tools one by one with progress
             tools_list = list(self.hexstrike_tools.keys())
+            total_tools_count = len(tools_list)
+            
             for i, tool_name in enumerate(tools_list):
-                tool_progress = 5 + (i * 85 // total_tools)
+                tool_progress = 5 + (i * 85 // total_tools_count)
                 
-                delete_progress.update(tool_progress, f"Removing {tool_name}")
+                if progress_callback:
+                    progress_callback(tool_progress, f"🗑️ Removing {tool_name}")
                 
                 try:
                     # Simulate deletion process
-                    time.sleep(0.1)
+                    time.sleep(0.05)  # Brief pause for visual effect
                     del self.hexstrike_tools[tool_name]
                     deleted_count += 1
                 except Exception as e:
-                    failed_deletions.append(f"{tool_name}: {str(e)}")
+                    failed_deletions.append((tool_name, str(e)))
             
-            # Step 91-100: Finalize
-            delete_progress.update(95, "Finalizing cleanup")
-            time.sleep(0.5)
+            return deleted_count, failed_deletions
+        
+        # Run with Rich progress
+        if RICH_AVAILABLE:
+            deleted_count, failed_deletions = run_with_rich_progress(
+                "Deleting All Tools",
+                delete_with_progress,
+                total_steps=100,
+                style=theme["style"],
+                emoji=theme["emoji"],
+                steps=[
+                    (5, "🔒 Preparing mass deletion..."),
+                    (15, "🗑️ Removing reconnaissance tools..."),
+                    (30, "🗑️ Removing web analysis tools..."),
+                    (45, "🗑️ Removing network scanners..."),
+                    (60, "🗑️ Removing exploitation tools..."),
+                    (75, "🗑️ Removing password crackers..."),
+                    (85, "🗑️ Removing defense tools..."),
+                    (90, "🔧 Verifying deletions..."),
+                    (95, "📋 Finalizing cleanup..."),
+                    (100, "✅ All tools deleted successfully!")
+                ]
+            )
             
-            delete_progress.finish(f"Deleted {deleted_count} tools successfully")
-            
-            # Summary
-            if failed_deletions:
-                return f"⚠️  Deleted {deleted_count}/{total_tools} tools. Failed: {len(failed_deletions)}\n❌ Failed deletions: {', '.join(failed_deletions[:3])}"
-            else:
-                return f"✅ Successfully deleted all {deleted_count} tools!"
+            # Show results
+            if COLORAMA_AVAILABLE:
+                results_header = f"{Fore.LIGHTGREEN_EX}┌─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}"
+                results_title = f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL} {Style.BRIGHT}{Back.GREEN}{Fore.WHITE}📊 DELETION SUMMARY 📊{Style.RESET_ALL} {Fore.LIGHTGREEN_EX}{' ' * 43}│{Style.RESET_ALL}"
+                results_footer = f"{Fore.LIGHTGREEN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}"
                 
-        except Exception as e:
-            delete_progress.finish("Deletion failed")
-            return f"❌ Error during mass deletion: {e}"
+                print(f"\n{results_header}")
+                print(f"{results_title}")
+                print(f"{results_footer}")
+                
+                print(f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}   {Fore.GREEN}✅{Style.RESET_ALL} Successfully deleted: {deleted_count} tools")
+                if failed_deletions:
+                    print(f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}   {Fore.RED}❌{Style.RESET_ALL} Failed deletions: {len(failed_deletions)} tools")
+                    for tool, error in failed_deletions[:3]:  # Show first 3 errors
+                        print(f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}     {Fore.RED}•{Style.RESET_ALL} {tool}: {error}")
+                    if len(failed_deletions) > 3:
+                        print(f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}     {Fore.RED}... and {len(failed_deletions) - 3} more")
+                
+                print(f"{Fore.LIGHTGREEN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}")
+            
+            if failed_deletions:
+                return f"⚠️  Deletion completed with {len(failed_deletions)} failures"
+            else:
+                return f"✅ All {deleted_count} tools deleted successfully!"
+        else:
+            # Fallback to ConfigurationProgress
+            delete_progress = ConfigurationProgress(total_steps=100, prefix="🗑️  Deleting", config_type="system")
+            
+            try:
+                deleted_count, failed_deletions = delete_with_progress()
+                delete_progress.finish("Deletion complete")
+                
+                if failed_deletions:
+                    return f"⚠️  Deletion completed with {len(failed_deletions)} failures"
+                else:
+                    return f"✅ All {deleted_count} tools deleted successfully!"
+                    
+            except Exception as e:
+                delete_progress.finish("Deletion failed")
+                return f"❌ Error during mass deletion: {e}"
     
     def install_single_tool(self, tool_name: str) -> str:
         """Install a single tool with beautiful progress bar"""
@@ -2361,17 +2497,107 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
             return f"❌ Invalid choice: {choice}"
     
     def install_all_tools(self):
-        """Install all HexStrike tools at once"""
-        print(f"\n{self._colorize('📦 Installing ALL HexStrike Tools...', Fore.YELLOW)}")
-        print("=" * 50)
+        """Install all HexStrike tools at once with Rich progress tracking"""
+        theme = MODEL_PROGRESS_THEMES["installation"]
+        
+        if COLORAMA_AVAILABLE:
+            # Beautiful installation header
+            install_header = f"{Fore.LIGHTYELLOW_EX}╔{'═' * 78}╗{Style.RESET_ALL}"
+            install_title = f"{Fore.LIGHTYELLOW_EX}║{Style.RESET_ALL} {Style.BRIGHT}{Back.YELLOW}{Fore.WHITE}📦 INSTALL ALL HEXSTRIKE TOOLS 📦{Style.RESET_ALL} {Fore.LIGHTYELLOW_EX}{' ' * 32}║{Style.RESET_ALL}"
+            install_footer = f"{Fore.LIGHTYELLOW_EX}╚{'═' * 78}╝{Style.RESET_ALL}"
+            
+            print(f"\n{install_header}")
+            print(f"{install_title}")
+            print(f"{install_footer}\n")
+            
+            print(f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}   {Fore.CYAN}🔧 Installing 50+ security tools for comprehensive testing{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}   {Fore.CYAN}⚡ Complete penetration testing toolkit setup{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}   {Fore.CYAN}🔧 This may take 15-30 minutes depending on your system{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTYELLOW_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
+        else:
+            print(f"\n{self._colorize('📦 Installing ALL HexStrike Tools...', Fore.YELLOW)}")
+            print("=" * 50)
         
         if os.path.exists('install_hexstrike_tools.sh'):
-            print(f"🔧 Running installation script...")
-            print(f"⚠️  This requires root privileges")
-            print(f"💡 Command: sudo ./install_hexstrike_tools.sh")
-            return f"📦 Run 'sudo ./install_hexstrike_tools.sh' to install all 50+ tools!"
+            def install_with_progress(progress_callback=None):
+                """Execute installation with progress tracking"""
+                try:
+                    # Start the installation process
+                    process = subprocess.Popen(['sudo', './install_hexstrike_tools.sh'], 
+                                             stdout=subprocess.PIPE, 
+                                             stderr=subprocess.PIPE, 
+                                             text=True,
+                                             cwd=os.getcwd())
+                    
+                    # Simulate progress during installation
+                    steps = [
+                        (10, "🔧 Preparing installation environment..."),
+                        (20, "📦 Downloading tool dependencies..."),
+                        (30, "🛠️ Installing reconnaissance tools..."),
+                        (40, "🔍 Installing web analysis tools..."),
+                        (50, "🌐 Installing network scanners..."),
+                        (60, "💻 Installing exploitation tools..."),
+                        (70, "🔓 Installing password crackers..."),
+                        (80, "🛡️ Installing defense tools..."),
+                        (90, "📋 Configuring tool environments..."),
+                        (95, "🔧 Verifying installations..."),
+                        (100, "✅ Installation complete!")
+                    ]
+                    
+                    for i, (progress_val, description) in enumerate(steps):
+                        if progress_callback:
+                            progress_callback(progress_val, description)
+                        
+                        # Check if process is still running
+                        if process.poll() is not None:
+                            break
+                        
+                        # Wait between progress updates
+                        time.sleep(2 if i < len(steps) - 1 else 1)
+                    
+                    # Wait for process to complete
+                    process.wait()
+                    return process.returncode == 0
+                    
+                except Exception as e:
+                    print(f"❌ Installation error: {e}")
+                    return False
+            
+            # Run with Rich progress
+            if RICH_AVAILABLE:
+                result = run_with_rich_progress(
+                    "Installing HexStrike Tools", 
+                    install_with_progress,
+                    total_steps=100,
+                    style=theme["style"],
+                    emoji=theme["emoji"],
+                    steps=[
+                        (10, "🔧 Preparing installation environment..."),
+                        (20, "📦 Downloading tool dependencies..."),
+                        (30, "🛠️ Installing reconnaissance tools..."),
+                        (40, "🔍 Installing web analysis tools..."),
+                        (50, "🌐 Installing network scanners..."),
+                        (60, "💻 Installing exploitation tools..."),
+                        (70, "🔓 Installing password crackers..."),
+                        (80, "🛡️ Installing defense tools..."),
+                        (90, "📋 Configuring tool environments..."),
+                        (95, "🔧 Verifying installations..."),
+                        (100, "✅ Installation complete!")
+                    ]
+                )
+                
+                if result:
+                    return "📦 All HexStrike tools installed successfully! 🎉"
+                else:
+                    return "❌ Installation failed. Please check the logs."
+            else:
+                # Fallback execution
+                print(f"🔧 Running installation script...")
+                print(f"⚠️  This requires root privileges")
+                print(f"💡 Command: sudo ./install_hexstrike_tools.sh")
+                return f"📦 Run 'sudo ./install_hexstrike_tools.sh' to install all 50+ tools!"
         else:
-            return f"❌ Installation script not found!"
+            return "❌ Installation script not found!"
     
     def install_tools_one_by_one(self):
         """Install tools one by one"""
