@@ -676,8 +676,19 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
     def show_main_menu(self):
         """Display the main menu with enhanced visual formatting"""
         if COLORAMA_AVAILABLE:
-            print(f"\n{Fore.CYAN}╔{'═' * 78}╗{Style.RESET_ALL}")
-            print(f"{Fore.CYAN}║{Style.RESET_ALL}{Fore.YELLOW}{' ' * 15}🔥 IBLU PROFESSIONAL HACKING ASSISTANT 🔥{' ' * 15}{Style.RESET_ALL}{Fore.CYAN}║{Style.RESET_ALL}")
+            # HACK THE WORLD ASCII Art Banner
+            print(f"\n{Fore.RED}    ████████╗ █████╗ ███╗   ██╗██╗  ██╗    ██████╗ ██╗   ██╗███████╗██╗   ██╗{Style.RESET_ALL}")
+            print(f"{Fore.RED}    ╚══██╔══╝██╔══██╗████╗  ██║██║ ██╔╝    ██╔══██╗██║   ██║██╔════╝██║   ██║{Style.RESET_ALL}")
+            print(f"{Fore.RED}       ██║   ███████║██╔██╗ ██║█████╔╝     ██████╔╝██║   ██║█████╗  ██║   ██║{Style.RESET_ALL}")
+            print(f"{Fore.RED}       ██║   ██╔══██║██║╚██╗██║██╔═██╗     ██╔══██╗██║   ██║██╔══╝  ╚██╗ ██╔╝{Style.RESET_ALL}")
+            print(f"{Fore.RED}       ██║   ██║  ██║██║ ╚████║██║  ██╗    ██████╔╝╚██████╔╝███████╗ ╚████╔╝ {Style.RESET_ALL}")
+            print(f"{Fore.RED}       ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝    ╚═════╝  ╚═════╝ ╚══════╝  ╚═══╝  {Style.RESET_ALL}")
+            print(f"{Fore.YELLOW}    {'─' * 78}{Style.RESET_ALL}")
+            print(f"{Fore.CYAN}{' ' * 20}🔥 HACK THE WORLD 🔥{' ' * 20}{Style.RESET_ALL}")
+            print(f"{Fore.YELLOW}    {'─' * 78}{Style.RESET_ALL}\n")
+            
+            print(f"{Fore.CYAN}╔{'═' * 78}╗{Style.RESET_ALL}")
+            print(f"{Fore.CYAN}║{Style.RESET_ALL}{Fore.YELLOW}{' ' * 15}🤖 IBLU PROFESSIONAL HACKING ASSISTANT 🤖{' ' * 15}{Style.RESET_ALL}{Fore.CYAN}║{Style.RESET_ALL}")
             print(f"{Fore.CYAN}╚{'═' * 78}╝{Style.RESET_ALL}\n")
             
             # Menu option 1
@@ -711,6 +722,15 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
         else:
             # Fallback for no color support
             print("\n" + "=" * 70)
+            print("    ████████╗ █████╗ ███╗   ██╗██╗  ██╗    ██████╗ ██╗   ██╗███████╗██╗   ██╗")
+            print("    ╚══██╔══╝██╔══██╗████╗  ██║██║ ██╔╝    ██╔══██╗██║   ██║██╔════╝██║   ██║")
+            print("       ██║   ███████║██╔██╗ ██║█████╔╝     ██████╔╝██║   ██║█████╗  ██║   ██║")
+            print("       ██║   ██╔══██║██║╚██╗██║██╔═██╗     ██╔══██╗██║   ██║██╔══╝  ╚██╗ ██╔╝")
+            print("       ██║   ██║  ██║██║ ╚████║██║  ██╗    ██████╔╝╚██████╔╝███████╗ ╚████╔╝ ")
+            print("       ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝    ╚═════╝  ╚═════╝ ╚══════╝  ╚═══╝  ")
+            print("    " + "─" * 70)
+            print("                      🔥 HACK THE WORLD 🔥")
+            print("    " + "─" * 70 + "\n")
             print("    IBLU PROFESSIONAL HACKING ASSISTANT - MAIN MENU")
             print("=" * 70 + "\n")
             print("[1] IBLU KALIGPT - Multi-AI Assistant")
