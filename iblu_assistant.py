@@ -555,7 +555,9 @@ class IBLUCommandHelper:
             "autopentest": {"description": "Auto pentest", "usage": "autopentest <target>"},
             "install_gemini": {"description": "Install Gemini model locally", "usage": "install_gemini"},
             "install_llama": {"description": "Install Llama model locally", "usage": "install_llama"},
-            "install_models": {"description": "Install all local models", "usage": "install_models"}
+            "install_models": {"description": "Install all local models", "usage": "install_models"},
+            "stack_models": {"description": "Stack multiple models for enhanced responses", "usage": "stack_models"},
+            "model_chat": {"description": "Enable models to communicate with each other", "usage": "model_chat"}
         }
 
 class KaliGPTMCPAssistant:
@@ -1474,6 +1476,10 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
             return self.install_llama_local()
         elif cmd == "install_models":
             return self.install_all_local_models()
+        elif cmd == "stack_models":
+            return self.stack_models_response()
+        elif cmd == "model_chat":
+            return self.enable_model_communication()
         
         # Check if it's a tool command (e.g., /nmap, /sqlmap)
         if cmd in self.command_helper.hexstrike_tools:
@@ -2134,6 +2140,214 @@ Provide step-by-step technical details while maintaining educational context and
             print(f"• {result}")
         
         return "✅ All local model installations completed!"
+    
+    def stack_models_response(self) -> str:
+        """Stack multiple models for enhanced responses"""
+        print(f"\n{self._colorize('🤖 Model Stacking Mode', Fore.CYAN)}")
+        print("=" * 50)
+        
+        # Get available providers
+        available_providers = []
+        for provider in [Provider.GEMINI, Provider.LLAMA, Provider.PERPLEXITY, Provider.OPENAI, Provider.MISTRAL]:
+            provider_keys = self.get_provider_keys(provider)
+            if provider_keys:
+                available_providers.append((provider, provider_keys[0]))
+        
+        if len(available_providers) < 2:
+            return f"❌ Need at least 2 configured providers for stacking. Available: {len(available_providers)}"
+        
+        print(f"📋 Available Providers: {', '.join([p[0].value.title() for p in available_providers])}")
+        
+        # Get user message for stacking
+        user_message = input(f"\n{self._colorize('💬 Enter your message for model stacking:', Fore.YELLOW)} ").strip()
+        
+        if not user_message:
+            return "❌ No message provided"
+        
+        print(f"\n{self._colorize('🔄 Stacking models...', Fore.YELLOW)}")
+        
+        stacked_responses = []
+        
+        # First model (usually local for privacy)
+        if Provider.LLAMA in [p[0] for p in available_providers]:
+            print("🏠 Local Model (Llama) - Initial analysis...")
+            llama_response = self.call_llama_api(self.SYSTEM_PROMPT, user_message, "local")
+            stacked_responses.append(("Llama", llama_response))
+        
+        # Second model (cloud for enhancement)
+        if Provider.GEMINI in [p[0] for p in available_providers]:
+            print("☁️ Cloud Model (Gemini) - Enhancement...")
+            gemini_response = self.call_gemini_api(self.SYSTEM_PROMPT, user_message, available_providers[[p[0] for p in available_providers].index(Provider.GEMINI)][1])
+            stacked_responses.append(("Gemini", gemini_response))
+        
+        # Third model if available
+        if Provider.PERPLEXITY in [p[0] for p in available_providers]:
+            print("🧠 Cloud Model (Perplexity) - Refinement...")
+            perplexity_response = self.call_perplexity_api(self.SYSTEM_PROMPT, user_message, available_providers[[p[0] for p in available_providers].index(Provider.PERPLEXITY)][1])
+            stacked_responses.append(("Perplexity", perplexity_response))
+        
+        # Combine responses
+        print(f"\n{self._colorize('📊 Stacked Response Analysis:', Fore.GREEN)}")
+        print("=" * 50)
+        
+        combined_analysis = "🔍 **Multi-Model Analysis**\n\n"
+        
+        for model, response in stacked_responses:
+            # Extract the actual response content
+            if "🤖 IBLU" in response:
+                content = response.split("🤖 IBLU")[-1].strip()
+                if content.startswith(":"):
+                    content = content[1:].strip()
+            else:
+                content = response
+            
+            combined_analysis += f"**{model} Analysis:**\n{content}\n\n"
+        
+        # Create synthesis prompt
+        synthesis_prompt = f"""
+Synthesize the following multi-model cybersecurity analysis into a comprehensive response:
+
+{combined_analysis}
+
+Provide a unified, enhanced response that combines the strengths of all models while maintaining technical accuracy and comprehensive coverage.
+"""
+        
+        print("🔄 Synthesizing final response...")
+        
+        # Use the best available model for synthesis
+        if Provider.GEMINI in [p[0] for p in available_providers]:
+            final_response = self.call_gemini_api(self.SYSTEM_PROMPT, synthesis_prompt, available_providers[[p[0] for p in available_providers].index(Provider.GEMINI)][1])
+        elif Provider.PERPLEXITY in [p[0] for p in available_providers]:
+            final_response = self.call_perplexity_api(self.SYSTEM_PROMPT, synthesis_prompt, available_providers[[p[0] for p in available_providers].index(Provider.PERPLEXITY)][1])
+        else:
+            final_response = "❌ No suitable model for synthesis"
+        
+        print(f"\n{self._colorize('🎯 Final Stacked Response:', Fore.MAGENTA)}")
+        print("=" * 50)
+        
+        if "🤖 IBLU" in final_response:
+            content = final_response.split("🤖 IBLU")[-1].strip()
+            if content.startswith(":"):
+                content = content[1:].strip()
+        else:
+            content = final_response
+        
+        return f"🤖 IBLU (Stacked Models):\n\n{content}"
+    
+    def enable_model_communication(self) -> str:
+        """Enable models to communicate with each other"""
+        print(f"\n{self._colorize('💬 Model Communication Mode', Fore.CYAN)}")
+        print("=" * 50)
+        
+        # Get available providers
+        available_providers = []
+        for provider in [Provider.GEMINI, Provider.LLAMA, Provider.PERPLEXITY, Provider.OPENAI, Provider.MISTRAL]:
+            provider_keys = self.get_provider_keys(provider)
+            if provider_keys:
+                available_providers.append((provider, provider_keys[0]))
+        
+        if len(available_providers) < 2:
+            return f"❌ Need at least 2 configured providers for communication. Available: {len(available_providers)}"
+        
+        print(f"📋 Available Models: {', '.join([p[0].value.title() for p in available_providers])}")
+        
+        # Create a conversation between models
+        conversation_topic = input(f"\n{self._colorize('💭 Enter conversation topic:', Fore.YELLOW)} ").strip()
+        
+        if not conversation_topic:
+            return "❌ No topic provided"
+        
+        print(f"\n{self._colorize('🗣️ Starting Model Conversation...', Fore.YELLOW)}")
+        print("=" * 50)
+        
+        conversation = []
+        
+        # Model 1 starts the conversation
+        if Provider.LLAMA in [p[0] for p in available_providers]:
+            print("🏠 Llama (Local) - Initiating conversation...")
+            starter_prompt = f"As a cybersecurity expert, start a discussion about: {conversation_topic}. Provide an initial perspective and ask a follow-up question."
+            llama_response = self.call_llama_api(self.SYSTEM_PROMPT, starter_prompt, "local")
+            conversation.append(("Llama", llama_response))
+        else:
+            print("☁️ Gemini (Cloud) - Initiating conversation...")
+            starter_prompt = f"As a cybersecurity expert, start a discussion about: {conversation_topic}. Provide an initial perspective and ask a follow-up question."
+            gemini_response = self.call_gemini_api(self.SYSTEM_PROMPT, starter_prompt, available_providers[[p[0] for p in available_providers].index(Provider.GEMINI)][1])
+            conversation.append(("Gemini", gemini_response))
+        
+        # Model 2 responds
+        if Provider.GEMINI in [p[0] for p in available_providers] and conversation[0][0] != "Gemini":
+            print("☁️ Gemini (Cloud) - Responding...")
+            # Extract the question from the first response
+            first_response = conversation[0][1]
+            if "🤖 IBLU" in first_response:
+                content = first_response.split("🤖 IBLU")[-1].strip()
+                if content.startswith(":"):
+                    content = content[1:].strip()
+            else:
+                content = first_response
+            
+            response_prompt = f"Respond to this cybersecurity perspective: {content}\n\nProvide your expert analysis and continue the discussion."
+            gemini_response = self.call_gemini_api(self.SYSTEM_PROMPT, response_prompt, available_providers[[p[0] for p in available_providers].index(Provider.GEMINI)][1])
+            conversation.append(("Gemini", gemini_response))
+        elif Provider.PERPLEXITY in [p[0] for p in available_providers]:
+            print("🧠 Perplexity (Cloud) - Responding...")
+            first_response = conversation[0][1]
+            if "🤖 IBLU" in first_response:
+                content = first_response.split("🤖 IBLU")[-1].strip()
+                if content.startswith(":"):
+                    content = content[1:].strip()
+            else:
+                content = first_response
+            
+            response_prompt = f"Respond to this cybersecurity perspective: {content}\n\nProvide your expert analysis and continue the discussion."
+            perplexity_response = self.call_perplexity_api(self.SYSTEM_PROMPT, response_prompt, available_providers[[p[0] for p in available_providers].index(Provider.PERPLEXITY)][1])
+            conversation.append(("Perplexity", perplexity_response))
+        
+        # Model 3 responds if available
+        if len(available_providers) >= 3:
+            remaining_providers = [p[0] for p in available_providers if p[0] not in [conv[0] for conv in conversation]]
+            if remaining_providers:
+                next_provider = remaining_providers[0]
+                print(f"☁️ {next_provider.value.title()} (Cloud) - Final response...")
+                
+                second_response = conversation[1][1]
+                if "🤖 IBLU" in second_response:
+                    content = second_response.split("🤖 IBLU")[-1].strip()
+                    if content.startswith(":"):
+                        content = content[1:].strip()
+                else:
+                    content = second_response
+                
+                response_prompt = f"Provide a final perspective on this cybersecurity discussion: {content}\n\nSynthesize the key points and offer a comprehensive conclusion."
+                
+                if next_provider == Provider.PERPLEXITY:
+                    final_response = self.call_perplexity_api(self.SYSTEM_PROMPT, response_prompt, available_providers[[p[0] for p in available_providers].index(next_provider)][1])
+                elif next_provider == Provider.OPENAI:
+                    final_response = self.call_openai_api(self.SYSTEM_PROMPT, response_prompt, available_providers[[p[0] for p in available_providers].index(next_provider)][1])
+                elif next_provider == Provider.MISTRAL:
+                    final_response = self.call_mistral_api(self.SYSTEM_PROMPT, response_prompt, available_providers[[p[0] for p in available_providers].index(next_provider)][1])
+                else:
+                    final_response = "❌ Model not available"
+                
+                conversation.append((next_provider.value.title(), final_response))
+        
+        # Display the full conversation
+        print(f"\n{self._colorize('💬 Model Conversation Transcript:', Fore.GREEN)}")
+        print("=" * 50)
+        
+        full_conversation = "🤖 **AI Model Conversation**\n\n"
+        
+        for i, (model, response) in enumerate(conversation, 1):
+            if "🤖 IBLU" in response:
+                content = response.split("🤖 IBLU")[-1].strip()
+                if content.startswith(":"):
+                    content = content[1:].strip()
+            else:
+                content = response
+            
+            full_conversation += f"**{model} (Turn {i}):**\n{content}\n\n"
+        
+        return f"🤖 IBLU (Model Communication):\n\n{full_conversation}"
     
     def connect_mcp(self):
         """Connect to MCP server"""
