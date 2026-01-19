@@ -1844,7 +1844,7 @@ Provide step-by-step technical details while maintaining educational context and
             
             # First, check what models are available
             models_url = f"https://generativelanguage.googleapis.com/v1/models?key={api_key}"
-            models_response = requests.get(models_url, timeout=10)
+            models_response = requests.get(models_url, timeout=15)
             
             if models_response.status_code == 200:
                 models_data = models_response.json()
@@ -1879,7 +1879,7 @@ Provide step-by-step technical details while maintaining educational context and
                 }]
             }
             
-            response = requests.post(url, headers=headers, json=payload, timeout=30)
+            response = requests.post(url, headers=headers, json=payload, timeout=60)
             response.raise_for_status()
             
             result = response.json()
