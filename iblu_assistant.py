@@ -1182,8 +1182,14 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
     
     def list_available_models(self) -> str:
         """List all available AI models (both cloud and local)"""
-        print(f"\n{self._colorize('🤖 Available AI Models', Fore.CYAN)}")
-        print("=" * 60)
+        # Enhanced header with rainbow gradient effect
+        header_border = f"{Fore.LIGHTBLUE_EX}{'╔' + '═' * 78 + '╗'}{Style.RESET_ALL}"
+        header_title = f"{Fore.LIGHTBLUE_EX}║{Style.RESET_ALL} {Style.BRIGHT}{Back.BLUE}{Fore.WHITE}🤖 AVAILABLE AI MODELS{Style.RESET_ALL} {Fore.LIGHTBLUE_EX}{' ' * 46}║{Style.RESET_ALL}"
+        header_border2 = f"{Fore.LIGHTBLUE_EX}{'╚' + '═' * 78 + '╝'}{Style.RESET_ALL}"
+        
+        print(f"\n{header_border}")
+        print(f"{header_title}")
+        print(f"{header_border2}")
         
         # Check cloud providers
         cloud_models = []
@@ -1206,36 +1212,94 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
         except:
             pass
         
-        print(f"\n{self._colorize('📊 Model Status Overview:', Fore.GREEN)}")
-        print("-" * 40)
+        # Enhanced overview section with gradient colors
+        overview_border = f"{Fore.LIGHTGREEN_EX}┌─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}"
+        overview_title = f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL} {Style.BRIGHT}{Back.GREEN}{Fore.WHITE}📊 MODEL STATUS OVERVIEW:{Style.RESET_ALL} {Fore.LIGHTGREEN_EX}{' ' * 44}│{Style.RESET_ALL}"
+        overview_border2 = f"{Fore.LIGHTGREEN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}"
+        
+        print(f"\n{overview_border}")
+        print(f"{overview_title}")
+        print(f"{overview_border2}")
         
         total_models = len(cloud_models) + len(local_models)
         
         if total_models == 0:
-            print(f"\n❌ No models configured!")
-            print(f"💡 Configure API keys for cloud models or install local models")
-            print(f"   • /config - Configure API keys")
-            print(f"   • /install_llama - Install local Llama models")
+            no_models_border = f"{Fore.LIGHTRED_EX}┌─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}"
+            no_models_msg = f"{Fore.LIGHTRED_EX}│{Style.RESET_ALL} {Style.BRIGHT}{Back.RED}{Fore.WHITE}❌ NO MODELS CONFIGURED!{Style.RESET_ALL} {Fore.LIGHTRED_EX}{' ' * 43}│{Style.RESET_ALL}"
+            no_models_border2 = f"{Fore.LIGHTRED_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}"
+            
+            print(f"\n{no_models_border}")
+            print(f"{no_models_msg}")
+            print(f"{no_models_border2}")
+            
+            tips_border = f"{Fore.LIGHTCYAN_EX}┌─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}"
+            tips_title = f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL} {Style.BRIGHT}{Back.CYAN}{Fore.WHITE}💡 GET STARTED:{Style.RESET_ALL} {Fore.LIGHTCYAN_EX}{' ' * 49}│{Style.RESET_ALL}"
+            tips_border2 = f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}"
+            
+            print(f"\n{tips_border}")
+            print(f"{tips_title}")
+            print(f"{tips_border2}")
+            print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}   {Fore.CYAN}•{Style.RESET_ALL} Configure API keys for cloud models                     {Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}   {Fore.CYAN}•{Style.RESET_ALL} Install local models for privacy-focused processing       {Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}                                                           {Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}   {Style.BRIGHT}{Fore.YELLOW}Commands:{Style.RESET_ALL}                                               {Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}   {Fore.CYAN}•{Style.RESET_ALL} {Style.BRIGHT}{Fore.WHITE}/config{Style.RESET_ALL} - Configure API keys                          {Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}   {Fore.CYAN}•{Style.RESET_ALL} {Style.BRIGHT}{Fore.WHITE}/install_llama{Style.RESET_ALL} - Install local Llama models              {Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}")
+            
             return "❌ No models available"
         
-        # Display cloud models
+        # Enhanced cloud models section with vibrant colors
         if cloud_models:
-            print(f"\n{self._colorize('☁️ Cloud Models:', Fore.BLUE)}")
+            cloud_border = f"{Fore.LIGHTBLUE_EX}┌─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}"
+            cloud_title = f"{Fore.LIGHTBLUE_EX}│{Style.RESET_ALL} {Style.BRIGHT}{Back.BLUE}{Fore.WHITE}☁️ CLOUD MODELS:{Style.RESET_ALL} {Fore.LIGHTBLUE_EX}{' ' * 51}│{Style.RESET_ALL}"
+            cloud_border2 = f"{Fore.LIGHTBLUE_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}"
+            
+            print(f"\n{cloud_border}")
+            print(f"{cloud_title}")
+            print(f"{cloud_border2}")
+            
             for i, (provider, api_key) in enumerate(cloud_models, 1):
-                status = "✅ Configured" if api_key else "❌ Not configured"
-                print(f"  {i}. {provider.value.title()} - {status}")
+                status_icon = "✅" if api_key else "❌"
+                status_text = "Configured" if api_key else "Not configured"
+                status_color = Fore.LIGHTGREEN_EX if api_key else Fore.LIGHTRED_EX
+                
+                print(f"{Fore.LIGHTBLUE_EX}│{Style.RESET_ALL}   {Fore.BLUE}┌─ [{Style.BRIGHT}{Fore.CYAN}{i}{Style.RESET_ALL}{Fore.BLUE}] ──────────────────────────────────────────────┐{Style.RESET_ALL} {Fore.LIGHTBLUE_EX}│{Style.RESET_ALL}")
+                print(f"{Fore.LIGHTBLUE_EX}│{Style.RESET_ALL}   {Fore.BLUE}│{Style.RESET_ALL} {Style.BRIGHT}{Fore.WHITE}{provider.value.title()}{Style.RESET_ALL} - {status_color}{status_icon} {status_text}{Style.RESET_ALL} {Fore.BLUE}{' ' * (35 - len(provider.value) - len(status_text))}│{Style.RESET_ALL} {Fore.LIGHTBLUE_EX}│{Style.RESET_ALL}")
+                print(f"{Fore.LIGHTBLUE_EX}│{Style.RESET_ALL}   {Fore.BLUE}└───────────────────────────────────────────────────────┘{Style.RESET_ALL} {Fore.LIGHTBLUE_EX}│{Style.RESET_ALL}")
+            
+            print(f"{Fore.LIGHTBLUE_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}")
         
-        # Display local models
+        # Enhanced local models section with vibrant colors
         if local_models:
-            print(f"\n{self._colorize('🏠 Local Models:', Fore.GREEN)}")
+            local_border = f"{Fore.LIGHTGREEN_EX}┌─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}"
+            local_title = f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL} {Style.BRIGHT}{Back.GREEN}{Fore.WHITE}🏠 LOCAL MODELS:{Style.RESET_ALL} {Fore.LIGHTGREEN_EX}{' ' * 51}│{Style.RESET_ALL}"
+            local_border2 = f"{Fore.LIGHTGREEN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}"
+            
+            print(f"\n{local_border}")
+            print(f"{local_title}")
+            print(f"{local_border2}")
+            
             for i, (provider, model_name, model_size) in enumerate(local_models, 1):
                 size_str = f"({model_size/1024:.1f}GB)" if model_size > 0 else "(Unknown size)"
-                status = "✅ Available" if model_name else "❌ Not available"
-                print(f"  {i}. {model_name} - {status} {size_str}")
+                status_icon = "✅" if model_name else "❌"
+                status_text = "Available" if model_name else "Not available"
+                status_color = Fore.LIGHTGREEN_EX if model_name else Fore.LIGHTRED_EX
+                
+                print(f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}   {Fore.GREEN}┌─ [{Style.BRIGHT}{Fore.CYAN}{i}{Style.RESET_ALL}{Fore.GREEN}] ──────────────────────────────────────────────┐{Style.RESET_ALL} {Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}")
+                print(f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}   {Fore.GREEN}│{Style.RESET_ALL} {Style.BRIGHT}{Fore.WHITE}{model_name}{Style.RESET_ALL} - {status_color}{status_icon} {status_text}{Style.RESET_ALL} {Style.BRIGHT}{Fore.MAGENTA}{size_str}{Style.RESET_ALL} {Fore.GREEN}{' ' * (30 - len(model_name) - len(status_text) - len(size_str))}│{Style.RESET_ALL} {Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}")
+                print(f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}   {Fore.GREEN}└───────────────────────────────────────────────────────┘{Style.RESET_ALL} {Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}")
+            
+            print(f"{Fore.LIGHTGREEN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}")
         
-        # Display model capabilities
-        print(f"\n{self._colorize('🔧 Model Capabilities:', Fore.YELLOW)}")
-        print("-" * 40)
+        # Enhanced capabilities section with vibrant colors
+        cap_border = f"{Fore.LIGHTYELLOW_EX}┌─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}"
+        cap_title = f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL} {Style.BRIGHT}{Back.YELLOW}{Fore.WHITE}🔧 MODEL CAPABILITIES:{Style.RESET_ALL} {Fore.LIGHTYELLOW_EX}{' ' * 47}│{Style.RESET_ALL}"
+        cap_border2 = f"{Fore.LIGHTYELLOW_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}"
+        
+        print(f"\n{cap_border}")
+        print(f"{cap_title}")
+        print(f"{cap_border2}")
         
         capabilities = {
             Provider.OPENAI: "Advanced reasoning, code generation, analysis",
@@ -1248,30 +1312,56 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
             if provider in [p[0] for p in cloud_models] or provider == Provider.LLAMA and local_models:
                 capability = capabilities.get(provider, "Unknown")
                 status = "✅" if (provider in [p[0] for p in cloud_models]) or (provider == Provider.LLAMA and local_models) else "❌"
-                print(f"  • {provider.value.title()} - {capability} {status}")
+                provider_name = provider.value.title()
+                print(f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}   {Fore.YELLOW}•{Style.RESET_ALL} {Style.BRIGHT}{Fore.WHITE}{provider_name}{Style.RESET_ALL} - {Fore.CYAN}{capability}{Style.RESET_ALL} {Fore.LIGHTGREEN_EX}{status}{Style.RESET_ALL} {Fore.LIGHTYELLOW_EX}{' ' * (20 - len(provider_name) - len(capability))}│{Style.RESET_ALL}")
         
-        # Show collaborative status
-        print(f"\n{self._colorize('🤝 Collaborative Status:', Fore.MAGENTA)}")
-        print("-" * 40)
+        print(f"{Fore.LIGHTYELLOW_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}")
+        
+        # Enhanced collaborative status section with vibrant colors
+        collab_border = f"{Fore.LIGHTMAGENTA_EX}┌─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}"
+        collab_title = f"{Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL} {Style.BRIGHT}{Back.MAGENTA}{Fore.WHITE}🤝 COLLABORATIVE STATUS:{Style.RESET_ALL} {Fore.LIGHTMAGENTA_EX}{' ' * 46}│{Style.RESET_ALL}"
+        collab_border2 = f"{Fore.LIGHTMAGENTA_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}"
+        
+        print(f"\n{collab_border}")
+        print(f"{collab_title}")
+        print(f"{collab_border2}")
         
         if total_models >= 2:
-            print(f"✅ Collaborative mode: ACTIVE")
-            print(f"   • Models will work together for comprehensive responses")
-            print(f"   • Parallel processing for faster answers")
-            print(f"   • Cross-model insight synthesis enabled")
+            print(f"{Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}   {Fore.LIGHTGREEN_EX}✅{Style.RESET_ALL} {Style.BRIGHT}{Back.GREEN}{Fore.WHITE}Collaborative mode: ACTIVE{Style.RESET_ALL} {Fore.LIGHTMAGENTA_EX}{' ' * 29}│{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}   {Fore.MAGENTA}•{Style.RESET_ALL} Models will work together for comprehensive responses  {Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}   {Fore.MAGENTA}•{Style.RESET_ALL} Parallel processing for faster answers                 {Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}   {Fore.MAGENTA}•{Style.RESET_ALL} Cross-model insight synthesis enabled                  {Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}")
         else:
-            print(f"❌ Collaborative mode: INACTIVE")
-            print(f"   • Need 2+ models for collaborative mode")
-            print(f"   • Single model mode will be used")
+            print(f"{Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}   {Fore.LIGHTRED_EX}❌{Style.RESET_ALL} {Style.BRIGHT}{Back.RED}{Fore.WHITE}Collaborative mode: INACTIVE{Style.RESET_ALL} {Fore.LIGHTMAGENTA_EX}{' ' * 27}│{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}   {Fore.MAGENTA}•{Style.RESET_ALL} Need 2+ models for collaborative mode                   {Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}   {Fore.MAGENTA}•{Style.RESET_ALL} Single model mode will be used                        {Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}")
         
-        # Show usage tips
-        print(f"\n{self._colorize('💡 Usage Tips:', Fore.CYAN)}")
-        print(f"  • Chat normally - collaborative mode activates automatically")
-        print(f"  • /collaborative - Check collaborative status")
-        print(f"  • /stack_models - Manual model stacking")
-        print(f"  • /model_chat - Enable model communication")
+        print(f"{Fore.LIGHTMAGENTA_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}")
         
-        return f"\n✅ Total models available: {total_models}"
+        # Enhanced usage tips section with vibrant colors
+        tips_border = f"{Fore.LIGHTCYAN_EX}┌─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}"
+        tips_title = f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL} {Style.BRIGHT}{Back.CYAN}{Fore.WHITE}💡 USAGE TIPS:{Style.RESET_ALL} {Fore.LIGHTCYAN_EX}{' ' * 53}│{Style.RESET_ALL}"
+        tips_border2 = f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}"
+        
+        print(f"\n{tips_border}")
+        print(f"{tips_title}")
+        print(f"{tips_border2}")
+        print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}   {Fore.CYAN}•{Style.RESET_ALL} Chat normally - collaborative mode activates automatically  {Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
+        print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}   {Fore.CYAN}•{Style.RESET_ALL} {Style.BRIGHT}{Fore.WHITE}/collaborative{Style.RESET_ALL} - Check collaborative status               {Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
+        print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}   {Fore.CYAN}•{Style.RESET_ALL} {Style.BRIGHT}{Fore.WHITE}/stack_models{Style.RESET_ALL} - Manual model stacking                     {Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
+        print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}   {Fore.CYAN}•{Style.RESET_ALL} {Style.BRIGHT}{Fore.WHITE}/model_chat{Style.RESET_ALL} - Enable model communication                {Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
+        print(f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}")
+        
+        # Final summary with enhanced visual and vibrant colors
+        summary_border = f"{Fore.WHITE}┌─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}"
+        summary_content = f"{Fore.WHITE}│{Style.RESET_ALL} {Style.BRIGHT}{Back.BLUE}{Fore.WHITE}✅ Total models available: {total_models}{Style.RESET_ALL} {Fore.WHITE}{' ' * 43}│{Style.RESET_ALL}"
+        summary_border2 = f"{Fore.WHITE}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}"
+        
+        print(f"\n{summary_border}")
+        print(f"{summary_content}")
+        print(f"{summary_border2}")
+        
+        return f"✅ Total models available: {total_models}"
     
     def handle_iblu_kaligpt(self):
         """Handle IBLU KALIGPT main menu option"""
