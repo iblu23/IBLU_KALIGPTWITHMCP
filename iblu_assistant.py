@@ -1466,33 +1466,75 @@ Focus on technical accuracy and completeness. Students learn best from detailed,
         
         return status
     
-    def handle_chat_message(self, message: str) -> str:
-        """Handle regular chat messages"""
-        # Add to conversation history with timestamp
+    def handle_chat_message(self, user_message: str) -> str:
+        """Handle regular chat messages with AI"""
+        # Add to conversation history
         self.conversation_history.append({
-            "role": "user", 
-            "content": message,
-            "timestamp": datetime.now().strftime('%H:%M:%S')
+            "role": "user",
+            "content": user_message,
+            "timestamp": datetime.now().isoformat()
         })
         
-        # Add user input to history
-        self.command_helper.add_user_input(message)
+        # Get AI response
+        response = self.get_ai_response(user_message)
         
-        # Try to get AI response if API keys are available
-        response = self.get_ai_response(message)
+        # Format response with colors if rich is available
+        formatted_response = self.format_ai_response(response)
         
-        # Add assistant response to history with timestamp
+        # Add AI response to history
         self.conversation_history.append({
-            "role": "assistant", 
+            "role": "assistant",
             "content": response,
-            "timestamp": datetime.now().strftime('%H:%M:%S')
+            "timestamp": datetime.now().isoformat()
         })
         
         # Save chat history periodically
         if len(self.conversation_history) % 5 == 0:
             self.command_helper.save_chat_history()
         
-        return response
+        return formatted_response
+    
+    def format_ai_response(self, response: str) -> str:
+        """Format AI response with colors and effects"""
+        if not RICH_AVAILABLE:
+            return response
+        
+        # Print formatted response using rich
+        console.print("\n")
+        
+        # Split response into lines for processing
+        lines = response.split('\n')
+        
+        for line in lines:
+            # Headers (###)
+            if line.startswith('### '):
+                console.print(f"[bold yellow]{line}[/bold yellow]")
+            # Numbered sections (1., 2., etc.)
+            elif line.strip() and line.strip()[0].isdigit() and '. ' in line[:5]:
+                console.print(f"[bold cyan]{line}[/bold cyan]")
+            # Bold items (**text**)
+            elif '**' in line:
+                # Replace **text** with rich markup
+                formatted = line.replace('**', '[bold green]', 1).replace('**', '[/bold green]', 1)
+                while '**' in formatted:
+                    formatted = formatted.replace('**', '[bold green]', 1).replace('**', '[/bold green]', 1)
+                console.print(formatted)
+            # Code blocks (```)
+            elif line.strip().startswith('```'):
+                console.print(f"[dim]{line}[/dim]")
+            # Bullet points (-)
+            elif line.strip().startswith('- '):
+                console.print(f"[cyan]{line}[/cyan]")
+            # Commands or code lines (starting with specific tools)
+            elif any(line.strip().startswith(tool) for tool in ['sqlmap', 'nmap', 'hydra', 'nikto', 'ffuf', 'john', 'hashcat', 'burp']):
+                syntax = Syntax(line.strip(), "bash", theme="monokai", line_numbers=False)
+                console.print(syntax)
+            # Regular text
+            else:
+                console.print(line)
+        
+        console.print("\n")
+        return ""  # Return empty since we already printed
     
     def get_ai_response(self, message: str) -> str:
         """Get AI response from configured provider"""
