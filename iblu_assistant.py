@@ -333,7 +333,7 @@ class IBLUCommandHelper:
             basic_commands = ['/help', '/exit', '/clear', '/status', '/scan', '/payload', 
                             '/autopentest', '/mcp_connect', '/mcp_disconnect', 
                             '/openai', '/gemini', '/mistral', '/llama', '/history', '/tools', '/install',
-                            '/hexstrike', '/pentest', '/llama_models', '/install_models']
+                            '/hexstrike', '/pentest', '/llama_models', '/delete_llama', '/delete_tools', '/install_models']
             
             # Add HexStrike tool commands
             hexstrike_commands = [f"/{tool}" for tool in self.hexstrike_tools.keys()]
@@ -528,7 +528,12 @@ class IBLUCommandHelper:
 {self._colorize('🤖 LOCAL MODEL MANAGEMENT:', Fore.MAGENTA)}
   install_llama     - Install Llama models locally (supports Llama 2 & 3.1 8B)
   llama_models      - List and manage available Llama models
+  delete_llama      - Delete a local Llama model
   install_models    - Install all local models
+
+{self._colorize('🔧 TOOL MANAGEMENT:', Fore.CYAN)}
+  delete_tools      - Delete HexStrike tools (one by one or all)
+  tools             - List all available tools
 
 {self._colorize('�️ HEXSTRIKE TOOLS (50+ available):', Fore.RED)}
   /nmap            - Network discovery and security auditing
@@ -555,7 +560,7 @@ class IBLUCommandHelper:
         print(help_text)
     
     def show_tools_list(self):
-        """Show categorized list of HexStrike tools"""
+        """Show categorized list of HexStrike tools with management options"""
         categories = {}
         for tool, info in self.hexstrike_tools.items():
             cat = info['category']
@@ -579,15 +584,46 @@ class IBLUCommandHelper:
             'util': Fore.GREEN
         }
         
+        # Display tools by category
+        tool_index = 1
+        tool_mapping = {}
+        
         for category, tools in sorted(categories.items()):
             color = category_colors.get(category, Fore.WHITE)
             print(f"\n{color}📂 {category.upper()} TOOLS:{Style.RESET_ALL}")
             for tool, name, desc in sorted(tools):
-                print(f"  • {color}/{tool}{Style.RESET_ALL} - {name}")
-                print(f"    {desc}")
+                print(f"  {tool_index:2d}. {color}/{tool}{Style.RESET_ALL} - {name}")
+                print(f"      {desc}")
+                tool_mapping[tool_index] = tool
+                tool_index += 1
         
         print(f"\n{Fore.CYAN}📊 Total Tools: {len(self.hexstrike_tools)}{Style.RESET_ALL}")
         print(f"{Fore.GREEN}💡 Use Tab completion after '/' to explore!{Style.RESET_ALL}")
+        
+        # Management options
+        print(f"\n{self._colorize('🔧 TOOL MANAGEMENT OPTIONS:', Fore.MAGENTA)}")
+        print("  d. Delete a specific tool")
+        print("  a. Delete ALL tools (⚠️  DANGEROUS)")
+        print("  r. Refresh tools list")
+        print("  x. Back to main menu")
+        
+        # Get user choice
+        choice = input(f"\n{self._colorize(f'🎯 Choose option (1-{len(tool_mapping)}, d, a, r, x):', Fore.YELLOW)}").strip()
+        
+        # Handle different choices
+        if choice.lower() == 'x':
+            return "🔙 Returned to main menu"
+        elif choice.lower() == 'r':
+            return self.show_tools_list()  # Refresh
+        elif choice.lower() == 'd':
+            return self.delete_specific_tool(tool_mapping)
+        elif choice.lower() == 'a':
+            return self.delete_all_tools()
+        elif choice.isdigit() and 1 <= int(choice) <= len(tool_mapping):
+            selected_tool = tool_mapping[int(choice)]
+            return f"🔧 Selected tool: {selected_tool}\n💡 Use /{selected_tool} to run this tool"
+        else:
+            return "❌ Invalid choice. Please try again."
     
     def show_hexstrike_commands(self):
         """Show HexStrike command overview"""
@@ -630,6 +666,150 @@ class IBLUCommandHelper:
         
         print(f"\n{Fore.GREEN}💡 Type '/' and Tab to explore all {len(self.hexstrike_tools)} tools!{Style.RESET_ALL}")
     
+    def delete_specific_tool(self, tool_mapping: Dict[int, str]) -> str:
+        """Delete a specific HexStrike tool"""
+        print(f"\n{self._colorize('🗑️  Delete Specific Tool', Fore.RED)}")
+        print("=" * 50)
+        
+        if not tool_mapping:
+            return "❌ No tools available to delete"
+        
+        print(f"\n{self._colorize('📋 Available tools for deletion:', Fore.YELLOW)}")
+        for index, tool in tool_mapping.items():
+            tool_info = self.hexstrike_tools.get(tool, {})
+            name = tool_info.get('name', tool)
+            category = tool_info.get('category', 'unknown')
+            print(f"  {index:2d}. /{tool} - {name} ({category})")
+        
+        print(f"\n{self._colorize('⚠️  WARNING: This will remove the tool from the database!', Fore.RED)}")
+        print(f"{self._colorize('💡 This only affects the tool list, not installed packages', Fore.YELLOW)}")
+        
+        choice = input(f"\n{self._colorize(f'🎯 Choose tool to delete (1-{len(tool_mapping)}) or 0 to cancel:', Fore.YELLOW)}").strip()
+        
+        if choice == '0':
+            return "🔙 Tool deletion cancelled"
+        
+        if not choice.isdigit() or not (1 <= int(choice) <= len(tool_mapping)):
+            return "❌ Invalid choice. Please try again."
+        
+        selected_index = int(choice)
+        selected_tool = tool_mapping[selected_index]
+        tool_info = self.hexstrike_tools[selected_tool]
+        
+        # Confirmation
+        prompt_text = f"⚠️  Are you sure you want to delete /{selected_tool} ({tool_info['name']})? (yes/no):"
+        confirm = input(f"\n{self._colorize(prompt_text, Fore.RED)}").strip().lower()
+        
+        if confirm not in ['yes', 'y']:
+            return "🔙 Tool deletion cancelled"
+        
+        try:
+            # Remove tool from database
+            tool_name = tool_info['name']
+            tool_category = tool_info['category']
+            
+            del self.hexstrike_tools[selected_tool]
+            
+            print(f"\n✅ Successfully deleted /{selected_tool}")
+            print(f"   Tool: {tool_name}")
+            print(f"   Category: {tool_category}")
+            print(f"   Status: Removed from database")
+            
+            # Show remaining tools count
+            remaining_tools = len(self.hexstrike_tools)
+            print(f"\n{self._colorize(f'📊 Remaining tools: {remaining_tools}', Fore.CYAN)}")
+            
+            if remaining_tools == 0:
+                print(f"\n{self._colorize('⚠️  No tools remaining in database', Fore.YELLOW)}")
+                print("💡 You can still use tools that are installed on your system")
+            else:
+                print("💡 Use /tools to see the updated list")
+            
+            return f"✅ /{selected_tool} has been deleted successfully"
+            
+        except Exception as e:
+            return f"❌ Error deleting tool {selected_tool}: {e}"
+    
+    def delete_all_tools(self) -> str:
+        """Delete all HexStrike tools from database"""
+        print(f"\n{self._colorize('🚨 DELETE ALL TOOLS - DANGER ZONE', Fore.RED)}")
+        print("=" * 60)
+        
+        total_tools = len(self.hexstrike_tools)
+        
+        if total_tools == 0:
+            return "❌ No tools available to delete"
+        
+        print(f"\n{self._colorize('⚠️  EXTREME WARNING!', Fore.RED)}")
+        print(f"{self._colorize('This will delete ALL {total_tools} tools from the database!', Fore.RED)}")
+        print(f"{self._colorize('This action cannot be undone!', Fore.RED)}")
+        
+        # Show tools that will be deleted
+        print(f"\n{self._colorize('📋 Tools to be deleted:', Fore.YELLOW)}")
+        categories = {}
+        for tool, info in self.hexstrike_tools.items():
+            cat = info['category']
+            if cat not in categories:
+                categories[cat] = []
+            categories[cat].append(f"/{tool}")
+        
+        for category, tools in sorted(categories.items()):
+            print(f"  {category.upper()}: {', '.join(sorted(tools))}")
+        
+        print(f"\n{self._colorize('🔒 SAFETY CONFIRMATION REQUIRED', Fore.MAGENTA)}")
+        print("Type 'DELETE ALL TOOLS' exactly to confirm:")
+        
+        confirmation = input(f"\n{self._colorize('🔴 Confirm deletion: ', Fore.RED)}").strip()
+        
+        if confirmation != "DELETE ALL TOOLS":
+            return "🔙 Mass deletion cancelled - confirmation mismatch"
+        
+        # Final confirmation
+        final_confirm = input(f"\n{self._colorize('⚠️  Are you absolutely sure? This will remove all {total_tools} tools. (yes/no):', Fore.RED)}").strip().lower()
+        
+        if final_confirm not in ['yes', 'y']:
+            return "🔙 Mass deletion cancelled"
+        
+        try:
+            print(f"\n🗑️  Deleting all {total_tools} tools...")
+            
+            # Create progress bar for mass deletion
+            progress_bar = ProgressBar(
+                total=total_tools,
+                prefix="🗑️ Mass Deletion",
+                suffix="",
+                width=40
+            )
+            
+            # Delete all tools with progress
+            tools_to_delete = list(self.hexstrike_tools.keys())
+            deleted_count = 0
+            
+            for i, tool in enumerate(tools_to_delete):
+                tool_info = self.hexstrike_tools[tool]
+                progress_bar.update(i + 1, f"Deleting /{tool} ({tool_info['name']})")
+                del self.hexstrike_tools[tool]
+                deleted_count += 1
+                time.sleep(0.01)  # Small delay for visual effect
+            
+            progress_bar.finish(f"All {deleted_count} tools deleted successfully")
+            
+            # Show final summary
+            print(f"\n{self._colorize('📊 MASS DELETION SUMMARY:', Fore.RED)}")
+            print(f"✅ Tools deleted: {deleted_count}")
+            print(f"✅ Database cleared: Yes")
+            print(f"✅ Status: Complete")
+            
+            print(f"\n{self._colorize('🔍 POST-DELETION STATUS:', Fore.CYAN)}")
+            print(f"📦 Tools in database: 0")
+            print(f"💡 Note: This doesn't uninstall tools from your system")
+            print(f"💡 You can still use tools directly if they're installed")
+            
+            return f"✅ All {deleted_count} tools have been deleted from the database"
+            
+        except Exception as e:
+            return f"❌ Error during mass deletion: {e}"
+    
     def add_to_history(self, command: str):
         """Add command to history"""
         if command and command not in self.command_history[-10:]:  # Avoid duplicates
@@ -666,7 +846,9 @@ class IBLUCommandHelper:
             "install_gemini": {"description": "Install Gemini model locally", "usage": "install_gemini"},
             "install_llama": {"description": "Install Llama model locally", "usage": "install_llama"},
             "install_models": {"description": "Install all local models", "usage": "install_models"},
-            "llama_models": {"description": "List and select available Llama models", "usage": "llama_models"},
+            "llama_models": {"description": "List and manage available Llama models", "usage": "llama_models"},
+            "delete_llama": {"description": "Delete a local Llama model", "usage": "delete_llama"},
+            "delete_tools": {"description": "Delete HexStrike tools (one by one or all)", "usage": "delete_tools"},
             "stack_models": {"description": "Stack multiple models for enhanced responses", "usage": "stack_models"},
             "model_chat": {"description": "Enable models to communicate with each other", "usage": "model_chat"}
         }
@@ -1608,6 +1790,11 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
             return self.install_all_local_models()
         elif cmd == "llama_models":
             return self.list_and_select_llama_models()
+        elif cmd == "delete_llama":
+            available_models = self.get_available_llama_models()
+            return self.delete_llama_model(available_models)
+        elif cmd == "delete_tools":
+            return self.command_helper.show_tools_list()
         elif cmd == "stack_models":
             return self.stack_models_response()
         elif cmd == "model_chat":
@@ -2759,6 +2946,27 @@ Provide step-by-step technical details while maintaining educational context and
                 marker = "⭐" if "3.1" in model else "  "
                 print(f"  {i}. {marker} {model}")
             
+            print(f"\n{self._colorize('🔧 Management Options:', Fore.MAGENTA)}")
+            print("  d. Delete a model")
+            print("  r. Refresh model list")
+            print("  x. Back to main menu")
+            
+            # Get user choice
+            choice = input(f"\n{self._colorize('🎯 Choose option (1-{len(available_models)}, d, r, x):', Fore.YELLOW)}").strip()
+            
+            # Handle different choices
+            if choice.lower() == 'x':
+                return "🔙 Returned to main menu"
+            elif choice.lower() == 'r':
+                return self.list_and_select_llama_models()  # Refresh
+            elif choice.lower() == 'd':
+                return self.delete_llama_model(available_models)
+            elif choice.isdigit() and 1 <= int(choice) <= len(available_models):
+                selected_model = available_models[int(choice) - 1]
+                return f"🦙 Selected model: {selected_model}\n💡 This model will be used for Llama API calls"
+            else:
+                return "❌ Invalid choice. Please try again."
+            
             print(f"\n{self._colorize('💡 Model Information:', Fore.YELLOW)}")
             print("⭐ Llama 3.1 models are preferred for better performance")
             print("📦 Models are automatically selected based on availability")
@@ -2781,6 +2989,109 @@ Provide step-by-step technical details while maintaining educational context and
             
         except Exception as e:
             return f"❌ Error checking models: {e}"
+    
+    def delete_llama_model(self, available_models: List[str]) -> str:
+        """Delete a selected Llama model"""
+        print(f"\n{self._colorize('🗑️  Delete Llama Model', Fore.RED)}")
+        print("=" * 50)
+        
+        if not available_models:
+            return "❌ No models available to delete"
+        
+        print(f"\n{self._colorize('📋 Available models for deletion:', Fore.YELLOW)}")
+        for i, model in enumerate(available_models, 1):
+            size_info = self.get_model_size(model)
+            print(f"  {i}. {model} {size_info}")
+        
+        print(f"\n{self._colorize('⚠️  WARNING: This will permanently remove the model!', Fore.RED)}")
+        print(f"{self._colorize('💡 Deleted models must be re-downloaded to use again', Fore.YELLOW)}")
+        
+        choice = input(f"\n{self._colorize('🎯 Choose model to delete (1-{len(available_models)}) or 0 to cancel:', Fore.YELLOW)}").strip()
+        
+        if choice == '0':
+            return "🔙 Model deletion cancelled"
+        
+        if not choice.isdigit() or not (1 <= int(choice) <= len(available_models)):
+            return "❌ Invalid choice. Please try again."
+        
+        selected_model = available_models[int(choice) - 1]
+        
+        # Confirmation
+        confirm = input(f"\n{self._colorize(f'⚠️  Are you sure you want to delete {selected_model}? (yes/no):', Fore.RED)}").strip().lower()
+        
+        if confirm not in ['yes', 'y']:
+            return "🔙 Model deletion cancelled"
+        
+        try:
+            print(f"\n🗑️  Deleting {selected_model}...")
+            
+            # Create progress bar for deletion
+            progress_bar = ProgressBar(
+                total=100,
+                prefix=f"🗑️ {selected_model}",
+                suffix="",
+                width=40
+            )
+            
+            # Simulate deletion progress
+            phases = [
+                (0, 20, "Stopping model processes..."),
+                (20, 40, "Removing model files..."),
+                (40, 80, "Cleaning up cache..."),
+                (80, 95, "Updating registry..."),
+                (95, 100, "Finalizing...")
+            ]
+            
+            for start, end, phase_msg in phases:
+                for i in range(end - start):
+                    progress = start + i
+                    progress_bar.update(progress, phase_msg)
+                    time.sleep(0.02)
+            
+            # Actual deletion command
+            delete_cmd = subprocess.run(['ollama', 'rm', selected_model], 
+                                     capture_output=True, text=True, timeout=60)
+            
+            if delete_cmd.returncode == 0:
+                progress_bar.finish(f"{selected_model} deleted successfully")
+                
+                # Show summary
+                print(f"\n{self._colorize('📊 Deletion Summary:', Fore.GREEN)}")
+                print(f"✅ Model: {selected_model}")
+                print(f"✅ Space freed: {self.get_model_size(selected_model)}")
+                print(f"✅ Status: Successfully removed")
+                
+                # Refresh available models
+                remaining_models = self.get_available_llama_models()
+                if remaining_models:
+                    print(f"\n{self._colorize(f'📦 Remaining models: {len(remaining_models)}', Fore.CYAN)}")
+                    for model in remaining_models:
+                        print(f"  • {model}")
+                else:
+                    print(f"\n{self._colorize('⚠️  No Llama models remaining', Fore.YELLOW)}")
+                    print("💡 Use /install_llama to install new models")
+                
+                return f"✅ {selected_model} has been deleted successfully"
+            else:
+                progress_bar.error(f"Failed to delete {selected_model}")
+                return f"❌ Failed to delete {selected_model}: {delete_cmd.stderr}"
+                
+        except subprocess.TimeoutExpired:
+            return f"❌ Deletion timeout for {selected_model}"
+        except Exception as e:
+            return f"❌ Error deleting {selected_model}: {e}"
+    
+    def get_model_size(self, model_name: str) -> str:
+        """Get estimated size of a model"""
+        # Estimated sizes based on model names
+        if "3.1" in model_name and "8b" in model_name.lower():
+            return "(~4.9GB)"
+        elif "llama2" in model_name.lower():
+            return "(~4.1GB)"
+        elif "70b" in model_name.lower():
+            return "(~39GB)"
+        else:
+            return "(~4GB)"
     
     def connect_mcp(self):
         """Connect to MCP server"""
