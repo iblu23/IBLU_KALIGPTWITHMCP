@@ -965,36 +965,36 @@ Focus on technical accuracy and completeness. Students learn best from detailed,
         
         if confirm in ['yes', 'y']:
             if RICH_AVAILABLE:
-                # Use rich progress bar for installation
+                # Use rich progress bar for installation with colors
                 with Progress(
-                    SpinnerColumn(),
-                    TextColumn("[bold green]{task.description}"),
-                    BarColumn(),
-                    TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
+                    SpinnerColumn(style="bold magenta"),
+                    TextColumn("[bold cyan]{task.description}"),
+                    BarColumn(complete_style="bold green", finished_style="bold green"),
+                    TextColumn("[bold yellow][progress.percentage]{task.percentage:>3.0f}%"),
                     TimeElapsedColumn(),
                     console=console
                 ) as progress:
-                    task = progress.add_task(f"Installing {tool_name}...", total=100)
+                    task = progress.add_task(f"[bold cyan]Installing {tool_name}...", total=100)
                     
-                    # Simulate installation steps with progress
-                    progress.update(task, advance=20, description=f"Updating package lists...")
+                    # Simulate installation steps with progress and colors
+                    progress.update(task, advance=20, description=f"[bold blue]Updating package lists...")
                     time.sleep(0.3)
                     
-                    progress.update(task, advance=20, description=f"Downloading {tool_name}...")
+                    progress.update(task, advance=20, description=f"[bold yellow]Downloading {tool_name}...")
                     
                     # Run actual installation
                     try:
                         result = subprocess.run(['sudo', 'apt', 'install', '-y', tool_name], 
                                               capture_output=True, text=True)
                         
-                        progress.update(task, advance=40, description=f"Installing {tool_name}...")
+                        progress.update(task, advance=40, description=f"[bold magenta]Installing {tool_name}...")
                         time.sleep(0.2)
                         
-                        progress.update(task, advance=20, description=f"Configuring {tool_name}...")
+                        progress.update(task, advance=20, description=f"[bold cyan]Configuring {tool_name}...")
                         time.sleep(0.2)
                         
                         if result.returncode == 0:
-                            progress.update(task, completed=100, description=f"✅ {tool_name} installed successfully!")
+                            progress.update(task, completed=100, description=f"[bold green]✅ {tool_name} installed successfully!")
                             time.sleep(0.5)
                             
                             console.print(f"\n[bold green]✅ Successfully installed {tool_name}![/bold green]\n")
@@ -1570,15 +1570,15 @@ Focus on technical accuracy and completeness. Students learn best from detailed,
     def call_single_provider(self, provider: Provider, system_prompt: str, user_message: str, api_key: str) -> str:
         """Call a single AI provider with progress animation"""
         if RICH_AVAILABLE:
-            # Use rich progress bar
+            # Use rich progress bar with colors
             with Progress(
-                SpinnerColumn(),
-                TextColumn("[bold cyan]{task.description}"),
-                BarColumn(),
+                SpinnerColumn(style="bold cyan"),
+                TextColumn("[bold magenta]{task.description}"),
+                BarColumn(complete_style="bold blue", pulse_style="bold yellow"),
                 TimeElapsedColumn(),
                 console=console
             ) as progress:
-                task = progress.add_task(f"🤖 {provider.value.title()} is thinking...", total=None)
+                task = progress.add_task(f"[bold cyan]🤖 {provider.value.title()} is thinking...", total=None)
                 
                 if provider == Provider.PERPLEXITY:
                     result = self.call_perplexity_api(system_prompt, user_message, api_key)
