@@ -1297,23 +1297,20 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
         print(f"🔗 MCP Connected: {'✅ Yes' if self.mcp_connected else '❌ No'}")
         
         print(f"\n{self._colorize('🔧 Configuration Options:', Fore.CYAN)}")
-        print(f"  1. Switch AI Provider")
-        print(f"  2. Toggle Rephrasing Mode")
-        print(f"  3. Check MCP Status")
-        print(f"  4. Show API Keys Status")
-        print(f"  5. Back to main menu")
+        print(f"  1. Toggle Rephrasing Mode")
+        print(f"  2. Check MCP Status")
+        print(f"  3. Show API Keys Status")
+        print(f"  4. Back to main menu")
         
-        choice = input(f"\n{self._colorize('🎯 Choose option (1-5):', Fore.YELLOW)}").strip()
+        choice = input(f"\n{self._colorize('🎯 Choose option (1-4):', Fore.YELLOW)}").strip()
         
         if choice == '1':
-            return self.switch_ai_provider()
-        elif choice == '2':
             return self.toggle_rephrasing_mode()
-        elif choice == '3':
+        elif choice == '2':
             return self.check_mcp_status()
-        elif choice == '4':
+        elif choice == '3':
             return self.show_api_keys_status()
-        elif choice == '5':
+        elif choice == '4':
             return self.show_main_menu()
         else:
             return f"❌ Invalid choice: {choice}"
@@ -1662,35 +1659,47 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
             system_prompt = self.SYSTEM_PROMPT
             user_message = message
         
-        # Check if multi-AI mode is requested (check for all available providers)
+        # Get all available providers with configured keys
         available_providers = []
-        for provider in [Provider.PERPLEXITY, Provider.OPENAI, Provider.GEMINI, Provider.MISTRAL]:
-            if self.get_provider_keys(provider):
-                available_providers.append(provider)
+        for provider in Provider:
+            provider_keys = self.get_provider_keys(provider)
+            if provider_keys:
+                available_providers.append((provider, provider_keys[0]))
         
-        # If multiple providers available and user wants comprehensive answer, query all
-        if len(available_providers) > 1 and any(word in message.lower() for word in ['comprehensive', 'complete', 'all', 'everything']):
-            return self.query_all_providers(system_prompt, user_message, available_providers)
+        if not available_providers:
+            return "❌ No API keys configured. Please configure API keys first."
         
-        # Single provider mode
-        provider_keys = self.get_provider_keys(self.current_ai_provider)
+        # Try each available provider in order
+        for provider, api_key in available_providers:
+            try:
+                print(f"🤖 Trying {provider.value.title()}...")
+                response = self.call_single_provider(provider, system_prompt, user_message, api_key)
+                
+                # Check for refusal and auto-enable rephrasing mode
+                if self.detect_refusal(response) and not self.rephrasing_mode:
+                    print(f"\n🔓 Detected refusal - Auto-enabling rephrasing mode and retrying...\n")
+                    self.rephrasing_mode = True
+                    return self.get_ai_response(message)  # Retry with rephrasing
+                
+                # Success - update current provider and return response
+                self.current_ai_provider = provider
+                return response
+                
+            except Exception as e:
+                print(f"❌ {provider.value.title()} Error: {str(e)}")
+                continue
         
-        if not provider_keys:
-            return f"❌ No API keys configured for {self.current_ai_provider.value}\n\n💡 Add API keys with: ./quick_setup.sh"
+        # All providers failed
+        error_msg = "❌ All configured providers failed:\n"
+        for provider, api_key in available_providers:
+            try:
+                # Try one more time to get specific error
+                self.call_single_provider(provider, system_prompt, user_message, api_key)
+            except Exception as e:
+                error_msg += f"  • {provider.value.title()}: {str(e)}\n"
         
-        # Try to call the AI provider
-        try:
-            response = self.call_single_provider(self.current_ai_provider, system_prompt, user_message, provider_keys[0])
-            
-            # Check for refusal and auto-enable rephrasing mode
-            if self.detect_refusal(response) and not self.rephrasing_mode:
-                print(f"\n🔓 Detected refusal - Auto-enabling rephrasing mode and retrying...\n")
-                self.rephrasing_mode = True
-                return self.get_ai_response(message)  # Retry with rephrasing
-            
-            return response
-        except Exception as e:
-            return f"❌ Error calling AI provider: {e}\n\n💡 Check your API key and internet connection"
+        error_msg += "\n💡 Please check your API keys or internet connection."
+        return error_msg
     
     def detect_refusal(self, response: str) -> bool:
         """Detect if AI refused to answer"""
