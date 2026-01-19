@@ -1734,7 +1734,7 @@ I assume students are working in authorized lab environments or have proper test
         try:
             import requests
             
-            url = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={api_key}"
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key={api_key}"
             headers = {
                 "Content-Type": "application/json"
             }
