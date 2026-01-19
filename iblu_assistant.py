@@ -1829,14 +1829,20 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
     
     def list_available_models(self) -> str:
         """List all available AI models (both cloud and local)"""
-        # Enhanced header with rainbow gradient effect
-        header_border = f"{Fore.LIGHTBLUE_EX}{'╔' + '═' * 78 + '╗'}{Style.RESET_ALL}"
-        header_title = f"{Fore.LIGHTBLUE_EX}║{Style.RESET_ALL} {Style.BRIGHT}{Back.BLUE}{Fore.WHITE}🤖 AVAILABLE AI MODELS{Style.RESET_ALL} {Fore.LIGHTBLUE_EX}{' ' * 46}║{Style.RESET_ALL}"
-        header_border2 = f"{Fore.LIGHTBLUE_EX}{'╚' + '═' * 78 + '╝'}{Style.RESET_ALL}"
+        # Enhanced overview section with gradient colors
+        overview_border = f"{Fore.LIGHTGREEN_EX}┌─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}"
+        overview_title = f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL} {Style.BRIGHT}{Back.GREEN}{Fore.WHITE}📊 MODEL STATUS OVERVIEW:{Style.RESET_ALL} {Fore.LIGHTGREEN_EX}{' ' * 44}│{Style.RESET_ALL}"
+        overview_border2 = f"{Fore.LIGHTGREEN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}"
         
-        print(f"\n{header_border}")
-        print(f"{header_title}")
-        print(f"{header_border2}")
+        print(f"\n{overview_border}")
+        print(f"{overview_title}")
+        print(f"{overview_border2}")
+        
+        # Add description for MODEL STATUS OVERVIEW
+        print(f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}   {Fore.CYAN}📈 Real-time status of all configured and available AI models{Style.RESET_ALL}")
+        print(f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}   {Fore.CYAN}🔍 Shows cloud API status and local model availability{Style.RESET_ALL}")
+        print(f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}   {Fore.CYAN}⚡ Includes model capabilities and download instructions{Style.RESET_ALL}")
+        print(f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}")
         
         # Check cloud providers
         cloud_models = []
@@ -1858,15 +1864,6 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
                         local_models.append((Provider.LLAMA, model_name, model.get('size', 0)))
         except:
             pass
-        
-        # Enhanced overview section with gradient colors
-        overview_border = f"{Fore.LIGHTGREEN_EX}┌─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}"
-        overview_title = f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL} {Style.BRIGHT}{Back.GREEN}{Fore.WHITE}📊 MODEL STATUS OVERVIEW:{Style.RESET_ALL} {Fore.LIGHTGREEN_EX}{' ' * 44}│{Style.RESET_ALL}"
-        overview_border2 = f"{Fore.LIGHTGREEN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}"
-        
-        print(f"\n{overview_border}")
-        print(f"{overview_title}")
-        print(f"{overview_border2}")
         
         # Initialize variables before using them
         local_mistral_available = False
