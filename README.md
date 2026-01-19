@@ -342,15 +342,6 @@ sudo ./install_hexstrike_tools.sh
 
 ---
 
-## 📈 **Roadmap**
-
-### **Upcoming Features**
-- 🌐 **Web interface** for remote access
-- 📱 **Mobile app** for on-the-go testing
-- 🔌 **Plugin system** for custom tools
-- 📊 **Dashboard** for project management
-- 🤝 **Team collaboration** features
-
 ### **Contributing**
 - 🐛 **Bug reports** - Use GitHub Issues
 - 💡 **Feature requests** - Suggest improvements
