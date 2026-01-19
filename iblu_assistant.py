@@ -1124,8 +1124,6 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
         self.config = config
         self.conversation_history: List[Dict] = []
         self.command_history: List[str] = []
-        self.mcp_server_process = None
-        self.mcp_connected = False
         self.current_ai_provider = Provider.OPENAI
         self.rephrasing_mode = False
         
@@ -2105,36 +2103,25 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
         print(f"\n{self._colorize('🔗 HexStrike MCP Server Verification', Fore.MAGENTA)}")
         print("=" * 50)
         
-        # Check MCP server file
-        mcp_server_exists = os.path.exists('hexstrike_mcp_server.py')
-        print(f"📁 MCP Server File: {'✅ Found' if mcp_server_exists else '❌ Not found'}")
-        
-        # Check MCP server process
-        if self.mcp_connected:
-            print(f"🔗 MCP Connection: ✅ Connected")
-        else:
-            print(f"🔗 MCP Connection: ❌ Disconnected")
-        
         # Check installation script
         installer_exists = os.path.exists('install_hexstrike_tools.sh')
-        print(f"📦 Installer Script: {'✅ Found' if installer_exists else '❌ Not found'}")
+        print(f"📁 Installation Script: {'✅ Found' if installer_exists else '❌ Not found'}")
         
-        # Check tools availability
+        # Check available tools
         available_tools = len(self.command_helper.hexstrike_tools)
-        installed_tools = sum(1 for tool in self.command_helper.hexstrike_tools.keys() if self.check_tool_installed(tool))
         print(f"🛠️  Available Tools: {available_tools}")
-        print(f"✅ Installed Tools: {installed_tools}")
         
-        print(f"\n{self._colorize('🔧 Manual MCP Server Test:', Fore.CYAN)}")
-        print(f"  python3 hexstrike_mcp_server.py")
+        # Check installed tools
+        installed_tools = len([tool for tool in self.command_helper.hexstrike_tools.keys()])
+        print(f"✅ Available Tools: {installed_tools}")
         
         print(f"\n{self._colorize('🔧 Manual Installation Test:', Fore.CYAN)}")
         print(f"  sudo ./install_hexstrike_tools.sh")
         
-        if mcp_server_exists and installer_exists and available_tools > 0:
-            print(f"\n{Fore.GREEN}✅ HexStrike MCP components are ready!{Style.RESET_ALL}")
-            print(f"💡 Run 'python3 hexstrike_mcp_server.py' to start the MCP server")
-            return f"🔗 MCP verification completed successfully!"
+        if installer_exists and available_tools > 0:
+            print(f"\n{Fore.GREEN}✅ HexStrike components are ready!{Style.RESET_ALL}")
+            print(f"💡 Run './install_hexstrike_tools.sh' to install tools")
+            return f"🔧 Verification completed successfully!"
         else:
             print(f"\n{Fore.YELLOW}⚠️  Some components may be missing{Style.RESET_ALL}")
             return f"🔧 Please ensure all components are installed"
@@ -2146,30 +2133,26 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
         
         print(f"🔑 Current AI Provider: {self.current_ai_provider}")
         print(f"🔓 Rephrasing Mode: {'✅ Enabled' if self.rephrasing_mode else '❌ Disabled'}")
-        print(f"🔗 MCP Connected: {'✅ Yes' if self.mcp_connected else '❌ No'}")
         
         print(f"\n{self._colorize('🔧 Configuration Options:', Fore.CYAN)}")
         print(f"  1. Switch AI Provider")
         print(f"  2. Toggle Rephrasing Mode")
-        print(f"  3. Check MCP Status")
-        print(f"  4. Show API Keys Status")
-        print(f"  5. Install Local Models")
-        print(f"  6. Back to main menu")
+        print(f"  3. Show API Keys Status")
+        print(f"  4. Install Local Models")
+        print(f"  5. Back to main menu")
         
-        choice = input(f"\n{self._colorize('🎯 Choose option (1-6):', Fore.YELLOW)}").strip()
+        choice = input(f"\n{self._colorize('🎯 Choose option (1-5):', Fore.YELLOW)}").strip()
         
         if choice == '1':
             return self.switch_ai_provider()
         elif choice == '2':
             return self.toggle_rephrasing_mode()
         elif choice == '3':
-            return self.check_mcp_status()
-        elif choice == '4':
             return self.show_api_keys_status()
-        elif choice == '5':
+        elif choice == '4':
             return self.install_local_models_menu()
-        elif choice == '6':
-            return self.show_main_menu()
+        elif choice == '5':
+            return ""
         else:
             return f"❌ Invalid choice: {choice}"
     
@@ -2513,6 +2496,17 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
         else:
             status += f"\n❌ MCP server is not running.\n"
             status += f"💡 Start it with: python3 hexstrike_mcp_server.py"
+        
+        return status
+    
+    def show_system_status(self) -> str:
+        """Show system status"""
+        status = f"🔗 System Status:\n"
+        status += f"🛠️  Available Tools: {len(self.command_helper.hexstrike_tools)}\n"
+        status += f"📁 Installation Script: install_hexstrike_tools.sh\n"
+        
+        status += f"\n✅ HexStrike components are ready!"
+        status += f"💡 Run './install_hexstrike_tools.sh' to install tools"
         
         return status
     
@@ -3099,7 +3093,6 @@ Provide step-by-step technical details while maintaining educational context and
         status += f"🐍 Python: {COLORAMA_AVAILABLE}\n"
         status += f"💬 Conversation History: {len(self.conversation_history)} messages\n"
         status += f"📝 Command History: {len(self.command_history)} commands\n"
-        status += f"🔗 MCP Connection: {'Connected' if self.mcp_connected else 'Disconnected'}\n"
         
         # Check local model status
         status += f"\n{self._colorize('🤖 Local Model Status:', Fore.CYAN)}\n"
@@ -3994,24 +3987,6 @@ Provide step-by-step technical details while maintaining educational context and
             install_progress.finish("Installation failed")
             return f"❌ Failed to install {model_name}: {str(e)}"
     
-    def connect_mcp(self):
-        """Connect to MCP server"""
-        if self.mcp_connected:
-            return "✅ Already connected to MCP server"
-        
-        try:
-            # Try to start MCP server
-            if os.path.exists('mcp_server.py'):
-                self.mcp_server_process = subprocess.Popen(['python3', 'mcp_server.py'])
-                time.sleep(2)
-                self.mcp_connected = True
-                return "✅ Connected to MCP server"
-                    return "❌ Failed to start MCP server"
-            else:
-                return "❌ MCP server script not found"
-        except Exception as e:
-            return f"❌ Error connecting to MCP: {e}"
-    
     def collaborative_model_response(self, user_message: str) -> str:
         """All available models communicate to provide comprehensive response"""
         print(f"\n{self._colorize('🤖 Collaborative AI Network', Fore.CYAN)}")
@@ -4366,40 +4341,6 @@ Provide a unified, enhanced response that combines the strengths of all models w
             full_conversation += f"**{model} (Turn {i}):**\n{content}\n\n"
         
         return f"🤖 IBLU (Model Communication):\n\n{full_conversation}"
-    
-    def connect_mcp(self):
-        """Connect to MCP server"""
-        if self.mcp_connected:
-            return "✅ Already connected to MCP server"
-        
-        try:
-            # Try to start MCP server
-            if os.path.exists('mcp_server.py'):
-                self.mcp_server_process = subprocess.Popen(['python3', 'mcp_server.py'])
-                time.sleep(2)  # Give it time to start
-                if self.mcp_server_process.poll() is None:
-                    self.mcp_connected = True
-                    return "✅ Connected to MCP server"
-                else:
-                    return "❌ Failed to start MCP server"
-            else:
-                return "❌ MCP server file not found"
-        except Exception as e:
-            return f"❌ Error connecting to MCP: {e}"
-    
-    def disconnect_mcp(self):
-        """Disconnect from MCP server"""
-        if not self.mcp_connected:
-            return "⚠️ Not connected to MCP server"
-        
-        try:
-            if self.mcp_server_process:
-                self.mcp_server_process.terminate()
-                self.mcp_server_process = None
-            self.mcp_connected = False
-            return "✅ Disconnected from MCP server"
-        except Exception as e:
-            return f"❌ Error disconnecting: {e}"
     
     def add_to_command_history(self, command: str):
         """Add command to history"""
