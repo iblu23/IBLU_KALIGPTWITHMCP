@@ -108,7 +108,7 @@ class HexStrikeMCPServer:
         
         for tool in self.config.get("tools", []):
             if self.check_tool_installed(tool):
-                logger.info(f"✅ {tool_name} is already installed")
+                logger.info(f"✅ {tool} is already installed")
                 installation_status[tool] = True
             elif self.config.get("auto_install", True):
                 logger.info(f"📦 Installing {tool}...")
