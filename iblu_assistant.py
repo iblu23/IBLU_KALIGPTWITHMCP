@@ -964,23 +964,66 @@ Focus on technical accuracy and completeness. Students learn best from detailed,
         confirm = input(f"\n{self._colorize('🔧 Install ' + tool_name + '? (yes/no):', Fore.YELLOW)} ").strip().lower()
         
         if confirm in ['yes', 'y']:
-            print(f"\n{self._colorize('🚀 Installing ' + tool_name + '...', Fore.GREEN)}")
-            
-            # Run installation command
-            try:
-                result = subprocess.run(['sudo', 'apt', 'install', '-y', tool_name], 
-                                      capture_output=False, text=True)
-                
-                if result.returncode == 0:
-                    print(f"\n{self._colorize('✅ Successfully installed ' + tool_name + '!', Fore.GREEN)}")
+            if RICH_AVAILABLE:
+                # Use rich progress bar for installation
+                with Progress(
+                    SpinnerColumn(),
+                    TextColumn("[bold green]{task.description}"),
+                    BarColumn(),
+                    TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
+                    TimeElapsedColumn(),
+                    console=console
+                ) as progress:
+                    task = progress.add_task(f"Installing {tool_name}...", total=100)
                     
-                    # Show usage commands
-                    self.show_tool_usage(tool_name, tool_info)
-                    return f"✅ {tool_name} installed and ready to use!"
-                else:
-                    return f"❌ Installation failed. Try manually: sudo apt install {tool_name}"
-            except Exception as e:
-                return f"❌ Error during installation: {e}"
+                    # Simulate installation steps with progress
+                    progress.update(task, advance=20, description=f"Updating package lists...")
+                    time.sleep(0.3)
+                    
+                    progress.update(task, advance=20, description=f"Downloading {tool_name}...")
+                    
+                    # Run actual installation
+                    try:
+                        result = subprocess.run(['sudo', 'apt', 'install', '-y', tool_name], 
+                                              capture_output=True, text=True)
+                        
+                        progress.update(task, advance=40, description=f"Installing {tool_name}...")
+                        time.sleep(0.2)
+                        
+                        progress.update(task, advance=20, description=f"Configuring {tool_name}...")
+                        time.sleep(0.2)
+                        
+                        if result.returncode == 0:
+                            progress.update(task, completed=100, description=f"✅ {tool_name} installed successfully!")
+                            time.sleep(0.5)
+                            
+                            console.print(f"\n[bold green]✅ Successfully installed {tool_name}![/bold green]\n")
+                            
+                            # Show usage commands
+                            self.show_tool_usage(tool_name, tool_info)
+                            return f"✅ {tool_name} installed and ready to use!"
+                        else:
+                            progress.update(task, description=f"❌ Installation failed")
+                            return f"❌ Installation failed. Try manually: sudo apt install {tool_name}"
+                    except Exception as e:
+                        progress.update(task, description=f"❌ Error occurred")
+                        return f"❌ Error during installation: {e}"
+            else:
+                # Fallback without rich
+                print(f"\n{self._colorize('🚀 Installing ' + tool_name + '...', Fore.GREEN)}")
+                
+                try:
+                    result = subprocess.run(['sudo', 'apt', 'install', '-y', tool_name], 
+                                          capture_output=False, text=True)
+                    
+                    if result.returncode == 0:
+                        print(f"\n{self._colorize('✅ Successfully installed ' + tool_name + '!', Fore.GREEN)}")
+                        self.show_tool_usage(tool_name, tool_info)
+                        return f"✅ {tool_name} installed and ready to use!"
+                    else:
+                        return f"❌ Installation failed. Try manually: sudo apt install {tool_name}"
+                except Exception as e:
+                    return f"❌ Error during installation: {e}"
         else:
             return "❌ Installation cancelled"
     
@@ -1525,24 +1568,50 @@ Focus on technical accuracy and completeness. Students learn best from detailed,
             return "❌ All providers failed or refused. Try enabling rephrasing mode."
     
     def call_single_provider(self, provider: Provider, system_prompt: str, user_message: str, api_key: str) -> str:
-        """Call a single AI provider with loading animation"""
-        spinner = Spinner(f"🤖 {provider.value.title()} is thinking")
-        spinner.start()
-        
-        try:
-            if provider == Provider.PERPLEXITY:
-                result = self.call_perplexity_api(system_prompt, user_message, api_key)
-            elif provider == Provider.OPENAI:
-                result = self.call_openai_api(system_prompt, user_message, api_key)
-            elif provider == Provider.GEMINI:
-                result = self.call_gemini_api(system_prompt, user_message, api_key)
-            elif provider == Provider.MISTRAL:
-                result = self.call_mistral_api(system_prompt, user_message, api_key)
-            else:
-                result = f"❌ Provider {provider.value} not implemented yet"
-            return result
-        finally:
-            spinner.stop()
+        """Call a single AI provider with progress animation"""
+        if RICH_AVAILABLE:
+            # Use rich progress bar
+            with Progress(
+                SpinnerColumn(),
+                TextColumn("[bold cyan]{task.description}"),
+                BarColumn(),
+                TimeElapsedColumn(),
+                console=console
+            ) as progress:
+                task = progress.add_task(f"🤖 {provider.value.title()} is thinking...", total=None)
+                
+                if provider == Provider.PERPLEXITY:
+                    result = self.call_perplexity_api(system_prompt, user_message, api_key)
+                elif provider == Provider.OPENAI:
+                    result = self.call_openai_api(system_prompt, user_message, api_key)
+                elif provider == Provider.GEMINI:
+                    result = self.call_gemini_api(system_prompt, user_message, api_key)
+                elif provider == Provider.MISTRAL:
+                    result = self.call_mistral_api(system_prompt, user_message, api_key)
+                else:
+                    result = f"❌ Provider {provider.value} not implemented yet"
+                
+                progress.update(task, completed=True)
+                return result
+        else:
+            # Fallback to simple spinner
+            spinner = Spinner(f"🤖 {provider.value.title()} is thinking")
+            spinner.start()
+            
+            try:
+                if provider == Provider.PERPLEXITY:
+                    result = self.call_perplexity_api(system_prompt, user_message, api_key)
+                elif provider == Provider.OPENAI:
+                    result = self.call_openai_api(system_prompt, user_message, api_key)
+                elif provider == Provider.GEMINI:
+                    result = self.call_gemini_api(system_prompt, user_message, api_key)
+                elif provider == Provider.MISTRAL:
+                    result = self.call_mistral_api(system_prompt, user_message, api_key)
+                else:
+                    result = f"❌ Provider {provider.value} not implemented yet"
+                return result
+            finally:
+                spinner.stop()
     
     def get_provider_keys(self, provider: Provider) -> List[str]:
         """Get API keys for a specific provider"""
