@@ -14,6 +14,7 @@ import random
 import subprocess
 import threading
 import readline
+import atexit
 from typing import List, Dict, Optional, Any
 from dataclasses import dataclass
 from enum import Enum
