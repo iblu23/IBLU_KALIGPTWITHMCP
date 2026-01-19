@@ -171,7 +171,6 @@ Type `/` and press **Tab** to see all available commands:
 ```
 IBLU_KALIGPTWITHMCP/
 ├── 🐍 iblu_assistant.py          # Main assistant application
-├── 🔧 hexstrike_mcp_server.py    # MCP server for tool integration
 ├── 📦 requirements.txt           # Python dependencies
 ├── ⚙️ config.json.example        # Configuration template
 ├── 🔧 setup.sh                   # Interactive setup script
