@@ -5105,15 +5105,16 @@ Provide step-by-step technical details while maintaining educational context and
         print(f"🔄 Initiating collaborative analysis...")
         
         # Phase 1: Parallel initial analysis with Rich progress
+        # Import Rich components at function level for availability throughout
+        from rich.progress import (
+            Progress, SpinnerColumn, TextColumn, BarColumn, 
+            TimeElapsedColumn, TimeRemainingColumn, MofNCompleteColumn,
+            TaskProgressColumn, DownloadColumn, TransferSpeedColumn
+        )
+        from rich.style import Style
+        from rich.text import Text
+        
         if RICH_AVAILABLE:
-            from rich.progress import (
-                Progress, SpinnerColumn, TextColumn, BarColumn, 
-                TimeElapsedColumn, TimeRemainingColumn, MofNCompleteColumn,
-                TaskProgressColumn, DownloadColumn, TransferSpeedColumn
-            )
-            from rich.style import Style
-            from rich.text import Text
-            
             # Create enhanced progress with multiple columns and effects
             with Progress(
                 SpinnerColumn("dots12", style="bold cyan", speed=0.5),
