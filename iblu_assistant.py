@@ -2697,7 +2697,6 @@ def load_config():
             config_data = json.load(f)
         
         return APIConfig(
-            perplexity_keys=config_data.get('perplexity_keys', []),
             openai_keys=config_data.get('openai_keys', []),
             gemini_keys=config_data.get('gemini_keys', []),
             mistral_keys=config_data.get('mistral_keys', []),
@@ -2706,7 +2705,13 @@ def load_config():
         )
     except Exception as e:
         print(f"❌ Error loading config: {e}")
-        return APIConfig(perplexity_keys=[])
+        return APIConfig(
+            openai_keys=[],
+            gemini_keys=[],
+            mistral_keys=[],
+            llama_keys=[],
+            gemini_cli_keys=[]
+        )
 
 def main():
     """Main function"""
