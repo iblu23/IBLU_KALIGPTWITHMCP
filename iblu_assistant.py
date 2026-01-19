@@ -1151,7 +1151,7 @@ You are integrated with advanced security testing capabilities through MCP integ
             combined_message = f"{system_prompt}\n\nUser Query: {user_message}"
             
             payload = {
-                "model": "llama-3.1-sonar-large-128k-online",
+                "model": "llama-3.1-sonar-small-128k-online",
                 "messages": [
                     {"role": "user", "content": combined_message}
                 ],
