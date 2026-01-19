@@ -320,11 +320,11 @@ def load_config():
 
 def main():
     """Main function"""
-    print("🔥 KaliGPT MCP Enhanced - 150 Automated Scans v2.3")
+    print("🔥 IBLU PROFESSIONAL HACKING ASSISTANT v2.3")
     print("=" * 60)
-    print("🚀 Advanced Cybersecurity Automation Platform")
-    print("🧠 Intelligent AI Assistant with MCP Integration")
-    print("🔗 150+ Automated Security Scans & Workflows")
+    print("🐍 Advanced Python Cybersecurity Toolkit")
+    print("🤖 Multiple AI Providers & MCP Integration")
+    print("🛡️ 122+ Professional Security Commands")
     print("=" * 60)
     print()
     
@@ -347,7 +347,7 @@ def main():
     # Main loop
     while True:
         try:
-            user_input = input("🤖 KaliGPT> ").strip()
+            user_input = input("🤖 IBLU> ").strip()
             
             if not user_input:
                 continue
