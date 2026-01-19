@@ -1288,7 +1288,7 @@ Focus on technical accuracy and completeness. Students learn best from detailed,
         try:
             import requests
             
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key={api_key}"
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key={api_key}"
             headers = {
                 "Content-Type": "application/json"
             }
