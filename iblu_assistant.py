@@ -590,31 +590,55 @@ Focus on technical accuracy and completeness. Students learn best from detailed,
         self.command_helper.conversation_history = self.conversation_history
     
     def show_main_menu(self):
-        """Display the main menu"""
-        menu_text = f"""
-{self._colorize('🔥 IBLU PROFESSIONAL HACKING ASSISTANT - MAIN MENU 🔥', Fore.YELLOW)}
-{self._colorize('=' * 60, Fore.CYAN)}
-
-{self._colorize('1. 🧠 IBLU KALIGPT', Fore.GREEN)}  - Multi-AI Assistant (Perplexity, OpenAI, Gemini)
-{self._colorize('   • Auto-rephrasing on refusal detection', Fore.CYAN)}
-{self._colorize('   • Multi-AI simultaneous querying', Fore.CYAN)}
-
-{self._colorize('2. 🎮 Hacking Toys', Fore.BLUE)}  - Install 50+ security tools
-{self._colorize('   • Install all tools at once', Fore.CYAN)}
-{self._colorize('   • Install tools one-by-one with descriptions', Fore.CYAN)}
-{self._colorize('   • Browse tools by category', Fore.CYAN)}
-
-{self._colorize('3. ⚙️  Configuration', Fore.RED)}  - Settings and preferences
-{self._colorize('   • API key management', Fore.CYAN)}
-{self._colorize('   • Rephrasing mode toggle', Fore.CYAN)}
-{self._colorize('   • System configuration', Fore.CYAN)}
-
-{self._colorize('4. 🚪 Exit', Fore.WHITE)}  - Exit the assistant
-
-{self._colorize('💡 Usage:', Fore.YELLOW)} Type the number (1-4) or command name
-{self._colorize('🔥 Ready for professional cybersecurity testing! 🔥', Fore.RED)}
-"""
-        print(menu_text)
+        """Display the main menu with enhanced visual formatting"""
+        if COLORAMA_AVAILABLE:
+            print(f"\n{Fore.CYAN}╔{'═' * 78}╗{Style.RESET_ALL}")
+            print(f"{Fore.CYAN}║{Style.RESET_ALL}{Fore.YELLOW}{' ' * 15}🔥 IBLU PROFESSIONAL HACKING ASSISTANT 🔥{' ' * 15}{Style.RESET_ALL}{Fore.CYAN}║{Style.RESET_ALL}")
+            print(f"{Fore.CYAN}╚{'═' * 78}╝{Style.RESET_ALL}\n")
+            
+            # Menu option 1
+            print(f"{Fore.GREEN}┌─ {Fore.YELLOW}[1]{Fore.GREEN} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
+            print(f"{Fore.GREEN}│{Style.RESET_ALL}  {Fore.YELLOW}🧠 IBLU KALIGPT{Style.RESET_ALL} - Multi-AI Assistant                                {Fore.GREEN}│{Style.RESET_ALL}")
+            print(f"{Fore.GREEN}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} Auto-rephrasing on refusal detection                        {Fore.GREEN}│{Style.RESET_ALL}")
+            print(f"{Fore.GREEN}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} Query multiple AI providers simultaneously                  {Fore.GREEN}│{Style.RESET_ALL}")
+            print(f"{Fore.GREEN}└───────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
+            
+            # Menu option 2
+            print(f"{Fore.BLUE}┌─ {Fore.YELLOW}[2]{Fore.BLUE} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
+            print(f"{Fore.BLUE}│{Style.RESET_ALL}  {Fore.YELLOW}🎮 HACKING TOYS{Style.RESET_ALL} - Install 50+ Security Tools                      {Fore.BLUE}│{Style.RESET_ALL}")
+            print(f"{Fore.BLUE}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} Install all tools at once                                   {Fore.BLUE}│{Style.RESET_ALL}")
+            print(f"{Fore.BLUE}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} Install one-by-one with descriptions                       {Fore.BLUE}│{Style.RESET_ALL}")
+            print(f"{Fore.BLUE}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} Browse by category (Recon, Web, Network, etc.)             {Fore.BLUE}│{Style.RESET_ALL}")
+            print(f"{Fore.BLUE}└───────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
+            
+            # Menu option 3
+            print(f"{Fore.MAGENTA}┌─ {Fore.YELLOW}[3]{Fore.MAGENTA} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
+            print(f"{Fore.MAGENTA}│{Style.RESET_ALL}  {Fore.YELLOW}⚙️  CONFIGURATION{Style.RESET_ALL} - Settings & Preferences                        {Fore.MAGENTA}│{Style.RESET_ALL}")
+            print(f"{Fore.MAGENTA}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} Manage API keys for AI providers                           {Fore.MAGENTA}│{Style.RESET_ALL}")
+            print(f"{Fore.MAGENTA}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} Toggle rephrasing mode                                     {Fore.MAGENTA}│{Style.RESET_ALL}")
+            print(f"{Fore.MAGENTA}└───────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
+            
+            # Menu option 4
+            print(f"{Fore.RED}┌─ {Fore.YELLOW}[4]{Fore.RED} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
+            print(f"{Fore.RED}│{Style.RESET_ALL}  {Fore.YELLOW}🚪 EXIT{Style.RESET_ALL} - Close the assistant                                      {Fore.RED}│{Style.RESET_ALL}")
+            print(f"{Fore.RED}└───────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
+            
+            print(f"{Fore.YELLOW}💡 TIP:{Style.RESET_ALL} Type a number (1-4) or just start chatting with your question!\n")
+        else:
+            # Fallback for no color support
+            print("\n" + "=" * 70)
+            print("    IBLU PROFESSIONAL HACKING ASSISTANT - MAIN MENU")
+            print("=" * 70 + "\n")
+            print("[1] IBLU KALIGPT - Multi-AI Assistant")
+            print("    • Auto-rephrasing on refusal")
+            print("    • Multi-AI querying\n")
+            print("[2] HACKING TOYS - Install Security Tools")
+            print("    • Install all or one-by-one")
+            print("    • Browse by category\n")
+            print("[3] CONFIGURATION - Settings")
+            print("    • API keys, rephrasing mode\n")
+            print("[4] EXIT\n")
+            print("Type a number (1-4) or start chatting!\n")
     
     def handle_menu_choice(self, choice: str) -> str:
         """Handle menu choice"""
@@ -633,18 +657,32 @@ Focus on technical accuracy and completeness. Students learn best from detailed,
     
     def handle_hacking_toys(self):
         """Handle Hacking Toys menu - install tools with descriptions"""
-        print(f"\n{self._colorize('🎮 HACKING TOYS - SECURITY TOOLS INSTALLATION', Fore.YELLOW)}")
-        print(self._colorize('=' * 70, Fore.CYAN))
-        
-        menu = f"""
-{self._colorize('Installation Options:', Fore.GREEN)}
-  {self._colorize('1.', Fore.YELLOW)} Install ALL tools at once (50+ tools)
-  {self._colorize('2.', Fore.YELLOW)} Install tools ONE-BY-ONE (choose by number with descriptions)
-  {self._colorize('3.', Fore.YELLOW)} Back to main menu
-
-{self._colorize('💡 Tip:', Fore.CYAN)} Each tool includes a short description of what it does
-"""
-        print(menu)
+        if COLORAMA_AVAILABLE:
+            print(f"\n{Fore.CYAN}╔{'═' * 78}╗{Style.RESET_ALL}")
+            print(f"{Fore.CYAN}║{Style.RESET_ALL}{Fore.YELLOW}{' ' * 20}🎮 HACKING TOYS INSTALLATION 🎮{' ' * 20}{Style.RESET_ALL}{Fore.CYAN}║{Style.RESET_ALL}")
+            print(f"{Fore.CYAN}╚{'═' * 78}╝{Style.RESET_ALL}\n")
+            
+            print(f"{Fore.GREEN}┌─ {Fore.YELLOW}[1]{Fore.GREEN} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
+            print(f"{Fore.GREEN}│{Style.RESET_ALL}  {Fore.YELLOW}⚡ INSTALL ALL{Style.RESET_ALL} - Quick install 50+ tools                           {Fore.GREEN}│{Style.RESET_ALL}")
+            print(f"{Fore.GREEN}│{Style.RESET_ALL}     {Fore.CYAN}⏱️  Time:{Style.RESET_ALL} 15-30 minutes  {Fore.CYAN}🔑 Requires:{Style.RESET_ALL} sudo                    {Fore.GREEN}│{Style.RESET_ALL}")
+            print(f"{Fore.GREEN}└───────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
+            
+            print(f"{Fore.BLUE}┌─ {Fore.YELLOW}[2]{Fore.BLUE} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
+            print(f"{Fore.BLUE}│{Style.RESET_ALL}  {Fore.YELLOW}🎯 INSTALL ONE-BY-ONE{Style.RESET_ALL} - Choose specific tools                     {Fore.BLUE}│{Style.RESET_ALL}")
+            print(f"{Fore.BLUE}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} Browse numbered list with descriptions                     {Fore.BLUE}│{Style.RESET_ALL}")
+            print(f"{Fore.BLUE}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} Organized by category (Recon, Web, Network, etc.)         {Fore.BLUE}│{Style.RESET_ALL}")
+            print(f"{Fore.BLUE}└───────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
+            
+            print(f"{Fore.MAGENTA}┌─ {Fore.YELLOW}[3]{Fore.MAGENTA} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
+            print(f"{Fore.MAGENTA}│{Style.RESET_ALL}  {Fore.YELLOW}🔙 BACK{Style.RESET_ALL} - Return to main menu                                    {Fore.MAGENTA}│{Style.RESET_ALL}")
+            print(f"{Fore.MAGENTA}└───────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
+        else:
+            print("\n" + "=" * 70)
+            print("    HACKING TOYS - SECURITY TOOLS INSTALLATION")
+            print("=" * 70 + "\n")
+            print("[1] Install ALL tools at once (50+ tools)")
+            print("[2] Install ONE-BY-ONE (choose by number)")
+            print("[3] Back to main menu\n")
         
         choice = input(f"{self._colorize('🎯 Choose option (1-3):', Fore.YELLOW)} ").strip()
         
