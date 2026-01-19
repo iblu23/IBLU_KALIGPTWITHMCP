@@ -1156,7 +1156,7 @@ def main():
 ║      ╠═╣╠═╣║  ╠╩╗   ║ ╠═╣║╣       ║║║║ ║╠╦╝║   ║║                          ║
 ║      ╩ ╩╩ ╩╚═╝╩ ╩   ╩ ╩ ╩╚═╝      ╚╩╝╚═╝╩╚═╩═╝═╩╝   🧠                     ║
 ║                                                                              ║
-║        🔥 IBLU PROFESSIONAL HACKING ASSISTANT v2.3 🔥                        ║
+║        🔥 IBLU PROFESSIONAL HACKING ASSISTANT v2.0 🔥                        ║
 ║        🐍 Advanced Python Cybersecurity Toolkit                              ║
 ║                                                                              ║
 ╠══════════════════════════════════════════════════════════════════════════════╣
@@ -1176,7 +1176,7 @@ def main():
 """
     print(banner)
     
-    print("🔥 IBLU PROFESSIONAL HACKING ASSISTANT v2.3")
+    print("🔥 IBLU PROFESSIONAL HACKING ASSISTANT v2.0")
     print("=" * 60)
     print("🐍 Advanced Python Cybersecurity Toolkit")
     print("🤖 Multiple AI Providers & MCP Integration")
