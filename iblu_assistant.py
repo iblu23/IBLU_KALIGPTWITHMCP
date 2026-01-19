@@ -982,7 +982,7 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
             line10 = f"{Fore.RED}║ {Fore.CYAN}{' '*20}██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║ {Fore.RED}║\n"
             line11 = f"{Fore.RED}║ {Fore.CYAN}{' '*20}╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝ {Fore.RED}║\n"
             line12 = f"{Fore.RED}║ {Fore.CYAN}{' '*20} ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝  {Fore.RED}║\n"
-            line13 = f"{Fore.RED}║ {Style.BRIGHT}{Fore.MAGENTA}{' '*15}🔥🔥🔥 HACK THE WORLD 🔥🔥🔥{Fore.RED}{' '*15}║\n"
+            line13 = f"{Fore.RED}║ {Style.BRIGHT}{Fore.MAGENTA}{' '*15}🔥🔥🔥 HACK MY LIFE 🔥🔥🔥{Fore.RED}{' '*15}║\n"
             banner = border + line1 + line2 + line3 + line4 + line5 + line6 + line7 + line8 + line9 + line10 + line11 + line12 + line13 + border
         else:
             border = "╔" + "═"*78 + "╗\n"
@@ -998,55 +998,72 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
             line10 = "║                     ██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║              ║\n"
             line11 = "║                     ╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝              ║\n"
             line12 = "║                      ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝               ║\n"
-            line13 = "║          🔥🔥🔥 HACK THE WORLD 🔥🔥🔥          ║\n"
+            line13 = "║          🔥🔥🔥 HACK MY LIFE 🔥🔥🔥          ║\n"
             banner = border + line1 + line2 + line3 + line4 + line5 + line6 + line7 + line8 + line9 + line10 + line11 + line12 + line13 + border
         
         print(banner)
         
         if COLORAMA_AVAILABLE:
             # Menu option 1
-            print(f"{Fore.GREEN}┌─ {Fore.YELLOW}[1]{Fore.GREEN} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
-            print(f"{Fore.GREEN}│{Style.RESET_ALL}  {Fore.YELLOW}🧠 IBLU KALIGPT{Style.RESET_ALL} - Multi-AI Assistant                                {Fore.GREEN}│{Style.RESET_ALL}")
+            print(f"{Fore.GREEN}┌─ {Style.BRIGHT}{Fore.YELLOW}[1]{Style.RESET_ALL}{Fore.GREEN} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
+            print(f"{Fore.GREEN}│{Style.RESET_ALL}  {Style.BRIGHT}{Fore.YELLOW}🧠 IBLU KALIGPT{Style.RESET_ALL} - Multi-AI Assistant                                {Fore.GREEN}│{Style.RESET_ALL}")
             print(f"{Fore.GREEN}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} Auto-rephrasing on refusal detection                        {Fore.GREEN}│{Style.RESET_ALL}")
             print(f"{Fore.GREEN}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} Query multiple AI providers simultaneously                  {Fore.GREEN}│{Style.RESET_ALL}")
             print(f"{Fore.GREEN}└───────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
             
             # Menu option 2
-            print(f"{Fore.BLUE}┌─ {Fore.YELLOW}[2]{Fore.BLUE} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
-            print(f"{Fore.BLUE}│{Style.RESET_ALL}  {Fore.YELLOW}🎮 HACKING TOYS{Style.RESET_ALL} - Install 50+ Security Tools                      {Fore.BLUE}│{Style.RESET_ALL}")
+            print(f"{Fore.BLUE}┌─ {Style.BRIGHT}{Fore.YELLOW}[2]{Style.RESET_ALL}{Fore.BLUE} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
+            print(f"{Fore.BLUE}│{Style.RESET_ALL}  {Style.BRIGHT}{Fore.YELLOW}🎮 HACKING TOYS{Style.RESET_ALL} - Install 50+ Security Tools                      {Fore.BLUE}│{Style.RESET_ALL}")
             print(f"{Fore.BLUE}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} Install all tools at once                                   {Fore.BLUE}│{Style.RESET_ALL}")
             print(f"{Fore.BLUE}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} Install one-by-one with descriptions                       {Fore.BLUE}│{Style.RESET_ALL}")
             print(f"{Fore.BLUE}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} Delete tools individually or all at once                     {Fore.BLUE}│{Style.RESET_ALL}")
             print(f"{Fore.BLUE}└───────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
             
             # Menu option 3
-            print(f"{Fore.MAGENTA}┌─ {Fore.YELLOW}[3]{Fore.MAGENTA} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
-            print(f"{Fore.MAGENTA}│{Style.RESET_ALL}  {Fore.YELLOW}🔧 TOOL MANAGEMENT{Style.RESET_ALL} - Advanced Options                          {Fore.MAGENTA}│{Style.RESET_ALL}")
+            print(f"{Fore.MAGENTA}┌─ {Style.BRIGHT}{Fore.YELLOW}[3]{Style.RESET_ALL}{Fore.MAGENTA} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
+            print(f"{Fore.MAGENTA}│{Style.RESET_ALL}  {Style.BRIGHT}{Fore.YELLOW}🔧 TOOL MANAGEMENT{Style.RESET_ALL} - Advanced Options                          {Fore.MAGENTA}│{Style.RESET_ALL}")
             print(f"{Fore.MAGENTA}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} /tools - List all tools with categories                     {Fore.MAGENTA}│{Style.RESET_ALL}")
             print(f"{Fore.MAGENTA}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} /delete_tools - Remove tools from database                {Fore.MAGENTA}│{Style.RESET_ALL}")
             print(f"{Fore.MAGENTA}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} /delete_llama - Remove local Llama models                 {Fore.MAGENTA}│{Style.RESET_ALL}")
             print(f"{Fore.MAGENTA}└───────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
             
             # Menu option 4
-            print(f"{Fore.RED}┌─ {Fore.YELLOW}[4]{Fore.RED} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
-            print(f"{Fore.RED}│{Style.RESET_ALL}  {Fore.YELLOW}🚪 EXIT{Style.RESET_ALL} - Close the assistant                                      {Fore.RED}│{Style.RESET_ALL}")
+            print(f"{Fore.CYAN}┌─ {Style.BRIGHT}{Fore.YELLOW}[4]{Style.RESET_ALL}{Fore.CYAN} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
+            print(f"{Fore.CYAN}│{Style.RESET_ALL}  {Style.BRIGHT}{Fore.YELLOW}⚙️  CONFIGURATION{Style.RESET_ALL} - Settings & Preferences                        {Fore.CYAN}│{Style.RESET_ALL}")
+            print(f"{Fore.CYAN}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} Manage API keys for AI providers                           {Fore.CYAN}│{Style.RESET_ALL}")
+            print(f"{Fore.CYAN}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} Toggle rephrasing mode                                     {Fore.CYAN}│{Style.RESET_ALL}")
+            print(f"{Fore.CYAN}└───────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
+            
+            # Menu option 5
+            print(f"{Fore.RED}┌─ {Style.BRIGHT}{Fore.YELLOW}[5]{Style.RESET_ALL}{Fore.RED} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
+            print(f"{Fore.RED}│{Style.RESET_ALL}  {Style.BRIGHT}{Fore.YELLOW}🚪 EXIT{Style.RESET_ALL} - Close the assistant                                      {Fore.RED}│{Style.RESET_ALL}")
             print(f"{Fore.RED}└───────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
             
-            print(f"{Fore.YELLOW}💡 TIP:{Style.RESET_ALL} Type a number (1-5) or just start chatting with your question!\n")
+            print(f"{Style.BRIGHT}{Fore.YELLOW}💡 TIP:{Style.RESET_ALL} Type a number (1-5) or just start chatting with your question!\n")
         else:
             # Fallback for no color support - simple menu options
-            print("[1] IBLU KALIGPT - Multi-AI Assistant")
-            print("    • Auto-rephrasing on refusal")
-            print("    • Multi-AI querying\n")
-            print("[2] HACKING TOYS - Install Security Tools")
-            print("    • Install all or one-by-one")
-            print("    • Browse by category\n")
-            print("[3] TOOL MANAGEMENT - Advanced Options")
-            print("    • List/delete tools and models\n")
-            print("[4] CONFIGURATION - Settings")
-            print("    • API keys, rephrasing mode\n")
-            print("[5] EXIT\n")
-            print("Type a number (1-5) or start chatting!\n")
+            print(f"\n{'='*60}")
+            print(f"{'='*20} IBLU KALIGPT MAIN MENU {'='*20}")
+            print(f"{'='*60}\n")
+            
+            print(f"[1] 🧠 IBLU KALIGPT - Multi-AI Assistant")
+            print(f"    • Auto-rephrasing on refusal")
+            print(f"    • Multi-AI querying\n")
+            
+            print(f"[2] 🎮 HACKING TOYS - Install Security Tools")
+            print(f"    • Install all or one-by-one")
+            print(f"    • Browse by category\n")
+            
+            print(f"[3] 🔧 TOOL MANAGEMENT - Advanced Options")
+            print(f"    • List/delete tools and models\n")
+            
+            print(f"[4] ⚙️  CONFIGURATION - Settings")
+            print(f"    • API keys, rephrasing mode\n")
+            
+            print(f"[5] 🚪 EXIT\n")
+            print(f"{'='*60}")
+            print(f"Type a number (1-5) or start chatting!\n")
+            print(f"{'='*60}\n")
     
     def handle_menu_choice(self, choice: str) -> str:
         """Handle menu choice"""
@@ -1108,24 +1125,24 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
     def handle_tool_management(self):
         """Handle Tool Management menu"""
         if COLORAMA_AVAILABLE:
-            print(f"\n{Fore.MAGENTA}╔{'═' * 78}╗{Style.RESET_ALL}")
-            print(f"{Fore.MAGENTA}║{Style.RESET_ALL}{Fore.YELLOW}{' ' * 18}🔧 TOOL MANAGEMENT OPTIONS 🔧{' ' * 18}{Style.RESET_ALL}{Fore.MAGENTA}║{Style.RESET_ALL}")
-            print(f"{Fore.MAGENTA}╚{'═' * 78}╝{Style.RESET_ALL}\n")
+            print(f"\n{Style.BRIGHT}{Fore.MAGENTA}╔{'═' * 78}╗{Style.RESET_ALL}")
+            print(f"{Style.BRIGHT}{Fore.MAGENTA}║{Style.RESET_ALL}{Style.BRIGHT}{Fore.YELLOW}{' ' * 18}🔧 TOOL MANAGEMENT OPTIONS 🔧{' ' * 18}{Style.RESET_ALL}{Style.BRIGHT}{Fore.MAGENTA}║{Style.RESET_ALL}")
+            print(f"{Style.BRIGHT}{Fore.MAGENTA}╚{'═' * 78}╝{Style.RESET_ALL}\n")
             
-            print(f"{Fore.CYAN}┌─ {Fore.YELLOW}[1]{Fore.CYAN} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
-            print(f"{Fore.CYAN}│{Style.RESET_ALL}  {Fore.YELLOW}📋 LIST TOOLS{Style.RESET_ALL} - Show all available tools with categories            {Fore.CYAN}│{Style.RESET_ALL}")
+            print(f"{Fore.CYAN}┌─ {Style.BRIGHT}{Fore.YELLOW}[1]{Style.RESET_ALL}{Fore.CYAN} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
+            print(f"{Fore.CYAN}│{Style.RESET_ALL}  {Style.BRIGHT}{Fore.YELLOW}📋 LIST TOOLS{Style.RESET_ALL} - Show all available tools with categories            {Fore.CYAN}│{Style.RESET_ALL}")
             print(f"{Fore.CYAN}└───────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
             
-            print(f"{Fore.RED}┌─ {Fore.YELLOW}[2]{Fore.RED} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
-            print(f"{Fore.RED}│{Style.RESET_ALL}  {Fore.YELLOW}🗑️  DELETE TOOLS{Style.RESET_ALL} - Remove tools from database                   {Fore.RED}│{Style.RESET_ALL}")
+            print(f"{Fore.RED}┌─ {Style.BRIGHT}{Fore.YELLOW}[2]{Style.RESET_ALL}{Fore.RED} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
+            print(f"{Fore.RED}│{Style.RESET_ALL}  {Style.BRIGHT}{Fore.YELLOW}🗑️  DELETE TOOLS{Style.RESET_ALL} - Remove tools from database                   {Fore.RED}│{Style.RESET_ALL}")
             print(f"{Fore.RED}└───────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
             
-            print(f"{Fore.YELLOW}┌─ {Fore.YELLOW}[3]{Fore.YELLOW} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
-            print(f"{Fore.YELLOW}│{Style.RESET_ALL}  {Fore.YELLOW}🦙 DELETE MODELS{Style.RESET_ALL} - Remove local Llama models                   {Fore.YELLOW}│{Style.RESET_ALL}")
+            print(f"{Fore.YELLOW}┌─ {Style.BRIGHT}{Fore.YELLOW}[3]{Style.RESET_ALL}{Fore.YELLOW} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
+            print(f"{Fore.YELLOW}│{Style.RESET_ALL}  {Style.BRIGHT}{Fore.YELLOW}🦙 DELETE MODELS{Style.RESET_ALL} - Remove local Llama models                   {Fore.YELLOW}│{Style.RESET_ALL}")
             print(f"{Fore.YELLOW}└───────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
             
-            print(f"{Fore.GREEN}┌─ {Fore.YELLOW}[4]{Fore.GREEN} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
-            print(f"{Fore.GREEN}│{Style.RESET_ALL}  {Fore.YELLOW}🔙 BACK TO MENU{Style.RESET_ALL} - Return to main menu                          {Fore.GREEN}│{Style.RESET_ALL}")
+            print(f"{Fore.GREEN}┌─ {Style.BRIGHT}{Fore.YELLOW}[4]{Style.RESET_ALL}{Fore.GREEN} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
+            print(f"{Fore.GREEN}│{Style.RESET_ALL}  {Style.BRIGHT}{Fore.YELLOW}🔙 BACK TO MENU{Style.RESET_ALL} - Return to main menu                          {Fore.GREEN}│{Style.RESET_ALL}")
             print(f"{Fore.GREEN}└───────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
         else:
             print("\n🔧 TOOL MANAGEMENT OPTIONS")
@@ -3447,7 +3464,7 @@ def main():
         line10 = f"{Fore.RED}║ {Fore.CYAN}{' '*20}██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║ {Fore.RED}║\n"
         line11 = f"{Fore.RED}║ {Fore.CYAN}{' '*20}╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝ {Fore.RED}║\n"
         line12 = f"{Fore.RED}║ {Fore.CYAN}{' '*20} ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝  {Fore.RED}║\n"
-        line13 = f"{Fore.RED}║ {Style.BRIGHT}{Fore.MAGENTA}{' '*15}🔥🔥🔥 HACK THE WORLD 🔥🔥🔥{Fore.RED}{' '*15}║\n"
+        line13 = f"{Fore.RED}║ {Style.BRIGHT}{Fore.MAGENTA}{' '*15}🔥🔥🔥 HACK MY LIFE  🔥🔥🔥{Fore.RED}{' '*15}║\n"
         banner = border + line1 + line2 + line3 + line4 + line5 + line6 + line7 + line8 + line9 + line10 + line11 + line12 + line13 + border
     else:
         border = "╔" + "═"*78 + "╗\n"
@@ -3463,7 +3480,7 @@ def main():
         line10 = "║                     ██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║              ║\n"
         line11 = "║                     ╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝              ║\n"
         line12 = "║                      ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝               ║\n"
-        line13 = "║          🔥🔥🔥 HACK THE WORLD 🔥🔥🔥          ║\n"
+        line13 = "║          🔥🔥🔥 HACK MY LIFE  🔥🔥🔥          ║\n"
         banner = border + line1 + line2 + line3 + line4 + line5 + line6 + line7 + line8 + line9 + line10 + line11 + line12 + line13 + border
     
     print(banner)
