@@ -851,8 +851,12 @@ Focus on technical accuracy and completeness. Students learn best from detailed,
         print(f"  • 🔗 HexStrike MCP integration")
         
         if self.rephrasing_mode:
-            print(f"\n{self._colorize('⚠️  REPHRASING MODE ACTIVE', Fore.RED)}")
+            print(f"\n{Fore.RED}⚠️  REPHRASING MODE ACTIVE{Style.RESET_ALL}")
             print(f"🔓 AI responses will bypass content restrictions")
+            print(f"🛡️ Uncensored cybersecurity assistance activated")
+        else:
+            print(f"\n{Fore.GREEN}✅ Rephrasing mode disabled{Style.RESET_ALL}")
+            print(f"🔓 AI responses will follow standard guidelines")
         
         return f"🧠 IBLU KALIGPT ready with {len(available_providers)} AI providers!"
     
@@ -1877,83 +1881,34 @@ def main():
     """Main function"""
     # Display colorful ASCII art banner
     if COLORAMA_AVAILABLE:
-        banner = f"""{Fore.RED}
-██╗  ██╗ █████╗  ██████╗██╗  ██╗    ████████╗██╗  ██╗███████╗
-██║  ██║██╔══██╗██╔════╝██║ ██╔╝    ╚══██╔══╝██║  ██║██╔════╝
-███████║███████║██║     █████╔╝        ██║   ███████║█████╗  
-██╔══██║██╔══██║██║     ██╔═██╗        ██║   ██╔══██║██╔══╝  
-██║  ██║██║  ██║╚██████╗██║  ██╗       ██║   ██║  ██║███████╗
-╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝       ╚═╝   ╚═╝  ╚═╝╚══════╝{Style.RESET_ALL}
-{Fore.CYAN}                    ██╗    ██╗ ██████╗ ██████╗ ██╗     ██████╗ 
-                    ██║    ██║██╔═══██╗██╔══██╗██║     ██╔══██╗
-                    ██║ █╗ ██║██║   ██║██████╔╝██║     ██║  ██║
-                    ██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║
-                    ╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
-                     ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝{Style.RESET_ALL}
-{Fore.YELLOW}🔥🔥🔥 IBLU PROFESSIONAL HACKING ASSISTANT v2.0 🔥🔥🔥{Style.RESET_ALL}
-{Fore.GREEN}🐍🐍🐍 Advanced Python Cybersecurity Toolkit 🐍🐍🐍{Style.RESET_ALL}
-"""
+        border = f"{Fore.RED}╔{'═'*78}╗\n"
+        line1 = f"{Fore.RED}║ {Style.BRIGHT}{Fore.YELLOW}██╗  ██╗ █████╗  ██████╗██╗  ██╗    ████████╗██╗  ██╗███████╗ {Fore.RED}║\n"
+        line2 = f"{Fore.RED}║ {Fore.YELLOW}██║  ██║██╔══██╗██╔════╝██║ ██╔╝    ╚══██╔══╝██║  ██║██╔════╝ {Fore.RED}║\n"
+        line3 = f"{Fore.RED}║ {Fore.YELLOW}███████║███████║██║     █████╔╝        ██║   ███████║█████╗   {Fore.RED}║\n"
+        line4 = f"{Fore.RED}║ {Fore.YELLOW}██╔══██║██╔══██║██║     ██╔═██╗        ██║   ██╔══██║██╔══╝   {Fore.RED}║\n"
+        banner = border + line1 + line2 + line3 + line4 + border
     else:
-        banner = """
-██╗  ██╗ █████╗  ██████╗██╗  ██╗    ████████╗██╗  ██╗███████╗
-██║  ██║██╔══██╗██╔════╝██║ ██╔╝    ╚══██╔══╝██║  ██║██╔════╝
-███████║███████║██║     █████╔╝        ██║   ███████║█████╗  
-██╔══██║██╔══██║██║     ██╔═██╗        ██║   ██╔══██║██╔══╝  
-██║  ██║██║  ██║╚██████╗██║  ██╗       ██║   ██║  ██║███████╗
-╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝       ╚═╝   ╚═╝  ╚═╝╚══════╝
-                    ██╗    ██╗ ██████╗ ██████╗ ██╗     ██████╗ 
-                    ██║    ██║██╔═══██╗██╔══██╗██║     ██╔══██╗
-                    ██║ █╗ ██║██║   ██║██████╔╝██║     ██║  ██║
-                    ██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║
-                    ╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
-                     ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
-🔥🔥🔥 IBLU PROFESSIONAL HACKING ASSISTANT v2.0 🔥🔥🔥
-🐍🐍🐍 Advanced Python Cybersecurity Toolkit 🐍🐍🐍
-"""
+        border = "╔" + "═"*78 + "╗\n"
+        line1 = "║ ██╗  ██╗ █████╗  ██████╗██╗  ██╗    ████████╗██╗  ██╗███████╗ ║\n"
+        line2 = "║ ██║  ██║██╔══██╗██╔════╝██║ ██╔╝    ╚══██╔══╝██║  ██║██╔════╝ ║\n"
+        line3 = "║ ███████║███████║██║     █████╔╝        ██║   ███████║█████╗   ║\n"
+        line4 = "║ ██╔══██║██╔══██║██║     ██╔═██╗        ██║   ██╔══██║██╔══╝   ║\n"
+        banner = border + line1 + line2 + line3 + line4 + border
+    
     print(banner)
     
-    print("🔥 IBLU PROFESSIONAL HACKING ASSISTANT v2.0")
-    print("=" * 60)
-    print("🐍 Advanced Python Cybersecurity Toolkit")
-    print("🤖 Multiple AI Providers & MCP Integration")
-    print("🛡️ Professional Security Commands")
-    print("=" * 60)
-    print()
-    
-    # Load configuration
-    config = load_config()
-    
-    # Initialize assistant
-    assistant = KaliGPTMCPAssistant(config)
-    
-    print("✅ Enhanced Command Helper: Available")
-    print("✅ Total Commands: 10 (1-10)")
-    print("✅ MCP Integration: Available")
-    print("✅ Chat History: Persistent storage")
-    print("✅ Word Suggestions: Intelligent learning")
-    print("✅ Tab Completion: Available")
-    print(f"✅ HexStrike Tools: {len(assistant.command_helper.hexstrike_tools)} security tools")
-    print()
-    print("🎯 Enhanced Features:")
-    print("  • 💬 Persistent chat history with timestamps")
-    print("  • 🧠 Intelligent typing suggestions based on previous input")
-    print("  • 🔧 Tab completion for '/' commands")
-    print("  • 📜 Command history with arrow keys")
-    print("  • 🚀 Enhanced UI with professional banner")
-    print("  • 🛡️ 50+ HexStrike security tools integration")
-    print("  • 🧠 Multi-AI provider support with rephrasing mode")
-    print()
-    print("🔥 HexStrike Security Tools Available:")
-    print("  • 🔍 Reconnaissance: nmap, masscan, dnsenum, recon-ng")
-    print("  • 🌐 Web Testing: nikto, sqlmap, burpsuite, gobuster")
-    print("  • 🔐 Password Cracking: john, hashcat, hydra, medusa")
-    print("  • 📡 Network Analysis: wireshark, tcpdump, aircrack-ng")
-    print("  • 💣 Exploitation: metasploit, msfconsole, msfvenom")
-    print("  • 🔬 Forensics: autopsy, volatility, sleuthkit")
-    print("  • 🎭 Social Engineering: setoolkit, phishing")
+    print(f"\n{self._colorize('🔥 Security Tools Available:', Fore.YELLOW)}")
+    print(f"  • 🔍 Reconnaissance: nmap, masscan, dnsenum, recon-ng")
+    print(f"  • 🌐 Web Testing: nikto, sqlmap, burpsuite, gobuster")
+    print(f"  • 🔐 Password Cracking: john, hashcat, hydra, medusa")
+    print(f"  • 📡 Network Analysis: wireshark, tcpdump, aircrack-ng")
+    print(f"  • 💣 Exploitation: metasploit, msfconsole, msfvenom")
+    print(f"  • 🔬 Forensics: autopsy, volatility, sleuthkit")
+    print(f"  • 🎭 Social Engineering: setoolkit, phishing")
     print()
     
     # Show main menu
+    assistant = KaliGPTMCPAssistant(load_config())
     assistant.show_main_menu()
     
     # Main loop
