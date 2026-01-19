@@ -9,7 +9,8 @@
 - 🛡️ **50+ Security Tools** - Integrated HexStrike professional tools
 - 💬 **Smart Chat Interface** - Persistent conversations with context awareness
 - ⚡ **Tab Completion** - Intelligent command suggestions and auto-completion
-- 📊 **Real-time Status** - Monitor tools and MCP server connectivity
+- 📊 **Real-time Status** - Monitor tools and use tools along with KaliGPT to
+  learn and practice at the same time
 - 🔧 **Automated Setup** - One-click installation of all security tools
 
 ---
