@@ -49,6 +49,15 @@ try:
     console = Console()
 except ImportError:
     RICH_AVAILABLE = False
+
+# Optional transformers for Hugging Face integration
+try:
+    from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
+    import torch
+    from huggingface_hub import hf_hub_download, list_repo_files, model_info
+    HUGGINGFACE_AVAILABLE = True
+except ImportError:
+    HUGGINGFACE_AVAILABLE = False
     console = None
 
 class ProgressBar:
@@ -204,6 +213,7 @@ class Provider(Enum):
     MISTRAL = "mistral"
     LLAMA = "llama"
     GEMINI_CLI = "gemini_cli"
+    HUGGINGFACE = "huggingface"
 
 @dataclass
 class APIConfig:
@@ -213,6 +223,7 @@ class APIConfig:
     mistral_keys: List[str] = None
     llama_keys: List[str] = None
     gemini_cli_keys: List[str] = None
+    huggingface_models: List[dict] = None  # Store HF model configs
 
 class IBLUCommandHelper:
     """
@@ -333,8 +344,8 @@ class IBLUCommandHelper:
             # Get basic command suggestions
             basic_commands = ['/help', '/exit', '/clear', '/status', '/scan', '/payload', 
                             '/autopentest', '/mcp_connect', '/mcp_disconnect', 
-                            '/openai', '/gemini', '/mistral', '/llama', '/history', '/tools', '/install',
-                            '/hexstrike', '/pentest', '/llama_models', '/delete_llama', '/delete_tools', '/collaborative', '/install_models', '/install_mistral']
+                            '/openai', '/gemini', '/mistral', '/llama', '/huggingface', '/history', '/tools', '/install',
+                            '/hexstrike', '/pentest', '/llama_models', '/delete_llama', '/delete_tools', '/collaborative', '/install_models', '/install_mistral', '/hf_install', '/hf_models', '/hf_search']
             
             # Add HexStrike tool commands
             hexstrike_commands = [f"/{tool}" for tool in self.hexstrike_tools.keys()]
@@ -525,6 +536,7 @@ class IBLUCommandHelper:
   gemini            - Switch to Gemini
   mistral           - Switch to Mistral
   llama             - Switch to local Llama models
+  huggingface       - Switch to Hugging Face models
 
 {self._colorize('🤖 LOCAL MODEL MANAGEMENT:', Fore.MAGENTA)}
   install_llama     - Install Llama models locally (supports Llama 2 & 3.1 8B)
@@ -532,6 +544,12 @@ class IBLUCommandHelper:
   llama_models      - List and manage available Llama models
   delete_llama      - Delete a local Llama model
   install_models    - Install all local models
+
+{self._colorize('🤗 HUGGING FACE MODELS:', Fore.BLUE)}
+  hf_install        - Install Hugging Face model (hf_install <model_name>)
+  hf_models         - List installed Hugging Face models
+  hf_search         - Search Hugging Face models (hf_search <query>)
+  huggingface       - Switch to Hugging Face models
 
 {self._colorize('🔧 TOOL MANAGEMENT:', Fore.CYAN)}
   delete_tools      - Delete HexStrike tools (one by one or all)
@@ -895,6 +913,9 @@ class IBLUCommandHelper:
             "install_llama": {"description": "Install Llama model locally", "usage": "install_llama"},
             "install_mistral": {"description": "Install Mistral Dolphin model locally", "usage": "install_mistral"},
             "install_models": {"description": "Install all local models", "usage": "install_models"},
+            "hf_install": {"description": "Install Hugging Face model", "usage": "hf_install <model_name>"},
+            "hf_models": {"description": "List installed Hugging Face models", "usage": "hf_models"},
+            "hf_search": {"description": "Search Hugging Face models", "usage": "hf_search <query>"},
             "llama_models": {"description": "List and manage available Llama models", "usage": "llama_models"},
             "delete_llama": {"description": "Delete a local Llama model", "usage": "delete_llama"},
             "delete_tools": {"description": "Delete HexStrike tools (one by one or all)", "usage": "delete_tools"},
@@ -1223,7 +1244,7 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
         print(f"{overview_title}")
         print(f"{overview_border2}")
         
-        total_models = len(cloud_models) + len(local_models) + (1 if local_mistral_available else 0)
+        total_models = len(cloud_models) + len(local_models) + (1 if local_mistral_available else 0) + len(hf_models_available)
         
         if total_models == 0:
             no_models_border = f"{Fore.LIGHTRED_EX}┌─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}"
@@ -1248,6 +1269,7 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
             print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}   {Fore.CYAN}•{Style.RESET_ALL} {Style.BRIGHT}{Fore.WHITE}/config{Style.RESET_ALL} - Configure API keys                          {Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
             print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}   {Fore.CYAN}•{Style.RESET_ALL} {Style.BRIGHT}{Fore.WHITE}/install_llama{Style.RESET_ALL} - Install local Llama models              {Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
             print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}   {Fore.CYAN}•{Style.RESET_ALL} {Style.BRIGHT}{Fore.WHITE}/install_mistral{Style.RESET_ALL} - Install local Mistral Dolphin model        {Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}   {Fore.CYAN}•{Style.RESET_ALL} {Style.BRIGHT}{Fore.WHITE}/hf_install{Style.RESET_ALL} - Install Hugging Face models               {Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
             print(f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}")
             
             return "❌ No models available"
@@ -1257,7 +1279,8 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
             Provider.OPENAI: "🧠 Thinking & Analysis",
             Provider.GEMINI: "🎨 Creative & Multimodal", 
             Provider.MISTRAL: "⚡ Fast & Efficient",
-            Provider.LLAMA: "🔒 Private & Secure"
+            Provider.LLAMA: "🔒 Private & Secure",
+            Provider.HUGGINGFACE: "🤗 Custom Models"
         }
         
         # Check for local Mistral model
@@ -1273,6 +1296,11 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
                         break
         except:
             pass
+        
+        # Check for Hugging Face models
+        hf_models_available = []
+        if HUGGINGFACE_AVAILABLE and self.config.huggingface_models:
+            hf_models_available = self.config.huggingface_models
 
         # Enhanced cloud models section with vibrant colors
         if cloud_models:
@@ -1353,6 +1381,28 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
             
             print(f"{Fore.LIGHTMAGENTA_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}")
         
+        # Enhanced Hugging Face models section
+        if hf_models_available:
+            hf_border = f"{Fore.LIGHTBLUE_EX}┌─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}"
+            hf_title = f"{Fore.LIGHTBLUE_EX}│{Style.RESET_ALL} {Style.BRIGHT}{Back.BLUE}{Fore.WHITE}🤗 HUGGING FACE MODELS:{Style.RESET_ALL} {Fore.LIGHTBLUE_EX}{' ' * 45}│{Style.RESET_ALL}"
+            hf_border2 = f"{Fore.LIGHTBLUE_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}"
+            
+            print(f"\n{hf_border}")
+            print(f"{hf_title}")
+            print(f"{hf_border2}")
+            
+            for i, model in enumerate(hf_models_available, 1):
+                model_name = model.get('name', 'Unknown')
+                model_type = model.get('type', 'Unknown')
+                installed_at = model.get('installed_at', 'Unknown')
+                
+                print(f"{Fore.LIGHTBLUE_EX}│{Style.RESET_ALL}   {Fore.BLUE}┌─ [{Style.BRIGHT}{Fore.CYAN}🤗{Style.RESET_ALL}{Fore.BLUE}] ──────────────────────────────────────────────┐{Style.RESET_ALL} {Fore.LIGHTBLUE_EX}│{Style.RESET_ALL}")
+                print(f"{Fore.LIGHTBLUE_EX}│{Style.RESET_ALL}   {Fore.BLUE}│{Style.RESET_ALL} {Style.BRIGHT}{Fore.WHITE}{model_name}{Style.RESET_ALL} - {Fore.LIGHTGREEN_EX}✅ Available{Style.RESET_ALL} {Fore.BLUE}{' ' * (35 - len(model_name))}│{Style.RESET_ALL} {Fore.LIGHTBLUE_EX}│{Style.RESET_ALL}")
+                print(f"{Fore.LIGHTBLUE_EX}│{Style.RESET_ALL}   {Fore.BLUE}│{Style.RESET_ALL} {Fore.CYAN}▸{Style.RESET_ALL} {Fore.WHITE}🤗 Custom Models{Style.RESET_ALL} {Fore.BLUE}{' ' * (35)}│{Style.RESET_ALL} {Fore.LIGHTBLUE_EX}│{Style.RESET_ALL}")
+                print(f"{Fore.LIGHTBLUE_EX}│{Style.RESET_ALL}   {Fore.BLUE}└───────────────────────────────────────────────────────┘{Style.RESET_ALL} {Fore.LIGHTBLUE_EX}│{Style.RESET_ALL}")
+            
+            print(f"{Fore.LIGHTBLUE_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}")
+        
         # Enhanced capabilities section with vibrant colors
         cap_border = f"{Fore.LIGHTYELLOW_EX}┌─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}"
         cap_title = f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL} {Style.BRIGHT}{Back.YELLOW}{Fore.WHITE}🔧 MODEL CAPABILITIES:{Style.RESET_ALL} {Fore.LIGHTYELLOW_EX}{' ' * 47}│{Style.RESET_ALL}"
@@ -1366,13 +1416,14 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
             Provider.OPENAI: "🧠 Advanced reasoning & 💻 Code generation",
             Provider.GEMINI: "🎨 Creative tasks & 📊 Large context analysis", 
             Provider.MISTRAL: "⚡ Fast responses & 💻 Code generation",
-            Provider.LLAMA: "🔒 Privacy-focused & 🛡️ Cybersecurity specialist"
+            Provider.LLAMA: "🔒 Privacy-focused & 🛡️ Cybersecurity specialist",
+            Provider.HUGGINGFACE: "🤗 Custom models & 🎯 Specialized tasks"
         }
         
-        for provider in [Provider.OPENAI, Provider.GEMINI, Provider.MISTRAL, Provider.LLAMA]:
-            if provider in [p[0] for p in cloud_models] or provider == Provider.LLAMA and local_models or provider == Provider.MISTRAL and local_mistral_available:
+        for provider in [Provider.OPENAI, Provider.GEMINI, Provider.MISTRAL, Provider.LLAMA, Provider.HUGGINGFACE]:
+            if provider in [p[0] for p in cloud_models] or provider == Provider.LLAMA and local_models or provider == Provider.MISTRAL and local_mistral_available or provider == Provider.HUGGINGFACE and hf_models_available:
                 capability = capabilities.get(provider, "Unknown")
-                status = "✅" if (provider in [p[0] for p in cloud_models]) or (provider == Provider.LLAMA and local_models) or (provider == Provider.MISTRAL and local_mistral_available) else "❌"
+                status = "✅" if (provider in [p[0] for p in cloud_models]) or (provider == Provider.LLAMA and local_models) or (provider == Provider.MISTRAL and local_mistral_available) or (provider == Provider.HUGGINGFACE and hf_models_available) else "❌"
                 provider_name = provider.value.title()
                 print(f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}   {Fore.YELLOW}•{Style.RESET_ALL} {Style.BRIGHT}{Fore.WHITE}{provider_name}{Style.RESET_ALL} - {Fore.CYAN}{capability}{Style.RESET_ALL} {Fore.LIGHTGREEN_EX}{status}{Style.RESET_ALL} {Fore.LIGHTYELLOW_EX}{' ' * (20 - len(provider_name) - len(capability))}│{Style.RESET_ALL}")
         
@@ -2209,6 +2260,12 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
             return self.install_llama_local()
         elif cmd == "install_mistral":
             return self.install_mistral_dolphin_local()
+        elif cmd == "hf_install":
+            return self.install_huggingface_model()
+        elif cmd == "hf_models":
+            return self.list_huggingface_models()
+        elif cmd == "hf_search":
+            return self.search_huggingface_models()
         elif cmd == "install_models":
             return self.install_all_local_models()
         elif cmd == "llama_models":
@@ -2272,6 +2329,8 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
             return "🤖 Switched to Mistral provider"
         elif cmd == "llama":
             return "🤖 Switched to local Llama models"
+        elif cmd == "huggingface":
+            return "🤗 Switched to Hugging Face models"
         elif cmd.startswith("install "):
             tool_name = cmd[8:]  # Remove "install "
             return self.install_tool(tool_name)
@@ -4211,6 +4270,135 @@ def main():
             break
         except Exception as e:
             print(f"❌ Error: {e}")
+
+    def install_huggingface_model(self) -> str:
+        """Install a Hugging Face model"""
+        if not HUGGINGFACE_AVAILABLE:
+            return "❌ Hugging Face libraries not installed. Install with: pip install transformers torch huggingface_hub"
+        
+        print(f"\n{self._colorize('🤗 Installing Hugging Face Model', Fore.BLUE)}")
+        print("=" * 50)
+        
+        # Get model name from user or use parameter
+        model_name = input(f"\n{self._colorize('🎯 Enter model name (e.g., microsoft/DialoGPT-medium, distilbert-base-uncased):', Fore.YELLOW)}").strip()
+        
+        if not model_name:
+            return "❌ No model name provided"
+        
+        print(f"\n{self._colorize(f'📦 Installing {model_name}...', Fore.GREEN)}")
+        
+        try:
+            # Check if transformers is available
+            self.show_loading_animation("Checking dependencies...")
+            
+            # Download model and tokenizer
+            self.show_loading_animation("Downloading tokenizer...")
+            tokenizer = AutoTokenizer.from_pretrained(model_name)
+            
+            self.show_loading_animation("Downloading model...")
+            model = AutoModelForCausalLM.from_pretrained(model_name)
+            
+            # Save model info to config
+            if not self.config.huggingface_models:
+                self.config.huggingface_models = []
+            
+            model_info = {
+                "name": model_name,
+                "type": "causal_lm",
+                "installed_at": datetime.now().isoformat(),
+                "size": "Unknown"
+            }
+            
+            self.config.huggingface_models.append(model_info)
+            self.save_config()
+            
+            print(f"\n{self._colorize('✅ Model installed successfully!', Fore.GREEN)}")
+            print(f"\n{self._colorize('📋 Model Details:', Fore.CYAN)}")
+            print(f"  • Name: {model_name}")
+            print(f"  • Type: Causal Language Model")
+            print(f"  • Installed: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+            print(f"\n{self._colorize('💡 Usage:', Fore.YELLOW)}")
+            print(f"  • Switch with: /huggingface")
+            print(f"  • List models: /hf_models")
+            
+            return f"✅ Successfully installed {model_name}"
+            
+        except Exception as e:
+            return f"❌ Failed to install model: {str(e)}"
+    
+    def list_huggingface_models(self) -> str:
+        """List installed Hugging Face models"""
+        print(f"\n{self._colorize('🤗 Installed Hugging Face Models', Fore.BLUE)}")
+        print("=" * 50)
+        
+        if not HUGGINGFACE_AVAILABLE:
+            return "❌ Hugging Face libraries not installed"
+        
+        if not self.config.huggingface_models:
+            print(f"\n{self._colorize('📭 No Hugging Face models installed', Fore.YELLOW)}")
+            print(f"\n{self._colorize('💡 Install a model with:', Fore.CYAN)}")
+            print("  /hf_install <model_name>")
+            return "No models installed"
+        
+        for i, model in enumerate(self.config.huggingface_models, 1):
+            model_name = model["name"]
+            print(f"\n{self._colorize(f'{i}. {model_name}', Fore.GREEN)}")
+            print(f"   Type: {model.get('type', 'Unknown')}")
+            print(f"   Installed: {model.get('installed_at', 'Unknown')}")
+            print(f"   Size: {model.get('size', 'Unknown')}")
+        
+        return f"✅ Found {len(self.config.huggingface_models)} Hugging Face models"
+    
+    def search_huggingface_models(self) -> str:
+        """Search for Hugging Face models"""
+        if not HUGGINGFACE_AVAILABLE:
+            return "❌ Hugging Face libraries not installed"
+        
+        print(f"\n{self._colorize('🔍 Search Hugging Face Models', Fore.BLUE)}")
+        print("=" * 50)
+        
+        query = input(f"\n{self._colorize('🎯 Enter search query:', Fore.YELLOW)}").strip()
+        
+        if not query:
+            return "❌ No search query provided"
+        
+        print(f"\n{self._colorize(f'🔍 Searching for \"{query}\"...', Fore.GREEN)}")
+        
+        try:
+            from huggingface_hub import HfApi
+            api = HfApi()
+            
+            # Search models
+            models = api.list_models(
+                search=query,
+                limit=10,
+                sort="downloads",
+                direction=-1
+            )
+            
+            if not models:
+                return f"❌ No models found for '{query}'"
+            
+            print(f"\n{self._colorize('📋 Search Results:', Fore.CYAN)}")
+            print("=" * 50)
+            
+            for i, model in enumerate(models, 1):
+                print(f"\n{self._colorize(f'{i}. {model.id}', Fore.GREEN)}")
+                print(f"   📝 {model.modelId}")
+                print(f"   👥 Downloads: {model.downloads:,}")
+                print(f"   🏷️  Tags: {', '.join(model.tags[:3])}")
+                print(f"   📊 Likes: {model.likes:,}")
+                
+                if i >= 5:  # Limit to 5 results
+                    break
+            
+            print(f"\n{self._colorize('💡 Install a model with:', Fore.YELLOW)}")
+            print(f"  /hf_install {models[0].id if models else '<model_name>'}")
+            
+            return f"✅ Found {len(models)} models for '{query}'"
+            
+        except Exception as e:
+            return f"❌ Search failed: {str(e)}"
 
 if __name__ == "__main__":
     main()
