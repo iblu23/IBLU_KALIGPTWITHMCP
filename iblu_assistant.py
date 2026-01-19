@@ -773,39 +773,80 @@ class IBLUCommandHelper:
         try:
             print(f"\n🗑️  Deleting all {total_tools} tools...")
             
-            # Create progress bar for mass deletion
-            progress_bar = ProgressBar(
-                total=total_tools,
-                prefix="🗑️ Mass Deletion",
-                suffix="",
-                width=40
-            )
+            # Create spinner for mass deletion (same style as thinking animation)
+            spinner_chars = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏']
+            mass_actions = ['purging', 'wiping', 'clearing', 'removing', 'eliminating', 'scrubbing', 'cleaning', 'erasing', 'destroying', 'deleting']
             
-            # Delete all tools with progress
-            tools_to_delete = list(self.hexstrike_tools.keys())
-            deleted_count = 0
+            # Start mass deletion animation
+            import threading
+            deletion_complete = threading.Event()
+            deletion_result = {'success': False, 'count': 0, 'error': None}
             
-            for i, tool in enumerate(tools_to_delete):
-                tool_info = self.hexstrike_tools[tool]
-                progress_bar.update(i + 1, f"Deleting /{tool} ({tool_info['name']})")
-                del self.hexstrike_tools[tool]
-                deleted_count += 1
-                time.sleep(0.01)  # Small delay for visual effect
+            def animate_mass_deletion():
+                """Animate mass deletion process with spinner"""
+                idx = 0
+                current_action_idx = 0
+                last_action_change = time.time()
+                
+                while not deletion_complete.is_set():
+                    # Change action every 0.8 seconds
+                    current_time = time.time()
+                    if current_time - last_action_change >= 0.8:
+                        current_action_idx = (current_action_idx + 1) % len(mass_actions)
+                        last_action_change = current_time
+                    
+                    current_action = mass_actions[current_action_idx]
+                    sys.stdout.write(f'\r{spinner_chars[idx]} 🗑️  Mass deletion {current_action}...')
+                    sys.stdout.flush()
+                    idx = (idx + 1) % len(spinner_chars)
+                    time.sleep(0.1)
+                
+                # Clean up
+                sys.stdout.write('\r' + ' ' * 40 + '\r')
+                sys.stdout.flush()
             
-            progress_bar.finish(f"All {deleted_count} tools deleted successfully")
+            # Start animation in background
+            animation_thread = threading.Thread(target=animate_mass_deletion)
+            animation_thread.start()
             
-            # Show final summary
-            print(f"\n{self._colorize('📊 MASS DELETION SUMMARY:', Fore.RED)}")
-            print(f"✅ Tools deleted: {deleted_count}")
-            print(f"✅ Database cleared: Yes")
-            print(f"✅ Status: Complete")
+            # Delete all tools
+            try:
+                tools_to_delete = list(self.hexstrike_tools.keys())
+                deleted_count = 0
+                
+                for tool in tools_to_delete:
+                    del self.hexstrike_tools[tool]
+                    deleted_count += 1
+                    time.sleep(0.01)  # Small delay for visual effect
+                
+                deletion_result['success'] = True
+                deletion_result['count'] = deleted_count
+            except Exception as e:
+                deletion_result['success'] = False
+                deletion_result['error'] = str(e)
+            finally:
+                deletion_complete.set()
+                animation_thread.join()
             
-            print(f"\n{self._colorize('🔍 POST-DELETION STATUS:', Fore.CYAN)}")
-            print(f"📦 Tools in database: 0")
-            print(f"💡 Note: This doesn't uninstall tools from your system")
-            print(f"💡 You can still use tools directly if they're installed")
-            
-            return f"✅ All {deleted_count} tools have been deleted from the database"
+            if deletion_result['success']:
+                print(f"✅ All {deletion_result['count']} tools deleted successfully")
+                
+                # Show final summary
+                print(f"\n{self._colorize('📊 MASS DELETION SUMMARY:', Fore.RED)}")
+                print(f"✅ Tools deleted: {deletion_result['count']}")
+                print(f"✅ Database cleared: Yes")
+                print(f"✅ Status: Complete")
+                
+                print(f"\n{self._colorize('🔍 POST-DELETION STATUS:', Fore.CYAN)}")
+                print(f"📦 Tools in database: 0")
+                print(f"💡 Note: This doesn't uninstall tools from your system")
+                print(f"💡 You can still use tools directly if they're installed")
+                
+                return f"✅ All {deletion_result['count']} tools have been deleted from the database"
+            else:
+                error_msg = deletion_result['error'] or "Unknown error"
+                print(f"❌ Mass deletion failed: {error_msg}")
+                return f"❌ Error during mass deletion: {error_msg}"
             
         except Exception as e:
             return f"❌ Error during mass deletion: {e}"
@@ -2663,18 +2704,37 @@ Provide step-by-step technical details while maintaining educational context and
                 print(f"📦 Downloading Docker image: {image} ({i}/{len(images_to_try)})")
                 print(f"{'='*60}")
                 
-                # Create progress bar for Docker pull
-                progress_bar = ProgressBar(
-                    total=100,
-                    prefix=f"🐳 {image}",
-                    suffix="",
-                    width=40
-                )
+                # Create spinner for Docker pull (same style as thinking animation)
+                spinner_chars = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏']
+                docker_actions = ['pulling', 'downloading', 'fetching', 'retrieving', 'grabbing', 'loading', 'importing', 'acquiring', 'getting', 'obtaining']
                 
-                # Start the actual pull command in a thread
+                # Start Docker pull animation
                 import threading
                 pull_complete = threading.Event()
                 pull_result = {'success': False, 'error': None}
+                
+                def animate_docker_pull():
+                    """Animate Docker pull process with spinner"""
+                    idx = 0
+                    current_action_idx = 0
+                    last_action_change = time.time()
+                    
+                    while not pull_complete.is_set():
+                        # Change action every 1 second
+                        current_time = time.time()
+                        if current_time - last_action_change >= 1.0:
+                            current_action_idx = (current_action_idx + 1) % len(docker_actions)
+                            last_action_change = current_time
+                        
+                        current_action = docker_actions[current_action_idx]
+                        sys.stdout.write(f'\r{spinner_chars[idx]} 🐳 {image} {current_action}...')
+                        sys.stdout.flush()
+                        idx = (idx + 1) % len(spinner_chars)
+                        time.sleep(0.1)
+                    
+                    # Clean up
+                    sys.stdout.write('\r' + ' ' * (len(image) + 20) + '\r')
+                    sys.stdout.flush()
                 
                 def pull_image():
                     try:
@@ -2688,16 +2748,16 @@ Provide step-by-step technical details while maintaining educational context and
                     finally:
                         pull_complete.set()
                 
-                # Start the download
+                # Start the download and animation
                 pull_thread = threading.Thread(target=pull_image)
+                animation_thread = threading.Thread(target=animate_docker_pull)
                 pull_thread.start()
-                
-                # Show progress while downloading
-                estimated_size = 800 if "python" in image else 200  # MB estimates
-                progress_bar.simulate_download(image, estimated_size)
+                animation_thread.start()
                 
                 # Wait for actual download to complete
                 pull_thread.join()
+                pull_complete.set()
+                animation_thread.join()
                 
                 if pull_result['success']:
                     print(f"✅ Successfully pulled: {image}")
@@ -2705,7 +2765,7 @@ Provide step-by-step technical details while maintaining educational context and
                     break
                 else:
                     error_msg = pull_result['error'] or "Unknown error"
-                    progress_bar.error(f"Failed to pull {image}: {error_msg}")
+                    print(f"❌ Failed to pull {image}: {error_msg}")
             
             if not pull_success:
                 return f"❌ Failed to pull any base image. Docker setup may need manual configuration."
@@ -2765,17 +2825,46 @@ Provide step-by-step technical details while maintaining educational context and
         start_time = time.time()
         check_interval = 2  # Check every 2 seconds
         
-        progress_bar = ProgressBar(
-            total=100,
-            prefix=f"📦 {model_name}",
-            suffix="",
-            width=40
-        )
+        # Create spinner for download monitoring (same style as thinking animation)
+        spinner_chars = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏']
+        download_actions = ['downloading', 'fetching', 'retrieving', 'grabbing', 'pulling', 'getting', 'obtaining', 'acquiring', 'loading', 'importing']
+        
+        # Start download monitoring animation
+        import threading
+        download_complete = threading.Event()
+        download_result = {'success': False, 'found': False}
+        
+        def animate_download():
+            """Animate download monitoring process with spinner"""
+            idx = 0
+            current_action_idx = 0
+            last_action_change = time.time()
+            
+            while not download_complete.is_set():
+                # Change action every 1 second
+                current_time = time.time()
+                if current_time - last_action_change >= 1.0:
+                    current_action_idx = (current_action_idx + 1) % len(download_actions)
+                    last_action_change = current_time
+                
+                current_action = download_actions[current_action_idx]
+                sys.stdout.write(f'\r{spinner_chars[idx]} 📦 {model_name} {current_action}...')
+                sys.stdout.flush()
+                idx = (idx + 1) % len(spinner_chars)
+                time.sleep(0.1)
+            
+            # Clean up
+            sys.stdout.write('\r' + ' ' * (len(model_name) + 20) + '\r')
+            sys.stdout.flush()
+        
+        # Start animation in background
+        animation_thread = threading.Thread(target=animate_download)
+        animation_thread.start()
         
         print(f"\n📥 Monitoring {model_name} download progress...")
         
-        while time.time() - start_time < max_wait_time:
-            try:
+        try:
+            while time.time() - start_time < max_wait_time:
                 # Check if model is available by querying Ollama API
                 url = "http://localhost:11434/api/tags"
                 response = requests.get(url, timeout=5)
@@ -2785,39 +2874,26 @@ Provide step-by-step technical details while maintaining educational context and
                     for model in models_data.get('models', []):
                         if model_name.replace(':8b', '').replace(':latest', '') in model.get('name', '').replace(':8b', '').replace(':latest', ''):
                             # Model found - download complete
-                            progress_bar.finish(f"{model_name} downloaded successfully")
+                            download_result['found'] = True
+                            download_result['success'] = True
+                            download_complete.set()
+                            animation_thread.join()
+                            print(f"✅ {model_name} downloaded successfully")
                             return True
                 
-                # Simulate progress based on elapsed time
-                elapsed = time.time() - start_time
-                estimated_total_time = 120 if "3.1" in model_name else 90  # seconds
-                progress_percent = min(95, (elapsed / estimated_total_time) * 100)
-                
-                # Update progress with realistic phases
-                if progress_percent < 10:
-                    phase = "Connecting to registry..."
-                elif progress_percent < 25:
-                    phase = "Downloading manifest..."
-                elif progress_percent < 85:
-                    phase = f"Downloading {model_name}..."
-                elif progress_percent < 95:
-                    phase = "Verifying integrity..."
-                else:
-                    phase = "Finalizing..."
-                
-                progress_bar.update(int(progress_percent), phase)
                 time.sleep(check_interval)
-                
-            except Exception as e:
-                # If we can't check progress, just continue simulating
-                elapsed = time.time() - start_time
-                progress_percent = min(95, (elapsed / 120) * 100)
-                progress_bar.update(int(progress_percent), "Downloading...")
-                time.sleep(check_interval)
-        
-        # Timeout reached
-        progress_bar.error(f"Download timeout for {model_name}")
-        return False
+            
+            # Timeout reached
+            download_complete.set()
+            animation_thread.join()
+            print(f"❌ Download timeout for {model_name}")
+            return False
+            
+        except Exception as e:
+            download_complete.set()
+            animation_thread.join()
+            print(f"❌ Error monitoring download: {e}")
+            return False
     
     def install_llama_local(self) -> str:
         """Install Llama model locally via Ollama with model selection"""
@@ -3091,35 +3167,57 @@ Provide step-by-step technical details while maintaining educational context and
         try:
             print(f"\n🗑️  Deleting {selected_model}...")
             
-            # Create progress bar for deletion
-            progress_bar = ProgressBar(
-                total=100,
-                prefix=f"🗑️ {selected_model}",
-                suffix="",
-                width=40
-            )
+            # Create spinner for deletion (same style as thinking animation)
+            spinner_chars = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏']
+            deletion_actions = ['removing', 'deleting', 'cleaning', 'wiping', 'erasing', 'purging', 'clearing', 'eliminating', 'destroying', 'scrubbing']
             
-            # Simulate deletion progress
-            phases = [
-                (0, 20, "Stopping model processes..."),
-                (20, 40, "Removing model files..."),
-                (40, 80, "Cleaning up cache..."),
-                (80, 95, "Updating registry..."),
-                (95, 100, "Finalizing...")
-            ]
+            # Start deletion animation
+            import threading
+            deletion_complete = threading.Event()
+            deletion_result = {'success': False, 'error': None}
             
-            for start, end, phase_msg in phases:
-                for i in range(end - start):
-                    progress = start + i
-                    progress_bar.update(progress, phase_msg)
-                    time.sleep(0.02)
+            def animate_deletion():
+                """Animate deletion process with spinner"""
+                idx = 0
+                current_action_idx = 0
+                last_action_change = time.time()
+                
+                while not deletion_complete.is_set():
+                    # Change action every 0.8 seconds
+                    current_time = time.time()
+                    if current_time - last_action_change >= 0.8:
+                        current_action_idx = (current_action_idx + 1) % len(deletion_actions)
+                        last_action_change = current_time
+                    
+                    current_action = deletion_actions[current_action_idx]
+                    sys.stdout.write(f'\r{spinner_chars[idx]} 🗑️  {selected_model} {current_action}...')
+                    sys.stdout.flush()
+                    idx = (idx + 1) % len(spinner_chars)
+                    time.sleep(0.1)
+                
+                # Clean up
+                sys.stdout.write('\r' + ' ' * (len(selected_model) + 20) + '\r')
+                sys.stdout.flush()
+            
+            # Start animation in background
+            animation_thread = threading.Thread(target=animate_deletion)
+            animation_thread.start()
             
             # Actual deletion command
-            delete_cmd = subprocess.run(['ollama', 'rm', selected_model], 
-                                     capture_output=True, text=True, timeout=60)
+            try:
+                delete_cmd = subprocess.run(['ollama', 'rm', selected_model], 
+                                         capture_output=True, text=True, timeout=60)
+                deletion_result['success'] = delete_cmd.returncode == 0
+                deletion_result['error'] = delete_cmd.stderr if delete_cmd.returncode != 0 else None
+            except Exception as e:
+                deletion_result['success'] = False
+                deletion_result['error'] = str(e)
+            finally:
+                deletion_complete.set()
+                animation_thread.join()
             
-            if delete_cmd.returncode == 0:
-                progress_bar.finish(f"{selected_model} deleted successfully")
+            if deletion_result['success']:
+                print(f"✅ {selected_model} deleted successfully")
                 
                 # Show summary
                 print(f"\n{self._colorize('📊 Deletion Summary:', Fore.GREEN)}")
@@ -3139,8 +3237,9 @@ Provide step-by-step technical details while maintaining educational context and
                 
                 return f"✅ {selected_model} has been deleted successfully"
             else:
-                progress_bar.error(f"Failed to delete {selected_model}")
-                return f"❌ Failed to delete {selected_model}: {delete_cmd.stderr}"
+                error_msg = deletion_result['error'] or "Unknown error"
+                print(f"❌ Failed to delete {selected_model}: {error_msg}")
+                return f"❌ Failed to delete {selected_model}: {error_msg}"
                 
         except subprocess.TimeoutExpired:
             return f"❌ Deletion timeout for {selected_model}"
