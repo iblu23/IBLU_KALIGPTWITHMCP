@@ -4318,6 +4318,9 @@ Provide step-by-step technical details while maintaining educational context and
                 install_progress.update(45, "⚠️ Ollama service may need manual start")
             
             # Step 46-100: Install models
+            installed_models = []
+            failed_models = []
+            
             for i, (model, model_name) in enumerate(zip(models_to_install, model_names)):
                 model_start_progress = 50 + (i * 50 // len(models_to_install))
                 model_end_progress = 50 + ((i + 1) * 50 // len(models_to_install))
@@ -4339,8 +4342,10 @@ Provide step-by-step technical details while maintaining educational context and
                 
                 if model_install_success:
                     install_progress.update(model_end_progress, f"✅ {model_name} installed")
+                    installed_models.append(model_name)
                 else:
                     install_progress.update(model_end_progress, f"❌ {model_name} failed")
+                    failed_models.append(model_name)
             
             # Summary
             if installed_models:
