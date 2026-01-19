@@ -321,7 +321,7 @@ def main():
 ║      ╠═╣╠═╣║  ╠╩╗   ║ ╠═╣║╣       ║║║║ ║╠╦╝║   ║║                          ║
 ║      ╩ ╩╩ ╩╚═╝╩ ╩   ╩ ╩ ╩╚═╝      ╚╩╝╚═╝╩╚═╩═╝═╩╝   🧠                     ║
 ║                                                                              ║
-║        🔥 IBLU PROFESSIONAL HACKING ASSISTANT v2.0 🔥                        ║
+║        🔥 IBLU PROFESSIONAL HACKING ASSISTANT v2.3 🔥                        ║
 ║        🐍 Advanced Python Cybersecurity Toolkit                              ║
 ║                                                                              ║
 ╠══════════════════════════════════════════════════════════════════════════════╣

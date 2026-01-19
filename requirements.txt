@@ -1,61 +1,13 @@
-# 🔥 IBLU Professional Hacking Assistant v2.3 - Enhanced Requirements 🔥
-# 🚀 Complete dependencies for 122-command enhanced security testing platform 🚀
-
-# AI Provider APIs
-openai>=1.0.0                    # 🧠 OpenAI GPT integration
-google-generativeai>=0.3.0      # ✨ Google Gemini API support
-mistralai>=0.0.8                 # 🌊 Mistral AI API support
+# 🔥 IBLU Professional Hacking Assistant - Minimal Requirements 🔥
 
 # Core Dependencies
-requests>=2.31.0                 # 🌐 HTTP requests library
 colorama>=0.4.0                  # 🎨 Terminal colors and formatting
+requests>=2.31.0                 # 🌐 HTTP requests library
 
-# Note: asyncio, pathlib, dataclasses, time, and enum are built-in modules
-# They are automatically available in Python 3.8+ and don't need installation
+# Built-in modules (no installation needed):
+# - asyncio, pathlib, dataclasses, time, enum, sys, os, json, subprocess
 
-# Performance & Monitoring
-psutil>=5.9.0                   # 💻 System information gathering
-
-# Security Tools Integration
-python-nmap>=0.7.1              # 🗺️ Network scanning integration
-beautifulsoup4>=4.12.0           # 🌐 Web scraping and analysis
-cryptography>=41.0.0             # 🔐 Encryption and security tools
-
-# Enhanced Features Dependencies
-rich>=13.0.0                     # 🎨 Rich text and beautiful formatting
-typer>=0.7.0                     # 🖥️ Modern CLI framework
-pydantic>=1.10.0                  # 📋 Data validation and settings
-click>=8.0.0                      # 🖱️ Command line interface toolkit
-aiohttp>=3.8.0                    # 🚀 Async HTTP client for improved performance
-
-# MCP (Model Context Protocol) Support
-# Note: MCP server integration may require additional setup
-# See README.md for Hexstrike MCP configuration
-
-# Development Tools (Optional)
-pytest>=7.0.0                     # 🧪 Testing framework
-black>=22.0.0                      # 🖤️ Code formatting
-flake8>=5.0.0                      # 🔍 Code linting
-mypy>=1.0.0                        # 📝 Type checking
-
-# System Monitoring (Optional)
-prometheus-client>=0.14.0          # 📊 Metrics collection
-sentry-sdk>=1.0.0                   # 📡 Error tracking
-
-# Logging (Enhanced)
-loguru>=0.6.0                      # 📝 Advanced logging
-structlog>=22.1.0                   # 📊 Structured logging
-
-# Database (Optional for future features)
-sqlalchemy>=1.4.0                  # 🗄️ Database ORM
-# Note: sqlite3 is built-in to Python
-
-# Web Interface (Optional)
-fastapi>=0.68.0                    # 🌐 Fast API framework
-uvicorn>=0.15.0                    # 🚀 ASGI server
-jinja2>=3.0.0                     # 🎨 Template engine
-
-# Security Testing Tools (Optional)
-scapy>=2.4.0                      # 📡 Packet manipulation
-pwntools>=4.4.0                    # 🔐 Password testing
-paramiko>=2.7.0                    # 🔑 SSH library
+# Optional for AI providers (install as needed):
+# openai>=1.0.0                   # 🧠 OpenAI GPT integration
+# google-generativeai>=0.3.0     # ✨ Google Gemini API support
+# mistralai>=0.0.8                # 🌊 Mistral AI API support
