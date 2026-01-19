@@ -1243,20 +1243,23 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
         print(f"🔗 MCP Connected: {'✅ Yes' if self.mcp_connected else '❌ No'}")
         
         print(f"\n{self._colorize('🔧 Configuration Options:', Fore.CYAN)}")
-        print(f"  1. Toggle Rephrasing Mode")
-        print(f"  2. Check MCP Status")
-        print(f"  3. Show API Keys Status")
-        print(f"  4. Back to main menu")
+        print(f"  1. Switch AI Provider")
+        print(f"  2. Toggle Rephrasing Mode")
+        print(f"  3. Check MCP Status")
+        print(f"  4. Show API Keys Status")
+        print(f"  5. Back to main menu")
         
-        choice = input(f"\n{self._colorize('🎯 Choose option (1-4):', Fore.YELLOW)}").strip()
+        choice = input(f"\n{self._colorize('🎯 Choose option (1-5):', Fore.YELLOW)}").strip()
         
         if choice == '1':
-            return self.toggle_rephrasing_mode()
+            return self.switch_ai_provider()
         elif choice == '2':
-            return self.check_mcp_status()
+            return self.toggle_rephrasing_mode()
         elif choice == '3':
-            return self.show_api_keys_status()
+            return self.check_mcp_status()
         elif choice == '4':
+            return self.show_api_keys_status()
+        elif choice == '5':
             return self.show_main_menu()
         else:
             return f"❌ Invalid choice: {choice}"
