@@ -1,6 +1,6 @@
 # 🔥 IBLU Professional Hacking Assistant - AI-Powered Cybersecurity Platform 🔥
 
-## 🎯 **What is IBLU?**
+## 🎯 **What is IBLU-KALIGPT?**
 
 **IBLU** is a professional cybersecurity assistant that combines **AI intelligence** with **50+ security tools** for authorized penetration testing and security research. It's your personal hacking assistant that helps you perform security assessments efficiently.
 
