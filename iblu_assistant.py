@@ -916,18 +916,21 @@ Focus on technical accuracy and completeness. Students learn best from detailed,
         for tool, info in self.command_helper.hexstrike_tools.items():
             cat = info['category']
             if cat not in categories:
-                categories[cat] = []
-            categories[cat].append(tool)
+                categories[cat] = {"total": 0, "installed": 0, "tools": []}
+            categories[cat]["total"] += 1
+            categories[cat]["tools"].append(tool)
+            if self.check_tool_installed(tool):
+                categories[cat]["installed"] += 1
         
         print(f"📋 Available Categories:")
         for i, (cat, tools) in enumerate(categories.items(), 1):
-            print(f"  {i}. {cat.upper()} ({len(tools)} tools)")
+            print(f"  {i}. {cat.upper()} ({len(tools['tools'])} tools)")
         
         try:
             cat_choice = input(f"\n{self._colorize('🎯 Choose category (1-{len(categories)}):', Fore.YELLOW)}").strip()
             cat_index = int(cat_choice) - 1
             category_name = list(categories.keys())[cat_index]
-            tools_in_category = categories[category_name]
+            tools_in_category = categories[category_name]["tools"]
             
             print(f"\n🔧 {category_name.upper()} Tools:")
             for i, tool in enumerate(tools_in_category, 1):
@@ -1897,14 +1900,14 @@ def main():
     
     print(banner)
     
-    print(f"\n{self._colorize('🔥 Security Tools Available:', Fore.YELLOW)}")
-    print(f"  • 🔍 Reconnaissance: nmap, masscan, dnsenum, recon-ng")
-    print(f"  • 🌐 Web Testing: nikto, sqlmap, burpsuite, gobuster")
-    print(f"  • 🔐 Password Cracking: john, hashcat, hydra, medusa")
-    print(f"  • 📡 Network Analysis: wireshark, tcpdump, aircrack-ng")
-    print(f"  • 💣 Exploitation: metasploit, msfconsole, msfvenom")
-    print(f"  • 🔬 Forensics: autopsy, volatility, sleuthkit")
-    print(f"  • 🎭 Social Engineering: setoolkit, phishing")
+    print("\n🔥 Security Tools Available:")
+    print("  • 🔍 Reconnaissance: nmap, masscan, dnsenum, recon-ng")
+    print("  • 🌐 Web Testing: nikto, sqlmap, burpsuite, gobuster")
+    print("  • 🔐 Password Cracking: john, hashcat, hydra, medusa")
+    print("  • 📡 Network Analysis: wireshark, tcpdump, aircrack-ng")
+    print("  • 💣 Exploitation: metasploit, msfconsole, msfvenom")
+    print("  • 🔬 Forensics: autopsy, volatility, sleuthkit")
+    print("  • 🎭 Social Engineering: setoolkit, phishing")
     print()
     
     # Show main menu
