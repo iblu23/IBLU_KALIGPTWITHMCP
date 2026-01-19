@@ -5138,25 +5138,33 @@ Provide step-by-step technical details while maintaining educational context and
                     theme = model_themes.get(provider, {"style": "bold cyan", "emoji": "🤖", "name": "Model"})
                     
                     try:
-                        # Create individual model progress
-                        model_task = progress.add_task(f"[{theme['style']}]{theme['emoji']} {theme['name']} responding...", total=None)
+                        # Create individual model progress with proper total
+                        model_task = progress.add_task(f"[{theme['style']}]{theme['emoji']} {theme['name']} responding...", total=100)
+                        
+                        # Simulate progress during API call
+                        progress.update(model_task, advance=20, description=f"[{theme['style']}]{theme['emoji']} {theme['name']} connecting...")
+                        time.sleep(0.1)
                         
                         if provider == Provider.LLAMA:
+                            progress.update(model_task, advance=30, description=f"[{theme['style']}]{theme['emoji']} {theme['name']} processing...")
                             response = self.call_llama_api(self.SYSTEM_PROMPT, user_message, api_key)
                         elif provider == Provider.OPENAI:
+                            progress.update(model_task, advance=30, description=f"[{theme['style']}]{theme['emoji']} {theme['name']} processing...")
                             response = self.call_openai_api(self.SYSTEM_PROMPT, user_message, api_key)
                         elif provider == Provider.GEMINI:
+                            progress.update(model_task, advance=30, description=f"[{theme['style']}]{theme['emoji']} {theme['name']} processing...")
                             response = self.call_gemini_api(self.SYSTEM_PROMPT, user_message, api_key)
                         elif provider == Provider.MISTRAL:
+                            progress.update(model_task, advance=30, description=f"[{theme['style']}]{theme['emoji']} {theme['name']} processing...")
                             response = self.call_mistral_api(self.SYSTEM_PROMPT, user_message, api_key)
                         
-                        progress.update(model_task, description=f"[{theme['style']}✅ {theme['name']} completed")
+                        progress.update(model_task, completed=100, description=f"[{theme['style']}✅ {theme['name']} completed")
                         
                         response_time = time.time() - start_time
                         return provider, response, response_time
                         
                     except Exception as e:
-                        progress.update(model_task, description=f"[{theme['style']}❌ {theme['name']} failed")
+                        progress.update(model_task, completed=100, description=f"[{theme['style']}❌ {theme['name']} failed")
                         return provider, f"Error: {str(e)}", time.time() - start_time
                 
                 # Execute parallel model responses
