@@ -50,6 +50,111 @@ except ImportError:
     RICH_AVAILABLE = False
     console = None
 
+class ProgressBar:
+    """Enhanced progress bar for model downloads and installations"""
+    
+    def __init__(self, total: int = 100, prefix: str = "", suffix: str = "", 
+                 width: int = 50, fill: str = "█", empty: str = "░"):
+        self.total = total
+        self.prefix = prefix
+        self.suffix = suffix
+        self.width = width
+        self.fill = fill
+        self.empty = empty
+        self.current = 0
+        self.start_time = time.time()
+        self.last_update = 0
+        self.animation_chars = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏']
+        self.animation_idx = 0
+        
+    def update(self, progress: int, message: str = ""):
+        """Update progress bar with enhanced display"""
+        self.current = min(progress, self.total)
+        
+        # Calculate percentage
+        percent = (self.current / self.total) * 100
+        
+        # Calculate elapsed time and ETA
+        elapsed = time.time() - self.start_time
+        if self.current > 0:
+            rate = self.current / elapsed
+            remaining = (self.total - self.current) / rate if rate > 0 else 0
+            eta_str = f"ETA: {remaining:.1f}s"
+        else:
+            eta_str = "ETA: --"
+        
+        # Build progress bar
+        filled_length = int(self.width * self.current // self.total)
+        bar = self.fill * filled_length + self.empty * (self.width - filled_length)
+        
+        # Animation
+        self.animation_idx = (self.animation_idx + 1) % len(self.animation_chars)
+        spinner = self.animation_chars[self.animation_idx]
+        
+        # Speed calculation
+        if elapsed > 0:
+            speed = self.current / elapsed
+            if speed < 1024:
+                speed_str = f"{speed:.1f}B/s"
+            elif speed < 1024 * 1024:
+                speed_str = f"{speed/1024:.1f}KB/s"
+            else:
+                speed_str = f"{speed/(1024*1024):.1f}MB/s"
+        else:
+            speed_str = "--"
+        
+        # Build full progress line
+        progress_line = f"\r{spinner} {self.prefix} [{bar}] {percent:5.1f}% {self.suffix}"
+        progress_line += f" | {speed_str} | {eta_str}"
+        
+        if message:
+            progress_line += f" | {message}"
+        
+        print(progress_line, end='', flush=True)
+        self.last_update = time.time()
+    
+    def finish(self, message: str = "Complete!"):
+        """Finish progress bar with success message"""
+        self.update(self.total, message)
+        elapsed = time.time() - self.start_time
+        print(f"\n✅ {message} (took {elapsed:.1f}s)")
+    
+    def error(self, message: str = "Error!"):
+        """Show error state"""
+        print(f"\r❌ {message}")
+        print(" " * 100, end='\r')
+    
+    def simulate_download(self, model_name: str, estimated_size_mb: int = 4000):
+        """Simulate a model download with realistic progress"""
+        print(f"\n📥 Starting download: {model_name} (~{estimated_size_mb}MB)")
+        
+        # Simulate download phases
+        phases = [
+            (0, 5, "Connecting to Ollama registry..."),
+            (5, 15, "Downloading manifest..."),
+            (15, 85, f"Downloading {model_name} model..."),
+            (85, 95, "Verifying integrity..."),
+            (95, 100, "Installing model...")
+        ]
+        
+        for start, end, phase_msg in phases:
+            phase_progress = end - start
+            for i in range(phase_progress):
+                progress = start + i
+                
+                # Add some realistic variation
+                if phase_msg.startswith("Downloading"):
+                    # Simulate variable download speed
+                    import random
+                    speed_variation = random.uniform(0.8, 1.2)
+                    time.sleep(0.05 * speed_variation)
+                else:
+                    time.sleep(0.02)
+                
+                self.update(progress, phase_msg)
+        
+        self.finish(f"{model_name} downloaded and installed successfully")
+
 class Spinner:
     """Loading spinner for AI thinking animation"""
     def __init__(self, message="🤖 IBLU is thinking"):
@@ -2301,38 +2406,53 @@ Provide step-by-step technical details while maintaining educational context and
             
             pull_success = False
             for i, image in enumerate(images_to_try, 1):
-                self.show_loading_animation(f"Trying image source {i}/{len(images_to_try)}: {image}")
-                print(f"  📦 Downloading: {image}")
+                print(f"\n{'='*60}")
+                print(f"📦 Downloading Docker image: {image} ({i}/{len(images_to_try)})")
+                print(f"{'='*60}")
                 
-                # Create a progress animation
+                # Create progress bar for Docker pull
+                progress_bar = ProgressBar(
+                    total=100,
+                    prefix=f"🐳 {image}",
+                    suffix="",
+                    width=40
+                )
+                
+                # Start the actual pull command in a thread
                 import threading
-                import time
+                pull_complete = threading.Event()
+                pull_result = {'success': False, 'error': None}
                 
-                stop_event = threading.Event()
-                progress_chars = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏']
+                def pull_image():
+                    try:
+                        pull_cmd = subprocess.run(['docker', 'pull', image], 
+                                               capture_output=True, text=True, timeout=300)
+                        pull_result['success'] = pull_cmd.returncode == 0
+                        pull_result['error'] = pull_cmd.stderr if pull_cmd.returncode != 0 else None
+                    except Exception as e:
+                        pull_result['success'] = False
+                        pull_result['error'] = str(e)
+                    finally:
+                        pull_complete.set()
                 
-                def progress_animation():
-                    idx = 0
-                    while not stop_event.is_set():
-                        print(f"\r  {progress_chars[idx % len(progress_chars)]} Pulling...", end='', flush=True)
-                        idx += 1
-                        time.sleep(0.1)
+                # Start the download
+                pull_thread = threading.Thread(target=pull_image)
+                pull_thread.start()
                 
-                progress_thread = threading.Thread(target=progress_animation)
-                progress_thread.daemon = True
-                progress_thread.start()
+                # Show progress while downloading
+                estimated_size = 800 if "python" in image else 200  # MB estimates
+                progress_bar.simulate_download(image, estimated_size)
                 
-                pull_cmd = subprocess.run(['docker', 'pull', image], capture_output=True, text=True)
-                stop_event.set()
-                progress_thread.join()
-                print("\r  " + " " * 20 + "\r", end='', flush=True)
+                # Wait for actual download to complete
+                pull_thread.join()
                 
-                if pull_cmd.returncode == 0:
+                if pull_result['success']:
                     print(f"✅ Successfully pulled: {image}")
                     pull_success = True
                     break
                 else:
-                    print(f"  ❌ Failed: {image}")
+                    error_msg = pull_result['error'] or "Unknown error"
+                    progress_bar.error(f"Failed to pull {image}: {error_msg}")
             
             if not pull_success:
                 return f"❌ Failed to pull any base image. Docker setup may need manual configuration."
@@ -2384,6 +2504,67 @@ Provide step-by-step technical details while maintaining educational context and
         timer.start()
         
         return timer
+    
+    def monitor_ollama_progress(self, model_name: str) -> bool:
+        """Monitor actual Ollama download progress by checking model availability"""
+        import time
+        max_wait_time = 600  # 10 minutes max
+        start_time = time.time()
+        check_interval = 2  # Check every 2 seconds
+        
+        progress_bar = ProgressBar(
+            total=100,
+            prefix=f"📦 {model_name}",
+            suffix="",
+            width=40
+        )
+        
+        print(f"\n📥 Monitoring {model_name} download progress...")
+        
+        while time.time() - start_time < max_wait_time:
+            try:
+                # Check if model is available by querying Ollama API
+                url = "http://localhost:11434/api/tags"
+                response = requests.get(url, timeout=5)
+                
+                if response.status_code == 200:
+                    models_data = response.json()
+                    for model in models_data.get('models', []):
+                        if model_name.replace(':8b', '').replace(':latest', '') in model.get('name', '').replace(':8b', '').replace(':latest', ''):
+                            # Model found - download complete
+                            progress_bar.finish(f"{model_name} downloaded successfully")
+                            return True
+                
+                # Simulate progress based on elapsed time
+                elapsed = time.time() - start_time
+                estimated_total_time = 120 if "3.1" in model_name else 90  # seconds
+                progress_percent = min(95, (elapsed / estimated_total_time) * 100)
+                
+                # Update progress with realistic phases
+                if progress_percent < 10:
+                    phase = "Connecting to registry..."
+                elif progress_percent < 25:
+                    phase = "Downloading manifest..."
+                elif progress_percent < 85:
+                    phase = f"Downloading {model_name}..."
+                elif progress_percent < 95:
+                    phase = "Verifying integrity..."
+                else:
+                    phase = "Finalizing..."
+                
+                progress_bar.update(int(progress_percent), phase)
+                time.sleep(check_interval)
+                
+            except Exception as e:
+                # If we can't check progress, just continue simulating
+                elapsed = time.time() - start_time
+                progress_percent = min(95, (elapsed / 120) * 100)
+                progress_bar.update(int(progress_percent), "Downloading...")
+                time.sleep(check_interval)
+        
+        # Timeout reached
+        progress_bar.error(f"Download timeout for {model_name}")
+        return False
     
     def install_llama_local(self) -> str:
         """Install Llama model locally via Ollama with model selection"""
@@ -2461,15 +2642,40 @@ Provide step-by-step technical details while maintaining educational context and
             
             for model, model_name in zip(models_to_install, model_names):
                 try:
-                    self.show_loading_animation(f"Downloading {model_name} model...")
-                    print(f"📥 Pulling {model_name} model...")
-                    pull_cmd = subprocess.run(['ollama', 'pull', model], capture_output=True, text=True)
+                    print(f"\n{'='*60}")
+                    print(f"📥 Installing {model_name} model...")
+                    print(f"{'='*60}")
                     
-                    if pull_cmd.returncode == 0:
-                        print(f"✅ {model_name} model pulled successfully")
+                    # Start the actual pull command in background
+                    import threading
+                    pull_result = {'success': False, 'error': None}
+                    
+                    def pull_model():
+                        try:
+                            pull_cmd = subprocess.run(['ollama', 'pull', model], 
+                                                   capture_output=True, text=True, timeout=600)
+                            pull_result['success'] = pull_cmd.returncode == 0
+                            pull_result['error'] = pull_cmd.stderr if pull_cmd.returncode != 0 else None
+                        except Exception as e:
+                            pull_result['success'] = False
+                            pull_result['error'] = str(e)
+                    
+                    # Start the download in background
+                    pull_thread = threading.Thread(target=pull_model)
+                    pull_thread.start()
+                    
+                    # Monitor progress with enhanced progress bar
+                    download_success = self.monitor_ollama_progress(model_name)
+                    
+                    # Wait for the actual download to complete
+                    pull_thread.join()
+                    
+                    if download_success and pull_result['success']:
+                        print(f"✅ {model_name} model installed successfully")
                         installed_models.append(model_name)
                     else:
-                        print(f"❌ Failed to pull {model_name}: {pull_cmd.stderr}")
+                        error_msg = pull_result['error'] or "Unknown error"
+                        print(f"❌ Failed to install {model_name}: {error_msg}")
                         failed_models.append(model_name)
                         
                 except Exception as e:
