@@ -2322,6 +2322,11 @@ All responses should be helpful, educational, and focused on legitimate cybersec
     def install_tools_one_by_one_with_descriptions(self):
         """Install tools one by one with full descriptions using rich tables"""
         if RICH_AVAILABLE:
+            from rich.console import Console
+            from rich.panel import Panel
+            from rich.table import Table
+            console = Console()
+            
             console.print("\n")
             console.print(Panel("[bold yellow]🎮 SELECT HACKING TOY TO INSTALL[/bold yellow]", 
                                border_style="cyan", expand=False))
@@ -2632,6 +2637,10 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             return f"❌ Unknown tool: {tool_name}"
         
         if RICH_AVAILABLE:
+            from rich.console import Console
+            from rich.panel import Panel
+            console = Console()
+            
             # Show tool info in a panel
             info_text = f"""[bold cyan]Tool:[/bold cyan] {tool_name}
 [bold cyan]Name:[/bold cyan] {tool_info['name']}
@@ -2716,6 +2725,11 @@ All responses should be helpful, educational, and focused on legitimate cybersec
     def show_tool_usage(self, tool_name: str, tool_info: dict):
         """Show tool usage examples and commands"""
         if RICH_AVAILABLE:
+            from rich.console import Console
+            from rich.panel import Panel
+            from rich.syntax import Syntax
+            console = Console()
+            
             console.print("\n")
             console.print(Panel("[bold green]✅ Installation Complete![/bold green]", 
                               border_style="green", expand=False))
@@ -3339,12 +3353,19 @@ All responses should be helpful, educational, and focused on legitimate cybersec
         if not response:
             return response
             
+        # Initialize Rich console
+        console = None
+        if RICH_AVAILABLE:
+            from rich.console import Console
+            from rich.syntax import Syntax
+            console = Console()
+            
         # If response contains colorama codes, print directly and return
         if COLORAMA_AVAILABLE and (Style.RESET_ALL in response or Style.BRIGHT in response or Back.RESET in response):
             print(response)
             return ""
         
-        if not RICH_AVAILABLE:
+        if not RICH_AVAILABLE or not console:
             return response
         
         # Print formatted response using rich
@@ -5073,10 +5094,11 @@ Provide step-by-step technical details while maintaining educational context and
             RICH_PROGRESS_AVAILABLE = False
         
         if COLORAMA_AVAILABLE:
-            # Beautiful collaborative header
-            collab_header = f"{Fore.LIGHTCYAN_EX}╔{'═' * 78}╗{Style.RESET_ALL}"
-            collab_title = f"{Fore.LIGHTCYAN_EX}║{Style.RESET_ALL} {Style.BRIGHT}{Back.CYAN}{Fore.WHITE}🤖 COLLABORATIVE AI NETWORK 🤖{Style.RESET_ALL} {Fore.LIGHTCYAN_EX}{' ' * 36}║{Style.RESET_ALL}"
-            collab_footer = f"{Fore.LIGHTCYAN_EX}╚{'═' * 78}╝{Style.RESET_ALL}"
+            # Beautiful collaborative header - use Colorama Style explicitly
+            from colorama import Style as ColoramaStyle
+            collab_header = f"{Fore.LIGHTCYAN_EX}╔{'═' * 78}╗{ColoramaStyle.RESET_ALL}"
+            collab_title = f"{Fore.LIGHTCYAN_EX}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Back.CYAN}{Fore.WHITE}🤖 COLLABORATIVE AI NETWORK 🤖{ColoramaStyle.RESET_ALL} {Fore.LIGHTCYAN_EX}{' ' * 36}║{ColoramaStyle.RESET_ALL}"
+            collab_footer = f"{Fore.LIGHTCYAN_EX}╚{'═' * 78}╝{ColoramaStyle.RESET_ALL}"
             
             print(f"\n{collab_header}")
             print(f"{collab_title}")
@@ -5119,24 +5141,28 @@ Provide step-by-step technical details while maintaining educational context and
         
         # Phase 1: Parallel initial analysis with Rich progress
         if RICH_PROGRESS_AVAILABLE:
+            # Create Rich console for progress display
+            from rich.console import Console
+            console = Console()
+            
             # Create enhanced progress with multiple columns and effects
             with Progress(
-                SpinnerColumn("dots12", style="bold cyan", speed=0.5),
+                SpinnerColumn("dots12", style="cyan", speed=0.5),
                 TextColumn("[bold cyan]🤖 Collaborative Analysis: {task.description}"),
                 BarColumn(
                     bar_width=50, 
                     complete_style=Style(color="bright_cyan", bold=True),
-                    finished_style=Style(color="bold cyan", blink=True),
+                    finished_style=Style(color="cyan", bold=True),
                     pulse_style=Style(color="cyan", dim=True)
                 ),
                 TaskProgressColumn(
                     text_format="• {task.completed}/{task.total}",
-                    style="bright_yellow",
+                    style="yellow",
                     show_speed=True
                 ),
-                TextColumn("[progress.percentage]{task.percentage:>3.1f}%", style="bold magenta"),
+                TextColumn("[progress.percentage]{task.percentage:>3.1f}%", style="magenta"),
                 MofNCompleteColumn(),
-                TimeElapsedColumn(elapsed_when_finished=True, style="dim green"),
+                TimeElapsedColumn(),
                 console=console,
                 transient=False,
                 refresh_per_second=10
@@ -5349,17 +5375,144 @@ Based on the analyses above, provide a comprehensive, enhanced response that:
                 preview = response.replace('\n', ' ')[:150] + "..." if len(response.replace('\n', ' ')) > 150 else response.replace('\n', ' ')
                 print(f"  • {provider.value.title()}: {preview}")
         
-        return f"""
-{self._colorize('🤖 COLLABORATIVE AI RESPONSE', Fore.GREEN)}
-{'=' * 60}
+        # Use Rich console for beautiful output
+        console = None
+        if RICH_AVAILABLE:
+            from rich.console import Console
+            from rich.panel import Panel
+            from rich.table import Table
+            from rich.columns import Columns
+            from rich.text import Text
+            from rich import box
+            
+            console = Console()
+        
+        # Format the enhanced response for better readability
+        if RICH_AVAILABLE and console:
+            # Process the enhanced response for better Rich formatting
+            formatted_response = enhanced_response
+            
+            # Add better spacing and formatting
+            formatted_response = formatted_response.replace("\n\n", "\n\n[white]•[/white] ")
+            formatted_response = formatted_response.replace("###", "\n[bold yellow]▶[/bold yellow] [bold white]")
+            formatted_response = formatted_response.replace("**", "[bold white]")
+            formatted_response = formatted_response.replace("*", "[italic white]")
+            
+            # Add paragraph breaks with alternating colors for better readability
+            paragraphs = formatted_response.split('\n\n')
+            formatted_paragraphs = []
+            paragraph_colors = ['white', 'cyan', 'magenta', 'yellow', 'green', 'blue']
+            
+            for i, para in enumerate(paragraphs):
+                if para.strip():
+                    color = paragraph_colors[i % len(paragraph_colors)]
+                    formatted_paragraphs.append(f"[{color}]{para.strip()}[/{color}]")
+            
+            enhanced_response = '\n\n'.join(formatted_paragraphs)
+        else:
+            # Fallback to colorama paragraph formatting with alternating colors
+            paragraphs = enhanced_response.split('\n\n')
+            formatted_paragraphs = []
+            paragraph_colors = [Fore.WHITE, Fore.CYAN, Fore.MAGENTA, Fore.YELLOW, Fore.GREEN, Fore.BLUE]
+            
+            for i, para in enumerate(paragraphs):
+                if para.strip():
+                    color = paragraph_colors[i % len(paragraph_colors)]
+                    formatted_paragraphs.append(self._colorize(para.strip(), color))
+            
+            enhanced_response = '\n\n'.join(formatted_paragraphs)
+        performance_details = []
+        for provider, response_time in response_times.items():
+            theme = model_themes.get(provider, {"emoji": "🤖", "color": "cyan"})
+            model_name = provider.value.title()
+            performance_details.append({
+                "emoji": theme["emoji"],
+                "name": model_name,
+                "time": response_time,
+                "length": len(initial_responses[provider])
+            })
+        
+        # Use Rich console for beautiful output
+        if RICH_AVAILABLE and console:
+            # Create main response panel with enhanced formatting
+            response_panel = Panel(
+                Text.from_markup(f"""
+[bold cyan]╔══════════════════════════════════════════════════════════════════════════════╗
+║ [bold green]🤖 COLLABORATIVE AI NETWORK RESPONSE[/bold green] ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+[bold yellow]📋 SYNTHESIZED EXPERTISE[/bold yellow]
+[cyan]────────────────────────────────────────────────────────────────────────────────[/cyan]
 
 {enhanced_response}
 
-{'=' * 60}
-{self._colorize('📊 Collaboration Details:', Fore.BLUE)}
-⚡ Response Time: {sum(response_times.values()):.2f}s
-🤝 Models Used: {', '.join([p.value.title() for p in initial_responses.keys()])}
-🏆 Lead Model: {fastest_provider.value.title()}
+[cyan]────────────────────────────────────────────────────────────────────────────────[/cyan]
+
+[bold magenta]📊 COLLABORATION METRICS[/bold magenta]
+[cyan]⚡[/cyan] [white]Total Response Time:[/white] [green]{sum(response_times.values()):.2f}s[/green]
+[cyan]🤝[/cyan] [white]AI Models Engaged:[/white] [blue]{', '.join([p.value.title() for p in initial_responses.keys()])}[/blue]
+[cyan]🏆[/cyan] [white]Lead Contributor:[/white] [yellow]{fastest_provider.value.title()}[/yellow]
+
+[bold cyan]🔍 MODEL PERFORMANCE[/bold cyan]
+[cyan]────────────────────────────────────────────────────────────────────────────────[/cyan]
+"""),
+                title="[bold green]🤖 Collaborative AI Response[/bold green]",
+                border_style="cyan",
+                padding=(1, 2),
+                expand=True
+            )
+            
+            # Create performance table
+            perf_table = Table(show_header=False, box=box.ROUNDED, expand=True)
+            perf_table.add_column("Model", style="bold white", width=15)
+            perf_table.add_column("Response Time", style="green", width=12)
+            perf_table.add_column("Contribution", style="blue", width=12)
+            
+            for perf in performance_details:
+                perf_table.add_row(
+                    f"{perf['emoji']} {perf['name']}",
+                    f"⏱️  {perf['time']:.2f}s",
+                    f"📝 {perf['length']} chars"
+                )
+            
+            # Display the response with enhanced visual layout
+            console.print("\n")  # Add spacing
+            console.print(response_panel)
+            console.print("\n")  # Add spacing before performance table
+            
+            # Create performance metrics panel
+            metrics_panel = Panel(
+                perf_table,
+                title="[bold cyan]🔍 Performance Metrics[/bold cyan]",
+                border_style="magenta",
+                padding=(1, 2),
+                expand=True
+            )
+            
+            console.print(metrics_panel)
+            console.print("\n")  # Add spacing after
+            
+            return ""
+        else:
+            # Fallback to colorama formatting
+            return f"""
+{self._colorize('╔══════════════════════════════════════════════════════════════════════════════╗', Fore.CYAN)}
+{self._colorize('║', Fore.CYAN)} {self._colorize('🤖 COLLABORATIVE AI NETWORK RESPONSE', Fore.GREEN)} {self._colorize('║', Fore.CYAN)}
+{self._colorize('╚══════════════════════════════════════════════════════════════════════════════╝', Fore.CYAN)}
+
+{self._colorize('📋 SYNTHESIZED EXPERTISE', Fore.YELLOW)}
+{self._colorize('─' * 80, Fore.YELLOW)}
+
+{enhanced_response}
+
+{self._colorize('─' * 80, Fore.YELLOW)}
+{self._colorize('📊 COLLABORATION METRICS', Fore.MAGENTA)}
+{self._colorize('⚡', Fore.CYAN)} {self._colorize('Total Response Time:', Fore.WHITE)} {self._colorize(f'{sum(response_times.values()):.2f}s', Fore.GREEN)}
+{self._colorize('🤝', Fore.CYAN)} {self._colorize('AI Models Engaged:', Fore.WHITE)} {self._colorize(', '.join([p.value.title() for p in initial_responses.keys()]), Fore.BLUE)}
+{self._colorize('🏆', Fore.CYAN)} {self._colorize('Lead Contributor:', Fore.WHITE)} {self._colorize(fastest_provider.value.title(), Fore.YELLOW)}
+
+{self._colorize('🔍 MODEL PERFORMANCE', Fore.CYAN)}
+{self._colorize('─' * 80, Fore.CYAN)}{performance_details}
 """
     
     def stack_models_response(self) -> str:
@@ -5598,9 +5751,24 @@ def load_config():
 
 def main():
     """Main function"""
-    # Show main menu (which now contains the banner)
-    assistant = KaliGPTMCPAssistant(load_config())
-    assistant.show_main_menu()
+    # Suppress git output during startup
+    import subprocess
+    import os
+    import sys
+    
+    # Temporarily suppress git output
+    original_env = os.environ.copy()
+    os.environ['GIT_PAGER'] = ''
+    os.environ['GIT_TERMINAL_PROMPT'] = '0'
+    
+    try:
+        # Show main menu (which now contains the banner)
+        assistant = KaliGPTMCPAssistant(load_config())
+        assistant.show_main_menu()
+    finally:
+        # Restore environment
+        os.environ.clear()
+        os.environ.update(original_env)
     
     # Main loop
     while True:
