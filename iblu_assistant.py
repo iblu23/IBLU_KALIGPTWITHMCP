@@ -1710,7 +1710,7 @@ Provide step-by-step technical details while maintaining educational context and
                 TimeElapsedColumn(),
                 console=console
             ) as progress:
-                task = progress.add_task(f"[bold cyan]🤖 {provider.value.title()} is thinking...", total=None)
+                task = progress.add_task(f"[bold cyan]🤖 IBLU is thinking...", total=None)
                 
                 if provider == Provider.PERPLEXITY:
                     result = self.call_perplexity_api(system_prompt, user_message, api_key)
@@ -1727,7 +1727,7 @@ Provide step-by-step technical details while maintaining educational context and
                 return result
         else:
             # Fallback to simple spinner
-            spinner = Spinner(f"🤖 {provider.value.title()} is thinking")
+            spinner = Spinner(f"🤖 IBLU is thinking")
             spinner.start()
             
             try:
