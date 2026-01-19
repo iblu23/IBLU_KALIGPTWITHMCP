@@ -227,8 +227,8 @@ class IBLUCommandHelper:
             # Get basic command suggestions
             basic_commands = ['/help', '/exit', '/clear', '/status', '/scan', '/payload', 
                             '/autopentest', '/mcp_connect', '/mcp_disconnect', 
-                            '/openai', '/gemini', '/mistral', '/history', '/tools', '/install',
-                            '/hexstrike', '/pentest']
+                            '/openai', '/gemini', '/mistral', '/llama', '/history', '/tools', '/install',
+                            '/hexstrike', '/pentest', '/llama_models', '/install_models']
             
             # Add HexStrike tool commands
             hexstrike_commands = [f"/{tool}" for tool in self.hexstrike_tools.keys()]
@@ -418,6 +418,12 @@ class IBLUCommandHelper:
   openai            - Switch to OpenAI
   gemini            - Switch to Gemini
   mistral           - Switch to Mistral
+  llama             - Switch to local Llama models
+
+{self._colorize('🤖 LOCAL MODEL MANAGEMENT:', Fore.MAGENTA)}
+  install_llama     - Install Llama models locally (supports Llama 2 & 3.1 8B)
+  llama_models      - List and manage available Llama models
+  install_models    - Install all local models
 
 {self._colorize('�️ HEXSTRIKE TOOLS (50+ available):', Fore.RED)}
   /nmap            - Network discovery and security auditing
@@ -555,6 +561,7 @@ class IBLUCommandHelper:
             "install_gemini": {"description": "Install Gemini model locally", "usage": "install_gemini"},
             "install_llama": {"description": "Install Llama model locally", "usage": "install_llama"},
             "install_models": {"description": "Install all local models", "usage": "install_models"},
+            "llama_models": {"description": "List and select available Llama models", "usage": "llama_models"},
             "stack_models": {"description": "Stack multiple models for enhanced responses", "usage": "stack_models"},
             "model_chat": {"description": "Enable models to communicate with each other", "usage": "model_chat"}
         }
@@ -1494,6 +1501,8 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
             return self.install_llama_local()
         elif cmd == "install_models":
             return self.install_all_local_models()
+        elif cmd == "llama_models":
+            return self.list_and_select_llama_models()
         elif cmd == "stack_models":
             return self.stack_models_response()
         elif cmd == "model_chat":
@@ -1544,6 +1553,8 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
             return "🤖 Switched to Gemini provider"
         elif cmd == "mistral":
             return "🤖 Switched to Mistral provider"
+        elif cmd == "llama":
+            return "🤖 Switched to local Llama models"
         elif cmd.startswith("install "):
             tool_name = cmd[8:]  # Remove "install "
             return self.install_tool(tool_name)
@@ -2023,9 +2034,46 @@ Provide step-by-step technical details while maintaining educational context and
         except Exception as e:
             return f"❌ Gemini API Error: {e}\n\n💡 Check your API key at https://aistudio.google.com/app/apikey"
     
-    def call_llama_api(self, system_prompt: str, user_message: str, api_key: str) -> str:
-        """Call local Llama API via Ollama"""
+    def get_available_llama_models(self) -> List[str]:
+        """Get list of available Llama models from Ollama"""
         try:
+            url = "http://localhost:11434/api/tags"
+            response = requests.get(url, timeout=10)
+            response.raise_for_status()
+            
+            models_data = response.json()
+            available_models = []
+            
+            for model in models_data.get('models', []):
+                model_name = model.get('name', '')
+                if 'llama' in model_name.lower():
+                    available_models.append(model_name)
+            
+            # Prioritize Llama 3.1 8B, then Llama 2
+            priority_order = ['llama3.1:8b', 'llama3.1', 'llama2', 'llama']
+            
+            for model in priority_order:
+                if any(model in available_model for available_model in available_models):
+                    return [model for available_model in available_models if model in available_model]
+            
+            return available_models if available_models else ['llama2']  # Fallback to llama2
+            
+        except Exception as e:
+            # Fallback to llama2 if detection fails
+            return ['llama2']
+    
+    def call_llama_api(self, system_prompt: str, user_message: str, api_key: str) -> str:
+        """Call local Llama API via Ollama with automatic model selection"""
+        try:
+            # Get available models
+            available_models = self.get_available_llama_models()
+            
+            if not available_models:
+                return "❌ No Llama models available. Please install a model first using /install_llama"
+            
+            # Use the best available model
+            model_to_use = available_models[0]
+            
             # Default Ollama endpoint
             url = "http://localhost:11434/api/generate"
             
@@ -2037,7 +2085,7 @@ Provide step-by-step technical details while maintaining educational context and
             combined_message = f"{system_prompt}\n\nUser Query: {user_message}"
             
             payload = {
-                "model": "llama2",
+                "model": model_to_use,
                 "prompt": combined_message,
                 "stream": False
             }
@@ -2048,7 +2096,7 @@ Provide step-by-step technical details while maintaining educational context and
             result = response.json()
             ai_response = result.get('response', '')
             
-            return f"🤖 IBLU (Llama):\n\n{ai_response}"
+            return f"🤖 IBLU (Llama - {model_to_use}):\n\n{ai_response}"
             
         except requests.exceptions.ConnectionError as e:
             return f"❌ Llama API Error: {e}\n\n💡 Make sure Ollama is running: 'ollama serve' in terminal"
@@ -2338,9 +2386,31 @@ Provide step-by-step technical details while maintaining educational context and
         return timer
     
     def install_llama_local(self) -> str:
-        """Install Llama model locally via Ollama"""
+        """Install Llama model locally via Ollama with model selection"""
         print(f"\n{self._colorize('🔧 Installing Llama Model Locally via Ollama', Fore.CYAN)}")
         print("=" * 50)
+        
+        # Model selection menu
+        print(f"\n{self._colorize('📋 Available Llama Models:', Fore.YELLOW)}")
+        print("  1. Llama 2 (7B) - Stable, well-tested model")
+        print("  2. Llama 3.1 8B - Latest model with improved capabilities")
+        print("  3. Install both models")
+        
+        model_choice = input(f"\n{self._colorize('🎯 Choose model (1-3):', Fore.YELLOW)}").strip()
+        
+        if model_choice == "1":
+            models_to_install = ["llama2"]
+            model_names = ["Llama 2"]
+        elif model_choice == "2":
+            models_to_install = ["llama3.1:8b"]
+            model_names = ["Llama 3.1 8B"]
+        elif model_choice == "3":
+            models_to_install = ["llama2", "llama3.1:8b"]
+            model_names = ["Llama 2", "Llama 3.1 8B"]
+        else:
+            return "❌ Invalid choice. Installation cancelled."
+        
+        print(f"\n{self._colorize(f'📦 Installing: {", ".join(model_names)}', Fore.GREEN)}")
         
         # Show loading animation
         self.show_loading_animation("Initializing Ollama environment...")
@@ -2385,19 +2455,39 @@ Provide step-by-step technical details while maintaining educational context and
             print("🚀 Starting Ollama service...")
             serve_cmd = subprocess.run(['ollama', 'serve'], capture_output=True, text=True, timeout=5)
             
-            # Pull Llama model
-            self.show_loading_animation("Downloading Llama 2 model...")
-            print("📥 Pulling Llama 2 model...")
-            pull_cmd = subprocess.run(['ollama', 'pull', 'llama2'], capture_output=True, text=True)
+            # Install selected models
+            installed_models = []
+            failed_models = []
             
-            if pull_cmd.returncode == 0:
-                print("✅ Llama 2 model pulled successfully")
+            for model, model_name in zip(models_to_install, model_names):
+                try:
+                    self.show_loading_animation(f"Downloading {model_name} model...")
+                    print(f"📥 Pulling {model_name} model...")
+                    pull_cmd = subprocess.run(['ollama', 'pull', model], capture_output=True, text=True)
+                    
+                    if pull_cmd.returncode == 0:
+                        print(f"✅ {model_name} model pulled successfully")
+                        installed_models.append(model_name)
+                    else:
+                        print(f"❌ Failed to pull {model_name}: {pull_cmd.stderr}")
+                        failed_models.append(model_name)
+                        
+                except Exception as e:
+                    print(f"❌ Error installing {model_name}: {e}")
+                    failed_models.append(model_name)
+            
+            # Summary
+            if installed_models:
                 print(f"\n{self._colorize('🚀 Ollama is running on localhost:11434', Fore.GREEN)}")
                 print(f"\n{self._colorize('💡 Update config.json:', Fore.YELLOW)}")
                 print('"llama_keys": ["local"]')
-                return "✅ Llama model installed locally!"
+                
+                if failed_models:
+                    return f"⚠️  Successfully installed: {', '.join(installed_models)}. Failed: {', '.join(failed_models)}"
+                else:
+                    return f"✅ Successfully installed: {', '.join(installed_models)}!"
             else:
-                return f"❌ Failed to pull Llama model: {pull_cmd.stderr}"
+                return f"❌ Failed to install any models: {', '.join(failed_models)}"
                 
         except Exception as e:
             return f"❌ Installation error: {e}"
@@ -2424,6 +2514,67 @@ Provide step-by-step technical details while maintaining educational context and
             print(f"• {result}")
         
         return "✅ All local model installations completed!"
+    
+    def list_and_select_llama_models(self) -> str:
+        """List available Llama models and allow selection"""
+        print(f"\n{self._colorize('🦙 Available Llama Models', Fore.CYAN)}")
+        print("=" * 50)
+        
+        try:
+            # Get available models
+            available_models = self.get_available_llama_models()
+            
+            if not available_models or available_models == ['llama2']:  # Only fallback
+                print("🔍 Checking for installed models...")
+                try:
+                    url = "http://localhost:11434/api/tags"
+                    response = requests.get(url, timeout=10)
+                    response.raise_for_status()
+                    
+                    models_data = response.json()
+                    llama_models = []
+                    
+                    for model in models_data.get('models', []):
+                        model_name = model.get('name', '')
+                        if 'llama' in model_name.lower():
+                            llama_models.append(model_name)
+                    
+                    if not llama_models:
+                        return "❌ No Llama models found. Please install a model first using /install_llama"
+                    
+                    available_models = llama_models
+                    
+                except Exception as e:
+                    return f"❌ Could not connect to Ollama: {e}\n\n💡 Make sure Ollama is running: 'ollama serve'"
+            
+            print(f"\n{self._colorize('📋 Installed Llama Models:', Fore.GREEN)}")
+            for i, model in enumerate(available_models, 1):
+                # Mark the preferred model
+                marker = "⭐" if "3.1" in model else "  "
+                print(f"  {i}. {marker} {model}")
+            
+            print(f"\n{self._colorize('💡 Model Information:', Fore.YELLOW)}")
+            print("⭐ Llama 3.1 models are preferred for better performance")
+            print("📦 Models are automatically selected based on availability")
+            print("🔧 Use /install_llama to install additional models")
+            
+            # Show current status
+            print(f"\n{self._colorize('🔍 Current Status:', Fore.BLUE)}")
+            try:
+                url = "http://localhost:11434/api/tags"
+                response = requests.get(url, timeout=5)
+                if response.status_code == 200:
+                    print("✅ Ollama service is running")
+                else:
+                    print("⚠️  Ollama service may not be responding properly")
+            except:
+                print("❌ Ollama service is not running")
+                print("💡 Start Ollama with: ollama serve")
+            
+            return f"\n✅ Found {len(available_models)} Llama model(s)"
+            
+        except Exception as e:
+            return f"❌ Error checking models: {e}"
     
     def connect_mcp(self):
         """Connect to MCP server"""
