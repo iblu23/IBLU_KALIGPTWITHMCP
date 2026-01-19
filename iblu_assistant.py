@@ -2044,7 +2044,77 @@ Provide step-by-step technical details while maintaining educational context and
         status += f"💬 Conversation History: {len(self.conversation_history)} messages\n"
         status += f"📝 Command History: {len(self.command_history)} commands\n"
         status += f"🔗 MCP Connection: {'Connected' if self.mcp_connected else 'Disconnected'}\n"
+        
+        # Check local model status
+        status += f"\n{self._colorize('🤖 Local Model Status:', Fore.CYAN)}\n"
+        
+        # Check Ollama (Llama)
+        ollama_status = self.check_ollama_status()
+        status += f"🏠 Ollama (Llama): {ollama_status}\n"
+        
+        # Check Gemini Docker
+        gemini_status = self.check_gemini_docker_status()
+        status += f"☁️ Gemini Docker: {gemini_status}\n"
+        
+        # Check configured local providers
+        local_providers = []
+        if self.config.llama_keys:
+            local_providers.append("Llama")
+        if self.config.gemini_keys:
+            for key in self.config.gemini_keys:
+                if key.startswith("http://localhost") or key.startswith("127.0.0.1"):
+                    local_providers.append("Gemini (Local)")
+                    break
+        
+        if local_providers:
+            status += f"🔧 Configured Local: {', '.join(local_providers)}\n"
+        else:
+            status += f"🔧 Configured Local: None\n"
+        
         return status
+    
+    def check_ollama_status(self) -> str:
+        """Check Ollama service status"""
+        try:
+            # Check if Ollama is running
+            response = requests.get("http://localhost:11434/api/tags", timeout=3)
+            if response.status_code == 200:
+                models = response.json().get('models', [])
+                if models:
+                    model_names = [model['name'].split(':')[-1] for model in models]
+                    return f"✅ Running ({len(models)} models: {', '.join(model_names[:3])}{'...' if len(model_names) > 3 else ''})"
+                else:
+                    return "✅ Running (no models)"
+            else:
+                return "❌ Not responding"
+        except requests.exceptions.ConnectionError:
+            return "❌ Not running"
+        except Exception as e:
+            return f"❌ Error: {str(e)[:30]}..."
+    
+    def check_gemini_docker_status(self) -> str:
+        """Check Gemini Docker container status"""
+        try:
+            # Check if Docker is available
+            docker_check = subprocess.run(['docker', '--version'], capture_output=True, text=True, timeout=5)
+            if docker_check.returncode != 0:
+                return "❌ Docker not installed"
+            
+            # Check if Gemini container is running
+            container_check = subprocess.run(['docker', 'ps', '--filter', 'name=gemini', '--format', '{{.Names}}'], capture_output=True, text=True, timeout=5)
+            if container_check.returncode == 0:
+                containers = container_check.stdout.strip().split('\n')
+                running_containers = [c for c in containers if c and c != 'NAMES']
+                if running_containers:
+                    return f"✅ Running ({len(running_containers)} container{'s' if len(running_containers) > 1 else ''})"
+                else:
+                    return "❌ Not running"
+            else:
+                return "❌ Not running"
+        except subprocess.TimeoutExpired:
+            return "❌ Timeout checking"
+        except Exception as e:
+            return f"❌ Error: {str(e)[:30]}..."
     
     def install_gemini_local(self) -> str:
         """Install Gemini model locally"""
