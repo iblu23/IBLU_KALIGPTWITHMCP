@@ -3360,45 +3360,73 @@ Provide step-by-step technical details while maintaining educational context and
             return False
     
     def call_single_provider(self, provider: Provider, system_prompt: str, user_message: str, api_key: str) -> str:
-        """Call a single AI provider with model-specific progress animation"""
+        """Call a single AI provider with enhanced Rich progress animation"""
         if RICH_AVAILABLE:
             # Get model-specific theme for rich progress
             model_themes = {
-                Provider.OPENAI: {"style": "bold green", "emoji": "🤖", "name": "OpenAI"},
-                Provider.GEMINI: {"style": "bold magenta", "emoji": "🌟", "name": "Gemini"},
-                Provider.MISTRAL: {"style": "bold red", "emoji": "🔥", "name": "Mistral"},
-                Provider.LLAMA: {"style": "bold cyan", "emoji": "🦙", "name": "Llama"},
-                Provider.GEMINI_CLI: {"style": "bold blue", "emoji": "💎", "name": "Gemini CLI"},
-                Provider.HUGGINGFACE: {"style": "bold yellow", "emoji": "🤗", "name": "HuggingFace"}
+                Provider.OPENAI: {"style": "bold green", "emoji": "🤖", "name": "OpenAI", "color": "bright_green"},
+                Provider.GEMINI: {"style": "bold magenta", "emoji": "🌟", "name": "Gemini", "color": "bright_magenta"},
+                Provider.MISTRAL: {"style": "bold red", "emoji": "🔥", "name": "Mistral", "color": "bright_red"},
+                Provider.LLAMA: {"style": "bold cyan", "emoji": "🦙", "name": "Llama", "color": "bright_cyan"},
+                Provider.GEMINI_CLI: {"style": "bold blue", "emoji": "💎", "name": "Gemini CLI", "color": "bright_blue"},
+                Provider.HUGGINGFACE: {"style": "bold yellow", "emoji": "🤗", "name": "HuggingFace", "color": "bright_yellow"}
             }
             
-            theme = model_themes.get(provider, {"style": "bold cyan", "emoji": "🤖", "name": "IBLU"})
+            theme = model_themes.get(provider, {"style": "bold cyan", "emoji": "🤖", "name": "IBLU", "color": "bright_cyan"})
             
-            # Use rich progress bar with model-specific colors
+            # Enhanced Rich progress bar with high-definition display
             with Progress(
                 SpinnerColumn(style=theme["style"]),
                 TextColumn(f"[{theme['style']}]{theme['emoji']} {{task.description}}"),
-                BarColumn(complete_style=theme["style"], pulse_style="bold yellow"),
+                BarColumn(bar_width=40, complete_style=theme["color"], finished_style=f"bold {theme['color']}", pulse_style="bold yellow"),
+                TextColumn("[progress.percentage]{task.percentage:>3.1f}%"),
                 TimeElapsedColumn(),
-                console=console
+                console=console,
+                transient=False
             ) as progress:
-                task = progress.add_task(f"[{theme['style']}]{theme['name']} is thinking...", total=None)
+                # Create thinking task with animated progress
+                task = progress.add_task(f"[{theme['style']}]{theme['name']} is thinking...", total=100)
                 
-                if provider == Provider.OPENAI:
-                    result = self.call_openai_api(system_prompt, user_message, api_key)
-                elif provider == Provider.GEMINI:
-                    result = self.call_gemini_api(system_prompt, user_message, api_key)
-                elif provider == Provider.MISTRAL:
-                    result = self.call_mistral_api(system_prompt, user_message, api_key)
-                elif provider == Provider.LLAMA:
-                    result = self.call_llama_api(system_prompt, user_message, api_key)
-                elif provider == Provider.GEMINI_CLI:
-                    result = self.call_gemini_cli_api(system_prompt, user_message, api_key)
-                else:
-                    result = f"❌ Provider {provider.value} not implemented yet"
+                # Simulate thinking progress
+                thinking_steps = [
+                    (10, f"[{theme['style']}]{theme['name']} analyzing request..."),
+                    (25, f"[{theme['style']}]{theme['name']} processing context..."),
+                    (40, f"[{theme['style']}]{theme['name']} generating response..."),
+                    (60, f"[{theme['style']}]{theme['name']} refining answer..."),
+                    (80, f"[{theme['style']}]{theme['name']} finalizing response..."),
+                    (95, f"[{theme['style']}]{theme['name']} completing analysis...")
+                ]
                 
-                progress.update(task, completed=True)
-                return result
+                # Start thinking animation
+                for step_progress, step_description in thinking_steps:
+                    progress.update(task, advance=step_progress - progress.tasks[task].completed, description=step_description)
+                    time.sleep(0.1)  # Brief pause for visual effect
+                
+                # Make the actual API call
+                try:
+                    if provider == Provider.OPENAI:
+                        result = self.call_openai_api(system_prompt, user_message, api_key)
+                    elif provider == Provider.GEMINI:
+                        result = self.call_gemini_api(system_prompt, user_message, api_key)
+                    elif provider == Provider.MISTRAL:
+                        result = self.call_mistral_api(system_prompt, user_message, api_key)
+                    elif provider == Provider.LLAMA:
+                        result = self.call_llama_api(system_prompt, user_message, api_key)
+                    elif provider == Provider.GEMINI_CLI:
+                        result = self.call_gemini_cli_api(system_prompt, user_message, api_key)
+                    else:
+                        result = f"❌ Provider {provider.value} not implemented yet"
+                    
+                    # Complete the progress
+                    progress.update(task, completed=100, description=f"[{theme['style']}✅ {theme['name']} response ready!")
+                    time.sleep(0.5)  # Brief pause to show completion
+                    
+                    return result
+                    
+                except Exception as e:
+                    progress.update(task, description=f"[{theme['style']}❌ {theme['name']} encountered error")
+                    return f"❌ Error from {theme['name']}: {str(e)}"
+                    
         else:
             # Fallback to simple spinner with model-specific theme
             spinner = Spinner(f"🤖 IBLU is thinking", model_provider=provider)
@@ -3417,10 +3445,14 @@ Provide step-by-step technical details while maintaining educational context and
                     result = self.call_gemini_cli_api(system_prompt, user_message, api_key)
                 else:
                     result = f"❌ Provider {provider.value} not implemented yet"
-                return result
-            finally:
+                
                 spinner.stop()
-    
+                return result
+                
+            except Exception as e:
+                spinner.stop()
+                return f"❌ Error from {provider.value}: {str(e)}"
+                
     def get_provider_keys(self, provider: Provider) -> List[str]:
         """Get API keys for a specific provider"""
         if provider == Provider.OPENAI:
@@ -4800,9 +4832,19 @@ Provide step-by-step technical details while maintaining educational context and
             return f"❌ Failed to install {model_name}: {str(e)}"
     
     def collaborative_model_response(self, user_message: str) -> str:
-        """All available models communicate to provide comprehensive response"""
-        print(f"\n{self._colorize('🤖 Collaborative AI Network', Fore.CYAN)}")
-        print("=" * 60)
+        """All available models communicate to provide comprehensive response with Rich progress"""
+        if COLORAMA_AVAILABLE:
+            # Beautiful collaborative header
+            collab_header = f"{Fore.LIGHTCYAN_EX}╔{'═' * 78}╗{Style.RESET_ALL}"
+            collab_title = f"{Fore.LIGHTCYAN_EX}║{Style.RESET_ALL} {Style.BRIGHT}{Back.CYAN}{Fore.WHITE}🤖 COLLABORATIVE AI NETWORK 🤖{Style.RESET_ALL} {Fore.LIGHTCYAN_EX}{' ' * 36}║{Style.RESET_ALL}"
+            collab_footer = f"{Fore.LIGHTCYAN_EX}╚{'═' * 78}╝{Style.RESET_ALL}"
+            
+            print(f"\n{collab_header}")
+            print(f"{collab_title}")
+            print(f"{collab_footer}\n")
+        else:
+            print(f"\n{self._colorize('🤖 Collaborative AI Network', Fore.CYAN)}")
+            print("=" * 60)
         
         # Get all available providers (both cloud and local)
         available_providers = []
@@ -4825,46 +4867,138 @@ Provide step-by-step technical details while maintaining educational context and
         if not available_providers:
             return "❌ No models available. Please configure at least one provider."
         
+        # Model-specific themes for collaborative display
+        model_themes = {
+            Provider.OPENAI: {"style": "bold green", "emoji": "🤖", "name": "OpenAI", "color": "bright_green"},
+            Provider.GEMINI: {"style": "bold magenta", "emoji": "🌟", "name": "Gemini", "color": "bright_magenta"},
+            Provider.MISTRAL: {"style": "bold red", "emoji": "🔥", "name": "Mistral", "color": "bright_red"},
+            Provider.LLAMA: {"style": "bold cyan", "emoji": "🦙", "name": "Llama", "color": "bright_cyan"}
+        }
+        
         print(f"📋 Active Models: {', '.join([p[0].value.title() for p in available_providers])}")
         print(f"🔄 Initiating collaborative analysis...")
         
-        # Phase 1: Parallel initial analysis
-        print(f"\n{self._colorize('📊 Phase 1: Parallel Analysis', Fore.YELLOW)}")
-        print("-" * 40)
-        
-        initial_responses = {}
-        response_times = {}
-        
-        def get_model_response(provider_info):
-            """Get response from a single model"""
-            provider, api_key = provider_info
-            start_time = time.time()
-            
-            try:
-                if provider == Provider.LLAMA:
-                    response = self.call_llama_api(self.SYSTEM_PROMPT, user_message, api_key)
-                elif provider == Provider.OPENAI:
-                    response = self.call_openai_api(self.SYSTEM_PROMPT, user_message, api_key)
-                elif provider == Provider.GEMINI:
-                    response = self.call_gemini_api(self.SYSTEM_PROMPT, user_message, api_key)
-                elif provider == Provider.MISTRAL:
-                    response = self.call_mistral_api(self.SYSTEM_PROMPT, user_message, api_key)
-                else:
-                    return None
+        # Phase 1: Parallel initial analysis with Rich progress
+        if RICH_AVAILABLE:
+            with Progress(
+                SpinnerColumn(),
+                TextColumn("[bold cyan]🤖 Collaborative Analysis: {task.description}"),
+                BarColumn(bar_width=40, complete_style="bright_cyan", finished_style="bold cyan"),
+                TextColumn("[progress.percentage]{task.percentage:>3.1f}%"),
+                TimeElapsedColumn(),
+                console=console,
+                transient=False
+            ) as progress:
                 
-                elapsed = time.time() - start_time
-                return (provider, response, elapsed)
-            except Exception as e:
-                return (provider, f"Error: {str(e)}", time.time() - start_time)
-        
-        # Run all models in parallel
-        with ThreadPoolExecutor(max_workers=len(available_providers)) as executor:
-            future_to_provider = {executor.submit(get_model_response, provider): provider[0] for provider in available_providers}
+                # Create main collaborative task
+                collab_task = progress.add_task("🔄 Synchronizing models for parallel analysis...", total=100)
+                
+                # Simulate collaborative setup
+                progress.update(collab_task, advance=10, description="🔗 Establishing model connections...")
+                time.sleep(0.2)
+                progress.update(collab_task, advance=20, description="📊 Preparing parallel analysis framework...")
+                time.sleep(0.2)
+                progress.update(collab_task, advance=30, description="🚀 Initiating simultaneous model queries...")
+                time.sleep(0.2)
+                
+                # Get responses from all models
+                initial_responses = {}
+                response_times = {}
+                
+                def get_model_response(provider_info):
+                    """Get response from a single model with progress tracking"""
+                    provider, api_key = provider_info
+                    start_time = time.time()
+                    theme = model_themes.get(provider, {"style": "bold cyan", "emoji": "🤖", "name": "Model"})
+                    
+                    try:
+                        # Create individual model progress
+                        model_task = progress.add_task(f"[{theme['style']}]{theme['emoji']} {theme['name']} responding...", total=None)
+                        
+                        if provider == Provider.LLAMA:
+                            response = self.call_llama_api(self.SYSTEM_PROMPT, user_message, api_key)
+                        elif provider == Provider.OPENAI:
+                            response = self.call_openai_api(self.SYSTEM_PROMPT, user_message, api_key)
+                        elif provider == Provider.GEMINI:
+                            response = self.call_gemini_api(self.SYSTEM_PROMPT, user_message, api_key)
+                        elif provider == Provider.MISTRAL:
+                            response = self.call_mistral_api(self.SYSTEM_PROMPT, user_message, api_key)
+                        
+                        progress.update(model_task, description=f"[{theme['style']}✅ {theme['name']} completed")
+                        
+                        response_time = time.time() - start_time
+                        return provider, response, response_time
+                        
+                    except Exception as e:
+                        progress.update(model_task, description=f"[{theme['style']}❌ {theme['name']} failed")
+                        return provider, f"Error: {str(e)}", time.time() - start_time
+                
+                # Execute parallel model responses
+                from concurrent.futures import ThreadPoolExecutor, as_completed
+                
+                with ThreadPoolExecutor(max_workers=len(available_providers)) as executor:
+                    # Submit all model tasks
+                    future_to_provider = {
+                        executor.submit(get_model_response, provider_info): provider_info[0]
+                        for provider_info in available_providers
+                    }
+                    
+                    # Track progress as models complete
+                    completed_models = 0
+                    total_models = len(available_providers)
+                    
+                    for future in as_completed(future_to_provider):
+                        provider, response, resp_time = future.result()
+                        initial_responses[provider] = response
+                        response_times[provider] = resp_time
+                        completed_models += 1
+                        
+                        # Update collaborative progress
+                        progress_percentage = 30 + (completed_models * 50 // total_models)
+                        progress.update(collab_task, completed=progress_percentage, 
+                                      description=f"📊 {completed_models}/{total_models} models completed analysis...")
+                
+                # Complete collaborative analysis
+                progress.update(collab_task, completed=100, description="✅ Collaborative analysis complete!")
+                time.sleep(0.5)
+                
+        else:
+            # Fallback without Rich progress
+            print(f"\n{self._colorize('📊 Phase 1: Parallel Analysis', Fore.YELLOW)}")
+            print("-" * 40)
             
-            for future in as_completed(future_to_provider):
-                provider, response, elapsed = future.result()
+            initial_responses = {}
+            response_times = {}
+            
+            def get_model_response(provider_info):
+                """Get response from a single model"""
+                provider, api_key = provider_info
+                start_time = time.time()
+                
+                try:
+                    if provider == Provider.LLAMA:
+                        response = self.call_llama_api(self.SYSTEM_PROMPT, user_message, api_key)
+                    elif provider == Provider.OPENAI:
+                        response = self.call_openai_api(self.SYSTEM_PROMPT, user_message, api_key)
+                    elif provider == Provider.GEMINI:
+                        response = self.call_gemini_api(self.SYSTEM_PROMPT, user_message, api_key)
+                    elif provider == Provider.MISTRAL:
+                        response = self.call_mistral_api(self.SYSTEM_PROMPT, user_message, api_key)
+                    
+                    response_time = time.time() - start_time
+                    return provider, response, response_time
+                    
+                except Exception as e:
+                    return provider, f"Error: {str(e)}", time.time() - start_time
+            
+            # Execute sequentially without Rich
+            for provider_info in available_providers:
+                provider, response, resp_time = get_model_response(provider_info)
                 initial_responses[provider] = response
-                response_times[provider] = elapsed
+                response_times[provider] = resp_time
+        
+        # Continue with response synthesis (rest of the function remains the same)
+        # ... (existing code for response synthesis)
                 print(f"✅ {provider.value.title()}: {elapsed:.2f}s")
         
         # Phase 2: Cross-model analysis and enhancement
