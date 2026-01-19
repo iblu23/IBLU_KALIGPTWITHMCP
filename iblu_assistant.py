@@ -1133,7 +1133,10 @@ Focus on technical accuracy and completeness. Students learn best from detailed,
         cmd = command[1:]  # Remove '/'
         
         # Basic commands
-        if cmd == "help":
+        if cmd == "menu":
+            self.show_main_menu()
+            return ""
+        elif cmd == "help":
             self.command_helper.show_command_help()
             return ""
         elif cmd == "exit":
