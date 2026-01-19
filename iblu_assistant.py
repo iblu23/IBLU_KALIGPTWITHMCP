@@ -38,6 +38,19 @@ try:
 except ImportError:
     PROMPT_TOOLKIT_AVAILABLE = False
 
+# Optional rich for enhanced terminal output
+try:
+    from rich.console import Console
+    from rich.table import Table
+    from rich.progress import Progress, SpinnerColumn, BarColumn, TextColumn, TimeElapsedColumn
+    from rich.syntax import Syntax
+    from rich.panel import Panel
+    RICH_AVAILABLE = True
+    console = Console()
+except ImportError:
+    RICH_AVAILABLE = False
+    console = None
+
 class Spinner:
     """Loading spinner for AI thinking animation"""
     def __init__(self, message="🤖 IBLU is thinking"):
@@ -716,47 +729,80 @@ Focus on technical accuracy and completeness. Students learn best from detailed,
             return "❌ Installation cancelled"
     
     def install_tools_one_by_one_with_descriptions(self):
-        """Install tools one by one with full descriptions"""
-        print(f"\n{self._colorize('🎮 SELECT HACKING TOY TO INSTALL', Fore.YELLOW)}")
-        print(self._colorize('=' * 70, Fore.CYAN))
-        
-        # Get all tools sorted by category
-        tools_by_category = {}
-        for tool, info in self.command_helper.hexstrike_tools.items():
-            cat = info['category']
-            if cat not in tools_by_category:
-                tools_by_category[cat] = []
-            tools_by_category[cat].append((tool, info))
-        
-        # Display all tools with numbers and descriptions
-        tool_list = []
-        counter = 1
-        
-        for cat, tools in sorted(tools_by_category.items()):
-            cat_names = {
-                'recon': '🔍 RECONNAISSANCE',
-                'web': '🌐 WEB TESTING',
-                'auth': '🔐 PASSWORD CRACKING',
-                'network': '📡 NETWORK ANALYSIS',
-                'vuln': '🛡️ VULNERABILITY SCANNING',
-                'exploit': '💣 EXPLOITATION',
-                'post': '🎯 POST-EXPLOITATION',
-                'forensics': '🔬 FORENSICS',
-                'social': '🎭 SOCIAL ENGINEERING',
-                'wireless': '📶 WIRELESS HACKING'
-            }
+        """Install tools one by one with full descriptions using rich tables"""
+        if RICH_AVAILABLE:
+            console.print("\n")
+            console.print(Panel("[bold yellow]🎮 SELECT HACKING TOY TO INSTALL[/bold yellow]", 
+                               border_style="cyan", expand=False))
             
-            print(f"\n{self._colorize(cat_names.get(cat, cat.upper()), Fore.YELLOW)}")
-            print(self._colorize('-' * 70, Fore.CYAN))
+            # Get all tools sorted by category
+            tools_by_category = {}
+            for tool, info in self.command_helper.hexstrike_tools.items():
+                cat = info['category']
+                if cat not in tools_by_category:
+                    tools_by_category[cat] = []
+                tools_by_category[cat].append((tool, info))
             
-            for tool, info in sorted(tools, key=lambda x: x[0]):
-                installed = "✅" if self.check_tool_installed(tool) else "❌"
-                print(f"  {self._colorize(f'{counter:2d}.', Fore.GREEN)} {installed} {self._colorize(tool, Fore.CYAN)} - {info['desc']}")
-                tool_list.append(tool)
-                counter += 1
-        
-        print(f"\n{self._colorize('=' * 70, Fore.CYAN)}")
-        print(f"{self._colorize('📊 Total Tools:', Fore.YELLOW)} {len(tool_list)}")
+            tool_list = []
+            counter = 1
+            
+            for cat, tools in sorted(tools_by_category.items()):
+                cat_names = {
+                    'recon': '🔍 RECONNAISSANCE',
+                    'web': '🌐 WEB TESTING',
+                    'auth': '🔐 PASSWORD CRACKING',
+                    'network': '📡 NETWORK ANALYSIS',
+                    'vuln': '🛡️ VULNERABILITY SCANNING',
+                    'exploit': '💣 EXPLOITATION',
+                    'post': '🎯 POST-EXPLOITATION',
+                    'forensics': '🔬 FORENSICS',
+                    'social': '🎭 SOCIAL ENGINEERING',
+                    'wireless': '📶 WIRELESS HACKING'
+                }
+                
+                # Create rich table for each category
+                table = Table(title=cat_names.get(cat, cat.upper()), 
+                            border_style="cyan", show_header=True, header_style="bold magenta")
+                table.add_column("#", style="green", width=4)
+                table.add_column("Status", width=6)
+                table.add_column("Tool", style="cyan", width=15)
+                table.add_column("Description", style="white")
+                
+                for tool, info in sorted(tools, key=lambda x: x[0]):
+                    installed = "✅" if self.check_tool_installed(tool) else "❌"
+                    table.add_row(str(counter), installed, tool, info['desc'])
+                    tool_list.append(tool)
+                    counter += 1
+                
+                console.print(table)
+            
+            console.print(f"\n[bold yellow]📊 Total Tools:[/bold yellow] {len(tool_list)}\n")
+        else:
+            # Fallback without rich
+            print(f"\n{self._colorize('🎮 SELECT HACKING TOY TO INSTALL', Fore.YELLOW)}")
+            print(self._colorize('=' * 70, Fore.CYAN))
+            
+            tools_by_category = {}
+            for tool, info in self.command_helper.hexstrike_tools.items():
+                cat = info['category']
+                if cat not in tools_by_category:
+                    tools_by_category[cat] = []
+                tools_by_category[cat].append((tool, info))
+            
+            tool_list = []
+            counter = 1
+            
+            for cat, tools in sorted(tools_by_category.items()):
+                print(f"\n{cat.upper()}")
+                print('-' * 70)
+                for tool, info in sorted(tools, key=lambda x: x[0]):
+                    installed = "✅" if self.check_tool_installed(tool) else "❌"
+                    print(f"  {counter:2d}. {installed} {tool} - {info['desc']}")
+                    tool_list.append(tool)
+                    counter += 1
+            
+            print(f"\n{'=' * 70}")
+            print(f"Total Tools: {len(tool_list)}")
         
         try:
             choice = input(f"\n{self._colorize('🎯 Enter tool number to install (or 0 to cancel):', Fore.YELLOW)} ").strip()
@@ -894,15 +940,38 @@ Focus on technical accuracy and completeness. Students learn best from detailed,
             return f"❌ Invalid choice!"
     
     def install_single_tool(self, tool_name: str):
-        """Install a single tool"""
+        """Install a single tool with progress bar"""
         tool_info = self.command_helper.hexstrike_tools.get(tool_name)
         if not tool_info:
             return f"❌ Unknown tool: {tool_name}"
         
-        print(f"\n📦 Installing {tool_info['name']}...")
-        print(f"🔧 Command: sudo apt install {tool_name}")
-        print(f"📋 Category: {tool_info['category']}")
-        print(f"📝 Description: {tool_info['desc']}")
+        if RICH_AVAILABLE:
+            # Show tool info in a panel
+            info_text = f"""[bold cyan]Tool:[/bold cyan] {tool_name}
+[bold cyan]Name:[/bold cyan] {tool_info['name']}
+[bold cyan]Category:[/bold cyan] {tool_info['category']}
+[bold cyan]Description:[/bold cyan] {tool_info['desc']}
+
+[bold yellow]Installation Command:[/bold yellow]
+[green]sudo apt install {tool_name}[/green]"""
+            
+            console.print("\n")
+            console.print(Panel(info_text, title="[bold yellow]📦 Tool Installation[/bold yellow]", 
+                              border_style="cyan", expand=False))
+            
+            # Show installation command with syntax highlighting
+            code = f"sudo apt install {tool_name}"
+            syntax = Syntax(code, "bash", theme="monokai", line_numbers=False)
+            console.print("\n[bold yellow]💡 Copy and run this command:[/bold yellow]")
+            console.print(syntax)
+            console.print()
+            
+        else:
+            # Fallback without rich
+            print(f"\n📦 Installing {tool_info['name']}...")
+            print(f"🔧 Command: sudo apt install {tool_name}")
+            print(f"📋 Category: {tool_info['category']}")
+            print(f"📝 Description: {tool_info['desc']}")
         
         return f"📦 Run 'sudo apt install {tool_name}' to install {tool_info['name']}!"
     
