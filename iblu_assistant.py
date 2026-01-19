@@ -1703,8 +1703,8 @@ Provide step-by-step technical details while maintaining educational context and
             system_prompt = self.SYSTEM_PROMPT
             user_message = message
         
-        # Get all available providers with configured keys, prioritizing Gemini
-        provider_priority = [Provider.GEMINI, Provider.LLAMA, Provider.PERPLEXITY, Provider.OPENAI, Provider.MISTRAL]
+        # Get all available providers with configured keys, prioritizing Gemini with fallback chain
+        provider_priority = [Provider.GEMINI, Provider.MISTRAL, Provider.OPENAI, Provider.PERPLEXITY, Provider.LLAMA]
         available_providers = []
         for provider in provider_priority:
             provider_keys = self.get_provider_keys(provider)
@@ -1733,13 +1733,36 @@ Provide step-by-step technical details while maintaining educational context and
             except Exception as e:
                 print(f"❌ {provider.value.title()} Error: {str(e)}")
                 
-                # Check if API key is compromised (403 Forbidden with leaked key message)
-                if hasattr(e, 'response') and hasattr(e.response, 'status_code') and e.response.status_code == 403:
+                # Check for different error types and handle accordingly
+                if hasattr(e, 'response') and hasattr(e.response, 'status_code'):
+                    status_code = e.response.status_code
                     response_text = getattr(e.response, 'text', '').lower()
-                    if 'leaked' in response_text or 'forbidden' in response_text:
+                    
+                    # Handle API key compromise (403)
+                    if status_code == 403 and ('leaked' in response_text or 'forbidden' in response_text):
                         print(f"\n{self._colorize('🔑 API Key Compromised! Rotating...', Fore.RED)}")
                         self.rotate_api_key(provider, api_key)
                         continue
+                    
+                    # Handle server overload (503) or timeouts
+                    elif status_code in [503, 429] or 'timeout' in str(e).lower() or 'overloaded' in response_text:
+                        print(f"\n{self._colorize(f'⏰ {provider.value.title()} overloaded/timeout! Switching...', Fore.YELLOW)}")
+                        continue
+                    
+                    # Handle rate limiting (429)
+                    elif status_code == 429:
+                        print(f"\n{self._colorize(f'🚦 {provider.value.title()} rate limited! Switching...', Fore.YELLOW)}")
+                        continue
+                    
+                    # Handle server errors (5xx)
+                    elif 500 <= status_code < 600:
+                        print(f"\n{self._colorize(f'🔥 {provider.value.title()} server error! Switching...', Fore.YELLOW)}")
+                        continue
+                
+                # Handle network/connection errors
+                elif 'timeout' in str(e).lower() or 'connection' in str(e).lower():
+                    print(f"\n{self._colorize(f'🌐 {provider.value.title()} connection error! Switching...', Fore.YELLOW)}")
+                    continue
                 
                 continue
         
