@@ -1244,6 +1244,27 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
         print(f"{overview_title}")
         print(f"{overview_border2}")
         
+        # Initialize variables before using them
+        local_mistral_available = False
+        hf_models_available = []
+        
+        # Check for local Mistral model
+        try:
+            url = "http://localhost:11434/api/tags"
+            response = requests.get(url, timeout=5)
+            if response.status_code == 200:
+                models_data = response.json()
+                for model in models_data.get('models', []):
+                    if 'mistral' in model.get('name', '').lower():
+                        local_mistral_available = True
+                        break
+        except:
+            pass
+        
+        # Check for Hugging Face models
+        if HUGGINGFACE_AVAILABLE and self.config.huggingface_models:
+            hf_models_available = self.config.huggingface_models
+        
         total_models = len(cloud_models) + len(local_models) + (1 if local_mistral_available else 0) + len(hf_models_available)
         
         if total_models == 0:
@@ -1282,25 +1303,6 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
             Provider.LLAMA: "🔒 Private & Secure",
             Provider.HUGGINGFACE: "🤗 Custom Models"
         }
-        
-        # Check for local Mistral model
-        local_mistral_available = False
-        try:
-            url = "http://localhost:11434/api/tags"
-            response = requests.get(url, timeout=5)
-            if response.status_code == 200:
-                models_data = response.json()
-                for model in models_data.get('models', []):
-                    if 'mistral' in model.get('name', '').lower():
-                        local_mistral_available = True
-                        break
-        except:
-            pass
-        
-        # Check for Hugging Face models
-        hf_models_available = []
-        if HUGGINGFACE_AVAILABLE and self.config.huggingface_models:
-            hf_models_available = self.config.huggingface_models
 
         # Enhanced cloud models section with vibrant colors
         if cloud_models:
