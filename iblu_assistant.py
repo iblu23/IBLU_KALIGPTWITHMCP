@@ -1249,6 +1249,14 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
             
             return "❌ No models available"
         
+        # Model descriptions for each provider
+        model_descriptions = {
+            Provider.OPENAI: "🧠 Thinking & Analysis",
+            Provider.GEMINI: "🎨 Creative & Multimodal", 
+            Provider.MISTRAL: "⚡ Fast & Efficient",
+            Provider.LLAMA: "🔒 Private & Secure"
+        }
+
         # Enhanced cloud models section with vibrant colors
         if cloud_models:
             cloud_border = f"{Fore.LIGHTBLUE_EX}┌─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}"
@@ -1263,9 +1271,11 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
                 status_icon = "✅" if api_key else "❌"
                 status_text = "Configured" if api_key else "Not configured"
                 status_color = Fore.LIGHTGREEN_EX if api_key else Fore.LIGHTRED_EX
+                description = model_descriptions.get(provider, "General purpose")
                 
                 print(f"{Fore.LIGHTBLUE_EX}│{Style.RESET_ALL}   {Fore.BLUE}┌─ [{Style.BRIGHT}{Fore.CYAN}{i}{Style.RESET_ALL}{Fore.BLUE}] ──────────────────────────────────────────────┐{Style.RESET_ALL} {Fore.LIGHTBLUE_EX}│{Style.RESET_ALL}")
                 print(f"{Fore.LIGHTBLUE_EX}│{Style.RESET_ALL}   {Fore.BLUE}│{Style.RESET_ALL} {Style.BRIGHT}{Fore.WHITE}{provider.value.title()}{Style.RESET_ALL} - {status_color}{status_icon} {status_text}{Style.RESET_ALL} {Fore.BLUE}{' ' * (35 - len(provider.value) - len(status_text))}│{Style.RESET_ALL} {Fore.LIGHTBLUE_EX}│{Style.RESET_ALL}")
+                print(f"{Fore.LIGHTBLUE_EX}│{Style.RESET_ALL}   {Fore.BLUE}│{Style.RESET_ALL} {Fore.CYAN}▸{Style.RESET_ALL} {Fore.WHITE}{description}{Style.RESET_ALL} {Fore.BLUE}{' ' * (47 - len(description))}│{Style.RESET_ALL} {Fore.LIGHTBLUE_EX}│{Style.RESET_ALL}")
                 print(f"{Fore.LIGHTBLUE_EX}│{Style.RESET_ALL}   {Fore.BLUE}└───────────────────────────────────────────────────────┘{Style.RESET_ALL} {Fore.LIGHTBLUE_EX}│{Style.RESET_ALL}")
             
             print(f"{Fore.LIGHTBLUE_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}")
@@ -1285,9 +1295,11 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
                 status_icon = "✅" if model_name else "❌"
                 status_text = "Available" if model_name else "Not available"
                 status_color = Fore.LIGHTGREEN_EX if model_name else Fore.LIGHTRED_EX
+                description = model_descriptions.get(provider, "Local AI model")
                 
                 print(f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}   {Fore.GREEN}┌─ [{Style.BRIGHT}{Fore.CYAN}{i}{Style.RESET_ALL}{Fore.GREEN}] ──────────────────────────────────────────────┐{Style.RESET_ALL} {Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}")
                 print(f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}   {Fore.GREEN}│{Style.RESET_ALL} {Style.BRIGHT}{Fore.WHITE}{model_name}{Style.RESET_ALL} - {status_color}{status_icon} {status_text}{Style.RESET_ALL} {Style.BRIGHT}{Fore.MAGENTA}{size_str}{Style.RESET_ALL} {Fore.GREEN}{' ' * (30 - len(model_name) - len(status_text) - len(size_str))}│{Style.RESET_ALL} {Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}")
+                print(f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}   {Fore.GREEN}│{Style.RESET_ALL} {Fore.CYAN}▸{Style.RESET_ALL} {Fore.WHITE}{description}{Style.RESET_ALL} {Fore.GREEN}{' ' * (47 - len(description))}│{Style.RESET_ALL} {Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}")
                 print(f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}   {Fore.GREEN}└───────────────────────────────────────────────────────┘{Style.RESET_ALL} {Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}")
             
             print(f"{Fore.LIGHTGREEN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}")
@@ -1302,10 +1314,10 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
         print(f"{cap_border2}")
         
         capabilities = {
-            Provider.OPENAI: "Advanced reasoning, code generation, analysis",
-            Provider.GEMINI: "Multimodal, creative tasks, large context window",
-            Provider.MISTRAL: "Fast responses, code generation, analysis",
-            Provider.LLAMA: "Privacy-focused, local processing, cybersecurity"
+            Provider.OPENAI: "🧠 Advanced reasoning & 💻 Code generation",
+            Provider.GEMINI: "🎨 Creative tasks & 📊 Large context analysis", 
+            Provider.MISTRAL: "⚡ Fast responses & 💻 Code generation",
+            Provider.LLAMA: "🔒 Privacy-focused & 🛡️ Cybersecurity specialist"
         }
         
         for provider in [Provider.OPENAI, Provider.GEMINI, Provider.MISTRAL, Provider.LLAMA]:
