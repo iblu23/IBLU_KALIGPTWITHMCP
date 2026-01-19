@@ -20,6 +20,7 @@ from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
 from datetime import datetime
+import requests
 
 # Import colorama for terminal colors
 try:
@@ -96,6 +97,7 @@ class Provider(Enum):
     OPENAI = "openai"
     GEMINI = "gemini"
     MISTRAL = "mistral"
+    LLAMA = "llama"
 
 @dataclass
 class APIConfig:
@@ -104,6 +106,7 @@ class APIConfig:
     openai_keys: List[str] = None
     gemini_keys: List[str] = None
     mistral_keys: List[str] = None
+    llama_keys: List[str] = None
 
 class IBLUCommandHelper:
     """
@@ -1281,6 +1284,8 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
             providers.append(Provider.OPENAI)
         if self.config.gemini_keys:
             providers.append(Provider.GEMINI)
+        if self.config.llama_keys:
+            providers.append(Provider.LLAMA)
         if self.config.mistral_keys:
             providers.append(Provider.MISTRAL)
         
@@ -1633,7 +1638,7 @@ Provide step-by-step technical details while maintaining educational context and
             user_message = message
         
         # Get all available providers with configured keys, prioritizing Gemini
-        provider_priority = [Provider.GEMINI, Provider.PERPLEXITY, Provider.OPENAI, Provider.MISTRAL]
+        provider_priority = [Provider.GEMINI, Provider.LLAMA, Provider.PERPLEXITY, Provider.OPENAI, Provider.MISTRAL]
         available_providers = []
         for provider in provider_priority:
             provider_keys = self.get_provider_keys(provider)
@@ -1729,6 +1734,8 @@ Provide step-by-step technical details while maintaining educational context and
                     result = self.call_gemini_api(system_prompt, user_message, api_key)
                 elif provider == Provider.MISTRAL:
                     result = self.call_mistral_api(system_prompt, user_message, api_key)
+                elif provider == Provider.LLAMA:
+                    result = self.call_llama_api(system_prompt, user_message, api_key)
                 else:
                     result = f"❌ Provider {provider.value} not implemented yet"
                 
@@ -1748,6 +1755,8 @@ Provide step-by-step technical details while maintaining educational context and
                     result = self.call_gemini_api(system_prompt, user_message, api_key)
                 elif provider == Provider.MISTRAL:
                     result = self.call_mistral_api(system_prompt, user_message, api_key)
+                elif provider == Provider.LLAMA:
+                    result = self.call_llama_api(system_prompt, user_message, api_key)
                 else:
                     result = f"❌ Provider {provider.value} not implemented yet"
                 return result
@@ -1764,6 +1773,8 @@ Provide step-by-step technical details while maintaining educational context and
             return [k for k in (self.config.gemini_keys or []) if k and k != "your-gemini-api-key-here"]
         elif provider == Provider.MISTRAL:
             return [k for k in (self.config.mistral_keys or []) if k and k != "your-mistral-api-key-here"]
+        elif provider == Provider.LLAMA:
+            return [k for k in (self.config.llama_keys or []) if k and k != "your-llama-api-key-here"]
         return []
     
     def call_perplexity_api(self, system_prompt: str, user_message: str, api_key: str) -> str:
@@ -1892,6 +1903,40 @@ Provide step-by-step technical details while maintaining educational context and
         except Exception as e:
             return f"❌ Gemini API Error: {e}\n\n💡 Check your API key at https://aistudio.google.com/app/apikey"
     
+    def call_llama_api(self, system_prompt: str, user_message: str, api_key: str) -> str:
+        """Call local Llama API via Ollama"""
+        try:
+            # Default Ollama endpoint
+            url = "http://localhost:11434/api/generate"
+            
+            headers = {
+                "Content-Type": "application/json"
+            }
+            
+            # Llama format - combine system and user message
+            combined_message = f"{system_prompt}\n\nUser Query: {user_message}"
+            
+            payload = {
+                "model": "llama2",
+                "prompt": combined_message,
+                "stream": False
+            }
+            
+            response = requests.post(url, headers=headers, json=payload, timeout=120)
+            response.raise_for_status()
+            
+            result = response.json()
+            ai_response = result.get('response', '')
+            
+            return f"🤖 IBLU (Llama):\n\n{ai_response}"
+            
+        except requests.exceptions.ConnectionError as e:
+            return f"❌ Llama API Error: {e}\n\n💡 Make sure Ollama is running: 'ollama serve' in terminal"
+        except requests.exceptions.HTTPError as e:
+            return f"❌ Llama API Error: {e}\n\n💡 Check Ollama configuration and model availability"
+        except Exception as e:
+            return f"❌ Llama API Error: {e}\n\n💡 Check Ollama installation and setup"
+
     def call_mistral_api(self, system_prompt: str, user_message: str, api_key: str) -> str:
         """Call Mistral API"""
         try:
@@ -1983,7 +2028,8 @@ def load_config():
             perplexity_keys=config_data.get('perplexity_keys', []),
             openai_keys=config_data.get('openai_keys', []),
             gemini_keys=config_data.get('gemini_keys', []),
-            mistral_keys=config_data.get('mistral_keys', [])
+            mistral_keys=config_data.get('mistral_keys', []),
+            llama_keys=config_data.get('llama_keys', [])
         )
     except Exception as e:
         print(f"❌ Error loading config: {e}")
