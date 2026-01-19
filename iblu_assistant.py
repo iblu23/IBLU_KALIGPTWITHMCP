@@ -1689,8 +1689,7 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
                 ("[2] 🎮 HACKING TOYS", "Installation & Management", Fore.BLUE, "• Install, list, and delete security tools", ""),
                 ("[3] ⚙️  CONFIGURATION", "Settings", Fore.CYAN, "• API keys, rephrasing mode", ""),
                 ("[4] 📋 LIST MODELS", "Show available AI models", Fore.MAGENTA, "", ""),
-                ("[5] 🗑️  DELETE MODELS", "Remove local models", Fore.RED, "", ""),
-                ("[6] 🚪 EXIT", "Leave the program", Fore.YELLOW, "", "")
+                ("[5] 🚪 EXIT", "Leave the program", Fore.YELLOW, "", "")
             ]
             
             for i, (option, title, color, desc1, desc2) in enumerate(options):
@@ -1723,12 +1722,10 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
             return self.handle_configuration()
         elif choice in ['4', 'models', 'list']:
             return self.list_available_models()
-        elif choice in ['5', 'delete', 'remove', 'models_delete']:
-            return self.handle_delete_models()
-        elif choice in ['6', 'exit', 'quit']:
+        elif choice in ['5', 'exit', 'quit']:
             return "👋 Goodbye! Stay secure!"
         else:
-            return f"❌ Invalid choice: {choice}\n💡 Please choose 1-6 or type 'menu'"
+            return f"❌ Invalid choice: {choice}\n💡 Please choose 1-5 or type 'menu'"
     
     def handle_hacking_toys(self):
         """Handle Hacking Toys menu - install and manage tools"""
@@ -1760,7 +1757,13 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
             print(f"{Fore.RED}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} Free up disk space by removing unused tools                 {Fore.RED}│{Style.RESET_ALL}")
             print(f"{Fore.RED}└───────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
             
-            print(f"{Fore.LIGHTYELLOW_EX}┌─ {Fore.YELLOW}[5]{Fore.LIGHTYELLOW_EX} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTMAGENTA_EX}┌─ {Fore.YELLOW}[5]{Fore.LIGHTMAGENTA_EX} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}  {Fore.YELLOW}🗑️  DELETE MODELS{Style.RESET_ALL} - Remove local AI models                        {Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} Delete Llama, Mistral, or HuggingFace models              {Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} Free up disk space by removing unused models                 {Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTMAGENTA_EX}└───────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
+            
+            print(f"{Fore.LIGHTYELLOW_EX}┌─ {Fore.YELLOW}[6]{Fore.LIGHTYELLOW_EX} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
             print(f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}  {Fore.YELLOW}🔙 BACK{Style.RESET_ALL} - Return to main menu                                    {Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}")
             print(f"{Fore.LIGHTYELLOW_EX}└───────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
         else:
@@ -1771,9 +1774,10 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
             print("[2] Install ONE-BY-ONE (choose by number)")
             print("[3] LIST TOOLS (view installed tools)")
             print("[4] DELETE TOOLS (remove tools)")
-            print("[5] Back to main menu\n")
+            print("[5] DELETE MODELS (remove AI models)")
+            print("[6] Back to main menu\n")
         
-        choice = input(f"{self._colorize('🎯 Choose option (1-5):', Fore.YELLOW)} ").strip()
+        choice = input(f"{self._colorize('🎯 Choose option (1-6):', Fore.YELLOW)} ").strip()
         
         if choice == '1':
             return self.install_all_tools()
@@ -1784,9 +1788,11 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
         elif choice == '4':
             return self.command_helper.show_tools_list()  # This will show delete options
         elif choice == '5':
+            return self.handle_delete_models()
+        elif choice == '6':
             return ""
         else:
-            return f"❌ Invalid choice: {choice}\n💡 Please choose 1-5"
+            return f"❌ Invalid choice: {choice}\n💡 Please choose 1-6"
     
     def handle_delete_models(self):
         """Handle model deletion menu"""
