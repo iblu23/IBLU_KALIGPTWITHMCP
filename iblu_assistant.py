@@ -1773,49 +1773,54 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
         self.command_helper.conversation_history = self.conversation_history
     
     def show_main_menu(self):
-        """Display the main menu with enhanced visual formatting"""
+        """Display the main menu with clean, minimal formatting"""
         if COLORAMA_AVAILABLE:
-            border = f"{Fore.RED}╔{'═'*78}╗\n"
-            line1 = f"{Fore.RED}║ {Style.BRIGHT}{Fore.YELLOW}██╗  ██╗ █████╗  ██████╗██╗  ██╗    ████████╗██╗  ██╗███████╗ {Fore.RED}║\n"
-            line2 = f"{Fore.RED}║ {Fore.YELLOW}██║  ██║██╔══██╗██╔════╝██║ ██╔╝    ╚══██╔══╝██║  ██║██╔════╝ {Fore.RED}║\n"
-            line3 = f"{Fore.RED}║ {Fore.YELLOW}███████║███████║██║     █████╔╝        ██║   ███████║█████╗   {Fore.RED}║\n"
-            line4 = f"{Fore.RED}║ {Fore.YELLOW}██╔══██║██╔══██║██║     ██╔═██╗        ██║   ██╔══██║██╔══╝   {Fore.RED}║\n"
-            line5 = f"{Fore.RED}║ {Fore.YELLOW}██║  ██║██║  ██║╚██████╗██║  ██╗       ██║   ██║  ██║███████╗ {Fore.RED}║\n"
-            line6 = f"{Fore.RED}║ {Fore.YELLOW}╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝       ╚═╝   ╚═╝  ╚═╝╚══════╝ {Fore.RED}║\n"
-            line7 = f"{Fore.RED}║ {Fore.CYAN}{' '*20}██╗    ██╗ ██████╗ ██████╗ ██╗     ██████╗  {Fore.RED}║\n"
-            line8 = f"{Fore.RED}║ {Fore.CYAN}{' '*20}██║    ██║██╔═══██╗██╔══██╗██║     ██╔══██╗ {Fore.RED}║\n"
-            line9 = f"{Fore.RED}║ {Fore.CYAN}{' '*20}██║ █╗ ██║██║   ██║██████╔╝██║     ██║  ██║ {Fore.RED}║\n"
-            line10 = f"{Fore.RED}║ {Fore.CYAN}{' '*20}██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║ {Fore.RED}║\n"
-            line11 = f"{Fore.RED}║ {Fore.CYAN}{' '*20}╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝ {Fore.RED}║\n"
-            line12 = f"{Fore.RED}║ {Fore.CYAN}{' '*20} ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝  {Fore.RED}║\n"
-            line13 = f"{Fore.RED}║ {Style.BRIGHT}{Fore.MAGENTA}{' '*15}🔥🔥🔥 HACK MY LIFE 🔥🔥🔥{Fore.RED}{' '*15}║\n"
-            banner = border + line1 + line2 + line3 + line4 + line5 + line6 + line7 + line8 + line9 + line10 + line11 + line12 + line13 + border
+            # Simple, clean header
+            header = f"{Fore.LIGHTCYAN_EX}┌─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}"
+            title = f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL} {Style.BRIGHT}{Back.CYAN}{Fore.WHITE}🧠 IBLU KALIGPT 🧠{Style.RESET_ALL} {Fore.LIGHTCYAN_EX}{' ' * 49}│{Style.RESET_ALL}"
+            footer = f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}"
+            
+            print(f"\n{header}")
+            print(f"{title}")
+            print(f"{footer}\n")
+            
+            # Security tools overview
+            tools_header = f"{Fore.LIGHTYELLOW_EX}┌─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}"
+            tools_title = f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL} {Style.BRIGHT}{Back.YELLOW}{Fore.WHITE}🔥 Security Tools Available 🔥{Style.RESET_ALL} {Fore.LIGHTYELLOW_EX}{' ' * 39}│{Style.RESET_ALL}"
+            tools_footer = f"{Fore.LIGHTYELLOW_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}"
+            
+            print(f"{tools_header}")
+            print(f"{tools_title}")
+            print(f"{tools_footer}")
+            
+            print(f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}   {Fore.CYAN}🔍 Reconnaissance:{Style.RESET_ALL} nmap, masscan, dnsenum, recon-ng")
+            print(f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}   {Fore.CYAN}🌐 Web Testing:{Style.RESET_ALL} nikto, sqlmap, burpsuite, gobuster")
+            print(f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}   {Fore.CYAN}🔐 Password Cracking:{Style.RESET_ALL} john, hashcat, hydra, medusa")
+            print(f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}   {Fore.CYAN}📡 Network Analysis:{Style.RESET_ALL} wireshark, tcpdump, aircrack-ng")
+            print(f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}   {Fore.CYAN}💣 Exploitation:{Style.RESET_ALL} metasploit, msfconsole, msfvenom")
+            print(f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}   {Fore.CYAN}🔬 Forensics:{Style.RESET_ALL} autopsy, volatility, sleuthkit")
+            print(f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}   {Fore.CYAN}🎭 Social Engineering:{Style.RESET_ALL} setoolkit, phishing")
+            print(f"{Fore.LIGHTYELLOW_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
         else:
-            border = "╔" + "═"*78 + "╗\n"
-            line1 = "║ ██╗  ██╗ █████╗  ██████╗██╗  ██╗    ████████╗██╗  ██╗███████╗ ║\n"
-            line2 = "║ ██║  ██║██╔══██╗██╔════╝██║ ██╔╝    ╚══██╔══╝██║  ██║██╔════╝ ║\n"
-            line3 = "║ ███████║███████║██║     █████╔╝        ██║   ███████║█████╗   ║\n"
-            line4 = "║ ██╔══██║██╔══██║██║     ██╔═██╗        ██║   ██╔══██║██╔══╝   ║\n"
-            line5 = "║ ██║  ██║██║  ██║╚██████╗██║  ██╗       ██║   ██║  ██║███████╗ ║\n"
-            line6 = "║ ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝       ╚═╝   ╚═╝  ╚═╝╚══════╝ ║\n"
-            line7 = "║                     ██╗    ██╗ ██████╗ ██████╗ ██╗     ██████╗               ║\n"
-            line8 = "║                     ██║    ██║██╔═══██╗██╔══██╗██║     ██╔══██╗              ║\n"
-            line9 = "║                     ██║ █╗ ██║██║   ██║██████╔╝██║     ██║  ██║              ║\n"
-            line10 = "║                     ██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║              ║\n"
-            line11 = "║                     ╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝              ║\n"
-            line12 = "║                      ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝               ║\n"
-            line13 = "║          🔥🔥🔥 HACK MY LIFE 🔥🔥🔥          ║\n"
-            banner = border + line1 + line2 + line3 + line4 + line5 + line6 + line7 + line8 + line9 + line10 + line11 + line12 + line13 + border
+            print("\n" + "=" * 70)
+            print("    🧠 IBLU KALIGPT")
+            print("=" * 70 + "\n")
+            print("🔥 Security Tools Available:")
+            print("  • 🔍 Reconnaissance: nmap, masscan, dnsenum, recon-ng")
+            print("  • 🌐 Web Testing: nikto, sqlmap, burpsuite, gobuster")
+            print("  • 🔐 Password Cracking: john, hashcat, hydra, medusa")
+            print("  • 📡 Network Analysis: wireshark, tcpdump, aircrack-ng")
+            print("  • 💣 Exploitation: metasploit, msfconsole, msfvenom")
+            print("  • 🔬 Forensics: autopsy, volatility, sleuthkit")
+            print("  • 🎭 Social Engineering: setoolkit, phishing\n")
         
-        print(banner)
-        
+        # Menu options header
         if COLORAMA_AVAILABLE:
-            # Beautiful menu header
             menu_header = f"{Fore.LIGHTCYAN_EX}┌─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}"
-            menu_title = f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL} {Style.BRIGHT}{Back.CYAN}{Fore.WHITE}🧠 IBLU KALIGPT MAIN MENU 🧠{Style.RESET_ALL} {Fore.LIGHTCYAN_EX}{' ' * 43}│{Style.RESET_ALL}"
+            menu_title = f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL} {Style.BRIGHT}{Back.CYAN}{Fore.WHITE}🧠 MAIN MENU 🧠{Style.RESET_ALL} {Fore.LIGHTCYAN_EX}{' ' * 51}│{Style.RESET_ALL}"
             menu_footer = f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}"
             
-            print(f"\n{menu_header}")
+            print(f"{menu_header}")
             print(f"{menu_title}")
             print(f"{menu_footer}\n")
             
