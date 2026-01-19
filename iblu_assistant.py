@@ -2138,10 +2138,10 @@ Provide step-by-step technical details while maintaining educational context and
             print("📥 Pulling Gemini model image...")
             # Try alternative image sources
             images_to_try = [
-                'ghcr.io/google/generative-ai/gemini:latest',
-                'ghcr.io/google/generative-ai/gemini:2.0-flash',
-                'ollama/gemini:latest',
-                'gemini/gemini:latest'
+                'ollama/ollama:latest',
+                'python:3.11-slim',
+                'ubuntu:22.04',
+                'alpine:latest'
             ]
             
             pull_success = False
@@ -2180,18 +2180,19 @@ Provide step-by-step technical details while maintaining educational context and
                     print(f"  ❌ Failed: {image}")
             
             if not pull_success:
-                return f"❌ Failed to pull any Gemini image. Try manual installation."
+                return f"❌ Failed to pull any base image. Docker setup may need manual configuration."
             
-            self.show_loading_animation("Configuring local Gemini instance...")
+            self.show_loading_animation("Configuring local AI environment...")
             if pull_cmd.returncode == 0:
-                print("✅ Gemini model image pulled successfully")
-                print(f"\n{self._colorize('🚀 To run Gemini locally:', Fore.GREEN)}")
-                print("docker run -p 8080:8080 ghcr.io/google/generative-ai/gemini:latest")
-                print(f"\n{self._colorize('💡 Then update config.json:', Fore.YELLOW)}")
-                print('"gemini_keys": ["http://localhost:8080"]')
-                return "✅ Gemini model installed locally!"
+                print("✅ Base Docker environment ready!")
+                print(f"\n{self._colorize('🚀 Docker setup completed!', Fore.GREEN)}")
+                print(f"\n{self._colorize('💡 For local Gemini, try:', Fore.YELLOW)}")
+                print("1. Manual Gemini Docker setup from Google documentation")
+                print("2. Use cloud Gemini API instead (recommended)")
+                print("3. Configure cloud API keys in config.json")
+                return "✅ Docker environment ready for local AI setup!"
             else:
-                return f"❌ Failed to pull Gemini image: {pull_cmd.stderr}"
+                return f"❌ Failed to pull base image: {pull_cmd.stderr}"
         
         except Exception as e:
             return f"❌ Installation error: {e}"
