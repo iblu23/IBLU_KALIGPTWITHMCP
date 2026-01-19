@@ -2131,8 +2131,27 @@ Provide step-by-step technical details while maintaining educational context and
             
             # Pull Gemini model image
             print("📥 Pulling Gemini model image...")
-            pull_cmd = subprocess.run(['docker', 'pull', 'ghcr.io/google/generative-ai/gemini:latest'], 
-                                      capture_output=True, text=True)
+            # Try alternative image sources
+            images_to_try = [
+                'ghcr.io/google/generative-ai/gemini:latest',
+                'ghcr.io/google/generative-ai/gemini:2.0-flash',
+                'ollama/gemini:latest',
+                'gemini/gemini:latest'
+            ]
+            
+            pull_success = False
+            for image in images_to_try:
+                print(f"  Trying: {image}")
+                pull_cmd = subprocess.run(['docker', 'pull', image], capture_output=True, text=True)
+                if pull_cmd.returncode == 0:
+                    print(f"✅ Successfully pulled: {image}")
+                    pull_success = True
+                    break
+                else:
+                    print(f"  ❌ Failed: {image}")
+            
+            if not pull_success:
+                return f"❌ Failed to pull any Gemini image. Try manual installation."
             
             if pull_cmd.returncode == 0:
                 print("✅ Gemini model image pulled successfully")
@@ -2158,8 +2177,26 @@ Provide step-by-step technical details while maintaining educational context and
             
             if ollama_check.returncode != 0:
                 print("📦 Installing Ollama...")
-                install_cmd = subprocess.run(['curl', '-fsSL', 'https://ollama.ai/install.sh', '|', 'sh'], 
-                                           shell=True, capture_output=True, text=True)
+                # Try multiple installation methods
+                install_methods = [
+                    "curl -fsSL https://ollama.ai/install.sh | sh",
+                    "wget -qO- https://ollama.ai/install.sh | sh",
+                    "bash -c 'curl -fsSL https://ollama.ai/install.sh | sh'"
+                ]
+                
+                install_success = False
+                for method in install_methods:
+                    print(f"  Trying: {method}")
+                    install_cmd = subprocess.run(method, shell=True, capture_output=True, text=True, timeout=300)
+                    if install_cmd.returncode == 0:
+                        print("✅ Ollama installed successfully")
+                        install_success = True
+                        break
+                    else:
+                        print(f"  ❌ Failed: {method}")
+                
+                if not install_success:
+                    return f"❌ Failed to install Ollama. Try manual installation: https://ollama.ai/download"
                 
                 if install_cmd.returncode != 0:
                     return f"❌ Failed to install Ollama: {install_cmd.stderr}"
