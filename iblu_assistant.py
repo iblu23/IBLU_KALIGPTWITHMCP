@@ -525,12 +525,379 @@ You are integrated with advanced security testing capabilities through MCP integ
         # Share conversation history with command helper
         self.command_helper.conversation_history = self.conversation_history
     
+    def show_main_menu(self):
+        """Display the main menu"""
+        menu_text = f"""
+{self._colorize('🔥 IBLU PROFESSIONAL HACKING ASSISTANT - MAIN MENU 🔥', Fore.YELLOW)}
+{self._colorize('=' * 60, Fore.CYAN)}
+
+{self._colorize('1. 🧠 IBLU KALIGPT', Fore.GREEN)}  - Multi-AI Assistant (Perplexity, OpenAI, Gemini, Mistral)
+{self._colorize('   • Bypass jailbreak settings with rephrasing mode', Fore.CYAN)}
+{self._colorize('   • All AI models available simultaneously', Fore.CYAN)}
+
+{self._colorize('2. 🛡️ HexStrike Tools Installation', Fore.BLUE)}  - Install 50+ security tools
+{self._colorize('   • Option A: Install all tools at once', Fore.CYAN)}
+{self._colorize('   • Option B: Install tools one-by-one', Fore.CYAN)}
+{self._colorize('   • Automated dependency management', Fore.CYAN)}
+
+{self._colorize('3. 🔗 MCP Connection Status', Fore.MAGENTA)}  - Verify HexStrike MCP server
+{self._colorize('   • Manual connection check', Fore.CYAN)}
+{self._colorize('   • Service status verification', Fore.CYAN)}
+{self._colorize('   • Troubleshooting assistance', Fore.CYAN)}
+
+{self._colorize('4. ⚙️  Configuration', Fore.RED)}  - Settings and preferences
+{self._colorize('   • API key management', Fore.CYAN)}
+{self._colorize('   • Rephrasing mode toggle', Fore.CYAN)}
+{self._colorize('   • System configuration', Fore.CYAN)}
+
+{self._colorize('5. 🚪 Exit', Fore.WHITE)}  - Exit the assistant
+
+{self._colorize('💡 Usage:', Fore.YELLOW)} Type the number (1-5) or command name
+{self._colorize('🔥 Ready for professional cybersecurity testing! 🔥', Fore.RED)}
+"""
+        print(menu_text)
+    
+    def handle_menu_choice(self, choice: str) -> str:
+        """Handle menu choice"""
+        choice = choice.strip()
+        
+        if choice in ['1', 'iblu', 'kali', 'kaligpt']:
+            return self.handle_iblu_kaligpt()
+        elif choice in ['2', 'tools', 'install', 'hexstrike']:
+            return self.handle_tools_installation()
+        elif choice in ['3', 'mcp', 'connection', 'status']:
+            return self.handle_mcp_verification()
+        elif choice in ['4', 'config', 'settings']:
+            return self.handle_configuration()
+        elif choice in ['5', 'exit', 'quit']:
+            return "👋 Goodbye! Stay secure!"
+        else:
+            return f"❌ Invalid choice: {choice}\n💡 Please choose 1-5 or type 'menu'"
+    
+    def handle_iblu_kaligpt(self):
+        """Handle IBLU KALIGPT multi-AI setup"""
+        print(f"\n{self._colorize('🧠 IBLU KALIGPT - Multi-AI Assistant', Fore.GREEN)}")
+        print("=" * 50)
+        
+        # Check available API keys
+        available_providers = []
+        if self.config.perplexity_keys:
+            available_providers.append("Perplexity")
+        if self.config.openai_keys:
+            available_providers.append("OpenAI")
+        if self.config.gemini_keys:
+            available_providers.append("Gemini")
+        if self.config.mistral_keys:
+            available_providers.append("Mistral")
+        
+        print(f"✅ Available AI Providers: {', '.join(available_providers) if available_providers else 'None'}")
+        print(f"🔄 Current Provider: {self.current_ai_provider}")
+        print(f"🔓 Rephrasing Mode: {'✅ Enabled' if self.rephrasing_mode else '❌ Disabled'}")
+        
+        if not available_providers:
+            print(f"\n{self._colorize('⚠️  No API keys configured!', Fore.YELLOW)}")
+            print(f"💡 Please add API keys to config.json")
+            print(f"📝 Example: {{'perplexity_keys': ['your-key']}}")
+            return ""
+        
+        print(f"\n{self._colorize('🎯 Features:', Fore.CYAN)}")
+        print(f"  • 🤖 Multiple AI models available simultaneously")
+        print(f"  • 🔓 Rephrasing mode bypasses content filters")
+        print(f"  • 🛡️ Uncensored cybersecurity assistance")
+        print(f"  • 🔗 HexStrike MCP integration")
+        
+        if self.rephrasing_mode:
+            print(f"\n{self._colorize('⚠️  REPHRASING MODE ACTIVE', Fore.RED)}")
+            print(f"🔓 AI responses will bypass content restrictions")
+        
+        return f"🧠 IBLU KALIGPT ready with {len(available_providers)} AI providers!"
+    
+    def handle_tools_installation(self):
+        """Handle HexStrike tools installation"""
+        print(f"\n{self._colorize('🛡️ HexStrike Tools Installation', Fore.BLUE)}")
+        print("=" * 50)
+        
+        print(f"📊 Available Tools: {len(self.command_helper.hexstrike_tools)} security tools")
+        
+        # Check installation status
+        installed_count = 0
+        for tool in self.command_helper.hexstrike_tools.keys():
+            if self.check_tool_installed(tool):
+                installed_count += 1
+        
+        print(f"✅ Already Installed: {installed_count}/{len(self.command_helper.hexstrike_tools)} tools")
+        
+        print(f"\n{self._colorize('🔧 Installation Options:', Fore.CYAN)}")
+        print(f"  A) Install ALL tools at once (recommended)")
+        print(f"  B) Install tools one-by-one")
+        print(f"  C) Check installation status")
+        print(f"  D) Back to main menu")
+        
+        choice = input(f"\n{self._colorize('🎯 Choose option (A-D):', Fore.YELLOW)}").strip().upper()
+        
+        if choice == 'A':
+            return self.install_all_tools()
+        elif choice == 'B':
+            return self.install_tools_one_by_one()
+        elif choice == 'C':
+            return self.show_installation_status()
+        elif choice == 'D':
+            return self.show_main_menu()
+        else:
+            return f"❌ Invalid choice: {choice}"
+    
+    def install_all_tools(self):
+        """Install all HexStrike tools at once"""
+        print(f"\n{self._colorize('📦 Installing ALL HexStrike Tools...', Fore.YELLOW)}")
+        print("=" * 50)
+        
+        if os.path.exists('install_hexstrike_tools.sh'):
+            print(f"🔧 Running installation script...")
+            print(f"⚠️  This requires root privileges")
+            print(f"💡 Command: sudo ./install_hexstrike_tools.sh")
+            return f"📦 Run 'sudo ./install_hexstrike_tools.sh' to install all 50+ tools!"
+        else:
+            return f"❌ Installation script not found!"
+    
+    def install_tools_one_by_one(self):
+        """Install tools one by one"""
+        print(f"\n{self._colorize('📦 One-by-One Tool Installation', Fore.YELLOW)}")
+        print("=" * 50)
+        
+        categories = {}
+        for tool, info in self.command_helper.hexstrike_tools.items():
+            cat = info['category']
+            if cat not in categories:
+                categories[cat] = []
+            categories[cat].append(tool)
+        
+        print(f"📋 Available Categories:")
+        for i, (cat, tools) in enumerate(categories.items(), 1):
+            print(f"  {i}. {cat.upper()} ({len(tools)} tools)")
+        
+        try:
+            cat_choice = input(f"\n{self._colorize('🎯 Choose category (1-{len(categories)}):', Fore.YELLOW)}").strip()
+            cat_index = int(cat_choice) - 1
+            category_name = list(categories.keys())[cat_index]
+            tools_in_category = categories[category_name]
+            
+            print(f"\n🔧 {category_name.upper()} Tools:")
+            for i, tool in enumerate(tools_in_category, 1):
+                status = "✅" if self.check_tool_installed(tool) else "❌"
+                print(f"  {i}. {status} {tool}")
+            
+            tool_choice = input(f"\n{self._colorize('🎯 Choose tool (1-{len(tools_in_category)}):', Fore.YELLOW)}").strip()
+            tool_index = int(tool_choice) - 1
+            selected_tool = tools_in_category[tool_index]
+            
+            return self.install_single_tool(selected_tool)
+            
+        except (ValueError, IndexError):
+            return f"❌ Invalid choice!"
+    
+    def install_single_tool(self, tool_name: str):
+        """Install a single tool"""
+        tool_info = self.command_helper.hexstrike_tools.get(tool_name)
+        if not tool_info:
+            return f"❌ Unknown tool: {tool_name}"
+        
+        print(f"\n📦 Installing {tool_info['name']}...")
+        print(f"🔧 Command: sudo apt install {tool_name}")
+        print(f"📋 Category: {tool_info['category']}")
+        print(f"📝 Description: {tool_info['desc']}")
+        
+        return f"📦 Run 'sudo apt install {tool_name}' to install {tool_info['name']}!"
+    
+    def show_installation_status(self):
+        """Show detailed installation status"""
+        print(f"\n{self._colorize('📊 HexStrike Tools Installation Status', Fore.CYAN)}")
+        print("=" * 60)
+        
+        categories = {}
+        for tool, info in self.command_helper.hexstrike_tools.items():
+            cat = info['category']
+            if cat not in categories:
+                categories[cat] = {"total": 0, "installed": 0, "tools": []}
+            categories[cat]["total"] += 1
+            categories[cat]["tools"].append(tool)
+            if self.check_tool_installed(tool):
+                categories[cat]["installed"] += 1
+        
+        for category, data in sorted(categories.items()):
+            percentage = (data["installed"] / data["total"]) * 100
+            color = Fore.GREEN if percentage == 100 else Fore.YELLOW if percentage >= 50 else Fore.RED
+            print(f"\n{color}📂 {category.upper()} ({data['installed']}/{data['total']}) - {percentage:.1f}%{Style.RESET_ALL}")
+            
+            for tool in sorted(data["tools"]):
+                status = "✅" if self.check_tool_installed(tool) else "❌"
+                tool_info = self.command_helper[tool]
+                print(f"  {status} {tool} - {tool_info['name']}")
+        
+        total_installed = sum(data["installed"] for data in categories.values())
+        total_tools = sum(data["total"] for data in categories.values())
+        overall_percentage = (total_installed / total_tools) * 100
+        
+        print(f"\n{Fore.CYAN}📊 Overall Status: {total_installed}/{total_tools} ({overall_percentage:.1f}%){Style.RESET_ALL}")
+        
+        return f"📊 Installation status displayed above"
+    
+    def handle_mcp_verification(self):
+        """Handle MCP server verification"""
+        print(f"\n{self._colorize('🔗 HexStrike MCP Server Verification', Fore.MAGENTA)}")
+        print("=" * 50)
+        
+        # Check MCP server file
+        mcp_server_exists = os.path.exists('hexstrike_mcp_server.py')
+        print(f"📁 MCP Server File: {'✅ Found' if mcp_server_exists else '❌ Not found'}")
+        
+        # Check MCP server process
+        if self.mcp_connected:
+            print(f"🔗 MCP Connection: ✅ Connected")
+        else:
+            print(f"🔗 MCP Connection: ❌ Disconnected")
+        
+        # Check installation script
+        installer_exists = os.path.exists('install_hexstrike_tools.sh')
+        print(f"📦 Installer Script: {'✅ Found' if installer_exists else '❌ Not found'}")
+        
+        # Check tools availability
+        available_tools = len(self.command_helper.hexstrike_tools)
+        installed_tools = sum(1 for tool in self.command_helper.hexstrike_tools.keys() if self.check_tool_installed(tool))
+        print(f"🛠️  Available Tools: {available_tools}")
+        print(f"✅ Installed Tools: {installed_tools}")
+        
+        print(f"\n{self._colorize('🔧 Manual MCP Server Test:', Fore.CYAN)}")
+        print(f"  python3 hexstrike_mcp_server.py")
+        
+        print(f"\n{self._colorize('🔧 Manual Installation Test:', Fore.CYAN)}")
+        print(f"  sudo ./install_hexstrike_tools.sh")
+        
+        if mcp_server_exists and installer_exists and available_tools > 0:
+            print(f"\n{Fore.GREEN}✅ HexStrike MCP components are ready!{Style.RESET_ALL}")
+            print(f"💡 Run 'python3 hexstrike_mcp_server.py' to start the MCP server")
+            return f"🔗 MCP verification completed successfully!"
+        else:
+            print(f"\n{Fore.YELLOW}⚠️  Some components may be missing{Style.RESET_ALL}")
+            return f"🔧 Please ensure all components are installed"
+    
+    def handle_configuration(self):
+        """Handle configuration settings"""
+        print(f"\n{self._colorize('⚙️  Configuration Settings', Fore.RED)}")
+        print("=" * 40)
+        
+        print(f"🔑 Current AI Provider: {self.current_ai_provider}")
+        print(f"🔓 Rephrasing Mode: {'✅ Enabled' if self.rephrasing_mode else '❌ Disabled'}")
+        print(f"🔗 MCP Connected: {'✅ Yes' if self.mcp_connected else '❌ No'}")
+        
+        print(f"\n{self._colorize('🔧 Configuration Options:', Fore.CYAN)}")
+        print(f"  1. Switch AI Provider")
+        print(f"  2. Toggle Rephrasing Mode")
+        print(f"  3. Check MCP Status")
+        print(f"  4. Show API Keys Status")
+        print(f"  5. Back to main menu")
+        
+        choice = input(f"\n{self._colorize('🎯 Choose option (1-5):', Fore.YELLOW)}").strip()
+        
+        if choice == '1':
+            return self.switch_ai_provider()
+        elif choice == '2':
+            return self.toggle_rephrasing_mode()
+        elif choice == '3':
+            return self.check_mcp_status()
+        elif choice == '4':
+            return self.show_api_keys_status()
+        elif choice == '5':
+            return self.show_main_menu()
+        else:
+            return f"❌ Invalid choice: {choice}"
+    
+    def switch_ai_provider(self):
+        """Switch between AI providers"""
+        providers = []
+        if self.config.perplexity_keys:
+            providers.append("perplexity")
+        if self.config.openai_keys:
+            providers.append("openai")
+        if self.config.gemini_keys:
+            providers.append("gemini")
+        if self.config.mistral_keys:
+            providers.append("mistral")
+        
+        if not providers:
+            return f"❌ No API keys configured in config.json"
+        
+        print(f"\n{self._colorize('🤖 Available AI Providers:', Fore.GREEN)}")
+        for i, provider in enumerate(providers, 1):
+            status = "✅" if provider == self.current_ai_provider else "  "
+            print(f"  {i}. {status} {provider.title()}")
+        
+        try:
+            choice = input(f"\n{self._colorize('🎯 Choose provider (1-{len(providers)}):', Fore.YELLOW)}").strip()
+            provider_index = int(choice) - 1
+            selected_provider = providers[provider_index]
+            
+            self.current_ai_provider = selected_provider
+            return f"🤖 Switched to {selected_provider.title()} AI provider"
+            
+        except (ValueError, IndexError):
+            return f"❌ Invalid choice!"
+    
+    def toggle_rephrasing_mode(self):
+        """Toggle rephrasing mode"""
+        self.rephrasing_mode = not self.rephrasing_mode
+        status = "✅ Enabled" if self.rephrasing_mode else "❌ Disabled"
+        
+        if self.rephrasing_mode:
+            print(f"\n{Fore.RED}⚠️  REPHRASING MODE ENABLED{Style.RESET_ALL}")
+            print(f"🔓 AI responses will bypass content restrictions")
+            print(f"🛡️ Uncensored cybersecurity assistance activated")
+        else:
+            print(f"\n{Fore.GREEN}✅ Rephrasing mode disabled{Style.RESET_ALL}")
+            print(f"🔓 AI responses will follow standard guidelines")
+        
+        return f"🔓 Rephrasing mode {status}"
+    
+    def show_api_keys_status(self):
+        """Show API keys configuration status"""
+        print(f"\n{self._colorize('🔑 API Keys Configuration', Fore.GREEN)}")
+        print("=" * 40)
+        
+        providers = {
+            'perplexity': self.config.perplexity_keys,
+            'openai': self.config.openai_keys,
+            'gemini': self.config.gemini_keys,
+            'mistral': self.config.mistral_keys
+        }
+        
+        for provider, keys in providers.items():
+            if keys:
+                print(f"{Fore.GREEN}✅ {provider.title()}: {len(keys)} key(s) configured")
+                for i, key in enumerate(keys[:3], 1):
+                    masked_key = key[:8] + "..." + key[-4:] if len(key) > 15 else key
+                    print(f"   {i}. {masked_key}")
+                if len(keys) > 3:
+                    print(f"   ... and {len(keys)-3} more key(s)")
+            else:
+                print(f"{Fore.RED}❌ {provider.title()}: No keys configured")
+        
+        return f"🔑 API keys status displayed above"
+    
+    def _colorize(self, text: str, color: str = "") -> str:
+        """Apply color to text if colorama is available"""
+        if COLORAMA_AVAILABLE and color:
+            return f"{color}{text}{Style.RESET_ALL}"
+        return text
+    
     def process_command(self, user_input: str) -> str:
         """Process user commands"""
         user_input = user_input.strip()
         
         if not user_input:
             return "Please enter a command or message."
+        
+        # Handle menu choices first
+        if user_input.isdigit() or user_input.lower() in ['menu', 'main', 'iblu', 'kali', 'kaligpt', 'tools', 'install', 'hexstrike', 'mcp', 'connection', 'status', 'config', 'settings']:
+            return self.handle_menu_choice(user_input)
         
         # Handle numbered commands (basic implementation)
         if user_input.isdigit():
@@ -838,22 +1205,20 @@ def main():
     print("  • 📜 Command history with arrow keys")
     print("  • 🚀 Enhanced UI with professional banner")
     print("  • 🛡️ 50+ HexStrike security tools integration")
+    print("  • 🧠 Multi-AI provider support with rephrasing mode")
     print()
     print("🔥 HexStrike Security Tools Available:")
     print("  • 🔍 Reconnaissance: nmap, masscan, dnsenum, recon-ng")
     print("  • 🌐 Web Testing: nikto, sqlmap, burpsuite, gobuster")
-    print("  • � Password Cracking: john, hashcat, hydra, medusa")
+    print("  • 🔐 Password Cracking: john, hashcat, hydra, medusa")
     print("  • 📡 Network Analysis: wireshark, tcpdump, aircrack-ng")
     print("  • 💣 Exploitation: metasploit, msfconsole, msfvenom")
     print("  • 🔬 Forensics: autopsy, volatility, sleuthkit")
     print("  • 🎭 Social Engineering: setoolkit, phishing")
     print()
-    print("�💡 Type '/' and press Tab for command suggestions!")
-    print("💡 Type '/tools' to see all HexStrike tools!")
-    print("💡 Type '/hexstrike' for tools overview!")
-    print("💡 Type '/install <tool>' to install tools!")
-    print("🔥 Assistant ready! Let's start hacking... ethically! 🔥")
-    print()
+    
+    # Show main menu
+    assistant.show_main_menu()
     
     # Main loop
     while True:
@@ -869,11 +1234,10 @@ def main():
                 assistant.command_helper.save_chat_history()
                 break
             
-            # Show suggestions if input starts with '/'
-            if user_input.startswith('/') and len(user_input) > 1:
-                suggestions = assistant.command_helper.get_input_suggestions(user_input)
-                if suggestions:
-                    print(f"💡 Suggestions: {', '.join(suggestions[:3])}")
+            # Handle menu choices
+            if user_input.lower() in ['menu', 'main', '5']:
+                assistant.show_main_menu()
+                continue
             
             # Process the command
             response = assistant.process_command(user_input)
