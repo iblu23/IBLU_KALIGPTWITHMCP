@@ -334,7 +334,7 @@ class IBLUCommandHelper:
             basic_commands = ['/help', '/exit', '/clear', '/status', '/scan', '/payload', 
                             '/autopentest', '/mcp_connect', '/mcp_disconnect', 
                             '/openai', '/gemini', '/mistral', '/llama', '/history', '/tools', '/install',
-                            '/hexstrike', '/pentest', '/llama_models', '/delete_llama', '/delete_tools', '/collaborative', '/install_models']
+                            '/hexstrike', '/pentest', '/llama_models', '/delete_llama', '/delete_tools', '/collaborative', '/install_models', '/install_mistral']
             
             # Add HexStrike tool commands
             hexstrike_commands = [f"/{tool}" for tool in self.hexstrike_tools.keys()]
@@ -528,6 +528,7 @@ class IBLUCommandHelper:
 
 {self._colorize('🤖 LOCAL MODEL MANAGEMENT:', Fore.MAGENTA)}
   install_llama     - Install Llama models locally (supports Llama 2 & 3.1 8B)
+  install_mistral   - Install Mistral Dolphin model locally
   llama_models      - List and manage available Llama models
   delete_llama      - Delete a local Llama model
   install_models    - Install all local models
@@ -892,6 +893,7 @@ class IBLUCommandHelper:
             "autopentest": {"description": "Auto pentest", "usage": "autopentest <target>"},
             "install_gemini": {"description": "Install Gemini model locally", "usage": "install_gemini"},
             "install_llama": {"description": "Install Llama model locally", "usage": "install_llama"},
+            "install_mistral": {"description": "Install Mistral Dolphin model locally", "usage": "install_mistral"},
             "install_models": {"description": "Install all local models", "usage": "install_models"},
             "llama_models": {"description": "List and manage available Llama models", "usage": "llama_models"},
             "delete_llama": {"description": "Delete a local Llama model", "usage": "delete_llama"},
@@ -1221,7 +1223,7 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
         print(f"{overview_title}")
         print(f"{overview_border2}")
         
-        total_models = len(cloud_models) + len(local_models)
+        total_models = len(cloud_models) + len(local_models) + (1 if local_mistral_available else 0)
         
         if total_models == 0:
             no_models_border = f"{Fore.LIGHTRED_EX}┌─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}"
@@ -1245,6 +1247,7 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
             print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}   {Style.BRIGHT}{Fore.YELLOW}Commands:{Style.RESET_ALL}                                               {Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
             print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}   {Fore.CYAN}•{Style.RESET_ALL} {Style.BRIGHT}{Fore.WHITE}/config{Style.RESET_ALL} - Configure API keys                          {Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
             print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}   {Fore.CYAN}•{Style.RESET_ALL} {Style.BRIGHT}{Fore.WHITE}/install_llama{Style.RESET_ALL} - Install local Llama models              {Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}   {Fore.CYAN}•{Style.RESET_ALL} {Style.BRIGHT}{Fore.WHITE}/install_mistral{Style.RESET_ALL} - Install local Mistral Dolphin model        {Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
             print(f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}")
             
             return "❌ No models available"
@@ -1256,6 +1259,20 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
             Provider.MISTRAL: "⚡ Fast & Efficient",
             Provider.LLAMA: "🔒 Private & Secure"
         }
+        
+        # Check for local Mistral model
+        local_mistral_available = False
+        try:
+            url = "http://localhost:11434/api/tags"
+            response = requests.get(url, timeout=5)
+            if response.status_code == 200:
+                models_data = response.json()
+                for model in models_data.get('models', []):
+                    if 'mistral' in model.get('name', '').lower():
+                        local_mistral_available = True
+                        break
+        except:
+            pass
 
         # Enhanced cloud models section with vibrant colors
         if cloud_models:
@@ -1304,6 +1321,38 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
             
             print(f"{Fore.LIGHTGREEN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}")
         
+        # Enhanced local Mistral models section
+        if local_mistral_available:
+            mistral_border = f"{Fore.LIGHTMAGENTA_EX}┌─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}"
+            mistral_title = f"{Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL} {Style.BRIGHT}{Back.MAGENTA}{Fore.WHITE}🐬 LOCAL MISTRAL MODELS:{Style.RESET_ALL} {Fore.LIGHTMAGENTA_EX}{' ' * 43}│{Style.RESET_ALL}"
+            mistral_border2 = f"{Fore.LIGHTMAGENTA_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}"
+            
+            print(f"\n{mistral_border}")
+            print(f"{mistral_title}")
+            print(f"{mistral_border2}")
+            
+            # Get Mistral model details
+            try:
+                url = "http://localhost:11434/api/tags"
+                response = requests.get(url, timeout=5)
+                if response.status_code == 200:
+                    models_data = response.json()
+                    for model in models_data.get('models', []):
+                        if 'mistral' in model.get('name', '').lower():
+                            model_name = model.get('name', '')
+                            model_size = model.get('size', 0)
+                            size_str = f"({model_size/1024:.1f}GB)" if model_size > 0 else "(Unknown size)"
+                            
+                            print(f"{Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}   {Fore.MAGENTA}┌─ [{Style.BRIGHT}{Fore.CYAN}🐬{Style.RESET_ALL}{Fore.MAGENTA}] ──────────────────────────────────────────────┐{Style.RESET_ALL} {Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}")
+                            print(f"{Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}   {Fore.MAGENTA}│{Style.RESET_ALL} {Style.BRIGHT}{Fore.WHITE}{model_name}{Style.RESET_ALL} - {Fore.LIGHTGREEN_EX}✅ Available{Style.RESET_ALL} {Style.BRIGHT}{Fore.CYAN}{size_str}{Style.RESET_ALL} {Fore.MAGENTA}{' ' * (30 - len(model_name) - len(size_str))}│{Style.RESET_ALL} {Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}")
+                            print(f"{Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}   {Fore.MAGENTA}│{Style.RESET_ALL} {Fore.CYAN}▸{Style.RESET_ALL} {Fore.WHITE}⚡ Fast & Efficient{Style.RESET_ALL} {Fore.MAGENTA}{' ' * (35)}│{Style.RESET_ALL} {Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}")
+                            print(f"{Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}   {Fore.MAGENTA}└───────────────────────────────────────────────────────┘{Style.RESET_ALL} {Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}")
+                            break
+            except:
+                pass
+            
+            print(f"{Fore.LIGHTMAGENTA_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}")
+        
         # Enhanced capabilities section with vibrant colors
         cap_border = f"{Fore.LIGHTYELLOW_EX}┌─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}"
         cap_title = f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL} {Style.BRIGHT}{Back.YELLOW}{Fore.WHITE}🔧 MODEL CAPABILITIES:{Style.RESET_ALL} {Fore.LIGHTYELLOW_EX}{' ' * 47}│{Style.RESET_ALL}"
@@ -1321,9 +1370,9 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
         }
         
         for provider in [Provider.OPENAI, Provider.GEMINI, Provider.MISTRAL, Provider.LLAMA]:
-            if provider in [p[0] for p in cloud_models] or provider == Provider.LLAMA and local_models:
+            if provider in [p[0] for p in cloud_models] or provider == Provider.LLAMA and local_models or provider == Provider.MISTRAL and local_mistral_available:
                 capability = capabilities.get(provider, "Unknown")
-                status = "✅" if (provider in [p[0] for p in cloud_models]) or (provider == Provider.LLAMA and local_models) else "❌"
+                status = "✅" if (provider in [p[0] for p in cloud_models]) or (provider == Provider.LLAMA and local_models) or (provider == Provider.MISTRAL and local_mistral_available) else "❌"
                 provider_name = provider.value.title()
                 print(f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}   {Fore.YELLOW}•{Style.RESET_ALL} {Style.BRIGHT}{Fore.WHITE}{provider_name}{Style.RESET_ALL} - {Fore.CYAN}{capability}{Style.RESET_ALL} {Fore.LIGHTGREEN_EX}{status}{Style.RESET_ALL} {Fore.LIGHTYELLOW_EX}{' ' * (20 - len(provider_name) - len(capability))}│{Style.RESET_ALL}")
         
@@ -2054,10 +2103,11 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
         print("=" * 40)
         print(f"  1. Install Gemini Model (Docker)")
         print(f"  2. Install Llama Model (Ollama)")
-        print(f"  3. Install All Models")
-        print(f"  4. Back to configuration")
+        print(f"  3. Install Mistral Dolphin Model (Ollama)")
+        print(f"  4. Install All Models")
+        print(f"  5. Back to configuration")
         
-        choice = input(f"\n{self._colorize('🎯 Choose option (1-4):', Fore.YELLOW)}").strip()
+        choice = input(f"\n{self._colorize('🎯 Choose option (1-5):', Fore.YELLOW)}").strip()
         
         if choice == '1':
             result = self.install_gemini_local()
@@ -2070,17 +2120,23 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
             input(f"\n{self._colorize('Press Enter to continue...', Fore.YELLOW)}")
             return self.handle_configuration()
         elif choice == '3':
-            result = self.install_all_local_models()
+            result = self.install_mistral_dolphin_local()
             print(f"\n{result}")
             input(f"\n{self._colorize('Press Enter to continue...', Fore.YELLOW)}")
             return self.handle_configuration()
         elif choice == '4':
+            result = self.install_all_local_models()
+            print(f"\n{result}")
+            input(f"\n{self._colorize('Press Enter to continue...', Fore.YELLOW)}")
             return self.handle_configuration()
+        elif choice == '5':
+            return self.show_main_menu()
         else:
             print(f"❌ Invalid choice: {choice}")
             input(f"\n{self._colorize('Press Enter to continue...', Fore.YELLOW)}")
             return self.install_local_models_menu()
-    
+
+# ... (rest of the code remains the same)
     def _colorize(self, text: str, color: str = "") -> str:
         """Apply color to text if colorama is available"""
         if COLORAMA_AVAILABLE and color:
@@ -2151,6 +2207,8 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
             return self.install_gemini_local()
         elif cmd == "install_llama":
             return self.install_llama_local()
+        elif cmd == "install_mistral":
+            return self.install_mistral_dolphin_local()
         elif cmd == "install_models":
             return self.install_all_local_models()
         elif cmd == "llama_models":
@@ -3306,6 +3364,91 @@ Provide step-by-step technical details while maintaining educational context and
         except Exception as e:
             return f"❌ Installation error: {e}"
     
+    def install_mistral_dolphin_local(self) -> str:
+        """Install Mistral Dolphin model locally via Ollama"""
+        print(f"\n{self._colorize('🔧 Installing Mistral Dolphin Model Locally via Ollama', Fore.CYAN)}")
+        print("=" * 50)
+        
+        print(f"\n{self._colorize('🐬 About Mistral Dolphin:', Fore.YELLOW)}")
+        print("  • Fine-tuned Mistral model for instruction following")
+        print("  • Excellent for coding and analytical tasks")
+        print("  • Fast and efficient performance")
+        print("  • 7B parameter model - lightweight yet powerful")
+        
+        confirm = input(f"\n{self._colorize('🎯 Install Mistral Dolphin? (y/N):', Fore.YELLOW)}").strip().lower()
+        
+        if confirm not in ['y', 'yes']:
+            return "❌ Installation cancelled by user."
+        
+        print(f"\n{self._colorize('📦 Installing Mistral Dolphin...', Fore.GREEN)}")
+        
+        # Show loading animation
+        self.show_loading_animation("Initializing Ollama environment...")
+        
+        try:
+            # Check if Ollama is installed
+            self.show_loading_animation("Checking Ollama availability...")
+            ollama_check = subprocess.run(['which', 'ollama'], capture_output=True, text=True)
+            
+            if ollama_check.returncode != 0:
+                print("📦 Installing Ollama...")
+                # Try multiple installation methods
+                install_methods = [
+                    "curl -fsSL https://ollama.ai/install.sh | sh",
+                    "wget -qO- https://ollama.ai/install.sh | sh",
+                    "bash -c 'curl -fsSL https://ollama.ai/install.sh | sh'"
+                ]
+                
+                install_success = False
+                for method in install_methods:
+                    print(f"  Trying: {method}")
+                    install_cmd = subprocess.run(method, shell=True, capture_output=True, text=True, timeout=300)
+                    if install_cmd.returncode == 0:
+                        print("✅ Ollama installed successfully")
+                        install_success = True
+                        break
+                
+                if not install_success:
+                    return "❌ Failed to install Ollama. Please install manually: https://ollama.ai/"
+            
+            # Start Ollama service
+            self.show_loading_animation("Starting Ollama service...")
+            subprocess.run(['ollama', 'serve'], capture_output=True, text=True, timeout=10)
+            
+            # Wait a moment for service to start
+            time.sleep(3)
+            
+            # Install Mistral Dolphin model
+            self.show_loading_animation("Downloading Mistral Dolphin model...")
+            install_cmd = subprocess.run(['ollama', 'pull', 'mistral'], capture_output=True, text=True, timeout=600)
+            
+            if install_cmd.returncode == 0:
+                print(f"\n{self._colorize('✅ Mistral Dolphin installed successfully!', Fore.GREEN)}")
+                
+                # Verify installation
+                self.show_loading_animation("Verifying installation...")
+                verify_cmd = subprocess.run(['ollama', 'list'], capture_output=True, text=True)
+                
+                if 'mistral' in verify_cmd.stdout:
+                    print(f"\n{self._colorize('🚀 Mistral Dolphin is ready to use!', Fore.GREEN)}")
+                    print(f"\n{self._colorize('💡 Update config.json:', Fore.YELLOW)}")
+                    print('"mistral_keys": ["local"]')
+                    print(f"\n{self._colorize('🔗 Access via:', Fore.CYAN)}")
+                    print("  • /mistral command")
+                    print("  • Or set as default in config")
+                    
+                    return "✅ Mistral Dolphin model installed and ready!"
+                else:
+                    return "⚠️  Installation completed but verification failed"
+            else:
+                error_msg = install_cmd.stderr.strip() if install_cmd.stderr else "Unknown error"
+                return f"❌ Failed to install Mistral Dolphin: {error_msg}"
+                
+        except subprocess.TimeoutExpired:
+            return "❌ Installation timed out. Please check your internet connection."
+        except Exception as e:
+            return f"❌ Installation error: {e}"
+    
     def install_all_local_models(self) -> str:
         """Install all local models"""
         print(f"\n{self._colorize('🔧 Installing All Local Models', Fore.CYAN)}")
@@ -3322,6 +3465,12 @@ Provide step-by-step technical details while maintaining educational context and
         # Install Llama
         llama_result = self.install_llama_local()
         results.append(f"Llama: {llama_result}")
+        
+        print("\n" + "="*50)
+        
+        # Install Mistral Dolphin
+        mistral_result = self.install_mistral_dolphin_local()
+        results.append(f"Mistral Dolphin: {mistral_result}")
         
         print(f"\n{self._colorize('📊 Installation Summary:', Fore.GREEN)}")
         for result in results:
