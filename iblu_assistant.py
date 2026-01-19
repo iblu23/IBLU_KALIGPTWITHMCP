@@ -6,18 +6,14 @@
 🔗 50+ Automated Security Scans & Workflows 🔗
 """
 
-import os
 import json
+import os
+import sys
+import time
 import random
 import subprocess
-import asyncio
-import shutil
-import time
-import sys
-import readline
-import atexit
 import threading
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Any
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
@@ -55,15 +51,25 @@ class Spinner:
     """Loading spinner for AI thinking animation"""
     def __init__(self, message="🤖 IBLU is thinking"):
         self.spinner_chars = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏']
+        self.action_words = ['diving', 'flying', 'surfing', 'jumping', 'dancing', 'running', 'swimming', 'climbing', 'exploring', 'hacking', 'analyzing', 'scanning', 'processing', 'computing', 'cracking', 'breaking', 'solving', 'hunting', 'searching', 'digging']
         self.message = message
         self.running = False
+        self.current_word_index = 0
+        self.last_word_change = time.time()
         self.thread = None
     
     def spin(self):
-        """Spinner animation loop"""
+        """Spinner animation loop with random action words"""
         idx = 0
         while self.running:
-            sys.stdout.write(f'\r{self.spinner_chars[idx]} {self.message}...')
+            # Change word every 1 second
+            current_time = time.time()
+            if current_time - self.last_word_change >= 1.0:
+                self.current_word_index = random.randint(0, len(self.action_words) - 1)
+                self.last_word_change = current_time
+            
+            current_word = self.action_words[self.current_word_index]
+            sys.stdout.write(f'\r{self.spinner_chars[idx]} 🤖 IBLU is {current_word}...')
             sys.stdout.flush()
             idx = (idx + 1) % len(self.spinner_chars)
             time.sleep(0.1)
