@@ -1842,7 +1842,28 @@ Provide step-by-step technical details while maintaining educational context and
         try:
             import requests
             
-            url = f"https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key={api_key}"
+            # First, check what models are available
+            models_url = f"https://generativelanguage.googleapis.com/v1/models?key={api_key}"
+            models_response = requests.get(models_url, timeout=10)
+            
+            if models_response.status_code == 200:
+                models_data = models_response.json()
+                available_models = [model['name'] for model in models_data['models'] if 'generateContent' in model.get('supportedGenerationMethods', [])]
+                
+                # Try to find a working model
+                working_model = None
+                for model_name in ['gemini-1.5-flash', 'gemini-1.5-pro', 'gemini-pro', 'gemini-pro-vision']:
+                    if model_name in available_models:
+                        working_model = model_name
+                        break
+                
+                if working_model:
+                    url = f"https://generativelanguage.googleapis.com/v1/models/{working_model}:generateContent?key={api_key}"
+                else:
+                    return f"❌ No compatible Gemini models found. Available models: {', '.join(available_models[:5])}..."
+            else:
+                return f"❌ Failed to list Gemini models. Status: {models_response.status_code}"
+            
             headers = {
                 "Content-Type": "application/json"
             }
@@ -1855,33 +1876,18 @@ Provide step-by-step technical details while maintaining educational context and
                     "parts": [{
                         "text": combined_message
                     }]
-                }],
-                "generationConfig": {
-                    "temperature": 0.7,
-                    "maxOutputTokens": 2000
-                }
+                }]
             }
             
-            response = requests.post(url, json=payload, headers=headers, timeout=30)
+            response = requests.post(url, headers=headers, json=payload, timeout=30)
             response.raise_for_status()
             
             result = response.json()
             ai_response = result['candidates'][0]['content']['parts'][0]['text']
             
-            return f"🤖 IBLU (Gemini 1.5 Flash):\n\n{ai_response}"
+            return f"🤖 IBLU (Gemini):\n\n{ai_response}"
             
         except requests.exceptions.HTTPError as e:
-            # Try fallback to gemini-pro-vision if gemini-pro fails
-            if "404" in str(e) or "not found" in str(e).lower():
-                try:
-                    fallback_url = f"https://generativelanguage.googleapis.com/v1/models/gemini-pro-vision:generateContent?key={api_key}"
-                    response = requests.post(fallback_url, headers=headers, json=payload, timeout=30)
-                    response.raise_for_status()
-                    result = response.json()
-                    ai_response = result['candidates'][0]['content']['parts'][0]['text']
-                    return f"🤖 IBLU (Gemini Pro Vision):\n\n{ai_response}"
-                except:
-                    pass
             return f"❌ Gemini API Error: {e}\n\n💡 Response: {e.response.text if hasattr(e, 'response') else 'No details'}\n\n🔑 Check your API key at https://aistudio.google.com/app/apikey"
         except Exception as e:
             return f"❌ Gemini API Error: {e}\n\n💡 Check your API key at https://aistudio.google.com/app/apikey"
