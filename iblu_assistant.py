@@ -4426,38 +4426,96 @@ Provide step-by-step technical details while maintaining educational context and
         
         results = []
         
-        # Create overall progress tracker
-        overall_progress = ConfigurationProgress(total_steps=100, prefix="🚀 All Models", config_type="model")
-        
-        try:
-            # Step 1-10: Initialize installation
-            overall_progress.update(5, "Initializing all model installations")
-            time.sleep(0.5)
+        # Create Rich progress tracker for high-definition display
+        if RICH_AVAILABLE:
+            from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TimeRemainingColumn, TimeElapsedColumn
             
-            # Step 11-35: Install Gemini
-            overall_progress.update(15, "Installing Gemini model...")
-            gemini_result = self.install_gemini_local()
-            results.append(f"🌟 Gemini: {gemini_result}")
-            overall_progress.update(35, "Gemini installation complete")
+            with Progress(
+                SpinnerColumn(),
+                TextColumn("[bold blue]{task.description}"),
+                BarColumn(bar_width=40, complete_style="bright_green", finished_style="bold green"),
+                TextColumn("[progress.percentage]{task.percentage:>3.1f}%"),
+                TimeRemainingColumn(),
+                TimeElapsedColumn(),
+                console=console,
+                transient=False
+            ) as progress:
+                # Create main task
+                main_task = progress.add_task("🚀 Installing All Models", total=100)
+                
+                try:
+                    # Step 1-10: Initialize installation
+                    progress.update(main_task, advance=5, description="🚀 Initializing all model installations")
+                    time.sleep(0.5)
+                    
+                    # Step 11-35: Install Gemini
+                    progress.update(main_task, advance=10, description="🌟 Installing Gemini model...")
+                    gemini_result = self.install_gemini_local()
+                    results.append(f"🌟 Gemini: {gemini_result}")
+                    progress.update(main_task, advance=20, description="✅ Gemini installation complete")
+                    
+                    # Step 36-60: Install Llama
+                    progress.update(main_task, advance=5, description="🦙 Installing Llama model...")
+                    llama_result = self.install_llama_local()
+                    results.append(f"🦙 Llama: {llama_result}")
+                    progress.update(main_task, advance=20, description="✅ Llama installation complete")
+                    
+                    # Step 61-85: Install Mistral Dolphin
+                    progress.update(main_task, advance=5, description="🐬 Installing Mistral Dolphin model...")
+                    mistral_result = self.install_mistral_dolphin_local()
+                    results.append(f"🐬 Mistral Dolphin: {mistral_result}")
+                    progress.update(main_task, advance=20, description="✅ Mistral Dolphin installation complete")
+                    
+                    # Step 86-100: Final verification
+                    progress.update(main_task, advance=5, description="🔍 Verifying all installations...")
+                    time.sleep(1.0)
+                    progress.update(main_task, advance=10, description="🎉 Finalizing setup...")
+                    time.sleep(0.5)
+                    
+                    # Complete the progress
+                    progress.update(main_task, completed=100, description="🎊 All models installed successfully!")
+                    time.sleep(1.0)
+                    
+                except Exception as e:
+                    progress.update(main_task, description=f"❌ Installation failed: {e}")
+                    return f"❌ Installation error: {e}"
+        else:
+            # Fallback to ConfigurationProgress if Rich is not available
+            overall_progress = ConfigurationProgress(total_steps=100, prefix="🚀 All Models", config_type="model")
             
-            # Step 36-60: Install Llama
-            overall_progress.update(40, "Installing Llama model...")
-            llama_result = self.install_llama_local()
-            results.append(f"🦙 Llama: {llama_result}")
-            overall_progress.update(60, "Llama installation complete")
-            
-            # Step 61-85: Install Mistral Dolphin
-            overall_progress.update(65, "Installing Mistral Dolphin model...")
-            mistral_result = self.install_mistral_dolphin_local()
-            results.append(f"🐬 Mistral Dolphin: {mistral_result}")
-            overall_progress.update(85, "Mistral Dolphin installation complete")
-            
-            # Step 86-100: Final verification
-            overall_progress.update(90, "Verifying all installations...")
-            time.sleep(1.0)
-            overall_progress.update(95, "Finalizing setup...")
-            time.sleep(0.5)
-            overall_progress.finish("All models installed successfully!")
+            try:
+                # Step 1-10: Initialize installation
+                overall_progress.update(5, "Initializing all model installations")
+                time.sleep(0.5)
+                
+                # Step 11-35: Install Gemini
+                overall_progress.update(15, "Installing Gemini model...")
+                gemini_result = self.install_gemini_local()
+                results.append(f"🌟 Gemini: {gemini_result}")
+                overall_progress.update(35, "Gemini installation complete")
+                
+                # Step 36-60: Install Llama
+                overall_progress.update(40, "Installing Llama model...")
+                llama_result = self.install_llama_local()
+                results.append(f"🦙 Llama: {llama_result}")
+                overall_progress.update(60, "Llama installation complete")
+                
+                # Step 61-85: Install Mistral Dolphin
+                overall_progress.update(65, "Installing Mistral Dolphin model...")
+                mistral_result = self.install_mistral_dolphin_local()
+                results.append(f"🐬 Mistral Dolphin: {mistral_result}")
+                overall_progress.update(85, "Mistral Dolphin installation complete")
+                
+                # Step 86-100: Final verification
+                overall_progress.update(90, "Verifying all installations...")
+                time.sleep(1.0)
+                overall_progress.update(95, "Finalizing setup...")
+                time.sleep(0.5)
+                overall_progress.finish("All models installed successfully!")
+                
+            except Exception as e:
+                overall_progress.finish("Installation failed")
+                return f"❌ Installation error: {e}"
             
             # Show results summary
             if COLORAMA_AVAILABLE:
@@ -4482,10 +4540,6 @@ Provide step-by-step technical details while maintaining educational context and
                     print(f"• {result}")
             
             return "✅ All local model installations completed!"
-            
-        except Exception as e:
-            overall_progress.finish("Installation failed")
-            return f"❌ Installation error: {e}"
     
     def list_and_select_llama_models(self) -> str:
         """List available Llama models and allow selection"""
