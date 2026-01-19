@@ -1858,7 +1858,7 @@ Provide step-by-step technical details while maintaining educational context and
                         break
                 
                 if working_model:
-                    url = f"https://generativelanguage.googleapis.com/v1/models/{working_model}:generateContent?key={api_key}"
+                    url = f"https://generativelanguage.googleapis.com/v1/{working_model}:generateContent?key={api_key}"
                 else:
                     return f"❌ No compatible Gemini models found. Available models: {', '.join(available_models[:5])}..."
             else:
