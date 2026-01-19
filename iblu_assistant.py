@@ -1852,7 +1852,7 @@ Provide step-by-step technical details while maintaining educational context and
                 
                 # Try to find a working model
                 working_model = None
-                for model_name in ['gemini-1.5-flash', 'gemini-1.5-pro', 'gemini-pro', 'gemini-pro-vision']:
+                for model_name in ['gemini-2.5-flash', 'gemini-2.5-pro', 'gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-pro', 'gemini-pro-vision']:
                     if model_name in available_models:
                         working_model = model_name
                         break
