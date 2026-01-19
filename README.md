@@ -12,15 +12,6 @@ sudo ./install_hexstrike_tools.sh  # Install HexStrike tools
 python3 iblu_assistant.py
 ```
 
-That's it! 🎉
-
-## ✨ **Enhanced Features:**
-
-### 🎨 **Professional ASCII Banner**
-- Custom skull and crossbones design
-- Complete platform overview
-- Professional cybersecurity theme
-
 ### 💡 **Intelligent Command System**
 - **50+ HexStrike security tools** integrated
 - **Tab completion** for all commands
