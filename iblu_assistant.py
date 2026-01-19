@@ -552,7 +552,10 @@ class IBLUCommandHelper:
             "status": {"description": "Show status", "usage": "status"},
             "scan": {"description": "Security scan", "usage": "scan <target>"},
             "payload": {"description": "Generate payload", "usage": "payload <type>"},
-            "autopentest": {"description": "Auto pentest", "usage": "autopentest <target>"}
+            "autopentest": {"description": "Auto pentest", "usage": "autopentest <target>"},
+            "install_gemini": {"description": "Install Gemini model locally", "usage": "install_gemini"},
+            "install_llama": {"description": "Install Llama model locally", "usage": "install_llama"},
+            "install_models": {"description": "Install all local models", "usage": "install_models"}
         }
 
 class KaliGPTMCPAssistant:
@@ -1414,6 +1417,12 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
             return "🧹 Screen cleared."
         elif cmd == "status":
             return self.get_status()
+        elif cmd == "install_gemini":
+            return self.install_gemini_local()
+        elif cmd == "install_llama":
+            return self.install_llama_local()
+        elif cmd == "install_models":
+            return self.install_all_local_models()
         
         # Check if it's a tool command (e.g., /nmap, /sqlmap)
         if cmd in self.command_helper.hexstrike_tools:
@@ -1979,6 +1988,101 @@ Provide step-by-step technical details while maintaining educational context and
         status += f"📝 Command History: {len(self.command_history)} commands\n"
         status += f"🔗 MCP Connection: {'Connected' if self.mcp_connected else 'Disconnected'}\n"
         return status
+    
+    def install_gemini_local(self) -> str:
+        """Install Gemini model locally"""
+        print(f"\n{self._colorize('🔧 Installing Gemini Model Locally', Fore.CYAN)}")
+        print("=" * 50)
+        
+        try:
+            # Check if Docker is installed
+            docker_check = subprocess.run(['docker', '--version'], capture_output=True, text=True)
+            if docker_check.returncode != 0:
+                return f"❌ Docker not found. Install Docker first: https://docs.docker.com/get-docker/"
+            
+            print("✅ Docker found")
+            
+            # Pull Gemini model image
+            print("📥 Pulling Gemini model image...")
+            pull_cmd = subprocess.run(['docker', 'pull', 'ghcr.io/google/generative-ai/gemini:latest'], 
+                                      capture_output=True, text=True)
+            
+            if pull_cmd.returncode == 0:
+                print("✅ Gemini model image pulled successfully")
+                print(f"\n{self._colorize('🚀 To run Gemini locally:', Fore.GREEN)}")
+                print("docker run -p 8080:8080 ghcr.io/google/generative-ai/gemini:latest")
+                print(f"\n{self._colorize('💡 Then update config.json:', Fore.YELLOW)}")
+                print('"gemini_keys": ["http://localhost:8080"]')
+                return "✅ Gemini model installed locally!"
+            else:
+                return f"❌ Failed to pull Gemini image: {pull_cmd.stderr}"
+                
+        except Exception as e:
+            return f"❌ Installation error: {e}"
+    
+    def install_llama_local(self) -> str:
+        """Install Llama model locally via Ollama"""
+        print(f"\n{self._colorize('🔧 Installing Llama Model Locally via Ollama', Fore.CYAN)}")
+        print("=" * 50)
+        
+        try:
+            # Check if Ollama is installed
+            ollama_check = subprocess.run(['which', 'ollama'], capture_output=True, text=True)
+            
+            if ollama_check.returncode != 0:
+                print("📦 Installing Ollama...")
+                install_cmd = subprocess.run(['curl', '-fsSL', 'https://ollama.ai/install.sh', '|', 'sh'], 
+                                           shell=True, capture_output=True, text=True)
+                
+                if install_cmd.returncode != 0:
+                    return f"❌ Failed to install Ollama: {install_cmd.stderr}"
+                
+                print("✅ Ollama installed successfully")
+            else:
+                print("✅ Ollama already installed")
+            
+            # Start Ollama service
+            print("🚀 Starting Ollama service...")
+            serve_cmd = subprocess.run(['ollama', 'serve'], capture_output=True, text=True, timeout=5)
+            
+            # Pull Llama model
+            print("📥 Pulling Llama 2 model...")
+            pull_cmd = subprocess.run(['ollama', 'pull', 'llama2'], capture_output=True, text=True)
+            
+            if pull_cmd.returncode == 0:
+                print("✅ Llama 2 model pulled successfully")
+                print(f"\n{self._colorize('🚀 Ollama is running on localhost:11434', Fore.GREEN)}")
+                print(f"\n{self._colorize('💡 Update config.json:', Fore.YELLOW)}")
+                print('"llama_keys": ["local"]')
+                return "✅ Llama model installed locally!"
+            else:
+                return f"❌ Failed to pull Llama model: {pull_cmd.stderr}"
+                
+        except Exception as e:
+            return f"❌ Installation error: {e}"
+    
+    def install_all_local_models(self) -> str:
+        """Install all local models"""
+        print(f"\n{self._colorize('🔧 Installing All Local Models', Fore.CYAN)}")
+        print("=" * 50)
+        
+        results = []
+        
+        # Install Gemini
+        gemini_result = self.install_gemini_local()
+        results.append(f"Gemini: {gemini_result}")
+        
+        print("\n" + "="*50)
+        
+        # Install Llama
+        llama_result = self.install_llama_local()
+        results.append(f"Llama: {llama_result}")
+        
+        print(f"\n{self._colorize('📊 Installation Summary:', Fore.GREEN)}")
+        for result in results:
+            print(f"• {result}")
+        
+        return "✅ All local model installations completed!"
     
     def connect_mcp(self):
         """Connect to MCP server"""
