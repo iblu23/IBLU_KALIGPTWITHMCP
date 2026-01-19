@@ -1304,7 +1304,7 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
             Provider.HUGGINGFACE: "🤗 Custom Models"
         }
 
-        # Enhanced cloud models section with vibrant colors
+        # Enhanced cloud models section - simplified and clean
         if cloud_models:
             cloud_border = f"{Fore.LIGHTBLUE_EX}┌─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}"
             cloud_title = f"{Fore.LIGHTBLUE_EX}│{Style.RESET_ALL} {Style.BRIGHT}{Back.BLUE}{Fore.WHITE}☁️ CLOUD MODELS:{Style.RESET_ALL} {Fore.LIGHTBLUE_EX}{' ' * 51}│{Style.RESET_ALL}"
@@ -1320,15 +1320,33 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
                 status_color = Fore.LIGHTGREEN_EX if api_key else Fore.LIGHTRED_EX
                 description = model_descriptions.get(provider, "General purpose")
                 
-                print(f"{Fore.LIGHTBLUE_EX}│{Style.RESET_ALL}   {Fore.BLUE}┌─ [{Style.BRIGHT}{Fore.CYAN}{i}{Style.RESET_ALL}{Fore.BLUE}] ──────────────────────────────────────────────┐{Style.RESET_ALL} {Fore.LIGHTBLUE_EX}│{Style.RESET_ALL}")
-                print(f"{Fore.LIGHTBLUE_EX}│{Style.RESET_ALL}   {Fore.BLUE}│{Style.RESET_ALL} {Style.BRIGHT}{Fore.WHITE}{provider.value.title()}{Style.RESET_ALL} - {status_color}{status_icon} {status_text}{Style.RESET_ALL} {Fore.BLUE}{' ' * (35 - len(provider.value) - len(status_text))}│{Style.RESET_ALL} {Fore.LIGHTBLUE_EX}│{Style.RESET_ALL}")
-                print(f"{Fore.LIGHTBLUE_EX}│{Style.RESET_ALL}   {Fore.BLUE}│{Style.RESET_ALL} {Fore.CYAN}▸{Style.RESET_ALL} {Fore.WHITE}{description}{Style.RESET_ALL} {Fore.BLUE}{' ' * (47 - len(description))}│{Style.RESET_ALL} {Fore.LIGHTBLUE_EX}│{Style.RESET_ALL}")
-                print(f"{Fore.LIGHTBLUE_EX}│{Style.RESET_ALL}   {Fore.BLUE}└───────────────────────────────────────────────────────┘{Style.RESET_ALL} {Fore.LIGHTBLUE_EX}│{Style.RESET_ALL}")
+                print(f"{Fore.LIGHTBLUE_EX}│{Style.RESET_ALL}   {Fore.BLUE}•{Style.RESET_ALL} {Style.BRIGHT}{Fore.WHITE}{provider.value.title()}{Style.RESET_ALL} - {status_color}{status_icon} {status_text}{Style.RESET_ALL}")
+                print(f"{Fore.LIGHTBLUE_EX}│{Style.RESET_ALL}     {Fore.CYAN}{description}{Style.RESET_ALL}")
+                if i < len(cloud_models):
+                    print(f"{Fore.LIGHTBLUE_EX}│{Style.RESET_ALL}")
             
             print(f"{Fore.LIGHTBLUE_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}")
         
-        # Enhanced local models section with vibrant colors
+        # Combined local models section with download instructions
+        all_local_models = []
+        
+        # Add Llama models
         if local_models:
+            for provider, model_name, model_size in local_models:
+                if model_name:
+                    all_local_models.append(("Llama", model_name, model_size, "🔒 Private & Secure"))
+        
+        # Add Mistral model
+        if local_mistral_available:
+            all_local_models.append(("Mistral", "mistral:latest", 4270336, "⚡ Fast & Efficient"))
+        
+        # Add Hugging Face models
+        if hf_models_available:
+            for model in hf_models_available:
+                model_name = model.get('name', 'Unknown')
+                all_local_models.append(("HuggingFace", model_name, 0, "🤗 Custom Models"))
+        
+        if all_local_models:
             local_border = f"{Fore.LIGHTGREEN_EX}┌─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}"
             local_title = f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL} {Style.BRIGHT}{Back.GREEN}{Fore.WHITE}🏠 LOCAL MODELS:{Style.RESET_ALL} {Fore.LIGHTGREEN_EX}{' ' * 51}│{Style.RESET_ALL}"
             local_border2 = f"{Fore.LIGHTGREEN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}"
@@ -1337,73 +1355,43 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
             print(f"{local_title}")
             print(f"{local_border2}")
             
-            for i, (provider, model_name, model_size) in enumerate(local_models, 1):
-                size_str = f"({model_size/1024:.1f}GB)" if model_size > 0 else "(Unknown size)"
-                status_icon = "✅" if model_name else "❌"
-                status_text = "Available" if model_name else "Not available"
-                status_color = Fore.LIGHTGREEN_EX if model_name else Fore.LIGHTRED_EX
-                description = model_descriptions.get(provider, "Local AI model")
-                
-                print(f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}   {Fore.GREEN}┌─ [{Style.BRIGHT}{Fore.CYAN}{i}{Style.RESET_ALL}{Fore.GREEN}] ──────────────────────────────────────────────┐{Style.RESET_ALL} {Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}")
-                print(f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}   {Fore.GREEN}│{Style.RESET_ALL} {Style.BRIGHT}{Fore.WHITE}{model_name}{Style.RESET_ALL} - {status_color}{status_icon} {status_text}{Style.RESET_ALL} {Style.BRIGHT}{Fore.MAGENTA}{size_str}{Style.RESET_ALL} {Fore.GREEN}{' ' * (30 - len(model_name) - len(status_text) - len(size_str))}│{Style.RESET_ALL} {Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}")
-                print(f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}   {Fore.GREEN}│{Style.RESET_ALL} {Fore.CYAN}▸{Style.RESET_ALL} {Fore.WHITE}{description}{Style.RESET_ALL} {Fore.GREEN}{' ' * (47 - len(description))}│{Style.RESET_ALL} {Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}")
-                print(f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}   {Fore.GREEN}└───────────────────────────────────────────────────────┘{Style.RESET_ALL} {Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}")
+            for i, (provider_type, model_name, model_size, description) in enumerate(all_local_models, 1):
+                size_str = f"({model_size/1024:.1f}GB)" if model_size > 0 else ""
+                print(f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}   {Fore.GREEN}•{Style.RESET_ALL} {Style.BRIGHT}{Fore.WHITE}{model_name}{Style.RESET_ALL} {Fore.MAGENTA}{size_str}{Style.RESET_ALL}")
+                print(f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}     {Fore.CYAN}{description}{Style.RESET_ALL}")
+                if i < len(all_local_models):
+                    print(f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}")
+            
+            # Add download instructions
+            print(f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}   {Style.BRIGHT}{Fore.YELLOW}📥 DOWNLOAD INSTRUCTIONS:{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}   {Fore.GREEN}•{Style.RESET_ALL} {Fore.WHITE}Llama:{Style.RESET_ALL} {Fore.CYAN}/install_llama{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}   {Fore.GREEN}•{Style.RESET_ALL} {Fore.WHITE}Mistral:{Style.RESET_ALL} {Fore.CYAN}/install_mistral{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}   {Fore.GREEN}•{Style.RESET_ALL} {Fore.WHITE}HuggingFace:{Style.RESET_ALL} {Fore.CYAN}/hf_install <model_name>{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}   {Fore.GREEN}•{Style.RESET_ALL} {Fore.WHITE}All models:{Style.RESET_ALL} {Fore.CYAN}/install_models{Style.RESET_ALL}")
             
             print(f"{Fore.LIGHTGREEN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}")
-        
-        # Enhanced local Mistral models section
-        if local_mistral_available:
-            mistral_border = f"{Fore.LIGHTMAGENTA_EX}┌─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}"
-            mistral_title = f"{Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL} {Style.BRIGHT}{Back.MAGENTA}{Fore.WHITE}🐬 LOCAL MISTRAL MODELS:{Style.RESET_ALL} {Fore.LIGHTMAGENTA_EX}{' ' * 43}│{Style.RESET_ALL}"
-            mistral_border2 = f"{Fore.LIGHTMAGENTA_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}"
+        else:
+            # Show download instructions when no local models
+            local_border = f"{Fore.LIGHTYELLOW_EX}┌─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}"
+            local_title = f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL} {Style.BRIGHT}{Back.YELLOW}{Fore.WHITE}🏠 LOCAL MODELS:{Style.RESET_ALL} {Fore.LIGHTYELLOW_EX}{' ' * 51}│{Style.RESET_ALL}"
+            local_border2 = f"{Fore.LIGHTYELLOW_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}"
             
-            print(f"\n{mistral_border}")
-            print(f"{mistral_title}")
-            print(f"{mistral_border2}")
+            print(f"\n{local_border}")
+            print(f"{local_title}")
+            print(f"{local_border2}")
             
-            # Get Mistral model details
-            try:
-                url = "http://localhost:11434/api/tags"
-                response = requests.get(url, timeout=5)
-                if response.status_code == 200:
-                    models_data = response.json()
-                    for model in models_data.get('models', []):
-                        if 'mistral' in model.get('name', '').lower():
-                            model_name = model.get('name', '')
-                            model_size = model.get('size', 0)
-                            size_str = f"({model_size/1024:.1f}GB)" if model_size > 0 else "(Unknown size)"
-                            
-                            print(f"{Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}   {Fore.MAGENTA}┌─ [{Style.BRIGHT}{Fore.CYAN}🐬{Style.RESET_ALL}{Fore.MAGENTA}] ──────────────────────────────────────────────┐{Style.RESET_ALL} {Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}")
-                            print(f"{Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}   {Fore.MAGENTA}│{Style.RESET_ALL} {Style.BRIGHT}{Fore.WHITE}{model_name}{Style.RESET_ALL} - {Fore.LIGHTGREEN_EX}✅ Available{Style.RESET_ALL} {Style.BRIGHT}{Fore.CYAN}{size_str}{Style.RESET_ALL} {Fore.MAGENTA}{' ' * (30 - len(model_name) - len(size_str))}│{Style.RESET_ALL} {Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}")
-                            print(f"{Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}   {Fore.MAGENTA}│{Style.RESET_ALL} {Fore.CYAN}▸{Style.RESET_ALL} {Fore.WHITE}⚡ Fast & Efficient{Style.RESET_ALL} {Fore.MAGENTA}{' ' * (35)}│{Style.RESET_ALL} {Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}")
-                            print(f"{Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}   {Fore.MAGENTA}└───────────────────────────────────────────────────────┘{Style.RESET_ALL} {Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}")
-                            break
-            except:
-                pass
+            print(f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}   {Fore.YELLOW}❌ No local models installed{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}   {Style.BRIGHT}{Fore.YELLOW}📥 DOWNLOAD INSTRUCTIONS:{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}   {Fore.YELLOW}•{Style.RESET_ALL} {Fore.WHITE}Llama models:{Style.RESET_ALL} {Fore.CYAN}/install_llama{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}   {Fore.YELLOW}•{Style.RESET_ALL} {Fore.WHITE}Mistral Dolphin:{Style.RESET_ALL} {Fore.CYAN}/install_mistral{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}   {Fore.YELLOW}•{Style.RESET_ALL} {Fore.WHITE}HuggingFace models:{Style.RESET_ALL} {Fore.CYAN}/hf_install <model_name>{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}   {Fore.YELLOW}•{Style.RESET_ALL} {Fore.WHITE}Install all:{Style.RESET_ALL} {Fore.CYAN}/install_models{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}   {Fore.WHITE}💡 Local models provide privacy and offline access{Style.RESET_ALL}")
             
-            print(f"{Fore.LIGHTMAGENTA_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}")
-        
-        # Enhanced Hugging Face models section
-        if hf_models_available:
-            hf_border = f"{Fore.LIGHTBLUE_EX}┌─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}"
-            hf_title = f"{Fore.LIGHTBLUE_EX}│{Style.RESET_ALL} {Style.BRIGHT}{Back.BLUE}{Fore.WHITE}🤗 HUGGING FACE MODELS:{Style.RESET_ALL} {Fore.LIGHTBLUE_EX}{' ' * 45}│{Style.RESET_ALL}"
-            hf_border2 = f"{Fore.LIGHTBLUE_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}"
-            
-            print(f"\n{hf_border}")
-            print(f"{hf_title}")
-            print(f"{hf_border2}")
-            
-            for i, model in enumerate(hf_models_available, 1):
-                model_name = model.get('name', 'Unknown')
-                model_type = model.get('type', 'Unknown')
-                installed_at = model.get('installed_at', 'Unknown')
-                
-                print(f"{Fore.LIGHTBLUE_EX}│{Style.RESET_ALL}   {Fore.BLUE}┌─ [{Style.BRIGHT}{Fore.CYAN}🤗{Style.RESET_ALL}{Fore.BLUE}] ──────────────────────────────────────────────┐{Style.RESET_ALL} {Fore.LIGHTBLUE_EX}│{Style.RESET_ALL}")
-                print(f"{Fore.LIGHTBLUE_EX}│{Style.RESET_ALL}   {Fore.BLUE}│{Style.RESET_ALL} {Style.BRIGHT}{Fore.WHITE}{model_name}{Style.RESET_ALL} - {Fore.LIGHTGREEN_EX}✅ Available{Style.RESET_ALL} {Fore.BLUE}{' ' * (35 - len(model_name))}│{Style.RESET_ALL} {Fore.LIGHTBLUE_EX}│{Style.RESET_ALL}")
-                print(f"{Fore.LIGHTBLUE_EX}│{Style.RESET_ALL}   {Fore.BLUE}│{Style.RESET_ALL} {Fore.CYAN}▸{Style.RESET_ALL} {Fore.WHITE}🤗 Custom Models{Style.RESET_ALL} {Fore.BLUE}{' ' * (35)}│{Style.RESET_ALL} {Fore.LIGHTBLUE_EX}│{Style.RESET_ALL}")
-                print(f"{Fore.LIGHTBLUE_EX}│{Style.RESET_ALL}   {Fore.BLUE}└───────────────────────────────────────────────────────┘{Style.RESET_ALL} {Fore.LIGHTBLUE_EX}│{Style.RESET_ALL}")
-            
-            print(f"{Fore.LIGHTBLUE_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTYELLOW_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}")
         
         # Enhanced capabilities section with vibrant colors
         cap_border = f"{Fore.LIGHTYELLOW_EX}┌─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}"
