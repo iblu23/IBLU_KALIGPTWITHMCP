@@ -1624,9 +1624,10 @@ Provide step-by-step technical details while maintaining educational context and
             system_prompt = self.SYSTEM_PROMPT
             user_message = message
         
-        # Get all available providers with configured keys
+        # Get all available providers with configured keys, prioritizing Gemini
+        provider_priority = [Provider.GEMINI, Provider.PERPLEXITY, Provider.OPENAI, Provider.MISTRAL]
         available_providers = []
-        for provider in Provider:
+        for provider in provider_priority:
             provider_keys = self.get_provider_keys(provider)
             if provider_keys:
                 available_providers.append((provider, provider_keys[0]))
