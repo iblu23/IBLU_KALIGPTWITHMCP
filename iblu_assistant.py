@@ -374,36 +374,198 @@ class InstallationProgress:
         self.finish(f"{item_name} installed successfully")
 
 class Spinner:
-    """Loading spinner for AI thinking animation"""
-    def __init__(self, message="🤖 IBLU is thinking"):
-        self.spinner_chars = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏']
-        self.action_words = ['diving', 'flying', 'surfing', 'jumping', 'dancing', 'running', 'swimming', 'climbing', 'exploring', 'hacking', 'analyzing', 'scanning', 'processing', 'computing', 'cracking', 'breaking', 'solving', 'hunting', 'searching', 'digging']
+    """Loading spinner for AI thinking animation with colorful themes"""
+    
+    def __init__(self, message="🤖 IBLU is thinking", model_provider=None):
+        self.model_provider = model_provider
         self.message = message
         self.running = False
         self.current_word_index = 0
         self.last_word_change = time.time()
         self.thread = None
+        
+        # Model-specific spinner themes
+        self.model_themes = {
+            Provider.OPENAI: {
+                'spinners': ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'],
+                'colors': [Fore.LIGHTGREEN_EX, Fore.LIGHTBLUE_EX, Fore.LIGHTCYAN_EX],
+                'actions': ['analyzing', 'processing', 'computing', 'reasoning', 'thinking', 'calculating', 'evaluating', 'considering', 'examining', 'investigating'],
+                'prefix': '🤖 OpenAI'
+            },
+            Provider.GEMINI: {
+                'spinners': ['🌟', '⭐', '✨', '💫', '🌠', '🌌', '☄️', '🪐', '🌙', '🌕'],
+                'colors': [Fore.LIGHTMAGENTA_EX, Fore.LIGHTBLUE_EX, Fore.LIGHTYELLOW_EX],
+                'actions': ['dreaming', 'imagining', 'creating', 'envisioning', 'designing', 'crafting', 'building', 'constructing', 'formulating', 'developing'],
+                'prefix': '🌟 Gemini'
+            },
+            Provider.MISTRAL: {
+                'spinners': ['🔥', '💥', '⚡', '🌟', '✨', '💫', '🔥', '⚡', '💥', '🌈'],
+                'colors': [Fore.LIGHTRED_EX, Fore.LIGHTYELLOW_EX, Fore.LIGHTMAGENTA_EX],
+                'actions': ['accelerating', 'optimizing', 'enhancing', 'improving', 'refining', 'perfecting', 'streamlining', 'boosting', 'amplifying', 'magnifying'],
+                'prefix': '🔥 Mistral'
+            },
+            Provider.LLAMA: {
+                'spinners': ['🦙', '🌿', '🍃', '🌱', '🌾', '🌳', '🌲', '🎋', '🌴', '🎍'],
+                'colors': [Fore.LIGHTGREEN_EX, Fore.LIGHTYELLOW_EX, Fore.LIGHTCYAN_EX],
+                'actions': ['grazing', 'wandering', 'exploring', 'roaming', 'journeying', 'adventuring', 'discovering', 'navigating', 'trekking', 'marching'],
+                'prefix': '🦙 Llama'
+            },
+            Provider.GEMINI_CLI: {
+                'spinners': ['💎', '💠', '🔷', '🔶', '🔸', '🔹', '🔺', '🔻', '💠', '💎'],
+                'colors': [Fore.LIGHTBLUE_EX, Fore.LIGHTCYAN_EX, Fore.LIGHTMAGENTA_EX],
+                'actions': ['crystallizing', 'polishing', 'sharpening', 'refining', 'perfecting', 'enhancing', 'optimizing', 'clarifying', 'illuminating', 'brillianting'],
+                'prefix': '💎 Gemini CLI'
+            },
+            Provider.HUGGINGFACE: {
+                'spinners': ['🤗', '💕', '💖', '💗', '💓', '💝', '💘', '💞', '💟', '❤️'],
+                'colors': [Fore.LIGHTRED_EX, Fore.LIGHTMAGENTA_EX, Fore.LIGHTYELLOW_EX],
+                'actions': ['hugging', 'caring', 'embracing', 'supporting', 'nurturing', 'comforting', 'helping', 'assisting', 'guiding', 'protecting'],
+                'prefix': '🤗 HuggingFace'
+            }
+        }
+        
+        # Default theme if no model specified
+        self.default_theme = {
+            'spinners': ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'],
+            'colors': [Fore.LIGHTCYAN_EX, Fore.LIGHTMAGENTA_EX, Fore.LIGHTYELLOW_EX],
+            'actions': ['diving', 'flying', 'surfing', 'jumping', 'dancing', 'running', 'swimming', 'climbing', 'exploring', 'hacking'],
+            'prefix': '🤖 IBLU'
+        }
+        
+        # Get current theme
+        self.current_theme = self.model_themes.get(model_provider, self.default_theme)
+        
+        # Theme rotation
+        self.theme_rotation = 0
+        self.color_rotation = 0
+        self.spinner_rotation = 0
+        
+        # Progress bar for thinking visualization
+        self.thinking_progress = 0
+        self.max_thinking_progress = 100
+        self.glow_chars = ['█', '▓', '▒', '░', '▄', '▀', '■', '□', '▪', '▫', '◼', '◻']
+        self.glow_phase = 0
+    
+    def get_current_theme(self):
+        """Get current theme with rotation"""
+        if self.model_provider and self.model_provider in self.model_themes:
+            # Rotate between different themes for the same model
+            themes = [self.model_themes[self.model_provider]]
+            
+            # Add some variation themes
+            if self.model_provider == Provider.OPENAI:
+                themes.extend([
+                    {'spinners': ['🧠', '💡', '🔮', '🎯', '🎲', '🎪', '🎨', '🎭', '🎪', '🎯'], 'colors': [Fore.LIGHTGREEN_EX, Fore.LIGHTBLUE_EX], 'actions': self.current_theme['actions'], 'prefix': '🧠 OpenAI'},
+                    {'spinners': ['⚛️', '🔬', '🧪', '🔭', '🧮', '📐', '📊', '📈', '📉', '🔢'], 'colors': [Fore.LIGHTCYAN_EX, Fore.LIGHTGREEN_EX], 'actions': self.current_theme['actions'], 'prefix': '⚛️ OpenAI'}
+                ])
+            elif self.model_provider == Provider.GEMINI:
+                themes.extend([
+                    {'spinners': ['🎨', '🖌️', '🖼️', '🎭', '🎪', '🌈', '✨', '💫', '🌟', '⭐'], 'colors': [Fore.LIGHTMAGENTA_EX, Fore.LIGHTYELLOW_EX], 'actions': self.current_theme['actions'], 'prefix': '🎨 Gemini'},
+                    {'spinners': ['🔮', '🕯️', '🌠', '⭐', '💫', '✨', '🌟', '🌙', '🌕', '☀️'], 'colors': [Fore.LIGHTBLUE_EX, Fore.LIGHTMAGENTA_EX], 'actions': self.current_theme['actions'], 'prefix': '🔮 Gemini'}
+                ])
+            
+            current_theme = themes[self.theme_rotation % len(themes)]
+            self.theme_rotation += 1
+            return current_theme
+        else:
+            return self.default_theme
+    
+    def create_thinking_progress_bar(self, progress_percent):
+        """Create a colorful progress bar for thinking visualization"""
+        bar_width = 25
+        filled_length = int(bar_width * progress_percent / 100)
+        
+        # Get current theme colors
+        theme = self.get_current_theme()
+        colors = theme['colors']
+        
+        # Create rainbow progress bar
+        bar = ""
+        for i in range(bar_width):
+            if i < filled_length:
+                # Use different characters for glowy effect
+                char_idx = (i + self.glow_phase) % len(self.glow_chars)
+                char = self.glow_chars[char_idx]
+                
+                # Add color based on position for rainbow effect
+                color_idx = (i * len(colors)) // bar_width
+                color = colors[color_idx]
+                
+                if COLORAMA_AVAILABLE:
+                    bar += f"{color}{Style.BRIGHT}{char}{Style.RESET_ALL}"
+                else:
+                    bar += char
+            else:
+                bar += "░"
+        
+        return bar
     
     def spin(self):
-        """Spinner animation loop with random action words"""
+        """Enhanced spinner animation with colorful themes and progress bar"""
         idx = 0
+        progress_idx = 0
+        
         while self.running:
+            # Get current theme
+            theme = self.get_current_theme()
+            spinners = theme['spinners']
+            colors = theme['colors']
+            actions = theme['actions']
+            prefix = theme['prefix']
+            
             # Change word every 1 second
             current_time = time.time()
             if current_time - self.last_word_change >= 1.0:
-                self.current_word_index = random.randint(0, len(self.action_words) - 1)
+                self.current_word_index = random.randint(0, len(actions) - 1)
                 self.last_word_change = current_time
             
-            current_word = self.action_words[self.current_word_index]
-            sys.stdout.write(f'\r{self.spinner_chars[idx]} 🤖 IBLU is {current_word}...')
+            current_action = actions[self.current_word_index]
+            
+            # Update progress visualization
+            self.thinking_progress = (self.thinking_progress + 2) % self.max_thinking_progress
+            progress_bar = self.create_thinking_progress_bar(self.thinking_progress)
+            
+            # Update glow phase
+            self.glow_phase = (self.glow_phase + 1) % len(self.glow_chars)
+            
+            # Get spinner and color
+            spinner = spinners[idx % len(spinners)]
+            color = colors[self.color_rotation % len(colors)]
+            
+            # Build colorful thinking line
+            if COLORAMA_AVAILABLE:
+                colorful_spinner = f"{color}{Style.BRIGHT}{spinner}{Style.RESET_ALL}"
+                colorful_prefix = f"{Fore.LIGHTWHITE_EX}{Style.BRIGHT}{prefix}{Style.RESET_ALL}"
+                colorful_action = f"{Fore.LIGHTCYAN_EX}{Style.BRIGHT}{current_action}{Style.RESET_ALL}"
+                colorful_progress = f"{Fore.LIGHTYELLOW_EX}{Style.BRIGHT}{self.thinking_progress:3d}%{Style.RESET_ALL}"
+            else:
+                colorful_spinner = spinner
+                colorful_prefix = prefix
+                colorful_action = current_action
+                colorful_progress = f"{self.thinking_progress:3d}%"
+            
+            # Build full thinking line
+            thinking_line = f"\r{colorful_spinner} {colorful_prefix} is {colorful_action} [{progress_bar}] {colorful_progress}..."
+            
+            sys.stdout.write(thinking_line)
             sys.stdout.flush()
-            idx = (idx + 1) % len(self.spinner_chars)
+            
+            # Update indices
+            idx = (idx + 1) % len(spinners)
+            progress_idx = (progress_idx + 1) % 100
+            
+            # Change color every few updates
+            if idx % 8 == 0:
+                self.color_rotation = (self.color_rotation + 1) % len(colors)
+            
             time.sleep(0.1)
-        sys.stdout.write('\r' + ' ' * (len(self.message) + 10) + '\r')
+        
+        # Clean up
+        sys.stdout.write('\r' + ' ' * (len(self.message) + 50) + '\r')
         sys.stdout.flush()
     
     def start(self):
-        """Start the spinner"""
+        """Start the enhanced spinner"""
         self.running = True
         self.thread = threading.Thread(target=self.spin)
         self.thread.daemon = True
@@ -2897,17 +3059,29 @@ Provide step-by-step technical details while maintaining educational context and
             return False
     
     def call_single_provider(self, provider: Provider, system_prompt: str, user_message: str, api_key: str) -> str:
-        """Call a single AI provider with progress animation"""
+        """Call a single AI provider with model-specific progress animation"""
         if RICH_AVAILABLE:
-            # Use rich progress bar with colors
+            # Get model-specific theme for rich progress
+            model_themes = {
+                Provider.OPENAI: {"style": "bold green", "emoji": "🤖", "name": "OpenAI"},
+                Provider.GEMINI: {"style": "bold magenta", "emoji": "🌟", "name": "Gemini"},
+                Provider.MISTRAL: {"style": "bold red", "emoji": "🔥", "name": "Mistral"},
+                Provider.LLAMA: {"style": "bold cyan", "emoji": "🦙", "name": "Llama"},
+                Provider.GEMINI_CLI: {"style": "bold blue", "emoji": "💎", "name": "Gemini CLI"},
+                Provider.HUGGINGFACE: {"style": "bold yellow", "emoji": "🤗", "name": "HuggingFace"}
+            }
+            
+            theme = model_themes.get(provider, {"style": "bold cyan", "emoji": "🤖", "name": "IBLU"})
+            
+            # Use rich progress bar with model-specific colors
             with Progress(
-                SpinnerColumn(style="bold cyan"),
-                TextColumn("[bold magenta]{task.description}"),
-                BarColumn(complete_style="bold blue", pulse_style="bold yellow"),
+                SpinnerColumn(style=theme["style"]),
+                TextColumn(f"[{theme['style']}]{theme['emoji']} {{task.description}}"),
+                BarColumn(complete_style=theme["style"], pulse_style="bold yellow"),
                 TimeElapsedColumn(),
                 console=console
             ) as progress:
-                task = progress.add_task(f"[bold cyan]🤖 IBLU is thinking...", total=None)
+                task = progress.add_task(f"[{theme['style']}]{theme['name']} is thinking...", total=None)
                 
                 if provider == Provider.OPENAI:
                     result = self.call_openai_api(system_prompt, user_message, api_key)
@@ -2925,8 +3099,8 @@ Provide step-by-step technical details while maintaining educational context and
                 progress.update(task, completed=True)
                 return result
         else:
-            # Fallback to simple spinner
-            spinner = Spinner(f"🤖 IBLU is thinking")
+            # Fallback to simple spinner with model-specific theme
+            spinner = Spinner(f"🤖 IBLU is thinking", model_provider=provider)
             spinner.start()
             
             try:
