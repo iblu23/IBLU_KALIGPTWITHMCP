@@ -1842,7 +1842,7 @@ Provide step-by-step technical details while maintaining educational context and
         try:
             import requests
             
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key={api_key}"
+            url = f"https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key={api_key}"
             headers = {
                 "Content-Type": "application/json"
             }
@@ -1874,7 +1874,7 @@ Provide step-by-step technical details while maintaining educational context and
             # Try fallback to gemini-pro-vision if gemini-pro fails
             if "404" in str(e) or "not found" in str(e).lower():
                 try:
-                    fallback_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateContent?key={api_key}"
+                    fallback_url = f"https://generativelanguage.googleapis.com/v1/models/gemini-pro-vision:generateContent?key={api_key}"
                     response = requests.post(fallback_url, headers=headers, json=payload, timeout=30)
                     response.raise_for_status()
                     result = response.json()
