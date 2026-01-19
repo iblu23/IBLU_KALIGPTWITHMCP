@@ -313,6 +313,34 @@ def load_config():
 
 def main():
     """Main function"""
+    # Display custom banner
+    banner = """
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║   ☠️  ╦ ╦╔═╗╔═╗╦╔═  ╔╦╗╦ ╦╔═╗      ╦ ╦╔═╗╔═╗╦  ╔╦╗   ⚡                     ║
+║      ╠═╣╠═╣║  ╠╩╗   ║ ╠═╣║╣       ║║║║ ║╠╦╝║   ║║                          ║
+║      ╩ ╩╩ ╩╚═╝╩ ╩   ╩ ╩ ╩╚═╝      ╚╩╝╚═╝╩╚═╩═╝═╩╝   🧠                     ║
+║                                                                              ║
+║        🔥 IBLU PROFESSIONAL HACKING ASSISTANT v2.0 🔥                        ║
+║        🐍 Advanced Python Cybersecurity Toolkit                              ║
+║                                                                              ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║  🧩 PLATFORM                                                                  ║
+║  • 🤖 Multiple AI providers (Perplexity, OpenAI, Gemini, Mistral)             ║
+║  • 🔗 HexStrike MCP integration (150+ security tools)                         ║
+║                                                                              ║
+║  🚀 CAPABILITIES                                                              ║
+║  • 🛡️ 100+ professional security commands                                     ║
+║  • 📡 Real-time vulnerability assessment                                      ║
+║  • 💣 Automated payload generation                                            ║
+║  • 🗺️ Network reconnaissance & mapping                                        ║
+║  • 📊 Reporting & documentation                                               ║
+║                                                                              ║
+║  ⚠️ AUTHORIZED USE ONLY — professional security testing platform              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+"""
+    print(banner)
+    
     print("🔥 IBLU PROFESSIONAL HACKING ASSISTANT v2.3")
     print("=" * 60)
     print("🐍 Advanced Python Cybersecurity Toolkit")
