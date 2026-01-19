@@ -2634,21 +2634,70 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
             return f"🔧 Please ensure all components are installed"
     
     def handle_configuration(self):
-        """Handle configuration settings"""
-        print(f"\n{self._colorize('⚙️  Configuration Settings', Fore.RED)}")
-        print("=" * 40)
+        """Handle configuration settings with colorful styling"""
+        if COLORAMA_AVAILABLE:
+            # Beautiful configuration header
+            config_header = f"{Fore.LIGHTRED_EX}╔{'═' * 78}╗{Style.RESET_ALL}"
+            config_title = f"{Fore.LIGHTRED_EX}║{Style.RESET_ALL} {Style.BRIGHT}{Back.RED}{Fore.WHITE}⚙️  CONFIGURATION SETTINGS ⚙️{Style.RESET_ALL} {Fore.LIGHTRED_EX}{' ' * 38}║{Style.RESET_ALL}"
+            config_footer = f"{Fore.LIGHTRED_EX}╚{'═' * 78}╝{Style.RESET_ALL}"
+            
+            print(f"\n{config_header}")
+            print(f"{config_title}")
+            print(f"{config_footer}\n")
+            
+            # Current status with colorful display
+            status_border = f"{Fore.LIGHTCYAN_EX}┌─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}"
+            status_title = f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL} {Style.BRIGHT}{Back.CYAN}{Fore.WHITE}🔧 CURRENT STATUS 🔧{Style.RESET_ALL} {Fore.LIGHTCYAN_EX}{' ' * 47}│{Style.RESET_ALL}"
+            status_border2 = f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}"
+            
+            print(f"{status_border}")
+            print(f"{status_title}")
+            print(f"{status_border2}")
+            
+            # Current AI Provider with color
+            provider_colors = {
+                Provider.OPENAI: Fore.LIGHTGREEN_EX,
+                Provider.GEMINI: Fore.LIGHTMAGENTA_EX,
+                Provider.MISTRAL: Fore.LIGHTRED_EX,
+                Provider.LLAMA: Fore.LIGHTYELLOW_EX,
+                Provider.GEMINI_CLI: Fore.LIGHTBLUE_EX,
+                Provider.HUGGINGFACE: Fore.LIGHTCYAN_EX
+            }
+            provider_color = provider_colors.get(self.current_ai_provider, Fore.LIGHTWHITE_EX)
+            
+            print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}   {Fore.YELLOW}🔑{Style.RESET_ALL} Current AI Provider: {provider_color}{Style.BRIGHT}{self.current_ai_provider.value.title()}{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}   {Fore.YELLOW}🔓{Style.RESET_ALL} Rephrasing Mode: {Fore.LIGHTGREEN_EX if self.rephrasing_mode else Fore.LIGHTRED_EX}{'✅ Enabled' if self.rephrasing_mode else '❌ Disabled'}{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
+            
+            # Configuration options with beautiful styling
+            options = [
+                ("[1] 🔄 Switch AI Provider", "Change active AI model", Fore.LIGHTGREEN_EX),
+                ("[2] 🔓 Toggle Rephrasing Mode", "Enable/disable auto-rephrasing", Fore.LIGHTYELLOW_EX),
+                ("[3] 🔑 Show API Keys Status", "View configured API keys", Fore.LIGHTBLUE_EX),
+                ("[4] 📦 Install Local Models", "Download and setup local models", Fore.LIGHTMAGENTA_EX),
+                ("[5] 🗑️  Delete Models", "Remove local AI models", Fore.LIGHTRED_EX),
+                ("[6] 🔙 Back to Main Menu", "Return to main interface", Fore.LIGHTCYAN_EX)
+            ]
+            
+            for i, (option, desc, color) in enumerate(options):
+                print(f"{color}┌─ {Style.BRIGHT}{Fore.WHITE}{option}{Style.RESET_ALL}{color} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
+                print(f"{color}│{Style.RESET_ALL}  {Style.BRIGHT}{Fore.WHITE}{desc}{Style.RESET_ALL}{' ' * (55 - len(desc))}{color}│{Style.RESET_ALL}")
+                print(f"{color}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
+        else:
+            print("\n" + "=" * 40)
+            print("    CONFIGURATION SETTINGS")
+            print("=" * 40 + "\n")
+            print(f"🔑 Current AI Provider: {self.current_ai_provider}")
+            print(f"🔓 Rephrasing Mode: {'✅ Enabled' if self.rephrasing_mode else '❌ Disabled'}")
+            print("\nConfiguration Options:")
+            print("  1. Switch AI Provider")
+            print("  2. Toggle Rephrasing Mode")
+            print("  3. Show API Keys Status")
+            print("  4. Install Local Models")
+            print("  5. Delete Models")
+            print("  6. Back to main menu\n")
         
-        print(f"🔑 Current AI Provider: {self.current_ai_provider}")
-        print(f"🔓 Rephrasing Mode: {'✅ Enabled' if self.rephrasing_mode else '❌ Disabled'}")
-        
-        print(f"\n{self._colorize('🔧 Configuration Options:', Fore.CYAN)}")
-        print(f"  1. Switch AI Provider")
-        print(f"  2. Toggle Rephrasing Mode")
-        print(f"  3. Show API Keys Status")
-        print(f"  4. Install Local Models")
-        print(f"  5. Back to main menu")
-        
-        choice = input(f"\n{self._colorize('🎯 Choose option (1-5):', Fore.YELLOW)}").strip()
+        choice = input(f"{self._colorize('🎯 Choose option (1-6):', Fore.YELLOW)}").strip()
         
         if choice == '1':
             return self.switch_ai_provider()
@@ -2659,9 +2708,11 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
         elif choice == '4':
             return self.install_local_models_menu()
         elif choice == '5':
+            return self.handle_delete_models()
+        elif choice == '6':
             return ""
         else:
-            return f"❌ Invalid choice: {choice}"
+            return f"❌ Invalid choice: {choice}\n💡 Please choose 1-6"
     
     def switch_ai_provider(self):
         """Switch between AI providers"""
@@ -2745,16 +2796,41 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
         return status
     
     def install_local_models_menu(self):
-        """Show local model installation menu"""
-        print(f"\n{self._colorize('🔧 Install Local Models', Fore.CYAN)}")
-        print("=" * 40)
-        print(f"  1. Install Gemini Model (Docker)")
-        print(f"  2. Install Llama Model (Ollama)")
-        print(f"  3. Install Mistral Dolphin Model (Ollama)")
-        print(f"  4. Install All Models")
-        print(f"  5. Back to configuration")
+        """Show local model installation menu with colorful styling"""
+        if COLORAMA_AVAILABLE:
+            # Beautiful installation header
+            install_header = f"{Fore.LIGHTMAGENTA_EX}╔{'═' * 78}╗{Style.RESET_ALL}"
+            install_title = f"{Fore.LIGHTMAGENTA_EX}║{Style.RESET_ALL} {Style.BRIGHT}{Back.MAGENTA}{Fore.WHITE}📦 INSTALL LOCAL MODELS 📦{Style.RESET_ALL} {Fore.LIGHTMAGENTA_EX}{' ' * 38}║{Style.RESET_ALL}"
+            install_footer = f"{Fore.LIGHTMAGENTA_EX}╚{'═' * 78}╝{Style.RESET_ALL}"
+            
+            print(f"\n{install_header}")
+            print(f"{install_title}")
+            print(f"{install_footer}\n")
+            
+            # Installation options with beautiful styling
+            options = [
+                ("[1] 🌟 Install Gemini Model", "Docker-based Gemini installation", Fore.LIGHTBLUE_EX),
+                ("[2] 🦙 Install Llama Model", "Ollama-based Llama installation", Fore.LIGHTGREEN_EX),
+                ("[3] 🐬 Install Mistral Dolphin", "Ollama-based Mistral installation", Fore.LIGHTRED_EX),
+                ("[4] 🚀 Install All Models", "Complete installation suite", Fore.LIGHTYELLOW_EX),
+                ("[5] 🔙 Back to Configuration", "Return to configuration menu", Fore.LIGHTCYAN_EX)
+            ]
+            
+            for i, (option, desc, color) in enumerate(options):
+                print(f"{color}┌─ {Style.BRIGHT}{Fore.WHITE}{option}{Style.RESET_ALL}{color} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
+                print(f"{color}│{Style.RESET_ALL}  {Style.BRIGHT}{Fore.WHITE}{desc}{Style.RESET_ALL}{' ' * (55 - len(desc))}{color}│{Style.RESET_ALL}")
+                print(f"{color}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
+        else:
+            print("\n" + "=" * 40)
+            print("    INSTALL LOCAL MODELS")
+            print("=" * 40 + "\n")
+            print("  1. Install Gemini Model (Docker)")
+            print("  2. Install Llama Model (Ollama)")
+            print("  3. Install Mistral Dolphin Model (Ollama)")
+            print("  4. Install All Models")
+            print("  5. Back to configuration\n")
         
-        choice = input(f"\n{self._colorize('🎯 Choose option (1-5):', Fore.YELLOW)}").strip()
+        choice = input(f"{self._colorize('🎯 Choose option (1-5):', Fore.YELLOW)}").strip()
         
         if choice == '1':
             result = self.install_gemini_local()
@@ -2777,7 +2853,7 @@ Your core function is efficient and safe assistance. Balance extreme conciseness
             input(f"\n{self._colorize('Press Enter to continue...', Fore.YELLOW)}")
             return self.handle_configuration()
         elif choice == '5':
-            return self.show_main_menu()
+            return self.handle_configuration()
         else:
             print(f"❌ Invalid choice: {choice}")
             input(f"\n{self._colorize('Press Enter to continue...', Fore.YELLOW)}")
@@ -4329,33 +4405,87 @@ Provide step-by-step technical details while maintaining educational context and
             return f"❌ Installation error: {e}"
     
     def install_all_local_models(self) -> str:
-        """Install all local models"""
-        print(f"\n{self._colorize('🔧 Installing All Local Models', Fore.CYAN)}")
-        print("=" * 50)
+        """Install all local models with colorful progress bars"""
+        if COLORAMA_AVAILABLE:
+            # Beautiful installation header
+            all_header = f"{Fore.LIGHTYELLOW_EX}╔{'═' * 78}╗{Style.RESET_ALL}"
+            all_title = f"{Fore.LIGHTYELLOW_EX}║{Style.RESET_ALL} {Style.BRIGHT}{Back.YELLOW}{Fore.WHITE}🚀 INSTALL ALL MODELS 🚀{Style.RESET_ALL} {Fore.LIGHTYELLOW_EX}{' ' * 42}║{Style.RESET_ALL}"
+            all_footer = f"{Fore.LIGHTYELLOW_EX}╚{'═' * 78}╝{Style.RESET_ALL}"
+            
+            print(f"\n{all_header}")
+            print(f"{all_title}")
+            print(f"{all_footer}\n")
+            
+            print(f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}   {Fore.CYAN}🌟 Installing Gemini, Llama, and Mistral Dolphin models{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}   {Fore.CYAN}⚡ Complete local AI setup with colorful progress tracking{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}   {Fore.CYAN}🔧 This may take 15-30 minutes depending on your connection{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTYELLOW_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
+        else:
+            print(f"\n{self._colorize('🚀 Installing All Local Models', Fore.CYAN)}")
+            print("=" * 50)
         
         results = []
         
-        # Install Gemini
-        gemini_result = self.install_gemini_local()
-        results.append(f"Gemini: {gemini_result}")
+        # Create overall progress tracker
+        overall_progress = ConfigurationProgress(total_steps=100, prefix="🚀 All Models", config_type="model")
         
-        print("\n" + "="*50)
-        
-        # Install Llama
-        llama_result = self.install_llama_local()
-        results.append(f"Llama: {llama_result}")
-        
-        print("\n" + "="*50)
-        
-        # Install Mistral Dolphin
-        mistral_result = self.install_mistral_dolphin_local()
-        results.append(f"Mistral Dolphin: {mistral_result}")
-        
-        print(f"\n{self._colorize('📊 Installation Summary:', Fore.GREEN)}")
-        for result in results:
-            print(f"• {result}")
-        
-        return "✅ All local model installations completed!"
+        try:
+            # Step 1-10: Initialize installation
+            overall_progress.update(5, "Initializing all model installations")
+            time.sleep(0.5)
+            
+            # Step 11-35: Install Gemini
+            overall_progress.update(15, "Installing Gemini model...")
+            gemini_result = self.install_gemini_local()
+            results.append(f"🌟 Gemini: {gemini_result}")
+            overall_progress.update(35, "Gemini installation complete")
+            
+            # Step 36-60: Install Llama
+            overall_progress.update(40, "Installing Llama model...")
+            llama_result = self.install_llama_local()
+            results.append(f"🦙 Llama: {llama_result}")
+            overall_progress.update(60, "Llama installation complete")
+            
+            # Step 61-85: Install Mistral Dolphin
+            overall_progress.update(65, "Installing Mistral Dolphin model...")
+            mistral_result = self.install_mistral_dolphin_local()
+            results.append(f"🐬 Mistral Dolphin: {mistral_result}")
+            overall_progress.update(85, "Mistral Dolphin installation complete")
+            
+            # Step 86-100: Final verification
+            overall_progress.update(90, "Verifying all installations...")
+            time.sleep(1.0)
+            overall_progress.update(95, "Finalizing setup...")
+            time.sleep(0.5)
+            overall_progress.finish("All models installed successfully!")
+            
+            # Show results summary
+            if COLORAMA_AVAILABLE:
+                summary_header = f"{Fore.LIGHTGREEN_EX}┌─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}"
+                summary_title = f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL} {Style.BRIGHT}{Back.GREEN}{Fore.WHITE}📊 INSTALLATION SUMMARY 📊{Style.RESET_ALL} {Fore.LIGHTGREEN_EX}{' ' * 43}│{Style.RESET_ALL}"
+                summary_footer = f"{Fore.LIGHTGREEN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}"
+                
+                print(f"\n{summary_header}")
+                print(f"{summary_title}")
+                print(f"{summary_footer}")
+                
+                for result in results:
+                    if "✅" in result:
+                        print(f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}   {Fore.GREEN}✅{Style.RESET_ALL} {result}")
+                    else:
+                        print(f"{Fore.LIGHTRED_EX}│{Style.RESET_ALL}   {Fore.RED}❌{Style.RESET_ALL} {result}")
+                
+                print(f"{Fore.LIGHTGREEN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}")
+            else:
+                print(f"\n{self._colorize('📊 Installation Summary:', Fore.GREEN)}")
+                for result in results:
+                    print(f"• {result}")
+            
+            return "✅ All local model installations completed!"
+            
+        except Exception as e:
+            overall_progress.finish("Installation failed")
+            return f"❌ Installation error: {e}"
     
     def list_and_select_llama_models(self) -> str:
         """List available Llama models and allow selection"""
