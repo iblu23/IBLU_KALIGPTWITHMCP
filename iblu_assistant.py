@@ -2487,7 +2487,7 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                         chars[i] = random.choice(glitch_chars)
                 return "".join(chars)
             
-            # Static banner - HACK THE only (no duplication)
+            # Static banner - HACK THE on top, WORLD below
             banner_content = Text()
             # HACK THE section - red/orange
             banner_content.append("\033[31m\033[40m██╗  ██╗  █████╗   ██████╗ ██╗  ██╗    ████████╗ ██╗  ██╗ ███████╗    ██╗    ██╗  ██████╗  ██████╗  ██╗      ██████╗\033[0m\n", style="bold red")
@@ -2496,12 +2496,21 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             banner_content.append("\033[31m\033[40m██╔══██║ ██╔══██║ ██║      ██╔═██╗        ██║    ██╔══██║ ██╔══╝      ██║███╗██║ ██║   ██║ ██╔══██╗ ██║      ██║  ██║\033[0m\n", style="bold red")
             banner_content.append("\033[31m\033[40m██║  ██║ ██║  ██║ ╚██████╗ ██║  ██╗       ██║    ██║  ██║ ███████╗    ╚███╔███╔╝ ╚██████╔╝ ██║  ██║ ███████╗ ██████╔╝\033[0m\n", style="bold red")
             banner_content.append("\033[31m\033[40m╚═╝  ╚═╝ ╚═╝  ╚═╝  ╚═════╝ ╚═╝  ╚═╝       ╚═╝    ╚═╝  ╚═╝ ╚══════╝     ╚══╝╚══╝   ╚═════╝  ╚═╝  ╚═╝ ╚══════╝ ╚═════╝\033[0m\n", style="bold red")
+            # Spacing
+            banner_content.append("                    \n", style="bold red")
+            # WORLD section - blue, positioned below HACK THE
+            banner_content.append("                    \033[34m\033[40m██╗    ██╗  ██████╗  ██████╗ ██╗     ██████╗\033[0m\n", style="bold blue")
+            banner_content.append("                    \033[34m\033[40m██║    ██║ ██╔═══██╗ ██╔══██╗ ██║     ██╔══██╗\033[0m\n", style="bold blue")
+            banner_content.append("                    \033[34m\033[40m██║ █╗ ██║ ██║   ██║ ██████╔╝ ██║     ██║  ██║\033[0m\n", style="bold blue")
+            banner_content.append("                    \033[34m\033[40m██║███╗██║ ██║   ██║ ██╔══██╗ ██║     ██║  ██║\033[0m\n", style="bold blue")
+            banner_content.append("                    \033[34m\033[40m╚███╔███╔╝ ╚██████╔╝ ██║  ██║ ███████╗ ██████╔╝\033[0m\n", style="bold blue")
+            banner_content.append("                    \033[34m\033[40m ╚══╝╚══╝  ╚═════╝  ╚═╝  ╚═╝ ╚══════╝ ╚═════╝\033[0m\n", style="bold blue")
             
             # Display static banner without animation
             console.print(Panel(banner_content, border_style="red", padding=(1, 7), expand=True))
             
         else:
-            # Fallback banner without Rich - Static display, HACK THE only (no duplication)
+            # Fallback banner without Rich - Static display, HACK THE on top, WORLD below
             w = 115
             pad = lambda s: "║" + s.ljust(w) + "║"
             
@@ -2514,6 +2523,16 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.RED}{Back.BLACK}  ██╔══██║ ██╔══██║ ██║      ██╔═██╗        ██║    ██╔══██║ ██╔══╝      ██║███╗██║ ██║   ██║ ██╔══██╗ ██║      ██║  ██║{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.RED}{Back.BLACK}  ██║  ██║ ██║  ██║ ╚██████╗ ██║  ██╗       ██║    ██║  ██║ ███████╗    ╚███╔███╔╝ ╚██████╔╝ ██║  ██║ ███████╗ ██████╔╝{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.RED}{Back.BLACK}  ╚═╝  ╚═╝ ╚═╝  ╚═╝  ╚═════╝ ╚═╝  ╚═╝       ╚═╝    ╚═╝  ╚═╝ ╚══════╝     ╚══╝╚══╝   ╚═════╝  ╚═╝  ╚═╝ ╚══════╝ ╚═════╝{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}" + " "*w + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+            # Spacing
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}" + " "*w + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+            # WORLD section (blue, positioned below HACK THE)
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}                    {Fore.BLUE}{Back.BLACK}██╗    ██╗  ██████╗  ██████╗ ██╗     ██████╗{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}                    {Fore.BLUE}{Back.BLACK}██║    ██║ ██╔═══██╗ ██╔══██╗ ██║     ██╔══██╗{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}                    {Fore.BLUE}{Back.BLACK}██║ █╗ ██║ ██║   ██║ ██████╔╝ ██║     ██║  ██║{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}                    {Fore.BLUE}{Back.BLACK}██║███╗██║ ██║   ██║ ██╔══██╗ ██║     ██║  ██║{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}                    {Fore.BLUE}{Back.BLACK}╚███╔███╔╝ ╚██████╔╝ ██║  ██║ ███████╗ ██████╔╝{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}                    {Fore.BLUE}{Back.BLACK} ╚══╝╚══╝  ╚═════╝  ╚═╝  ╚═╝ ╚══════╝ ╚═════╝{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}" + " "*w + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.LIGHTRED_EX}╚" + "═"*w + f"╝{ColoramaStyle.RESET_ALL}")
             
