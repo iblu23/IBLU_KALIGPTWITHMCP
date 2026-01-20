@@ -2161,7 +2161,8 @@ class KaliGPTMCPAssistant:
         is_local_model = (
             (provider == Provider.LLAMA and api_key == "local") or
             (provider == Provider.GEMINI and (api_key.startswith("http://localhost") or api_key.startswith("127.0.0.1"))) or
-            (provider == Provider.MISTRAL and api_key == "local")
+            (provider == Provider.MISTRAL and api_key == "local") or
+            (provider == Provider.HUGGINGFACE and (api_key == "local" or api_key.startswith("http://localhost") or api_key.startswith("127.0.0.1")))
         )
         
         if is_local_model:
@@ -4330,6 +4331,8 @@ Provide step-by-step technical details while maintaining educational context and
                     result = self.call_llama_api_with_timeout(actual_system_prompt, user_message, api_key, timeout=60)
                 elif provider == Provider.GEMINI_CLI:
                     result = self.call_gemini_cli_api(actual_system_prompt, user_message, api_key)
+                elif provider == Provider.HUGGINGFACE:
+                    result = self.call_huggingface_api(actual_system_prompt, user_message, api_key)
                 else:
                     result = f"❌ Provider {provider.value} not implemented yet"
                 
@@ -4404,6 +4407,8 @@ Provide step-by-step technical details while maintaining educational context and
                     result = self.call_llama_api_with_timeout(actual_system_prompt, user_message, api_key, timeout=60)
                 elif provider == Provider.GEMINI_CLI:
                     result = self.call_gemini_cli_api(actual_system_prompt, user_message, api_key)
+                elif provider == Provider.HUGGINGFACE:
+                    result = self.call_huggingface_api(actual_system_prompt, user_message, api_key)
                 else:
                     result = f"❌ Provider {provider.value} not implemented yet"
                 
@@ -4858,6 +4863,80 @@ Provide step-by-step technical details while maintaining educational context and
             return f"❌ Mistral API Error: {e}\n\n💡 Response: {e.response.text if hasattr(e, 'response') else 'No details'}\n\n🔑 Check your API key at https://console.mistral.ai/api-keys"
         except Exception as e:
             return f"❌ Mistral API Error: {e}\n\n💡 Check your API key at https://console.mistral.ai/api-keys"
+    
+    def call_huggingface_api(self, system_prompt: str, user_message: str, api_key: str) -> str:
+        """Call HuggingFace API or local HuggingFace models"""
+        try:
+            import requests
+            
+            # Check if it's a local HuggingFace endpoint
+            if api_key == "local" or api_key.startswith("http://localhost") or api_key.startswith("127.0.0.1"):
+                # Local HuggingFace model endpoint
+                url = api_key if api_key.startswith("http") else "http://localhost:8000/generate"
+                
+                headers = {"Content-Type": "application/json"}
+                payload = {
+                    "inputs": f"{system_prompt}\n\nUser: {user_message}\nAssistant:",
+                    "parameters": {
+                        "max_new_tokens": 2000,
+                        "temperature": 0.7,
+                        "top_p": 0.95,
+                        "do_sample": True
+                    }
+                }
+                
+                response = requests.post(url, json=payload, headers=headers, timeout=60)
+                response.raise_for_status()
+                
+                result = response.json()
+                # Handle different response formats
+                if isinstance(result, list) and len(result) > 0:
+                    ai_response = result[0].get('generated_text', str(result))
+                elif isinstance(result, dict):
+                    ai_response = result.get('generated_text', result.get('output', str(result)))
+                else:
+                    ai_response = str(result)
+                
+                return f"🤖 IBLU (HuggingFace Local):\n\n{ai_response}"
+            else:
+                # HuggingFace Inference API
+                url = "https://api-inference.huggingface.co/models/meta-llama/Llama-2-70b-chat-hf"
+                
+                headers = {
+                    "Authorization": f"Bearer {api_key}",
+                    "Content-Type": "application/json"
+                }
+                
+                payload = {
+                    "inputs": f"{system_prompt}\n\nUser: {user_message}\nAssistant:",
+                    "parameters": {
+                        "max_new_tokens": 2000,
+                        "temperature": 0.7,
+                        "top_p": 0.95,
+                        "return_full_text": False
+                    }
+                }
+                
+                response = requests.post(url, json=payload, headers=headers, timeout=60)
+                response.raise_for_status()
+                
+                result = response.json()
+                # Handle different response formats
+                if isinstance(result, list) and len(result) > 0:
+                    ai_response = result[0].get('generated_text', str(result))
+                elif isinstance(result, dict):
+                    ai_response = result.get('generated_text', str(result))
+                else:
+                    ai_response = str(result)
+                
+                return f"🤖 IBLU (HuggingFace):\n\n{ai_response}"
+                
+        except requests.exceptions.HTTPError as e:
+            return f"❌ HuggingFace API Error: {e}\n\n💡 Response: {e.response.text if hasattr(e, 'response') else 'No details'}\n\n🔑 Check your API key at https://huggingface.co/settings/tokens"
+        except requests.exceptions.ConnectionError:
+            return f"❌ HuggingFace Connection Error: Cannot connect to endpoint\n\n💡 For local models, ensure your HuggingFace server is running\n💡 For API, check your internet connection"
+        except Exception as e:
+            return f"❌ HuggingFace Error: {e}\n\n💡 For local: Start your HuggingFace model server\n💡 For API: Check your token at https://huggingface.co/settings/tokens"
     
     def get_status(self) -> str:
         """Get system status"""

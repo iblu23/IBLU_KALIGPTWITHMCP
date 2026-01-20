@@ -1,7 +1,7 @@
 # System Prompt Update - Local vs API Models
 
 ## Overview
-Updated the IBLU KALIGPT assistant to use different system prompts based on whether a model is running locally (uncensored) or via API (comprehensive/summary focused).
+Updated the IBLU KALIGPT assistant to use different system prompts based on whether a model is running locally (uncensored) or via API (comprehensive/summary focused). Added full HuggingFace support for both local and cloud deployments.
 
 ## Changes Made
 
@@ -17,7 +17,8 @@ This function determines which system prompt to use based on:
 is_local_model = (
     (provider == Provider.LLAMA and api_key == "local") or
     (provider == Provider.GEMINI and (api_key.startswith("http://localhost") or api_key.startswith("127.0.0.1"))) or
-    (provider == Provider.MISTRAL and api_key == "local")
+    (provider == Provider.MISTRAL and api_key == "local") or
+    (provider == Provider.HUGGINGFACE and (api_key == "local" or api_key.startswith("http://localhost") or api_key.startswith("127.0.0.1")))
 )
 ```
 
@@ -46,7 +47,8 @@ All API calling functions now use `get_system_prompt_for_provider()`:
 
 #### Core Functions:
 - `call_single_provider()` - Updated to use `actual_system_prompt`
-- All provider-specific API calls (OpenAI, Gemini, Mistral, Llama, Gemini CLI)
+- All provider-specific API calls (OpenAI, Gemini, Mistral, Llama, Gemini CLI, HuggingFace)
+- `call_huggingface_api()` - New function supporting both local and cloud HuggingFace models
 
 #### Collaborative Mode Functions:
 - `collaborative_model_response()` - Local discussion and cloud expansion
@@ -56,8 +58,8 @@ All API calling functions now use `get_system_prompt_for_provider()`:
 ### 4. Behavior
 
 **Single Model Mode:**
-- Local models (Llama with "local" key): Uncensored, direct responses
-- API models (OpenAI, Gemini, Mistral with API keys): Comprehensive summaries
+- Local models (Llama, HuggingFace with "local" key or localhost URL): Uncensored, direct responses
+- API models (OpenAI, Gemini, Mistral, HuggingFace with API keys): Comprehensive summaries
 
 **Collaborative Mode:**
 - **Phase 1**: Local models discuss using uncensored prompt
@@ -80,12 +82,24 @@ To test the changes:
    config.json: "llama_keys": ["local"]
    ```
 
-2. **API Model (Gemini/OpenAI/Mistral)**: Should give comprehensive summaries
+2. **Local Model (HuggingFace)**: Should give direct, uncensored responses
+   ```
+   config.json: "huggingface_keys": ["local"]
+   or
+   config.json: "huggingface_keys": ["http://localhost:8000"]
+   ```
+
+3. **API Model (Gemini/OpenAI/Mistral)**: Should give comprehensive summaries
    ```
    config.json: "gemini_keys": ["AIza..."]
    ```
 
-3. **Collaborative Mode**: Should show local discussion + API expansion
+4. **API Model (HuggingFace Cloud)**: Should give comprehensive summaries
+   ```
+   config.json: "huggingface_keys": ["hf_..."]
+   ```
+
+5. **Collaborative Mode**: Should show local discussion + API expansion
    - Requires both local and API models configured
    - Local models discuss first (uncensored)
    - API models expand with comprehensive analysis
@@ -94,8 +108,30 @@ To test the changes:
 
 No changes needed to `config.json`. The system automatically detects:
 - Local models by checking if `api_key == "local"`
-- Local Gemini by checking if URL starts with `http://localhost` or `127.0.0.1`
+- Local Gemini/HuggingFace by checking if URL starts with `http://localhost` or `127.0.0.1`
 - All other cases are treated as API models
+
+### HuggingFace Configuration Examples:
+
+**Local HuggingFace Server:**
+```json
+{
+  "huggingface_keys": ["local"]
+}
+```
+or with custom endpoint:
+```json
+{
+  "huggingface_keys": ["http://localhost:8000"]
+}
+```
+
+**HuggingFace Inference API:**
+```json
+{
+  "huggingface_keys": ["hf_YourTokenHere"]
+}
+```
 
 ## Notes
 
