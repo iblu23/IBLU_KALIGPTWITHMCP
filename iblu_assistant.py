@@ -2651,13 +2651,11 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                 # Option title line
                 print(f"{color}│{ColoramaStyle.RESET_ALL}  {ColoramaStyle.BRIGHT}{Fore.WHITE}{title}{ColoramaStyle.RESET_ALL}{' ' * (82 - len(title) - 4)}{color}│{ColoramaStyle.RESET_ALL}")
                 
-                # Description lines with dimmer colors
+                # Description lines with white color
                 if desc1:
-                    dim_color = color.replace('LIGHT', '').replace('EX', '') if 'LIGHT' in color else color
-                    print(f"{color}│{ColoramaStyle.RESET_ALL}  {dim_color}{desc1.ljust(78)}{color}│{ColoramaStyle.RESET_ALL}")
+                    print(f"{color}│{ColoramaStyle.RESET_ALL}  {Fore.WHITE}{desc1.ljust(78)}{color}│{ColoramaStyle.RESET_ALL}")
                 if desc2:
-                    dim_color = color.replace('LIGHT', '').replace('EX', '') if 'LIGHT' in color else color
-                    print(f"{color}│{ColoramaStyle.RESET_ALL}  {dim_color}{desc2.ljust(78)}{color}│{ColoramaStyle.RESET_ALL}")
+                    print(f"{color}│{ColoramaStyle.RESET_ALL}  {Fore.WHITE}{desc2.ljust(78)}{color}│{ColoramaStyle.RESET_ALL}")
                 
                 # Bottom border
                 print(f"{color}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}\n")
@@ -2761,15 +2759,27 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             print(f"{Fore.LIGHTMAGENTA_EX}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}🗑️  DELETE MODELS - REMOVE LOCAL MODELS 🗑️{ColoramaStyle.RESET_ALL} {Fore.LIGHTMAGENTA_EX}{' ' * 20}║{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.LIGHTMAGENTA_EX}╚══════════════════════════════════════════════════════════════════════════════╝{ColoramaStyle.RESET_ALL}\n")
             
-            print(f"{Fore.LIGHTMAGENTA_EX}┌─ {ColoramaStyle.BRIGHT}{Fore.WHITE}[1] 🗑️  DELETE LLAMA MODELS{ColoramaStyle.RESET_ALL}{Fore.LIGHTMAGENTA_EX} ─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTMAGENTA_EX}│{ColoramaStyle.RESET_ALL}  {ColoramaStyle.BRIGHT}{Fore.WHITE}Remove local Llama models{ColoramaStyle.RESET_ALL}{' ' * (33)}{Fore.LIGHTMAGENTA_EX}│{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTMAGENTA_EX}│{ColoramaStyle.RESET_ALL}  {Fore.CYAN}• Free up disk space by removing Llama models{ColoramaStyle.RESET_ALL}{' ' * (13)}{Fore.LIGHTMAGENTA_EX}│{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTMAGENTA_EX}│{ColoramaStyle.RESET_ALL}  {Fore.CYAN}• Select specific models or delete all{ColoramaStyle.RESET_ALL}{' ' * (19)}{Fore.LIGHTMAGENTA_EX}│{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTMAGENTA_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}\n")
+            options = [
+                ("[1] 🗑️  DELETE LLAMA MODELS", "Remove local Llama models", Fore.LIGHTMAGENTA_EX,
+                 "• Free up disk space by removing Llama models", "• Select specific models or delete all"),
+                ("[2] 🔙 BACK", "Return to main menu", Fore.LIGHTMAGENTA_EX, "", "")
+            ]
             
-            print(f"{Fore.LIGHTMAGENTA_EX}┌─ {ColoramaStyle.BRIGHT}{Fore.WHITE}[2] 🔙 BACK{ColoramaStyle.RESET_ALL}{Fore.LIGHTMAGENTA_EX} ─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTMAGENTA_EX}│{ColoramaStyle.RESET_ALL}  {ColoramaStyle.BRIGHT}{Fore.WHITE}Return to main menu{ColoramaStyle.RESET_ALL}{' ' * (39)}{Fore.LIGHTMAGENTA_EX}│{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTMAGENTA_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}\n")
+            for option, title, color, desc1, desc2 in options:
+                # Top border with individual color
+                print(f"{color}┌─ {ColoramaStyle.BRIGHT}{Fore.WHITE}{option}{ColoramaStyle.RESET_ALL}{color} ─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}")
+                
+                # Option title line
+                print(f"{color}│{ColoramaStyle.RESET_ALL}  {ColoramaStyle.BRIGHT}{Fore.WHITE}{title}{ColoramaStyle.RESET_ALL}{' ' * (82 - len(title) - 4)}{color}│{ColoramaStyle.RESET_ALL}")
+                
+                # Description lines with white color
+                if desc1:
+                    print(f"{color}│{ColoramaStyle.RESET_ALL}  {Fore.WHITE}{desc1.ljust(78)}{color}│{ColoramaStyle.RESET_ALL}")
+                if desc2:
+                    print(f"{color}│{ColoramaStyle.RESET_ALL}  {Fore.WHITE}{desc2.ljust(78)}{color}│{ColoramaStyle.RESET_ALL}")
+                
+                # Bottom border
+                print(f"{color}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}\n")
         else:
             print("\n" + "=" * 70)
             print("    DELETE MODELS - REMOVE LOCAL MODELS")
@@ -3735,18 +3745,11 @@ All responses should be helpful, educational, and focused on legitimate cybersec
     def handle_configuration(self):
         """Handle configuration settings with colorful styling"""
         if COLORAMA_AVAILABLE:
-            w = 115
-            
-            # Single continuous panel for configuration
-            print(f"\n{Fore.LIGHTRED_EX}╔{'═'*w}╗{ColoramaStyle.RESET_ALL}")
+            print(f"\n{Fore.LIGHTRED_EX}╔══════════════════════════════════════════════════════════════════════════════╗{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}⚙️  CONFIGURATION SETTINGS ⚙️{ColoramaStyle.RESET_ALL} {Fore.LIGHTRED_EX}{' ' * 38}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}├{'═'*w}┤{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}╚══════════════════════════════════════════════════════════════════════════════╝{ColoramaStyle.RESET_ALL}\n")
             
-            # Current status section
-            print(f"{Fore.LIGHTRED_EX}│{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}🔧 CURRENT STATUS 🔧{ColoramaStyle.RESET_ALL} {Fore.LIGHTRED_EX}{' ' * 47}│{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}├{'═'*w}┤{ColoramaStyle.RESET_ALL}")
-            
-            # Current AI Provider with color
+            # Current status display
             provider_colors = {
                 Provider.OPENAI: Fore.LIGHTGREEN_EX,
                 Provider.GEMINI: Fore.LIGHTMAGENTA_EX,
@@ -3757,28 +3760,41 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             }
             provider_color = provider_colors.get(self.current_ai_provider, Fore.LIGHTWHITE_EX)
             
-            print(f"{Fore.LIGHTRED_EX}│{ColoramaStyle.RESET_ALL}   {Fore.YELLOW}🔑{ColoramaStyle.RESET_ALL} Current AI Provider: {provider_color}{ColoramaStyle.BRIGHT}{self.current_ai_provider.value.title()}{ColoramaStyle.RESET_ALL}{' ' * (w - len(self.current_ai_provider.value.title()) - 30)}{Fore.LIGHTRED_EX}│{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}│{ColoramaStyle.RESET_ALL}   {Fore.YELLOW}🔓{ColoramaStyle.RESET_ALL} Rephrasing Mode: {Fore.LIGHTGREEN_EX if self.rephrasing_mode else Fore.LIGHTRED_EX}{'✅ Enabled' if self.rephrasing_mode else '❌ Disabled'}{ColoramaStyle.RESET_ALL}{' ' * (w - 20)}{Fore.LIGHTRED_EX}│{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}├{'═'*w}┤{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}┌─ {ColoramaStyle.BRIGHT}{Fore.WHITE}🔧 CURRENT STATUS 🔧{ColoramaStyle.RESET_ALL}{Fore.LIGHTRED_EX} ─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}│{ColoramaStyle.RESET_ALL}  {Fore.YELLOW}🔑{ColoramaStyle.RESET_ALL} Current AI Provider: {provider_color}{ColoramaStyle.BRIGHT}{self.current_ai_provider.value.title()}{ColoramaStyle.RESET_ALL}{' ' * (82 - len(self.current_ai_provider.value.title()) - 30)}{Fore.LIGHTRED_EX}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}│{ColoramaStyle.RESET_ALL}  {Fore.YELLOW}🔓{ColoramaStyle.RESET_ALL} Rephrasing Mode: {Fore.LIGHTGREEN_EX if self.rephrasing_mode else Fore.LIGHTRED_EX}{'✅ Enabled' if self.rephrasing_mode else '❌ Disabled'}{ColoramaStyle.RESET_ALL}{' ' * (82 - 20)}{Fore.LIGHTRED_EX}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}\n")
             
             # Configuration options
             options = [
-                ("[1] 🔄 Switch AI Provider", "Change active AI model", Fore.LIGHTGREEN_EX),
-                ("[2] 🔓 Toggle Rephrasing Mode", "Enable/disable auto-rephrasing", Fore.LIGHTYELLOW_EX),
-                ("[3] 🔑 Show API Keys Status", "View configured API keys", Fore.LIGHTBLUE_EX),
-                ("[4] 📦 Install Local Models", "Download and setup local models", Fore.LIGHTMAGENTA_EX),
-                ("[5] 🗑️  Delete Models", "Remove local AI models", Fore.LIGHTRED_EX),
-                ("[6] 🔙 Back to Main Menu", "Return to main interface", Fore.LIGHTCYAN_EX)
+                ("[1] 🔄 Switch AI Provider", "Change active AI model", Fore.LIGHTGREEN_EX,
+                 "• Switch between OpenAI, Gemini, Mistral, Llama, etc.", ""),
+                ("[2] 🔓 Toggle Rephrasing Mode", "Enable/disable auto-rephrasing", Fore.LIGHTYELLOW_EX,
+                 "• Automatically rephrase responses on refusal", ""),
+                ("[3] 🔑 Show API Keys Status", "View configured API keys", Fore.LIGHTBLUE_EX,
+                 "• Check which API keys are properly configured", ""),
+                ("[4] 📦 Install Local Models", "Download and setup local models", Fore.LIGHTMAGENTA_EX,
+                 "• Install Llama, Mistral, and other local models", ""),
+                ("[5] 🗑️  Delete Models", "Remove local AI models", Fore.LIGHTRED_EX,
+                 "• Free up disk space by removing unused models", ""),
+                ("[6] 🔙 Back to Main Menu", "Return to main interface", Fore.LIGHTCYAN_EX, "", "")
             ]
             
-            for option, desc, color in options:
-                # Option line
-                print(f"{Fore.LIGHTRED_EX}│{ColoramaStyle.RESET_ALL} {color}{ColoramaStyle.BRIGHT}{option}{ColoramaStyle.RESET_ALL}: {desc.ljust(35)}{' ' * (w - len(option) - len(desc) - 4)}{Fore.LIGHTRED_EX}│{ColoramaStyle.RESET_ALL}")
+            for option, title, color, desc1, desc2 in options:
+                # Top border with individual color
+                print(f"{color}┌─ {ColoramaStyle.BRIGHT}{Fore.WHITE}{option}{ColoramaStyle.RESET_ALL}{color} ─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}")
                 
-                # Add spacing between options
-                print(f"{Fore.LIGHTRED_EX}│{ColoramaStyle.RESET_ALL}{' ' * w}{Fore.LIGHTRED_EX}│{ColoramaStyle.RESET_ALL}")
-            
-            print(f"{Fore.LIGHTRED_EX}└{'═'*w}┘{ColoramaStyle.RESET_ALL}\n")
+                # Option title line
+                print(f"{color}│{ColoramaStyle.RESET_ALL}  {ColoramaStyle.BRIGHT}{Fore.WHITE}{title}{ColoramaStyle.RESET_ALL}{' ' * (82 - len(title) - 4)}{color}│{ColoramaStyle.RESET_ALL}")
+                
+                # Description lines with white color
+                if desc1:
+                    print(f"{color}│{ColoramaStyle.RESET_ALL}  {Fore.WHITE}{desc1.ljust(78)}{color}│{ColoramaStyle.RESET_ALL}")
+                if desc2:
+                    print(f"{color}│{ColoramaStyle.RESET_ALL}  {Fore.WHITE}{desc2.ljust(78)}{color}│{ColoramaStyle.RESET_ALL}")
+                
+                # Bottom border
+                print(f"{color}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}\n")
         else:
             print("\n" + "=" * 40)
             print("    CONFIGURATION SETTINGS")
@@ -3813,35 +3829,36 @@ All responses should be helpful, educational, and focused on legitimate cybersec
     def handle_ai_text_suggestions(self):
         """Handle AI Text Suggestions / Autocomplete with multiple approaches"""
         if COLORAMA_AVAILABLE:
-            w = 115
-            
-            # Single continuous panel for AI suggestions
-            print(f"\n{Fore.LIGHTMAGENTA_EX}╔{'═'*w}╗{ColoramaStyle.RESET_ALL}")
+            print(f"\n{Fore.LIGHTMAGENTA_EX}╔══════════════════════════════════════════════════════════════════════════════╗{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.LIGHTMAGENTA_EX}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}🤖 AI TEXT SUGGESTIONS / AUTOCOMPLETE 🤖{ColoramaStyle.RESET_ALL} {Fore.LIGHTMAGENTA_EX}{' ' * 22}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTMAGENTA_EX}├{'═'*w}┤{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTMAGENTA_EX}╚══════════════════════════════════════════════════════════════════════════════╝{ColoramaStyle.RESET_ALL}\n")
             
             # AI Suggestions options
             options = [
-                ("[1] 🧠 OpenAI GPT Suggestions", "Advanced AI-powered text completion", Fore.LIGHTGREEN_EX, "• Context-aware suggestions", "• High quality responses"),
-                ("[2] 🏠 Local Models (Hugging Face)", "Offline text generation", Fore.LIGHTBLUE_EX, "• Privacy-focused", "• Custom models support"),
-                ("[3] ⚡ Rule-based Suggestions", "Fast predefined completions", Fore.LIGHTYELLOW_EX, "• Instant responses", "• Resource efficient"),
+                ("[1] 🧠 OpenAI GPT Suggestions", "Advanced AI-powered text completion", Fore.LIGHTGREEN_EX,
+                 "• Context-aware suggestions", "• High quality responses"),
+                ("[2] 🏠 Local Models (Hugging Face)", "Offline text generation", Fore.LIGHTBLUE_EX,
+                 "• Privacy-focused", "• Custom models support"),
+                ("[3] ⚡ Rule-based Suggestions", "Fast predefined completions", Fore.LIGHTYELLOW_EX,
+                 "• Instant responses", "• Resource efficient"),
                 ("[4] 🔙 Back to Main Menu", "Return to main interface", Fore.LIGHTCYAN_EX, "", "")
             ]
             
-            for option, desc, color, desc1, desc2 in options:
-                # Option line
-                print(f"{Fore.LIGHTMAGENTA_EX}│{ColoramaStyle.RESET_ALL} {color}{ColoramaStyle.BRIGHT}{option}{ColoramaStyle.RESET_ALL}: {desc.ljust(35)}{' ' * (w - len(option) - len(desc) - 4)}{Fore.LIGHTMAGENTA_EX}│{ColoramaStyle.RESET_ALL}")
+            for option, title, color, desc1, desc2 in options:
+                # Top border with individual color
+                print(f"{color}┌─ {ColoramaStyle.BRIGHT}{Fore.WHITE}{option}{ColoramaStyle.RESET_ALL}{color} ─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}")
                 
-                # Description lines
+                # Option title line
+                print(f"{color}│{ColoramaStyle.RESET_ALL}  {ColoramaStyle.BRIGHT}{Fore.WHITE}{title}{ColoramaStyle.RESET_ALL}{' ' * (82 - len(title) - 4)}{color}│{ColoramaStyle.RESET_ALL}")
+                
+                # Description lines with white color
                 if desc1:
-                    print(f"{Fore.LIGHTMAGENTA_EX}│{ColoramaStyle.RESET_ALL}  {Fore.CYAN}{desc1.ljust(65)}{' ' * (w - len(desc1) - 3)}{Fore.LIGHTMAGENTA_EX}│{ColoramaStyle.RESET_ALL}")
+                    print(f"{color}│{ColoramaStyle.RESET_ALL}  {Fore.WHITE}{desc1.ljust(78)}{color}│{ColoramaStyle.RESET_ALL}")
                 if desc2:
-                    print(f"{Fore.LIGHTMAGENTA_EX}│{ColoramaStyle.RESET_ALL}  {Fore.CYAN}{desc2.ljust(65)}{' ' * (w - len(desc2) - 3)}{Fore.LIGHTMAGENTA_EX}│{ColoramaStyle.RESET_ALL}")
+                    print(f"{color}│{ColoramaStyle.RESET_ALL}  {Fore.WHITE}{desc2.ljust(78)}{color}│{ColoramaStyle.RESET_ALL}")
                 
-                # Add spacing between options
-                print(f"{Fore.LIGHTMAGENTA_EX}│{ColoramaStyle.RESET_ALL}{' ' * w}{Fore.LIGHTMAGENTA_EX}│{ColoramaStyle.RESET_ALL}")
-            
-            print(f"{Fore.LIGHTMAGENTA_EX}└{'═'*w}┘{ColoramaStyle.RESET_ALL}\n")
+                # Bottom border
+                print(f"{color}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}\n")
         else:
             print("\n" + "=" * 50)
             print("    AI TEXT SUGGESTIONS / AUTOCOMPLETE")
