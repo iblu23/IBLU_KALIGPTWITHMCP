@@ -6535,6 +6535,59 @@ if TYPER_AVAILABLE and RICH_AVAILABLE and LOGURU_AVAILABLE:
             title="📋 Version Information",
             border_style="cyan"
         ))
+    
+    @modern_app.command()
+    def menu():
+        """🎯 Show main menu with installation options."""
+        try:
+            # Create assistant and show main menu
+            assistant = KaliGPTMCPAssistant(load_config())
+            assistant.show_main_menu()
+        except Exception as e:
+            print(f"❌ Error loading menu: {e}")
+    
+    @modern_app.command()
+    def install_llama():
+        """🦙 Install Llama model with Textual visual progress."""
+        try:
+            assistant = KaliGPTMCPAssistant(load_config())
+            print("🎨 Starting Textual Llama Installation...")
+            result = assistant.install_model_with_textual_progress("Llama", [])
+            print(f"Result: {result}")
+        except Exception as e:
+            print(f"❌ Error: {e}")
+    
+    @modern_app.command()
+    def install_gemini():
+        """🌟 Install Gemini model with Textual visual progress."""
+        try:
+            assistant = KaliGPTMCPAssistant(load_config())
+            print("🎨 Starting Textual Gemini Installation...")
+            result = assistant.install_model_with_textual_progress("Gemini", [])
+            print(f"Result: {result}")
+        except Exception as e:
+            print(f"❌ Error: {e}")
+    
+    @modern_app.command()
+    def install_mistral():
+        """🐬 Install Mistral model with Textual visual progress."""
+        try:
+            assistant = KaliGPTMCPAssistant(load_config())
+            print("🎨 Starting Textual Mistral Installation...")
+            result = assistant.install_model_with_textual_progress("Mistral Dolphin", [])
+            print(f"Result: {result}")
+        except Exception as e:
+            print(f"❌ Error: {e}")
+    
+    @modern_app.command()
+    def themes_demo():
+        """🎨 Show all available Textual visual themes."""
+        try:
+            assistant = KaliGPTMCPAssistant(load_config())
+            result = assistant.show_textual_themes_demo()
+            print(f"Result: {result}")
+        except Exception as e:
+            print(f"❌ Error: {e}")
 
     def modern_main():
         """Main entry point for modern CLI."""
