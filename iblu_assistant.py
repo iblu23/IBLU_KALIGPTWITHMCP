@@ -2987,61 +2987,44 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             print(f"{Fore.LIGHTRED_EX}╔" + "═"*banner_width + f"╗{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}" + " "*banner_width + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.LIGHTYELLOW_EX}{Back.BLACK}██╗  ██╗ █████╗  ██████╗██╗  ██╗    ████████╗██╗  ██╗███████╗{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.LIGHTYELLOW_EX}{Back.BLACK}██║  ██║██╔══██╗██╔════╝██║ ██╔╝    ╚██╔══╝██║  ██║██╔════╝{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.LIGHTYELLOW_EX}{Back.BLACK}███████║███████║██║     █████╔╝        ██║   ███████║█████╗{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.LIGHTYELLOW_EX}{Back.BLACK}██╔══██║██╔══██║██║     ██╔═██╗        ██║   ██╔══██║██╔══╝{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.LIGHTYELLOW_EX}{Back.BLACK}██║  ██║██║  ██║╚██████╗██║  ██╗       ██║   ██║  ██║███████╗{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.LIGHTYELLOW_EX}{Back.BLACK}╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝       ╚═╝   ╚═╝  ╚═╝╚══════╝{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}" + " "*banner_width + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            # WORLD section (blue, positioned below HACK THE)
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.BLUE}{Back.BLACK}{' '*20}██╗    ██╗ ██████╗ ██████╗ ██╗     ██████╗{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.BLUE}{Back.BLACK}{' '*20}██║    ██║██╔═══██╗██╔══██╗██║     ██╔══██╗{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.BLUE}{Back.BLACK}{' '*20}██║ █╗ ██║██║   ██║██████╔╝██║     ██║  ██║{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.BLUE}{Back.BLACK}{' '*20}██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.BLUE}{Back.BLACK}{' '*20}╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.BLUE}{Back.BLACK}{' '*20} ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}" + " "*banner_width + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            # Tagline section - purple/magenta
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}{' '*21}{Fore.MAGENTA}{Back.BLACK}┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓{ColoramaStyle.RESET_ALL}{' '*22}{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}{' '*21}{Fore.MAGENTA}{Back.BLACK}┃  🔥🔥🔥    WITH IBLU    🔥🔥🔥  ┃{ColoramaStyle.RESET_ALL}{' '*22}{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}{' '*21}{Fore.MAGENTA}{Back.BLACK}┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛{ColoramaStyle.RESET_ALL}{' '*22}{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}" + " "*banner_width + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.LIGHTYELLOW_EX}{Back.BLACK}██║  ██║██╔══██╗██╔════╝██║ ██╔╝    ██╔════╝██║  ██║██╔════╝{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.LIGHTYELLOW_EX}{Back.BLACK}███████║██║  ██║██║     █████╔╝     ███████╗███████║█████╗  {ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.LIGHTYELLOW_EX}{Back.BLACK}██╔══██║██║  ██║██║     ██╔═██╗     ╚════██║██╔══██║██╔══╝  {ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.LIGHTYELLOW_EX}{Back.BLACK}██║  ██║██████╔╝╚██████╗██║  ██╗    ███████║██║  ██║███████╗{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.LIGHTYELLOW_EX}{Back.BLACK}╚═╝  ╚═╝╚═════╝ ╚═════╝╚═╝  ╚═╝    ╚══════╝╚═╝  ╚═╝╚══════╝{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.LIGHTRED_EX}╚" + "═"*banner_width + f"╝{ColoramaStyle.RESET_ALL}")
-            
-            # Main header
             print(f"\n{Fore.LIGHTCYAN_EX}╔{'═'*banner_width}╗{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}🧠 COMPLETE MENU OPTIONS (1-11) 🧠{ColoramaStyle.RESET_ALL}{' ' * (banner_width - 35)}{Fore.LIGHTCYAN_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}🎮 HACK THE WORLD - CYBERSECURITY AI ASSISTANT 🎮{ColoramaStyle.RESET_ALL}{' ' * 20}{Fore.LIGHTCYAN_EX}║{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.LIGHTCYAN_EX}╚{'═'*banner_width}╝{ColoramaStyle.RESET_ALL}\n")
             
-            # All remaining options in visual style
+            # Define options for the menu
             options = [
-                # MAIN MENU (1-4)
-                ("[1] 🧠 IBLU KALIGPT", "Multi-AI Assistant", Fore.GREEN, 
-                 "• Auto-rephrasing on refusal", "• Multi-AI querying", "🤖"),
-                ("[2] 🎮 HACKING TOOLS", "Installation & Management", Fore.BLUE, 
-                 "• Install, list, and delete security tools", "", "🔧"),
-                ("[3] ⚙️  CONFIGURATION", "Settings", Fore.CYAN, 
-                 "• API keys, rephrasing mode", "• Provider configuration", "🔑"),
-                ("[4] 📦 INSTALL LOCAL MODELS", "Uncensored AI models", Fore.LIGHTMAGENTA_EX,
-                 "• Dolphin, Gemma, WhiteRabbitNeo", "• All uncensored models", "🔓"),
+                # CORE OPTIONS (1-4)
+                ("[1] 🎮 HACKING TOOLS", "Installation & Management", Fore.LIGHTGREEN_EX,
+                 "• Install, list, and delete security tools", "• Automated setup and configuration", "🎮"),
+                ("[2] ⚙️ CONFIGURATION", "Settings", Fore.LIGHTBLUE_EX,
+                 "• API keys, rephrasing mode", "• Provider configuration", "⚙️"),
+                ("[3] 📦 INSTALL LOCAL MODELS", "Uncensored AI models", Fore.LIGHTYELLOW_EX,
+                 "• Dolphin, Gemma, WhiteRabbitNeo", "• All uncensored models", "📦"),
+                ("[4] 📊 Check API Keys Status", "View current API configuration", Fore.LIGHTMAGENTA_EX,
+                 "• Status display, Key validation", "• Provider status", "📊"),
                 
                 # ADVANCED OPTIONS (5-8)
-                ("[5] 📊 Check API Keys Status", "View current API configuration", Fore.LIGHTMAGENTA_EX,
-                 "• Status display, Key validation", "• Provider status", "📊"),
-                ("[6] 🔄 Reload from Environment", "Load API keys from environment", Fore.LIGHTMAGENTA_EX,
+                ("[5] 🔄 Reload from Environment", "Load API keys from environment", Fore.LIGHTMAGENTA_EX,
                  "• Environment loading", "• Automatic detection", "🔄"),
-                ("[7] ✏️ Manual Key Entry", "Enter API keys manually", Fore.LIGHTMAGENTA_EX,
+                ("[6] ✏️ Manual Key Entry", "Enter API keys manually", Fore.LIGHTMAGENTA_EX,
                  "• Manual input, Key validation", "• Secure storage", "✏️"),
-                ("[8] 🔗 Test API Connections", "Test all configured endpoints", Fore.LIGHTMAGENTA_EX,
+                ("[7] 🔗 Test API Connections", "Test all configured endpoints", Fore.LIGHTMAGENTA_EX,
                  "• Connectivity testing", "• Response validation", "🔗"),
-                
-                # MODEL LISTING SUBMENU (9-10)
-                ("[9] 📋 LIST Cloud Models", "Show cloud API models", Fore.LIGHTWHITE_EX,
+                ("[8] 📋 LIST Cloud Models", "Show cloud API models", Fore.LIGHTWHITE_EX,
                  "• OpenAI, Gemini, Mistral", "• API key requirements", "☁️"),
-                ("[10] 🗑️ DELETE Local LLaMA Models", "Remove local Llama models", Fore.LIGHTWHITE_EX,
+                
+                # MODEL MANAGEMENT (9-10)
+                ("[9] 🗑️ DELETE Local LLaMA Models", "Remove local Llama models", Fore.LIGHTWHITE_EX,
                  "• Model deletion, Space cleanup", "• Configuration reset", "🦙"),
                 
-                ("[11] 🚪 EXIT", "Leave the program", Fore.RED, "", "", "👋"),
+                # EXIT (11)
+                ("[10] 🚪 EXIT", "Leave the program", Fore.RED, "", "", "👋"),
             ]
             
             for i, (option, title, color, desc1, desc2, icon) in enumerate(options):
@@ -4554,7 +4537,7 @@ All responses should be helpful, educational, and focused on legitimate cybersec
         elif choice == '4':
             return self.test_api_connections()
         elif choice == '5':
-            return self.handle_configuration()
+            return self.show_main_menu()
         else:
             return f"❌ Invalid choice: {choice}\n💡 Please choose 1-5"
     
@@ -4584,19 +4567,31 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                             os.environ[key] = value
                             print(f"✅ Loaded {key}")
                 
-                # Update configuration
+                # Update configuration - fix for dict config
                 if os.environ.get('OPENAI_API_KEY'):
-                    self.config.openai_keys = [os.environ['OPENAI_API_KEY']]
+                    if 'api_keys' not in self.config:
+                        self.config['api_keys'] = {}
+                    self.config['api_keys']['openai'] = [os.environ['OPENAI_API_KEY']]
                 if os.environ.get('GEMINI_API_KEY'):
-                    self.config.gemini_keys = [os.environ['GEMINI_API_KEY']]
+                    if 'api_keys' not in self.config:
+                        self.config['api_keys'] = {}
+                    self.config['api_keys']['gemini'] = [os.environ['GEMINI_API_KEY']]
                 if os.environ.get('MISTRAL_API_KEY'):
-                    self.config.mistral_keys = [os.environ['MISTRAL_API_KEY']]
+                    if 'api_keys' not in self.config:
+                        self.config['api_keys'] = {}
+                    self.config['api_keys']['mistral'] = [os.environ['MISTRAL_API_KEY']]
+                
+                # Reload API keys after environment update
+                self.load_api_keys()
                 
                 print(f"\n✅ Environment variables reloaded successfully!")
                 print(f"📊 Updated configuration:")
-                print(f"  • OpenAI: {len(self.config.openai_keys)} key(s)")
-                print(f"  • Gemini: {len(self.config.gemini_keys)} key(s)")
-                print(f"  • Mistral: {len(self.config.mistral_keys) if self.config.mistral_keys else 0} key(s)")
+                openai_count = len(self.api_keys.get(Provider.OPENAI, []))
+                gemini_count = len(self.api_keys.get(Provider.GEMINI, []))
+                mistral_count = len(self.api_keys.get(Provider.MISTRAL, []))
+                print(f"  • OpenAI: {openai_count} key(s)")
+                print(f"  • Gemini: {gemini_count} key(s)")
+                print(f"  • Mistral: {mistral_count} key(s)")
                 
                 return "✅ API keys reloaded from environment!"
                 
@@ -5002,32 +4997,24 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             print(f"{Fore.LIGHTBLUE_EX}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}🔑 API KEYS STATUS 🔑{ColoramaStyle.RESET_ALL} {Fore.LIGHTBLUE_EX}{' ' * 42}║{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.LIGHTBLUE_EX}╚══════════════════════════════════════════════════════════════════════════════╝{ColoramaStyle.RESET_ALL}\n")
             
-            # Provider status boxes
+            # Provider status boxes using new API key structure
             providers = []
             
-            if self.config.openai_keys:
-                valid_keys = [k for k in self.config.openai_keys if k and k != "your-openai-api-key-here"]
-                providers.append(("OpenAI", f"{len(valid_keys)} keys configured", Fore.LIGHTGREEN_EX if valid_keys else Fore.LIGHTRED_EX))
-            else:
-                providers.append(("OpenAI", "No keys configured", Fore.LIGHTRED_EX))
+            openai_keys = self.api_keys.get(Provider.OPENAI, [])
+            valid_openai = [k for k in openai_keys if k and not k.startswith('fake-') and len(k) > 10]
+            providers.append(("OpenAI", f"{len(valid_openai)} keys configured", Fore.LIGHTGREEN_EX if valid_openai else Fore.LIGHTRED_EX))
             
-            if self.config.gemini_keys:
-                valid_keys = [k for k in self.config.gemini_keys if k and k != "your-gemini-api-key-here"]
-                providers.append(("Gemini", f"{len(valid_keys)} keys configured", Fore.LIGHTGREEN_EX if valid_keys else Fore.LIGHTRED_EX))
-            else:
-                providers.append(("Gemini", "No keys configured", Fore.LIGHTRED_EX))
+            gemini_keys = self.api_keys.get(Provider.GEMINI, [])
+            valid_gemini = [k for k in gemini_keys if k and not k.startswith('fake-') and len(k) > 10]
+            providers.append(("Gemini", f"{len(valid_gemini)} keys configured", Fore.LIGHTGREEN_EX if valid_gemini else Fore.LIGHTRED_EX))
             
-            if self.config.llama_keys:
-                valid_keys = [k for k in self.config.llama_keys if k and k != "your-llama-api-key-here"]
-                providers.append(("Llama", f"{len(valid_keys)} keys configured", Fore.LIGHTGREEN_EX if valid_keys else Fore.LIGHTRED_EX))
-            else:
-                providers.append(("Llama", "No keys configured", Fore.LIGHTRED_EX))
+            mistral_keys = self.api_keys.get(Provider.MISTRAL, [])
+            valid_mistral = [k for k in mistral_keys if k and not k.startswith('fake-') and len(k) > 10]
+            providers.append(("Mistral", f"{len(valid_mistral)} keys configured", Fore.LIGHTGREEN_EX if valid_mistral else Fore.LIGHTRED_EX))
             
-            if self.config.mistral_keys:
-                valid_keys = [k for k in self.config.mistral_keys if k and k != "your-mistral-api-key-here"]
-                providers.append(("Mistral", f"{len(valid_keys)} keys configured", Fore.LIGHTGREEN_EX if valid_keys else Fore.LIGHTRED_EX))
-            else:
-                providers.append(("Mistral", "No keys configured", Fore.LIGHTRED_EX))
+            huggingface_keys = self.api_keys.get(Provider.HUGGINGFACE, [])
+            valid_hf = [k for k in huggingface_keys if k and not k.startswith('fake-') and len(k) > 10]
+            providers.append(("HuggingFace", f"{len(valid_hf)} keys configured", Fore.LIGHTGREEN_EX if valid_hf else Fore.LIGHTRED_EX))
             
             # Display each provider in its own box
             for provider, status, color in providers:
@@ -5037,7 +5024,8 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             
             # Instructions box
             print(f"{Fore.YELLOW}┌─ {ColoramaStyle.BRIGHT}{Fore.WHITE}💡 INSTRUCTIONS 💡{ColoramaStyle.RESET_ALL}{Fore.YELLOW} ─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.YELLOW}│{ColoramaStyle.RESET_ALL}  {ColoramaStyle.BRIGHT}{Fore.WHITE}Edit config.json to add API keys{ColoramaStyle.RESET_ALL}{' ' * (82 - 32)}{Fore.YELLOW}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.YELLOW}│{ColoramaStyle.RESET_ALL}  {ColoramaStyle.BRIGHT}{Fore.WHITE}Use option 7 (Manual Key Entry) to add API keys{ColoramaStyle.RESET_ALL}{' ' * (82 - 42)}{Fore.YELLOW}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.YELLOW}│{ColoramaStyle.RESET_ALL}  {ColoramaStyle.BRIGHT}{Fore.WHITE}Use option 2 (Reload from Environment) to load from ~/.iblu/api_keys.env{ColoramaStyle.RESET_ALL}{' ' * (82 - 62)}{Fore.YELLOW}│{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.YELLOW}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}\n")
             
             return ""
