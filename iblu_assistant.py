@@ -4265,6 +4265,9 @@ Provide step-by-step technical details while maintaining educational context and
                 spinner.update_progress(step_progress, step_description)
                 time.sleep(0.05)  # Brief pause for visual effect
             
+            # Update to 100% before making API call to show we're ready
+            spinner.update_progress(100, f"{theme['name']} making API call...")
+            
             # Make the actual API call
             try:
                 if provider == Provider.OPENAI:
@@ -4274,7 +4277,8 @@ Provide step-by-step technical details while maintaining educational context and
                 elif provider == Provider.MISTRAL:
                     result = self.call_mistral_api(system_prompt, user_message, api_key)
                 elif provider == Provider.LLAMA:
-                    result = self.call_llama_api(system_prompt, user_message, api_key)
+                    # Add shorter timeout for Llama to prevent hanging
+                    result = self.call_llama_api_with_timeout(system_prompt, user_message, api_key, timeout=60)
                 elif provider == Provider.GEMINI_CLI:
                     result = self.call_gemini_cli_api(system_prompt, user_message, api_key)
                 else:
@@ -4308,6 +4312,9 @@ Provide step-by-step technical details while maintaining educational context and
                     bar.update(step_progress, step_description)
                     time.sleep(0.1)  # Brief pause for visual effect
                 
+                # Update to 100% before making API call
+                bar.update(100, f"{theme['name']} making API call...")
+                
                 # Make the actual API call
                 try:
                     if provider == Provider.OPENAI:
@@ -4317,7 +4324,8 @@ Provide step-by-step technical details while maintaining educational context and
                     elif provider == Provider.MISTRAL:
                         result = self.call_mistral_api(system_prompt, user_message, api_key)
                     elif provider == Provider.LLAMA:
-                        result = self.call_llama_api(system_prompt, user_message, api_key)
+                        # Add shorter timeout for Llama to prevent hanging
+                        result = self.call_llama_api_with_timeout(system_prompt, user_message, api_key, timeout=60)
                     elif provider == Provider.GEMINI_CLI:
                         result = self.call_gemini_cli_api(system_prompt, user_message, api_key)
                     else:
@@ -4343,7 +4351,8 @@ Provide step-by-step technical details while maintaining educational context and
                 elif provider == Provider.MISTRAL:
                     result = self.call_mistral_api(system_prompt, user_message, api_key)
                 elif provider == Provider.LLAMA:
-                    result = self.call_llama_api(system_prompt, user_message, api_key)
+                    # Add shorter timeout for Llama to prevent hanging
+                    result = self.call_llama_api_with_timeout(system_prompt, user_message, api_key, timeout=60)
                 elif provider == Provider.GEMINI_CLI:
                     result = self.call_gemini_cli_api(system_prompt, user_message, api_key)
                 else:
@@ -4499,6 +4508,37 @@ Provide step-by-step technical details while maintaining educational context and
             # Fallback to llama2 if detection fails
             return ['llama2']
     
+    def call_llama_api_with_timeout(self, system_prompt: str, user_message: str, api_key: str, timeout: int = 60) -> str:
+        """Call Llama API with timeout protection to prevent hanging"""
+        import signal
+        import threading
+        
+        result_container = {"result": None, "error": None, "done": False}
+        
+        def llama_call():
+            try:
+                result_container["result"] = self.call_llama_api(system_prompt, user_message, api_key)
+                result_container["done"] = True
+            except Exception as e:
+                result_container["error"] = e
+                result_container["done"] = True
+        
+        # Start the Llama call in a separate thread
+        thread = threading.Thread(target=llama_call)
+        thread.daemon = True
+        thread.start()
+        
+        # Wait for completion with timeout
+        thread.join(timeout)
+        
+        if not result_container["done"]:
+            return f"❌ Llama API timeout after {timeout} seconds\n\n💡 The Llama model took too long to respond. Try:\n• Using a smaller model\n• Checking if Ollama is running properly\n• Reducing the complexity of your request"
+        
+        if result_container["error"]:
+            raise result_container["error"]
+        
+        return result_container["result"]
+    
     def call_llama_api(self, system_prompt: str, user_message: str, api_key: str) -> str:
         """Call local Llama API via Ollama with automatic model selection"""
         try:
@@ -4527,7 +4567,7 @@ Provide step-by-step technical details while maintaining educational context and
                 "stream": False
             }
             
-            response = requests.post(url, headers=headers, json=payload, timeout=120)
+            response = requests.post(url, headers=headers, json=payload, timeout=60)
             response.raise_for_status()
             
             result = response.json()
