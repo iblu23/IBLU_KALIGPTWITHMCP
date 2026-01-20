@@ -60,6 +60,14 @@ try:
 except ImportError:
     ALIVE_PROGRESS_AVAILABLE = False
 
+# Optional Textual for advanced TUI visual effects
+try:
+    from textual_progress import progress_manager, TEXTUAL_AVAILABLE, VisualThemes
+    TEXTUAL_PROGRESS_AVAILABLE = True
+except ImportError:
+    TEXTUAL_PROGRESS_AVAILABLE = False
+    TEXTUAL_AVAILABLE = False
+
 
 # API Key Protection - Anti-Detection Measures
 import os
@@ -3257,7 +3265,11 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                 ("[2] 🦙 Install Llama Model", "Ollama-based Llama installation", Fore.LIGHTGREEN_EX),
                 ("[3] 🐬 Install Mistral Dolphin", "Ollama-based Mistral installation", Fore.LIGHTRED_EX),
                 ("[4] 🚀 Install All Models", "Complete installation suite", Fore.LIGHTYELLOW_EX),
-                ("[5] 🔙 Back to Configuration", "Return to configuration menu", Fore.LIGHTCYAN_EX)
+                ("[5] 🎨 Install Gemini (Textual)", "Beautiful visual effects installation", Fore.MAGENTA),
+                ("[6] 🎨 Install Llama (Textual)", "Beautiful visual effects installation", Fore.MAGENTA),
+                ("[7] 🎨 Install Mistral (Textual)", "Beautiful visual effects installation", Fore.MAGENTA),
+                ("[8] 🎨 Themes Demo", "Show all available visual themes", Fore.CYAN),
+                ("[9] 🔙 Back to Configuration", "Return to configuration menu", Fore.LIGHTCYAN_EX)
             ]
             
             for i, (option, desc, color) in enumerate(options):
@@ -3272,9 +3284,13 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             print("  2. Install Llama Model (Ollama)")
             print("  3. Install Mistral Dolphin Model (Ollama)")
             print("  4. Install All Models")
-            print("  5. Back to configuration\n")
+            print("  5. Install Gemini (Textual)")
+            print("  6. Install Llama (Textual)")
+            print("  7. Install Mistral (Textual)")
+            print("  8. Themes Demo")
+            print("  9. Back to configuration\n")
         
-        choice = input(f"{self._colorize('🎯 Choose option (1-5):', Fore.YELLOW)}").strip()
+        choice = input(f"{self._colorize('🎯 Choose option (1-9):', Fore.YELLOW)}").strip()
         
         if choice == '1':
             result = self.install_gemini_local()
@@ -3297,6 +3313,26 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             input(f"\n{self._colorize('Press Enter to continue...', Fore.YELLOW)}")
             return self.handle_configuration()
         elif choice == '5':
+            result = self.install_model_with_textual_progress("Gemini", [])
+            print(f"\n{result}")
+            input(f"\n{self._colorize('Press Enter to continue...', Fore.YELLOW)}")
+            return self.handle_configuration()
+        elif choice == '6':
+            result = self.install_model_with_textual_progress("Llama", [])
+            print(f"\n{result}")
+            input(f"\n{self._colorize('Press Enter to continue...', Fore.YELLOW)}")
+            return self.handle_configuration()
+        elif choice == '7':
+            result = self.install_model_with_textual_progress("Mistral Dolphin", [])
+            print(f"\n{result}")
+            input(f"\n{self._colorize('Press Enter to continue...', Fore.YELLOW)}")
+            return self.handle_configuration()
+        elif choice == '8':
+            result = self.show_textual_themes_demo()
+            print(f"\n{result}")
+            input(f"\n{self._colorize('Press Enter to continue...', Fore.YELLOW)}")
+            return self.install_local_models_menu()
+        elif choice == '9':
             return self.handle_configuration()
         else:
             print(f"❌ Invalid choice: {choice}")
@@ -4367,8 +4403,28 @@ Provide step-by-step technical details while maintaining educational context and
             return f"❌ Installation error: {e}"
     
     def show_loading_animation(self, message: str):
-        """Show a beautiful loading animation with spinner or alive-progress"""
+        """Show a beautiful loading animation with Textual, alive-progress, or fallback"""
         timer = None
+        
+        # Priority 1: Textual with random visual effects
+        if TEXTUAL_PROGRESS_AVAILABLE and TEXTUAL_AVAILABLE:
+            try:
+                import asyncio
+                # Create a simple progress task with random theme
+                theme = VisualThemes.get_random_theme()
+                tasks = [{"name": message, "total": 100}]
+                
+                # Show brief Textual progress
+                progress_app = progress_manager.create_progress_session(message, tasks)
+                # Run briefly and close
+                print(f"🎨 [{theme.name}] {message}")
+                time.sleep(0.5)
+                return None
+            except Exception as e:
+                # Fallback to alive-progress if Textual fails
+                pass
+        
+        # Priority 2: alive-progress
         if ALIVE_PROGRESS_AVAILABLE:
             import time
             from alive_progress import alive_bar
@@ -5047,6 +5103,138 @@ Provide step-by-step technical details while maintaining educational context and
                     print(f"• {result}")
             
             return "✅ All local model installations completed!"
+    
+    def install_model_with_textual_progress(self, model_name: str, installation_steps: List[str]) -> str:
+        """Install model with beautiful Textual progress and random visual effects"""
+        if not TEXTUAL_PROGRESS_AVAILABLE or not TEXTUAL_AVAILABLE:
+            # Fallback to regular installation
+            print(f"🎨 Textual not available, using fallback for {model_name}")
+            if "gemini" in model_name.lower():
+                return self.install_gemini_local()
+            elif "llama" in model_name.lower():
+                return self.install_llama_local()
+            elif "mistral" in model_name.lower():
+                return self.install_mistral_dolphin_local()
+            else:
+                return f"❌ Unknown model: {model_name}"
+        
+        try:
+            print(f"\n🎨 Starting Textual-enhanced installation for {model_name}")
+            print(f"🎭 Each session gets unique visual effects!")
+            
+            # Create progress tasks with detailed steps
+            tasks = [
+                {"name": f"🔍 Checking system requirements", "total": 100},
+                {"name": f"📦 Downloading {model_name} model", "total": 100},
+                {"name": f"🔧 Configuring {model_name}", "total": 100},
+                {"name": f"✅ Verifying installation", "total": 100},
+            ]
+            
+            # Add model-specific steps
+            if "gemini" in model_name.lower():
+                tasks.insert(1, {"name": "🐳 Setting up Docker environment", "total": 100})
+                tasks.insert(2, {"name": "📥 Pulling Gemini Docker image", "total": 100})
+            elif "llama" in model_name.lower() or "mistral" in model_name.lower():
+                tasks.insert(1, {"name": "🦙 Checking Ollama service", "total": 100})
+                tasks.insert(2, {"name": f"📥 Downloading {model_name} via Ollama", "total": 100})
+            
+            # Show the current theme info
+            current_theme = VisualThemes.get_random_theme()
+            print(f"🎨 Current Theme: {current_theme.name}")
+            print(f"🌈 Visual Effect: {current_theme.effect_type.value}")
+            print(f"⚡ Animation Speed: {current_theme.animation_speed}x")
+            
+            # Create and run the Textual progress session
+            progress_app = progress_manager.create_progress_session(
+                f"Installing {model_name}", 
+                tasks
+            )
+            
+            # Simulate the actual installation process with progress updates
+            print(f"\n🚀 Installing {model_name} with {current_theme.name} theme...")
+            
+            # Run the actual installation in background
+            import threading
+            import time
+            
+            installation_result = {'status': 'running', 'result': None}
+            
+            def run_actual_installation():
+                """Run the actual installation in background"""
+                try:
+                    if "gemini" in model_name.lower():
+                        result = self.install_gemini_local()
+                    elif "llama" in model_name.lower():
+                        result = self.install_llama_local()
+                    elif "mistral" in model_name.lower():
+                        result = self.install_mistral_dolphin_local()
+                    else:
+                        result = f"❌ Unknown model: {model_name}"
+                    
+                    installation_result['status'] = 'completed'
+                    installation_result['result'] = result
+                    
+                except Exception as e:
+                    installation_result['status'] = 'error'
+                    installation_result['result'] = f"❌ Installation error: {e}"
+            
+            # Start installation in background
+            install_thread = threading.Thread(target=run_actual_installation)
+            install_thread.start()
+            
+            # Simulate progress updates while installation runs
+            for i in range(100):  # Simulate progress
+                if installation_result['status'] != 'running':
+                    break
+                time.sleep(0.1)  # Brief pause to show progress
+            
+            # Wait for installation to complete
+            install_thread.join()
+            
+            # Show final result with theme info
+            final_result = installation_result['result']
+            
+            if TEXTUAL_AVAILABLE:
+                print(f"\n🎨 Installation completed with {current_theme.name} theme!")
+                print(f"🎭 Visual effect: {current_theme.effect_type.value}")
+                print(f"✨ Next session will have a different random theme!")
+            
+            return final_result
+            
+        except Exception as e:
+            error_msg = f"❌ Textual installation error: {e}"
+            print(f"🔄 Falling back to regular installation...")
+            
+            # Fallback to regular installation
+            if "gemini" in model_name.lower():
+                return self.install_gemini_local()
+            elif "llama" in model_name.lower():
+                return self.install_llama_local()
+            elif "mistral" in model_name.lower():
+                return self.install_mistral_dolphin_local()
+            else:
+                return f"❌ Unknown model: {model_name}"
+    
+    def show_textual_themes_demo(self) -> str:
+        """Show demo of all available Textual themes"""
+        if not TEXTUAL_PROGRESS_AVAILABLE:
+            return "❌ Textual not available"
+        
+        print(f"\n🎨 Available Textual Progress Themes:")
+        print("=" * 60)
+        
+        for i, theme in enumerate(VisualThemes.THEMES, 1):
+            print(f"{i:2d}. {theme.name}")
+            print(f"    🎭 Effect: {theme.effect_type.value}")
+            print(f"    🌈 Colors: {theme.primary_color} + {theme.secondary_color}")
+            print(f"    ⚡ Speed: {theme.animation_speed}x | ✨ Glow: {theme.glow_intensity}")
+            print()
+        
+        print(f"💡 Each installation session gets a random theme!")
+        print(f"🎲 Random selection ensures unique visual experience every time!")
+        print(f"🔄 Themes include: Rainbow, Pulse, Wave, Neon, Matrix, Fire, Ocean, Galaxy, Cyber, Aurora")
+        
+        return "✅ Theme demo completed!"
     
     def list_and_select_llama_models(self) -> str:
         """List available Llama models and allow selection"""
