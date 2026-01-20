@@ -2639,15 +2639,14 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             
             print()
         
-        # Menu options header
+        # Menu options in single panel
         if COLORAMA_AVAILABLE:
-            menu_header = f"{Fore.LIGHTCYAN_EX}┌─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}"
-            menu_title = f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}🧠 MAIN MENU 🧠{ColoramaStyle.RESET_ALL} {Fore.LIGHTCYAN_EX}{' ' * 51}│{ColoramaStyle.RESET_ALL}"
-            menu_footer = f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}"
+            w = 144
             
-            print(f"\n{menu_header}")
-            print(f"{menu_title}")
-            print(f"{menu_footer}\n")
+            # Single continuous panel for main menu
+            print(f"\n{Fore.LIGHTCYAN_EX}┌{'═'*w}┐{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}🧠 MAIN MENU 🧠{ColoramaStyle.RESET_ALL} {Fore.LIGHTCYAN_EX}{' ' * 51}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}├{'═'*w}┤{ColoramaStyle.RESET_ALL}")
             
             # Menu options with beautiful colors
             options = [
@@ -2658,14 +2657,20 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                 ("[5] 🚪 EXIT", "Leave the program", Fore.YELLOW, "", "")
             ]
             
-            for i, (option, title, color, desc1, desc2) in enumerate(options):
-                print(f"{Fore.LIGHTCYAN_EX}┌─ {ColoramaStyle.BRIGHT}{Fore.WHITE}{option}{ColoramaStyle.RESET_ALL}{Fore.LIGHTCYAN_EX} ─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}")
-                print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}  {ColoramaStyle.BRIGHT}{Fore.WHITE}{title}{ColoramaStyle.RESET_ALL}{' ' * (55 - len(title))}{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
+            for option, title, color, desc1, desc2 in options:
+                # Option line
+                print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL} {color}{ColoramaStyle.BRIGHT}{option}{ColoramaStyle.RESET_ALL}: {title.ljust(25)}{' ' * (w - len(option) - len(title) - 4)}{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
+                
+                # Description lines
                 if desc1:
-                    print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}  {Fore.CYAN}{desc1}{ColoramaStyle.RESET_ALL}{' ' * (55 - len(desc1))}{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
+                    print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}  {Fore.CYAN}{desc1.ljust(65)}{' ' * (w - len(desc1) - 3)}{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
                 if desc2:
-                    print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}  {Fore.CYAN}{desc2}{ColoramaStyle.RESET_ALL}{' ' * (55 - len(desc2))}{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
-                print(f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}\n")
+                    print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}  {Fore.CYAN}{desc2.ljust(65)}{' ' * (w - len(desc2) - 3)}{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
+                
+                # Add spacing between options
+                print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}{' ' * w}{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
+            
+            print(f"{Fore.LIGHTCYAN_EX}└{'═'*w}┘{ColoramaStyle.RESET_ALL}\n")
             
             # Footer with instructions
             footer_border = f"{Fore.LIGHTGREEN_EX}┌─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}"
