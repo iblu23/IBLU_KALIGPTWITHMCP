@@ -2363,8 +2363,6 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             world_text = Text("🔥🔥🔥 HACK THE WORLD 🔥🔥🔥", style="bold magenta", justify="center")
             console.print(Panel(world_text, border_style="magenta", padding=(1, 4), expand=True))
             
-            console.print(Panel(pentagram_text, border_style="red", padding=(1, 4), expand=True))
-            
         else:
             # Fallback banner without Rich - Screen Wide (120 chars)
             w = 120
