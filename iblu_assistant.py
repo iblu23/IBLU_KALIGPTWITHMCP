@@ -2506,33 +2506,40 @@ All responses should be helpful, educational, and focused on legitimate cybersec
     def is_current_model_uncensored(self) -> bool:
         """Check if the current model is an uncensored model like Dolphin"""
         try:
-            # First check if we're configured to use local models
-            if hasattr(self, 'config'):
-                # Check LLAMA keys for local indication (primary method for Dolphin)
-                if self.config.llama_keys and any(key == "local" for key in self.config.llama_keys):
-                    # If configured for local LLAMA, check if Dolphin is installed
-                    try:
-                        result = subprocess.run(['ollama', 'list'], capture_output=True, text=True, timeout=10)
-                        if result.returncode == 0:
-                            models_output = result.stdout.lower()
-                            # Specifically check for Dolphin first
-                            if 'dolphin' in models_output:
-                                return True
-                            # Check other uncensored indicators
-                            uncensored_indicators = ['uncensored', 'unfiltered', 'dare', 'wizard', 'pygmalion', 'nous-hermes', 'mythos']
-                            return any(indicator in models_output for indicator in uncensored_indicators)
-                    except:
-                        # If we can't check Ollama, assume local means uncensored
+            # First, directly check if Dolphin is installed via Ollama
+            try:
+                result = subprocess.run(['ollama', 'list'], capture_output=True, text=True, timeout=10)
+                if result.returncode == 0:
+                    models_output = result.stdout.lower()
+                    # Priority check for Dolphin first
+                    if 'dolphin' in models_output:
                         return True
+                    # Check other uncensored indicators
+                    uncensored_indicators = ['uncensored', 'unfiltered', 'dare', 'wizard', 'pygmalion', 'nous-hermes', 'mythos']
+                    return any(indicator in models_output for indicator in uncensored_indicators)
+            except:
+                pass  # Continue with other checks if Ollama check fails
+            
+            # First check if we're configured to use local models
+            if hasattr(self, 'api_keys'):
+                # Check LLAMA keys for local indication (primary method for Dolphin)
+                llama_keys = self.api_keys.get(Provider.LLAMA, [])
+                if any(key == "local" for key in llama_keys):
+                    return True
                 
                 # Check MISTRAL keys for local indication  
-                if self.config.mistral_keys and any(key == "local" for key in self.config.mistral_keys):
+                mistral_keys = self.api_keys.get(Provider.MISTRAL, [])
+                if any(key == "local" for key in mistral_keys):
                     return True
                 
                 # Check HuggingFace models for uncensored models
-                if self.config.huggingface_models:
-                    for model in self.config.huggingface_models:
-                        model_name = model.get('name', '').lower()
+                hf_models = self.api_keys.get(Provider.HUGGINGFACE, [])
+                if hf_models:
+                    for model in hf_models:
+                        if isinstance(model, dict):
+                            model_name = model.get('name', '').lower()
+                        else:
+                            model_name = str(model).lower()
                         if any(indicator in model_name for indicator in ['dolphin', 'uncensored', 'unfiltered']):
                             return True
             
