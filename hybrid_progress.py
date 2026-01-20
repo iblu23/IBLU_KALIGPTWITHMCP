@@ -41,8 +41,49 @@ try:
     TEXTUAL_AVAILABLE = True
 except ImportError:
     TEXTUAL_AVAILABLE = False
-    # Create fallback Widget class
+    # Create fallback classes for when Textual is not available
     class Widget:
+        def __init__(self, *args, **kwargs):
+            pass
+    
+    class App:
+        def __init__(self, *args, **kwargs):
+            pass
+        
+        def run_async(self):
+            return None
+        
+        def exit(self):
+            pass
+    
+    class ComposeResult:
+        def __init__(self, *args, **kwargs):
+            pass
+    
+    class Container:
+        def __init__(self, *args, **kwargs):
+            pass
+    
+    class Static:
+        def __init__(self, *args, **kwargs):
+            pass
+        
+        def update(self, *args, **kwargs):
+            pass
+    
+    class ProgressBar:
+        def __init__(self, *args, **kwargs):
+            self.progress = 0
+    
+    class Header:
+        def __init__(self, *args, **kwargs):
+            pass
+    
+    class Footer:
+        def __init__(self, *args, **kwargs):
+            pass
+    
+    class reactive:
         def __init__(self, *args, **kwargs):
             pass
 
