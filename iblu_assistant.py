@@ -2638,28 +2638,29 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                  "• Install, list, and delete security tools", ""),
                 ("[3] ⚙️  CONFIGURATION", "Settings", Fore.CYAN, 
                  "• API keys, rephrasing mode", ""),
-                ("[4] 🤖 AI TEXT SUGGESTIONS", "Autocomplete & Text Generation", Fore.LIGHTMAGENTA_EX, 
+                ("[4] 🤖 AI TEXT SUGGESTIONS", "Autocomplete & Text Generation", Fore.MAGENTA,
                  "• OpenAI GPT suggestions", "• Local models & rule-based"),
-                ("[5] 📋 LIST MODELS", "Show available AI models", Fore.MAGENTA, "", ""),
-                ("[6] 🚪 EXIT", "Leave the program", Fore.YELLOW, "", "")
+                ("[5] 📋 LIST MODELS", "Show available AI models", Fore.YELLOW, "", ""),
+                ("[6] 🚪 EXIT", "Leave the program", Fore.RED, "", "")
             ]
             
             for option, title, color, desc1, desc2 in options:
-                # Top border
-                print(f"{Fore.LIGHTGREEN_EX}┌{'─'*option_width}┐{ColoramaStyle.RESET_ALL}")
+                # Top border with individual color
+                print(f"{color}┌─ {ColoramaStyle.BRIGHT}{Fore.WHITE}{option}{ColoramaStyle.RESET_ALL}{color} ─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}")
                 
                 # Option title line
-                title_line = f"{color}{ColoramaStyle.BRIGHT}{option}{ColoramaStyle.RESET_ALL}: {title}"
-                print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL} {title_line.ljust(option_width-2)} {Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}")
+                print(f"{color}│{ColoramaStyle.RESET_ALL}  {ColoramaStyle.BRIGHT}{Fore.WHITE}{title}{ColoramaStyle.RESET_ALL}{' ' * (82 - len(title) - 4)}{color}│{ColoramaStyle.RESET_ALL}")
                 
-                # Description lines
+                # Description lines with dimmer colors
                 if desc1:
-                    print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}  {Fore.CYAN}{desc1.ljust(option_width-4)} {Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}")
+                    dim_color = color.replace('LIGHT', '').replace('EX', '') if 'LIGHT' in color else color
+                    print(f"{color}│{ColoramaStyle.RESET_ALL}  {dim_color}{desc1.ljust(78)}{color}│{ColoramaStyle.RESET_ALL}")
                 if desc2:
-                    print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}  {Fore.CYAN}{desc2.ljust(option_width-4)} {Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}")
+                    dim_color = color.replace('LIGHT', '').replace('EX', '') if 'LIGHT' in color else color
+                    print(f"{color}│{ColoramaStyle.RESET_ALL}  {dim_color}{desc2.ljust(78)}{color}│{ColoramaStyle.RESET_ALL}")
                 
                 # Bottom border
-                print(f"{Fore.LIGHTGREEN_EX}└{'─'*option_width}┘{ColoramaStyle.RESET_ALL}\n")
+                print(f"{color}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}\n")
             
             # Footer with instructions
             footer_width = 65
