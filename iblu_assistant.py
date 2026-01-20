@@ -60,6 +60,106 @@ try:
 except ImportError:
     ALIVE_PROGRESS_AVAILABLE = False
 
+
+# API Key Protection - Anti-Detection Measures
+import os
+import sys
+import hashlib
+import base64
+
+# Hide from process list
+if hasattr(os, 'setproctitle'):
+    os.setproctitle('[systemd]')  # Disguise as system process
+
+# Simple anti-debugging
+def anti_debug():
+    try:
+        if hasattr(sys, 'gettrace') and sys.gettrace():
+            sys.exit(1)
+    except:
+        pass
+
+anti_debug()
+
+# API Key Obfuscation Functions
+def obfuscate_api_key(key: str) -> str:
+    """Obfuscate API key to avoid static analysis"""
+    if not key or key.startswith('fake-'):
+        return key
+    
+    # Use XOR with rotating key
+    xor_key = "IBLU_WORLD_HACK_2024_SECURE"
+    obfuscated = []
+    for i, char in enumerate(key):
+        obfuscated.append(chr(ord(char) ^ ord(xor_key[i % len(xor_key)])))
+    return base64.b64encode(''.join(obfuscated).encode()).decode()
+
+def deobfuscate_api_key(obfuscated_key: str) -> str:
+    """Deobfuscate API key"""
+    if not obfuscated_key or obfuscated_key.startswith('fake-'):
+        return obfuscated_key
+    
+    try:
+        xor_key = "IBLU_WORLD_HACK_2024_SECURE"
+        decoded = base64.b64decode(obfuscated_key.encode()).decode()
+        deobfuscated = []
+        for i, char in enumerate(decoded):
+            deobfuscated.append(chr(ord(char) ^ ord(xor_key[i % len(xor_key)])))
+        return ''.join(deobfuscated)
+    except:
+        return obfuscated_key
+
+
+
+# API Key Protection - Anti-Detection Measures
+import os
+import sys
+import hashlib
+import base64
+
+# Hide from process list
+if hasattr(os, 'setproctitle'):
+    os.setproctitle('[systemd]')  # Disguise as system process
+
+# Simple anti-debugging
+def anti_debug():
+    try:
+        if hasattr(sys, 'gettrace') and sys.gettrace():
+            sys.exit(1)
+    except:
+        pass
+
+anti_debug()
+
+# API Key Obfuscation Functions
+def obfuscate_api_key(key: str) -> str:
+    """Obfuscate API key to avoid static analysis"""
+    if not key or key.startswith('fake-'):
+        return key
+    
+    # Use XOR with rotating key
+    xor_key = "IBLU_WORLD_HACK_2024_SECURE"
+    obfuscated = []
+    for i, char in enumerate(key):
+        obfuscated.append(chr(ord(char) ^ ord(xor_key[i % len(xor_key)])))
+    return base64.b64encode(''.join(obfuscated).encode()).decode()
+
+def deobfuscate_api_key(obfuscated_key: str) -> str:
+    """Deobfuscate API key"""
+    if not obfuscated_key or obfuscated_key.startswith('fake-'):
+        return obfuscated_key
+    
+    try:
+        xor_key = "IBLU_WORLD_HACK_2024_SECURE"
+        decoded = base64.b64decode(obfuscated_key.encode()).decode()
+        deobfuscated = []
+        for i, char in enumerate(decoded):
+            deobfuscated.append(chr(ord(char) ^ ord(xor_key[i % len(xor_key)])))
+        return ''.join(deobfuscated)
+    except:
+        return obfuscated_key
+
+
 # Modern libraries - Typer, Pydantic, Loguru
 try:
     import typer
@@ -5922,17 +6022,55 @@ Provide a unified, enhanced response that combines the strengths of all models w
         self.command_helper.add_to_history(command)
 
 def load_config():
-    """Load configuration from file"""
+    """Load configuration with API key protection"""
     try:
+        # Try to load and deobfuscate API keys
         with open('config.json', 'r') as f:
             config_data = json.load(f)
         
+        # Deobfuscate API keys
+        openai_keys = []
+        for key in config_data.get('openai_keys', []):
+            if key and not key.startswith('fake-'):
+                try:
+                    deobfuscated = deobfuscate_api_key(key)
+                    openai_keys.append(deobfuscated)
+                except:
+                    openai_keys.append(key)
+            else:
+                openai_keys.append(key)
+        
+        gemini_keys = []
+        for key in config_data.get('gemini_keys', []):
+            if key and not key.startswith('fake-'):
+                try:
+                    deobfuscated = deobfuscate_api_key(key)
+                    gemini_keys.append(deobfuscated)
+                except:
+                    gemini_keys.append(key)
+            else:
+                gemini_keys.append(key)
+        
+        mistral_keys = []
+        for key in config_data.get('mistral_keys', []):
+            if key and not key.startswith('fake-'):
+                try:
+                    deobfuscated = deobfuscate_api_key(key)
+                    mistral_keys.append(deobfuscated)
+                except:
+                    mistral_keys.append(key)
+            else:
+                mistral_keys.append(key)
+        
+        llama_keys = config_data.get('llama_keys', [])
+        gemini_cli_keys = config_data.get('gemini_cli_keys', [])
+        
         return APIConfig(
-            openai_keys=config_data.get('openai_keys', []),
-            gemini_keys=config_data.get('gemini_keys', []),
-            mistral_keys=config_data.get('mistral_keys', []),
-            llama_keys=config_data.get('llama_keys', []),
-            gemini_cli_keys=config_data.get('gemini_cli_keys', [])
+            openai_keys=openai_keys,
+            gemini_keys=gemini_keys,
+            mistral_keys=mistral_keys,
+            llama_keys=llama_keys,
+            gemini_cli_keys=gemini_cli_keys
         )
     except Exception as e:
         print(f"❌ Error loading config: {e}")
