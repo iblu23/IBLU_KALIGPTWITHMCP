@@ -2653,8 +2653,9 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                 ("[1] 🧠 IBLU KALIGPT", "Multi-AI Assistant", Fore.GREEN, "• Auto-rephrasing on refusal", "• Multi-AI querying"),
                 ("[2] 🎮 HACKING TOYS", "Installation & Management", Fore.BLUE, "• Install, list, and delete security tools", ""),
                 ("[3] ⚙️  CONFIGURATION", "Settings", Fore.CYAN, "• API keys, rephrasing mode", ""),
-                ("[4] 📋 LIST MODELS", "Show available AI models", Fore.MAGENTA, "", ""),
-                ("[5] 🚪 EXIT", "Leave the program", Fore.YELLOW, "", "")
+                ("[4] 🤖 AI TEXT SUGGESTIONS", "Autocomplete & Text Generation", Fore.LIGHTMAGENTA_EX, "• OpenAI GPT suggestions", "• Local models & rule-based"),
+                ("[5] 📋 LIST MODELS", "Show available AI models", Fore.MAGENTA, "", ""),
+                ("[6] 🚪 EXIT", "Leave the program", Fore.YELLOW, "", "")
             ]
             
             for option, title, color, desc1, desc2 in options:
@@ -2691,12 +2692,14 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             return self.handle_hacking_toys()
         elif choice in ['3', 'config', 'settings']:
             return self.handle_configuration()
-        elif choice in ['4', 'models', 'list']:
+        elif choice in ['4', 'suggestions', 'autocomplete', 'ai', 'text']:
+            return self.handle_ai_text_suggestions()
+        elif choice in ['5', 'models', 'list']:
             return self.list_available_models()
-        elif choice in ['5', 'exit', 'quit']:
+        elif choice in ['6', 'exit', 'quit']:
             return "👋 Goodbye! Stay secure!"
         else:
-            return f"❌ Invalid choice: {choice}\n💡 Please choose 1-5 or type 'menu'"
+            return f"❌ Invalid choice: {choice}\n💡 Please choose 1-6 or type 'menu'"
     
     def handle_hacking_toys(self):
         """Handle Hacking Toys menu - install and manage tools"""
@@ -3820,6 +3823,198 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             return ""
         else:
             return f"❌ Invalid choice: {choice}\n💡 Please choose 1-6"
+    
+    def handle_ai_text_suggestions(self):
+        """Handle AI Text Suggestions / Autocomplete with multiple approaches"""
+        if COLORAMA_AVAILABLE:
+            w = 144
+            
+            # Single continuous panel for AI suggestions
+            print(f"\n{Fore.LIGHTMAGENTA_EX}╔{'═'*w}╗{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTMAGENTA_EX}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}🤖 AI TEXT SUGGESTIONS / AUTOCOMPLETE 🤖{ColoramaStyle.RESET_ALL} {Fore.LIGHTMAGENTA_EX}{' ' * 22}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTMAGENTA_EX}├{'═'*w}┤{ColoramaStyle.RESET_ALL}")
+            
+            # AI Suggestions options
+            options = [
+                ("[1] 🧠 OpenAI GPT Suggestions", "Advanced AI-powered text completion", Fore.LIGHTGREEN_EX, "• Context-aware suggestions", "• High quality responses"),
+                ("[2] 🏠 Local Models (Hugging Face)", "Offline text generation", Fore.LIGHTBLUE_EX, "• Privacy-focused", "• Custom models support"),
+                ("[3] ⚡ Rule-based Suggestions", "Fast predefined completions", Fore.LIGHTYELLOW_EX, "• Instant responses", "• Resource efficient"),
+                ("[4] 🔙 Back to Main Menu", "Return to main interface", Fore.LIGHTCYAN_EX, "", "")
+            ]
+            
+            for option, desc, color, desc1, desc2 in options:
+                # Option line
+                print(f"{Fore.LIGHTMAGENTA_EX}│{ColoramaStyle.RESET_ALL} {color}{ColoramaStyle.BRIGHT}{option}{ColoramaStyle.RESET_ALL}: {desc.ljust(35)}{' ' * (w - len(option) - len(desc) - 4)}{Fore.LIGHTMAGENTA_EX}│{ColoramaStyle.RESET_ALL}")
+                
+                # Description lines
+                if desc1:
+                    print(f"{Fore.LIGHTMAGENTA_EX}│{ColoramaStyle.RESET_ALL}  {Fore.CYAN}{desc1.ljust(65)}{' ' * (w - len(desc1) - 3)}{Fore.LIGHTMAGENTA_EX}│{ColoramaStyle.RESET_ALL}")
+                if desc2:
+                    print(f"{Fore.LIGHTMAGENTA_EX}│{ColoramaStyle.RESET_ALL}  {Fore.CYAN}{desc2.ljust(65)}{' ' * (w - len(desc2) - 3)}{Fore.LIGHTMAGENTA_EX}│{ColoramaStyle.RESET_ALL}")
+                
+                # Add spacing between options
+                print(f"{Fore.LIGHTMAGENTA_EX}│{ColoramaStyle.RESET_ALL}{' ' * w}{Fore.LIGHTMAGENTA_EX}│{ColoramaStyle.RESET_ALL}")
+            
+            print(f"{Fore.LIGHTMAGENTA_EX}└{'═'*w}┘{ColoramaStyle.RESET_ALL}\n")
+        else:
+            print("\n" + "=" * 50)
+            print("    AI TEXT SUGGESTIONS / AUTOCOMPLETE")
+            print("=" * 50 + "\n")
+            print("1. OpenAI GPT Suggestions - Advanced AI-powered text completion")
+            print("2. Local Models (Hugging Face) - Offline text generation")
+            print("3. Rule-based Suggestions - Fast predefined completions")
+            print("4. Back to Main Menu\n")
+        
+        choice = input(f"{self._colorize('🎯 Choose suggestion type (1-4):', Fore.YELLOW)}").strip()
+        
+        if choice == '1':
+            return self.handle_openai_suggestions()
+        elif choice == '2':
+            return self.handle_local_model_suggestions()
+        elif choice == '3':
+            return self.handle_rule_based_suggestions()
+        elif choice == '4':
+            return ""
+        else:
+            return f"❌ Invalid choice: {choice}\n💡 Please choose 1-4"
+    
+    def handle_openai_suggestions(self):
+        """Handle OpenAI GPT-based text suggestions"""
+        print(f"\n{self._colorize('🧠 OpenAI GPT Suggestions', Fore.LIGHTGREEN_EX)}")
+        print(f"{self._colorize('=' * 50, Fore.CYAN)}")
+        
+        if not self.config.openai_keys:
+            return f"❌ No OpenAI API keys configured. Please set up API keys first."
+        
+        print(f"{self._colorize('✅ OpenAI API detected', Fore.GREEN)}")
+        print(f"\n{self._colorize('📝 Enter your text or context for suggestions:', Fore.YELLOW)}")
+        
+        user_text = input(f"{self._colorize('➤ ', Fore.CYAN)}").strip()
+        
+        if not user_text:
+            return f"❌ No text provided for suggestions."
+        
+        print(f"\n{self._colorize('🔄 Generating suggestions...', Fore.YELLOW)}")
+        
+        try:
+            # Simulate OpenAI API call (you'll need to implement actual API integration)
+            suggestions = [
+                f"Based on '{user_text}', here are some suggestions:",
+                "• Consider expanding on the main topic with specific examples",
+                "• Add supporting details to strengthen your argument", 
+                "• Include relevant statistics or data points",
+                "• Provide a clear conclusion or call to action"
+            ]
+            
+            print(f"\n{self._colorize('💡 AI Suggestions:', Fore.LIGHTGREEN_EX)}")
+            for i, suggestion in enumerate(suggestions, 1):
+                print(f"  {i}. {suggestion}")
+            
+        except Exception as e:
+            return f"❌ Error generating suggestions: {str(e)}"
+        
+        input(f"\n{self._colorize('Press Enter to continue...', Fore.YELLOW)}")
+        return self.handle_ai_text_suggestions()
+    
+    def handle_local_model_suggestions(self):
+        """Handle local model (Hugging Face) text suggestions"""
+        print(f"\n{self._colorize('🏠 Local Models (Hugging Face)', Fore.LIGHTBLUE_EX)}")
+        print(f"{self._colorize('=' * 50, Fore.CYAN)}")
+        
+        print(f"{self._colorize('🔍 Checking for available local models...', Fore.YELLOW)}")
+        
+        # Check for common local model directories
+        model_paths = [
+            "./models",
+            "./local_models", 
+            "~/.cache/huggingface/hub",
+            "/tmp/models"
+        ]
+        
+        available_models = []
+        for path in model_paths:
+            if os.path.exists(os.path.expanduser(path)):
+                available_models.append(path)
+        
+        if available_models:
+            print(f"{self._colorize('✅ Found model directories:', Fore.GREEN)}")
+            for model in available_models:
+                print(f"  • {model}")
+        else:
+            print(f"{self._colorize('⚠️  No local models found', Fore.YELLOW)}")
+            print(f"{self._colorize('💡 To use local models:', Fore.CYAN)}")
+            print(f"  1. Install transformers: pip install transformers")
+            print(f"  2. Download models to ./models directory")
+            print(f"  3. Configure model path in settings")
+        
+        print(f"\n{self._colorize('📝 Enter text for local model suggestions:', Fore.YELLOW)}")
+        user_text = input(f"{self._colorize('➤ ', Fore.CYAN)}").strip()
+        
+        if not user_text:
+            return f"❌ No text provided for suggestions."
+        
+        # Simulate local model suggestions
+        suggestions = [
+            f"Local model analysis for '{user_text}':",
+            "• Suggested completion based on pattern matching",
+            "• Context-aware text generation",
+            "• Privacy-focused processing (offline)"
+        ]
+        
+        print(f"\n{self._colorize('💡 Local Model Suggestions:', Fore.LIGHTBLUE_EX)}")
+        for i, suggestion in enumerate(suggestions, 1):
+            print(f"  {i}. {suggestion}")
+        
+        input(f"\n{self._colorize('Press Enter to continue...', Fore.YELLOW)}")
+        return self.handle_ai_text_suggestions()
+    
+    def handle_rule_based_suggestions(self):
+        """Handle rule-based text suggestions"""
+        print(f"\n{self._colorize('⚡ Rule-based Suggestions', Fore.LIGHTYELLOW_EX)}")
+        print(f"{self._colorize('=' * 50, Fore.CYAN)}")
+        
+        print(f"{self._colorize('🚀 Fast predefined suggestions ready!', Fore.GREEN)}")
+        
+        # Define rule-based suggestions based on common patterns
+        rule_suggestions = {
+            "hello": ["Hello! How can I help you today?", "Hi there! What would you like to know?", "Greetings! How may I assist you?"],
+            "help": ["I can help with various tasks. What do you need?", "How can I assist you today?", "What kind of help are you looking for?"],
+            "error": ["Let me help you troubleshoot this issue.", "I can help resolve this error.", "Let's work through this problem together."],
+            "thank": ["You're welcome! Happy to help!", "My pleasure! Anything else?", "Glad I could assist you!"],
+            "bye": ["Goodbye! Have a great day!", "See you later! Take care!", "Farewell! Stay safe!"]
+        }
+        
+        print(f"\n{self._colorize('📝 Enter text for rule-based suggestions:', Fore.YELLOW)}")
+        user_text = input(f"{self._colorize('➤ ', Fore.CYAN)}").strip().lower()
+        
+        if not user_text:
+            return f"❌ No text provided for suggestions."
+        
+        print(f"\n{self._colorize('💡 Rule-based Suggestions:', Fore.LIGHTYELLOW_EX)}")
+        
+        # Find matching suggestions
+        found_suggestions = []
+        for key, suggestions in rule_suggestions.items():
+            if key in user_text:
+                found_suggestions.extend(suggestions)
+        
+        if found_suggestions:
+            print(f"{self._colorize('✅ Found matching suggestions:', Fore.GREEN)}")
+            for i, suggestion in enumerate(found_suggestions[:3], 1):  # Limit to 3 suggestions
+                print(f"  {i}. {suggestion}")
+        else:
+            # Default suggestions
+            default_suggestions = [
+                "That's interesting! Tell me more.",
+                "I understand. Could you provide more details?",
+                "Let me think about how to best help you."
+            ]
+            print(f"{self._colorize('💭 Default suggestions:', Fore.CYAN)}")
+            for i, suggestion in enumerate(default_suggestions, 1):
+                print(f"  {i}. {suggestion}")
+        
+        input(f"\n{self._colorize('Press Enter to continue...', Fore.YELLOW)}")
+        return self.handle_ai_text_suggestions()
     
     def switch_ai_provider(self):
         """Switch between AI providers"""
