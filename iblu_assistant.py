@@ -6157,5 +6157,63 @@ def main():
         except Exception as e:
             return f"❌ Search failed: {str(e)}"
 
+# Modern Typer CLI Commands
+if TYPER_AVAILABLE and RICH_AVAILABLE and LOGURU_AVAILABLE:
+    from rich import print
+    from rich.panel import Panel
+    
+    # Create modern CLI app
+    modern_app = Typer(
+        name="iblu",
+        help="🔥 IBLU Professional Hacking Assistant - Advanced Security Platform",
+        add_completion=True,
+        rich_markup_mode="rich",
+        no_args_is_help=True
+    )
+
+    @modern_app.command()
+    def chat(
+        query: str = typer.Argument(..., help="Your query for the AI assistant"),
+        provider: str = typer.Option("auto", "--provider", "-p", help="AI provider to use"),
+        verbose: bool = typer.Option(False, "--verbose", "-v", help="Enable verbose logging"),
+    ):
+        """🤖 Chat with the AI assistant for security analysis."""
+        if verbose:
+            logger.info(f"Starting chat with query: {query[:50]}...")
+        
+        print(Panel.fit(
+            f"[bold green]Query:[/bold green] {query}\n"
+            f"[bold cyan]Provider:[/bold cyan] {provider}",
+            title="🤖 Chat Configuration",
+        ))
+        
+        assistant = KaliGPTMCPAssistant(load_config())
+        response = assistant.process_command(query)
+        
+        print(Panel.fit(
+            response,
+            title="🤖 AI Response",
+            border_style="blue"
+        ))
+
+    @modern_app.command()
+    def version():
+        """📋 Show version information."""
+        print(Panel.fit(
+            "[bold blue]🔥 IBLU Professional Hacking Assistant v2.4[/bold blue]\n\n"
+            "[green]🚀 Advanced Cybersecurity Automation Platform[/green]\n"
+            "[yellow]🧠 Built with Rich, Typer, Pydantic & Loguru[/yellow]\n"
+            "[cyan]🌀 Beautiful Halo Spinners & Progress Bars[/cyan]",
+            title="📋 Version Information",
+            border_style="cyan"
+        ))
+
+    def modern_main():
+        """Main entry point for modern CLI."""
+        modern_app()
+
+    # Override main if modern dependencies are available
+    main = modern_main
+
 if __name__ == "__main__":
     main()
