@@ -6302,8 +6302,15 @@ Provide step-by-step technical details while maintaining educational context.
             if not available_models:
                 return "❌ No Llama models available. Please install a model first using /install_llama"
             
-            # Use the fastest available model
-            model_to_use = available_models[0]
+            # Use the specific model requested (Dolphin) or fallback to first available
+            model_to_use = api_key if api_key in ["dolphin", "local"] and api_key != "local" else available_models[0]
+            
+            # If api_key is "dolphin", find the actual dolphin model name
+            if api_key == "dolphin":
+                for model in available_models:
+                    if "dolphin" in model.lower():
+                        model_to_use = model
+                        break
             
             # Default Ollama endpoint
             url = "http://localhost:11434/api/generate"
