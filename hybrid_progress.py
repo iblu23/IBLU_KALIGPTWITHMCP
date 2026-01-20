@@ -32,16 +32,19 @@ except ImportError:
 try:
     from textual.app import App, ComposeResult
     from textual.containers import Horizontal, Vertical, Container
-    from textual.widgets import ProgressBar, Static, Footer, Header
+    from textual.widgets import ProgressBar, Static, Footer, Header, Widget
     from textual.reactive import reactive
     from textual.binding import Binding
     from textual.screen import ModalScreen
-    from textual.widget import Widget
     from textual.coordinate import Coordinate
     from textual import on
     TEXTUAL_AVAILABLE = True
 except ImportError:
     TEXTUAL_AVAILABLE = False
+    # Create fallback Widget class
+    class Widget:
+        def __init__(self, *args, **kwargs):
+            pass
 
 # Colorama for fallback
 try:
