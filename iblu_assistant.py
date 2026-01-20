@@ -3746,23 +3746,16 @@ All responses should be helpful, educational, and focused on legitimate cybersec
     def handle_configuration(self):
         """Handle configuration settings with colorful styling"""
         if COLORAMA_AVAILABLE:
-            # Beautiful configuration header
-            config_header = f"{Fore.LIGHTRED_EX}╔══════════════════════════════════════════════════════════════════════════════╗{ColoramaStyle.RESET_ALL}"
-            config_title = f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}⚙️  CONFIGURATION SETTINGS ⚙️{ColoramaStyle.RESET_ALL} {Fore.LIGHTRED_EX}{' ' * 38}║{ColoramaStyle.RESET_ALL}"
-            config_footer = f"{Fore.LIGHTRED_EX}╚══════════════════════════════════════════════════════════════════════════════╝{ColoramaStyle.RESET_ALL}"
+            w = 144
             
-            print(f"\n{config_header}")
-            print(f"{config_title}")
-            print(f"{config_footer}\n")
+            # Single continuous panel for configuration
+            print(f"\n{Fore.LIGHTRED_EX}╔{'═'*w}╗{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}⚙️  CONFIGURATION SETTINGS ⚙️{ColoramaStyle.RESET_ALL} {Fore.LIGHTRED_EX}{' ' * 38}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}├{'═'*w}┤{ColoramaStyle.RESET_ALL}")
             
-            # Current status with colorful display
-            status_border = f"{Fore.LIGHTCYAN_EX}┌─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}"
-            status_title = f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}🔧 CURRENT STATUS 🔧{ColoramaStyle.RESET_ALL} {Fore.LIGHTCYAN_EX}{' ' * 47}│{ColoramaStyle.RESET_ALL}"
-            status_border2 = f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}"
-            
-            print(f"{status_border}")
-            print(f"{status_title}")
-            print(f"{status_border2}")
+            # Current status section
+            print(f"{Fore.LIGHTRED_EX}│{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}🔧 CURRENT STATUS 🔧{ColoramaStyle.RESET_ALL} {Fore.LIGHTRED_EX}{' ' * 47}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}├{'═'*w}┤{ColoramaStyle.RESET_ALL}")
             
             # Current AI Provider with color
             provider_colors = {
@@ -3775,11 +3768,11 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             }
             provider_color = provider_colors.get(self.current_ai_provider, Fore.LIGHTWHITE_EX)
             
-            print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}   {Fore.YELLOW}🔑{ColoramaStyle.RESET_ALL} Current AI Provider: {provider_color}{ColoramaStyle.BRIGHT}{self.current_ai_provider.value.title()}{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}   {Fore.YELLOW}🔓{ColoramaStyle.RESET_ALL} Rephrasing Mode: {Fore.LIGHTGREEN_EX if self.rephrasing_mode else Fore.LIGHTRED_EX}{'✅ Enabled' if self.rephrasing_mode else '❌ Disabled'}{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}\n")
+            print(f"{Fore.LIGHTRED_EX}│{ColoramaStyle.RESET_ALL}   {Fore.YELLOW}🔑{ColoramaStyle.RESET_ALL} Current AI Provider: {provider_color}{ColoramaStyle.BRIGHT}{self.current_ai_provider.value.title()}{ColoramaStyle.RESET_ALL}{' ' * (w - len(self.current_ai_provider.value.title()) - 30)}{Fore.LIGHTRED_EX}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}│{ColoramaStyle.RESET_ALL}   {Fore.YELLOW}🔓{ColoramaStyle.RESET_ALL} Rephrasing Mode: {Fore.LIGHTGREEN_EX if self.rephrasing_mode else Fore.LIGHTRED_EX}{'✅ Enabled' if self.rephrasing_mode else '❌ Disabled'}{ColoramaStyle.RESET_ALL}{' ' * (w - 20)}{Fore.LIGHTRED_EX}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}├{'═'*w}┤{ColoramaStyle.RESET_ALL}")
             
-            # Configuration options with beautiful styling
+            # Configuration options
             options = [
                 ("[1] 🔄 Switch AI Provider", "Change active AI model", Fore.LIGHTGREEN_EX),
                 ("[2] 🔓 Toggle Rephrasing Mode", "Enable/disable auto-rephrasing", Fore.LIGHTYELLOW_EX),
@@ -3789,10 +3782,14 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                 ("[6] 🔙 Back to Main Menu", "Return to main interface", Fore.LIGHTCYAN_EX)
             ]
             
-            for i, (option, desc, color) in enumerate(options):
-                print(f"{Fore.LIGHTCYAN_EX}┌─ {ColoramaStyle.BRIGHT}{Fore.WHITE}{option}{ColoramaStyle.RESET_ALL}{Fore.LIGHTCYAN_EX} ─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}")
-                print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}  {ColoramaStyle.BRIGHT}{Fore.WHITE}{desc}{ColoramaStyle.RESET_ALL}{' ' * (55 - len(desc))}{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
-                print(f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}\n")
+            for option, desc, color in options:
+                # Option line
+                print(f"{Fore.LIGHTRED_EX}│{ColoramaStyle.RESET_ALL} {color}{ColoramaStyle.BRIGHT}{option}{ColoramaStyle.RESET_ALL}: {desc.ljust(35)}{' ' * (w - len(option) - len(desc) - 4)}{Fore.LIGHTRED_EX}│{ColoramaStyle.RESET_ALL}")
+                
+                # Add spacing between options
+                print(f"{Fore.LIGHTRED_EX}│{ColoramaStyle.RESET_ALL}{' ' * w}{Fore.LIGHTRED_EX}│{ColoramaStyle.RESET_ALL}")
+            
+            print(f"{Fore.LIGHTRED_EX}└{'═'*w}┘{ColoramaStyle.RESET_ALL}\n")
         else:
             print("\n" + "=" * 40)
             print("    CONFIGURATION SETTINGS")
