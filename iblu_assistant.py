@@ -47,6 +47,7 @@ try:
     from rich.panel import Panel
     from rich.style import Style
     from rich.text import Text
+    from rich.live import Live
     RICH_AVAILABLE = True
     console = Console()
 except ImportError:
@@ -2352,7 +2353,7 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             # Display the main banner - Full Screen (144 chars)
             console.print(Panel(banner_content, border_style="red", padding=(1, 7), expand=True))
             
-            # Display HACK THE WORLD text panel - Full Screen
+            # Display HACK THE WORLD text panel - Full Screen with typing effect
             pacman_art = """
 ⠀⠀⠀⠀⣀⣤⣴⣶⣶⣶⣦⣤⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⣠⣾⣿⣿⣿⣿⣿⣿⢿⣿⣿⣷⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀
@@ -2365,9 +2366,15 @@ All responses should be helpful, educational, and focused on legitimate cybersec
 ⠀⠀⠈⠙⠿⣿⣿⣿⣿⣿⣿⣿⠿⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠉⠉⠉⠉⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀
 """
-            world_text = Text(pacman_art, style="bold yellow", justify="center")
-            world_text.append("\n🔥🔥🔥 HACK THE WORLD 🔥🔥🔥", style="bold magenta")
-            console.print(Panel(world_text, border_style="magenta", padding=(1, 7), expand=True))
+            world_text = Text("", justify="center")
+            with Live(Panel(world_text, border_style="magenta", padding=(1, 7), expand=True), 
+                      console=console, refresh_per_second=60) as live:
+                for ch in pacman_art:
+                    world_text.append(ch, style="bold yellow")
+                    time.sleep(0.002)
+                
+                world_text.append("\n🔥🔥🔥 HACK THE WORLD 🔥🔥🔥", style="bold magenta")
+                live.refresh()
             
         else:
             # Fallback banner without Rich - Screen Wide (144 chars)
@@ -2399,19 +2406,31 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                 pad("")
             ]
             
-            # Add centered pacman art to fallback
+            # Print initial banner lines normally
+            for line in banner_lines:
+                print(line)
+            
+            # Add centered pacman art to fallback with typing effect
             for line in pacman_lines:
-                banner_lines.append(pad(line.center(w)))
+                padded_line = pad(line.center(w))
+                for ch in padded_line:
+                    print(ch, end="", flush=True)
+                    time.sleep(0.002)
+                print()
                 
-            banner_lines.extend([
+            # Print final banner lines with typing effect for the slogan
+            final_lines = [
                 pad(""),
                 pad("🔥🔥🔥 HACK THE WORLD 🔥🔥🔥".center(w)),
                 pad(""),
                 "╚" + "═"*w + "╝"
-            ])
+            ]
             
-            for line in banner_lines:
-                print(line)
+            for line in final_lines:
+                for ch in line:
+                    print(ch, end="", flush=True)
+                    time.sleep(0.002)
+                print()
         
                 
         if COLORAMA_AVAILABLE:
