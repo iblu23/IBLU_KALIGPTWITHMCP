@@ -2337,33 +2337,52 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             print("✨ Interface Ready! ✨\n")
             time.sleep(0.3)
         
-        if COLORAMA_AVAILABLE:
-            # Enhanced banner with improved spacing and decorative box
-            banner_lines = [
-                f"{Fore.RED}╔{'═'*78}╗",
-                f"{Fore.RED}║{' '*78}║",
-                f"{Fore.RED}║ {ColoramaStyle.BRIGHT}{Fore.YELLOW}██╗  ██╗ █████╗  ██████╗██╗  ██╗    ████████╗██╗  ██╗███████╗ {Fore.RED}║",
-                f"{Fore.RED}║ {ColoramaStyle.BRIGHT}{Fore.YELLOW}██║  ██║██╔══██╗██╔════╝██║ ██╔╝    ╚══██╔══╝██║  ██║██╔════╝ {Fore.RED}║",
-                f"{Fore.RED}║ {ColoramaStyle.BRIGHT}{Fore.YELLOW}███████║███████║██║     █████╔╝        ██║   ███████║█████╗   {Fore.RED}║",
-                f"{Fore.RED}║ {ColoramaStyle.BRIGHT}{Fore.YELLOW}██╔══██║██╔══██║██║     ██╔═██╗        ██║   ██╔══██║██╔══╝   {Fore.RED}║",
-                f"{Fore.RED}║ {ColoramaStyle.BRIGHT}{Fore.YELLOW}██║  ██║██║  ██║╚██████╗██║  ██╗       ██║   ██║  ██║███████╗ {Fore.RED}║",
-                f"{Fore.RED}║ {ColoramaStyle.BRIGHT}{Fore.YELLOW}╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝       ╚═╝   ╚═╝  ╚═╝╚══════╝ {Fore.RED}║",
-                f"{Fore.RED}║{' '*78}║",
-                f"{Fore.RED}║ {Fore.CYAN}{' '*20}██╗    ██╗ ██████╗ ██████╗ ██╗     ██████╗  {Fore.RED}║",
-                f"{Fore.RED}║ {Fore.CYAN}{' '*20}██║    ██║██╔═══██╗██╔══██╗██║     ██╔══██╗ {Fore.RED}║",
-                f"{Fore.RED}║ {Fore.CYAN}{' '*20}██║ █╗ ██║██║   ██║██████╔╝██║     ██║  ██║ {Fore.RED}║",
-                f"{Fore.RED}║ {Fore.CYAN}{' '*20}██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║ {Fore.RED}║",
-                f"{Fore.RED}║ {Fore.CYAN}{' '*20}╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝ {Fore.RED}║",
-                f"{Fore.RED}║ {Fore.CYAN}{' '*20} ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝  {Fore.RED}║",
-                f"{Fore.RED}║{' '*78}║",
-                f"{Fore.RED}║{' '*21}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓{Fore.RED}{' '*22}║",
-                f"{Fore.RED}║{' '*21}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}┃  🔥🔥🔥 HACK THE WORLD 🔥🔥🔥  ┃{Fore.RED}{' '*22}║",
-                f"{Fore.RED}║{' '*21}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛{Fore.RED}{' '*22}║",
-                f"{Fore.RED}║{' '*78}║",
-                f"{Fore.RED}╚{'═'*78}╝"
-            ]
+        if RICH_AVAILABLE:
+            console = Console()
+            
+            # Create Rich banner with Panel
+            banner_content = Text()
+            banner_content.append("██╗  ██╗ █████╗  ██████╗██╗  ██╗    ████████╗██╗  ██╗███████╗\n", style="bold yellow")
+            banner_content.append("██║  ██║██╔══██╗██╔════╝██║ ██╔╝    ╚══██╔══╝██║  ██║██╔════╝\n", style="bold yellow")
+            banner_content.append("███████║███████║██║     █████╔╝        ██║   ███████║█████╗\n", style="bold yellow")
+            banner_content.append("██╔══██║██╔══██║██║     ██╔═██╗        ██║   ██╔══██║██╔══╝\n", style="bold yellow")
+            banner_content.append("██║  ██║██║  ██║╚██████╗██║  ██╗       ██║   ██║  ██║███████╗\n", style="bold yellow")
+            banner_content.append("╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝       ╚═╝   ╚═╝  ╚═╝╚══════╝\n\n", style="bold yellow")
+            
+            banner_content.append("    ██╗    ██╗ ██████╗ ██████╗ ██╗     ██████╗\n", style="cyan")
+            banner_content.append("    ██║    ██║██╔═══██╗██╔══██╗██║     ██╔══██╗\n", style="cyan")
+            banner_content.append("    ██║ █╗ ██║██║   ██║██████╔╝██║     ██║  ██║\n", style="cyan")
+            banner_content.append("    ██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║\n", style="cyan")
+            banner_content.append("    ╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝\n", style="cyan")
+            banner_content.append("     ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝\n\n", style="cyan")
+            
+            hack_text = Text("🔥🔥🔥 HACK THE WORLD 🔥🔥🔥", style="bold magenta")
+            hack_panel = Panel(hack_text, border_style="magenta", padding=(0, 2))
+            
+            banner_content.append("\n")
+            
+            # Display the main banner
+            console.print(Panel(banner_content, border_style="red", padding=(1, 2)))
+            
+            # Display the hack world panel
+            console.print(hack_panel)
+            
+            # Add pentagram design
+            pentagram_text = Text("""
+⠀⠀⠀⣀⣤⣴⣶⣶⣦⣤⣀
+⠀⣠⣾⣿⣿⣿⢿⣿⣿⣷⣄
+⣾⣿⣿⣿⣿⣅⣽⣿⣿⡿⠃
+⣿⣿⣿⣿⣿⣿⡿⠛⠁
+⣿⣿⣿⣿⣿⠛⠁⣴⣶⡄
+⣿⣿⣿⣿⣿⣷⣦⣀⠙⠋
+⠸⣿⣿⣿⣿⣿⣿⣿⣦⣄
+⠀⠙⢿⣿⣿⣿⣿⣿⡿⠃
+⠀⠀⠙⠿⣿⣿⠿⠋
+""", style="bold magenta")
+            console.print(Panel(pentagram_text, border_style="red", padding=(1, 2)))
+            
         else:
-            # Enhanced banner fallback without colorama
+            # Fallback banner without Rich
             banner_lines = [
                 "╔" + "═"*78 + "╗",
                 "║" + " "*78 + "║",
@@ -2378,48 +2397,26 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                 "║                     ██║    ██║██╔═══██╗██╔══██╗██║     ██╔══██╗ ║",
                 "║                     ██║ █╗ ██║██║   ██║██████╔╝██║     ██║  ██║ ║",
                 "║                     ██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║ ║",
-                "║                     ╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝ ║",
-                "║                      ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝  ║",
-                "║" + " "*78 + "║",
                 "║                     ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓        ║",
                 "║                     ┃  🔥🔥🔥 HACK THE WORLD 🔥🔥🔥  ┃        ║",
-                "║                     ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛        ║",
+                "║                     ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛        ║",
+                "║ ⠀⠀⠀⣀⣤⣴⣶⣶⣦⣤⣀" + " "*57 + "║",
+                "║ ⠀⣠⣾⣿⣿⣿⢿⣿⣿⣷⣄" + " "*56 + "║",
+                "║ ⣾⣿⣿⣿⣿⣅⣽⣿⣿⡿⠃" + " "*56 + "║",
+                "║ ⣿⣿⣿⣿⣿⣿⡿⠛⠁" + " "*60 + "║",
+                "║ ⣿⣿⣿⣿⣿⠛⠁⣴⣶⡄" + " "*58 + "║",
+                "║ ⣿⣿⣿⣿⣿⣷⣦⣀⠙⠋" + " "*58 + "║",
+                "║ ⠸⣿⣿⣿⣿⣿⣿⣿⣦⣄" + " "*58 + "║",
+                "║ ⠀⠙⢿⣿⣿⣿⣿⣿⡿⠃" + " "*58 + "║",
+                "║ ⠀⠀⠙⠿⣿⣿⠿⠋" + " "*62 + "║",
                 "║" + " "*78 + "║",
                 "╚" + "═"*78 + "╝"
             ]
-        
-        for line in banner_lines:
-            print(line)
-        
-        # Add pentagram design
-        if COLORAMA_AVAILABLE:
-            pentagram_lines = [
-                f"{Fore.RED}╔{'═'*78}╗",
-                f"{Fore.RED}║{' '*36}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}★{Fore.RED}{' '*41}║",
-                f"{Fore.RED}║{' '*35}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}███{Fore.RED}{' '*40}║",
-                f"{Fore.RED}║{' '*34}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}█████{Fore.RED}{' '*39}║",
-                f"{Fore.RED}║{' '*24}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}██████{Fore.RED}{' '*7}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}█████████{Fore.RED}{' '*6}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}██████{Fore.RED}{' '*24}║",
-                f"{Fore.RED}║{' '*25}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}█████{Fore.RED}{' '*6}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}███████████{Fore.RED}{' '*6}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}█████{Fore.RED}{' '*25}║",
-                f"{Fore.RED}║{' '*26}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}████{Fore.RED}{' '*5}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}█████████████{Fore.RED}{' '*5}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}████{Fore.RED}{' '*26}║",
-                f"{Fore.RED}║{' '*27}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}███{Fore.RED}{' '*4}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}███████████████{Fore.RED}{' '*4}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}███{Fore.RED}{' '*27}║",
-                f"{Fore.RED}║{' '*28}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}██{Fore.RED}{' '*3}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}█████████████████{Fore.RED}{' '*3}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}██{Fore.RED}{' '*28}║",
-                f"{Fore.RED}║{' '*29}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}█{Fore.RED}{' '*2}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}███████████████████{Fore.RED}{' '*2}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}█{Fore.RED}{' '*29}║",
-                f"{Fore.RED}║{' '*31}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}█████████████████████{Fore.RED}{' '*26}║",
-                f"{Fore.RED}║{' '*33}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}█████████████████{Fore.RED}{' '*28}║",
-                f"{Fore.RED}║{' '*35}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}█████████████{Fore.RED}{' '*30}║",
-                f"{Fore.RED}║{' '*37}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}█████████{Fore.RED}{' '*32}║",
-                f"{Fore.RED}║{' '*39}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}█████{Fore.RED}{' '*34}║",
-                f"{Fore.RED}║{' '*40}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}███{Fore.RED}{' '*35}║",
-                f"{Fore.RED}║{' '*78}║",
-                f"{Fore.RED}║{' '*19}{ColoramaStyle.BRIGHT}{Fore.CYAN}⚔️  CHOOSE YOUR DESTINY  ⚔️{Fore.RED}{' '*19}║",
-                f"{Fore.RED}║{' '*78}║",
-                f"{Fore.RED}╚{'═'*78}╝"
-            ]
             
-            print()
-            for line in pentagram_lines:
+            for line in banner_lines:
                 print(line)
         
+                
         if COLORAMA_AVAILABLE:
             # Security tools overview
             tools_header = f"{Fore.LIGHTYELLOW_EX}┌─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}"
