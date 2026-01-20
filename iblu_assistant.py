@@ -3793,11 +3793,11 @@ All responses should be helpful, educational, and focused on legitimate cybersec
         
         # Check available API keys
         available_providers = []
-        if self.config.openai_keys:
+        if self.api_keys.get(Provider.OPENAI):
             available_providers.append("OpenAI")
-        if self.config.gemini_keys:
+        if self.api_keys.get(Provider.GEMINI):
             available_providers.append("Gemini")
-        if self.config.mistral_keys:
+        if self.api_keys.get(Provider.MISTRAL):
             available_providers.append("Mistral")
         
         # Display status information in panel format
@@ -4947,13 +4947,13 @@ All responses should be helpful, educational, and focused on legitimate cybersec
     def switch_ai_provider(self):
         """Switch between AI providers"""
         providers = []
-        if self.config.openai_keys:
+        if self.api_keys.get(Provider.OPENAI):
             providers.append(Provider.OPENAI)
-        if self.config.gemini_keys:
+        if self.api_keys.get(Provider.GEMINI):
             providers.append(Provider.GEMINI)
-        if self.config.llama_keys:
+        if self.api_keys.get(Provider.LLAMA):
             providers.append(Provider.LLAMA)
-        if self.config.mistral_keys:
+        if self.api_keys.get(Provider.MISTRAL):
             providers.append(Provider.MISTRAL)
         
         if not providers:
@@ -5036,29 +5036,21 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             
             providers_status = []
             
-            if self.config.openai_keys:
-                valid_keys = [k for k in self.config.openai_keys if k and k != "your-openai-api-key-here"]
-                providers_status.append(f"OpenAI: {len(valid_keys)} keys configured")
-            else:
-                providers_status.append("OpenAI: No keys configured")
+            openai_keys = self.api_keys.get(Provider.OPENAI, [])
+            valid_openai = [k for k in openai_keys if k and not k.startswith('fake-') and len(k) > 10]
+            providers_status.append(f"OpenAI: {len(valid_openai)} keys configured")
             
-            if self.config.gemini_keys:
-                valid_keys = [k for k in self.config.gemini_keys if k and k != "your-gemini-api-key-here"]
-                providers_status.append(f"Gemini: {len(valid_keys)} keys configured")
-            else:
-                providers_status.append("Gemini: No keys configured")
+            gemini_keys = self.api_keys.get(Provider.GEMINI, [])
+            valid_gemini = [k for k in gemini_keys if k and not k.startswith('fake-') and len(k) > 10]
+            providers_status.append(f"Gemini: {len(valid_gemini)} keys configured")
             
-            if self.config.llama_keys:
-                valid_keys = [k for k in self.config.llama_keys if k and k != "your-llama-api-key-here"]
-                providers_status.append(f"Llama: {len(valid_keys)} keys configured")
-            else:
-                providers_status.append("Llama: No keys configured")
+            llama_keys = self.api_keys.get(Provider.LLAMA, [])
+            valid_llama = [k for k in llama_keys if k and not k.startswith('fake-') and len(k) > 10]
+            providers_status.append(f"Llama: {len(valid_llama)} keys configured")
             
-            if self.config.mistral_keys:
-                valid_keys = [k for k in self.config.mistral_keys if k and k != "your-mistral-api-key-here"]
-                providers_status.append(f"Mistral: {len(valid_keys)} keys configured")
-            else:
-                providers_status.append("Mistral: No keys configured")
+            mistral_keys = self.api_keys.get(Provider.MISTRAL, [])
+            valid_mistral = [k for k in mistral_keys if k and not k.startswith('fake-') and len(k) > 10]
+            providers_status.append(f"Mistral: {len(valid_mistral)} keys configured")
             
             status += "\n".join(providers_status)
             status += f"\n\n💡 Edit config.json to add API keys"
@@ -6565,15 +6557,15 @@ Format your response as a comprehensive summary of the deliberation.
     def get_provider_keys(self, provider: Provider) -> List[str]:
         """Get API keys for a specific provider"""
         if provider == Provider.OPENAI:
-            return [k for k in (self.config.openai_keys or []) if k and k != "your-openai-api-key-here"]
+            return [k for k in (self.api_keys.get(Provider.OPENAI) or []) if k and not k.startswith('fake-')]
         elif provider == Provider.GEMINI:
-            return [k for k in (self.config.gemini_keys or []) if k and k != "your-gemini-api-key-here"]
+            return [k for k in (self.api_keys.get(Provider.GEMINI) or []) if k and not k.startswith('fake-')]
         elif provider == Provider.MISTRAL:
-            return [k for k in (self.config.mistral_keys or []) if k and k != "your-mistral-api-key-here"]
+            return [k for k in (self.api_keys.get(Provider.MISTRAL) or []) if k and not k.startswith('fake-')]
         elif provider == Provider.LLAMA:
-            return [k for k in (self.config.llama_keys or []) if k and k != "your-llama-api-key-here"]
+            return [k for k in (self.api_keys.get(Provider.LLAMA) or []) if k and not k.startswith('fake-')]
         elif provider == Provider.GEMINI_CLI:
-            return [k for k in (self.config.gemini_cli_keys or []) if k and k != "your-gemini-cli-api-key-here"]
+            return [k for k in (self.api_keys.get(Provider.GEMINI_CLI) or []) if k and not k.startswith('fake-')]
         return []
     
     def call_openai_api(self, system_prompt: str, user_message: str, api_key: str) -> str:
