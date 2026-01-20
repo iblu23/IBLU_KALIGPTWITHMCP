@@ -2,8 +2,13 @@
   "conversation_history": [
     {
       "role": "user",
-      "content": "how can i hack a website",
-      "timestamp": "2026-01-20T04:56:37.757971"
+      "content": "how to hack a website",
+      "timestamp": "2026-01-20T04:59:49.666165"
+    },
+    {
+      "role": "assistant",
+      "content": "❌ Llama API timeout after 60 seconds\n\n💡 The Llama model took too long to respond. Try:\n• Using a smaller model\n• Checking if Ollama is running properly\n• Reducing the complexity of your request",
+      "timestamp": "2026-01-20T05:01:01.573709"
     }
   ],
   "user_input_history": [
@@ -11,5 +16,5 @@
     "f",
     "how to hack a website?"
   ],
-  "last_saved": "2026-01-20T04:57:28.573004"
+  "last_saved": "2026-01-20T05:01:18.201147"
 }

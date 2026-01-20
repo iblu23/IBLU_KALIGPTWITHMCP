@@ -6306,27 +6306,28 @@ Provide step-by-step technical details while maintaining educational context and
         print(f"☁️  Cloud Models: {', '.join([p[0].value.title() for p in cloud_providers])}")
         print(f"🔄 Initiating enhanced collaborative analysis...")
         
-        # Phase 1: Local Model Communication (if available)
-        local_insights = ""
+        # Phase 1: Local Model Discussion Only (Uncensored Models)
+        local_conclusion = ""
         if local_providers:
-            print(f"\n{self._colorize('🔗 Phase 1: Local Model Communication', Fore.CYAN)}")
+            print(f"\n{self._colorize('🔗 Phase 1: Local Uncensored Models Discussion', Fore.CYAN)}")
             print("-" * 40)
             
-            # Local models discuss and analyze the question together
+            # Local models discuss and reach a conclusion
             local_discussion_prompt = f"""
-**LOCAL MODEL DISCUSSION FORUM**
+**LOCAL UNSENSORED MODEL DISCUSSION**
 
 Question: {user_message}
 
 **Instructions for Local Models:**
-- Discuss this question among yourselves
-- Share different perspectives and insights
+- Discuss this question thoroughly among yourselves
+- Share different perspectives and insights without censorship
 - Identify key technical concepts and methodologies
 - Exchange knowledge and experiences
 - Build upon each other's responses
 - Focus on practical implementation details
+- Reach a comprehensive conclusion
 
-**Format:** Each model should respond with their analysis, then others can build upon it.
+**Format:** Discuss the topic and provide a final conclusion at the end.
 """
             
             local_responses = {}
@@ -6338,141 +6339,148 @@ Question: {user_message}
                     if provider == Provider.LLAMA:
                         response = self.call_llama_api(self.SYSTEM_PROMPT, local_discussion_prompt, "local")
                         local_responses[provider] = response
-                        print(f"  {theme['emoji']} {theme['name']} ✅ contributed analysis")
+                        print(f"  {theme['emoji']} {theme['name']} ✅ contributed to discussion")
                     time.sleep(0.2)
                 except Exception as e:
                     print(f"  {theme['emoji']} {theme['name']} ❌ error: {str(e)}")
                     local_responses[provider] = f"Error: {str(e)}"
             
-            # Synthesize local insights
+            # Extract conclusion from local discussion
             if local_responses:
-                local_insights = f"""
-**LOCAL MODEL COLLABORATIVE INSIGHTS:**
+                local_discussion = "\n\n".join([f"{provider.value.title()} Analysis:\n{response}" for provider, response in local_responses.items() if not response.startswith("Error:")])
+                
+                # Have local models reach a conclusion
+                conclusion_prompt = f"""
+**LOCAL MODEL CONCLUSION SYNTHESIS**
 
-{'\n'.join([f"{provider.value.title()}: {response}" for provider, response in local_responses.items() if not response.startswith("Error:")])}
+Based on the discussion above:
 
-**Local Model Consensus:**
-Based on the discussion above, the local models have identified key technical concepts and approaches.
+{local_discussion}
+
+**Task:** 
+Provide a clear, comprehensive conclusion that summarizes the key points from the discussion above.
+
+**Format:** 
+**Conclusion:** [Your final conclusion here]
 """
+                
+                try:
+                    if Provider.LLAMA in local_providers:
+                        conclusion_response = self.call_llama_api(self.SYSTEM_PROMPT, conclusion_prompt, "local")
+                        local_conclusion = conclusion_response
+                        print(f"  🦙 Local models ✅ reached conclusion")
+                except Exception as e:
+                    print(f"  🦙 Local models ❌ failed to reach conclusion: {str(e)}")
+                    local_conclusion = local_discussion
         
-        # Phase 2: Cloud Model Analysis and Summarization
-        cloud_responses = {}
-        if cloud_providers:
-            print(f"\n{self._colorize('☁️  Phase 2: Cloud Model Analysis & Summarization', Fore.MAGENTA)}")
+        # Phase 2: Cloud Model Expansion of Local Conclusion
+        cloud_expansion = ""
+        if cloud_providers and local_conclusion:
+            print(f"\n{self._colorize('☁️  Phase 2: Cloud Models Expand Local Conclusion', Fore.MAGENTA)}")
             print("-" * 40)
             
-            # Cloud models analyze the question and local insights
-            cloud_analysis_prompt = f"""
-**CLOUD MODEL ANALYSIS REQUEST**
+            # Cloud models expand and refine the local conclusion
+            cloud_expansion_prompt = f"""
+**CLOUD MODEL EXPANSION REQUEST**
 
 Original Question: {user_message}
 
-{local_insights}
+**Local Models Conclusion:**
+{local_conclusion}
 
 **Instructions for Cloud Models:**
-1. Analyze the original question thoroughly
-2. Review the local models' collaborative insights
-3. Summarize the key facts and technical details
-4. Expand on the concepts with additional context
-5. Provide structured, comprehensive information
-6. Focus on accuracy and completeness
+- Review the local models' conclusion thoroughly
+- Expand on the concepts with additional context and details
+- Provide structured, comprehensive information
+- Add relevant background information and examples
+- Enhance the conclusion with your broader knowledge base
+- Maintain the core insights from local models while enriching them
 
 **Response Format:**
-- Start with clear summary of key facts
-- Provide detailed technical explanation
+- Start with acknowledging the local conclusion
+- Provide expanded analysis and additional context
 - Include practical examples and methodologies
-- Add relevant context and background information
 - Structure information for maximum clarity
+- End with an enhanced comprehensive summary
 """
             
             cloud_responses = {}
             for provider, api_key in cloud_providers:
                 theme = model_themes.get(provider, {"style": "bold green", "emoji": "🤖", "name": "Model"})
-                print(f"  {theme['emoji']} {theme['name']} 📊 analyzing and summarizing...")
+                print(f"  {theme['emoji']} {theme['name']} 📊 expanding conclusion...")
                 
                 try:
                     if provider == Provider.OPENAI:
-                        response = self.call_openai_api(self.SYSTEM_PROMPT, cloud_analysis_prompt, api_key)
+                        response = self.call_openai_api(self.SYSTEM_PROMPT, cloud_expansion_prompt, api_key)
                     elif provider == Provider.GEMINI:
-                        response = self.call_gemini_api(self.SYSTEM_PROMPT, cloud_analysis_prompt, api_key)
+                        response = self.call_gemini_api(self.SYSTEM_PROMPT, cloud_expansion_prompt, api_key)
                     elif provider == Provider.MISTRAL:
-                        response = self.call_mistral_api(self.SYSTEM_PROMPT, cloud_analysis_prompt, api_key)
+                        response = self.call_mistral_api(self.SYSTEM_PROMPT, cloud_expansion_prompt, api_key)
                     
                     cloud_responses[provider] = response
-                    print(f"  {theme['emoji']} {theme['name']} ✅ provided comprehensive analysis")
+                    print(f"  {theme['emoji']} {theme['name']} ✅ expanded the conclusion")
                     time.sleep(0.2)
                 except Exception as e:
                     print(f"  {theme['emoji']} {theme['name']} ❌ error: {str(e)}")
                     cloud_responses[provider] = f"Error: {str(e)}"
         
-        # Phase 3: Final Synthesis
-        print(f"\n{self._colorize('🎯 Phase 3: Final Synthesis', Fore.GREEN)}")
+        # Phase 3: Final Enhanced Response
+        print(f"\n{self._colorize('🎯 Phase 3: Final Enhanced Response', Fore.GREEN)}")
         print("-" * 40)
         
-        # Create final synthesis prompt
-        final_synthesis_prompt = f"""
-**FINAL SYNTHESIS REQUEST**
+        # Create the final enhanced response
+        if local_conclusion and cloud_responses:
+            # Combine local conclusion with cloud expansions
+            enhanced_response = f"""
+**🔗 Local Models Conclusion:**
 
-Original Question: {user_message}
+{local_conclusion}
 
-{local_insights}
+---
 
-{chr(10).join([f"{provider.value.title()} Analysis: {response}" for provider, response in cloud_responses.items() if not response.startswith("Error:")])}
+**☁️ Cloud Models Enhanced Expansion:**
 
-**Task:**
-Create a comprehensive response that:
-1. Starts with a direct answer to the user's question
-2. Incorporates insights from both local and cloud models
-3. Provides detailed technical explanations
-4. Includes practical examples and methodologies
-5. Structures information clearly with headings and bullet points
-6. Ensures accuracy and completeness
+{chr(10).join([f"**{provider.value.title()} Expansion:**\n{response}" for provider, response in cloud_responses.items() if not response.startswith("Error:")])}
 
-**Important Guidelines:**
-- Focus on educational and legitimate use cases
-- Provide step-by-step technical details where appropriate
-- Include relevant context and background information
-- Structure response for maximum clarity and readability
+---
+
+**🎯 Enhanced Summary:**
+The local uncensored models provided the foundational analysis and conclusion, which was then expanded and enriched by cloud models with additional context, examples, and comprehensive details.
 """
-        
-        # Use the best available model for final synthesis
-        best_provider = None
-        if cloud_providers:
-            # Prefer cloud models for synthesis
-            best_provider = cloud_providers[0][0]
-        elif local_providers:
-            # Fall back to local models
-            best_provider = local_providers[0][0]
-        
-        if best_provider:
-            theme = model_themes.get(best_provider, {"style": "bold cyan", "emoji": "🤖", "name": "Model"})
-            print(f"🎯 Using {theme['name']} for final synthesis...")
             
-            try:
-                if best_provider == Provider.LLAMA:
-                    final_response = self.call_llama_api(self.SYSTEM_PROMPT, final_synthesis_prompt, "local")
-                elif best_provider == Provider.OPENAI:
-                    final_response = self.call_openai_api(self.SYSTEM_PROMPT, final_synthesis_prompt, cloud_providers[[p[0] for p in cloud_providers].index(Provider.OPENAI)][1] if Provider.OPENAI in [p[0] for p in cloud_providers] else "")
-                elif best_provider == Provider.GEMINI:
-                    final_response = self.call_gemini_api(self.SYSTEM_PROMPT, final_synthesis_prompt, cloud_providers[[p[0] for p in cloud_providers].index(Provider.GEMINI)][1] if Provider.GEMINI in [p[0] for p in cloud_providers] else "")
-                elif best_provider == Provider.MISTRAL:
-                    final_response = self.call_mistral_api(self.SYSTEM_PROMPT, final_synthesis_prompt, cloud_providers[[p[0] for p in cloud_providers].index(Provider.MISTRAL)][1] if Provider.MISTRAL in [p[0] for p in cloud_providers] else "")
-                
-                print(f"✅ {theme['name']} synthesis complete!")
-                
-                # Add collaborative summary
-                print(f"\n{self._colorize('📊 Collaborative Summary', Fore.LIGHTYELLOW_EX)}")
-                print("-" * 40)
-                print(f"🔗 Local Models Participated: {len(local_providers)}")
-                print(f"☁️  Cloud Models Participated: {len(cloud_providers)}")
-                print(f"🤖 Total Models Used: {len(available_providers)}")
-                
-                return final_response
-                
-            except Exception as e:
-                return f"❌ Error in final synthesis: {str(e)}"
+            # Add collaborative summary
+            print(f"\n{self._colorize('📊 Collaborative Summary', Fore.LIGHTYELLOW_EX)}")
+            print("-" * 40)
+            print(f"🔗 Local Models Discussed: {len(local_providers)}")
+            print(f"☁️  Cloud Models Expanded: {len(cloud_providers)}")
+            print(f"🤖 Total Models Used: {len(available_providers)}")
+            print(f"📝 Workflow: Local Discussion → Cloud Expansion")
+            
+            return enhanced_response
+            
+        elif local_conclusion:
+            # Only local models available
+            print(f"\n{self._colorize('📊 Summary', Fore.LIGHTYELLOW_EX)}")
+            print("-" * 40)
+            print(f"🔗 Local Models Discussed: {len(local_providers)}")
+            print(f"☁️  Cloud Models Available: 0")
+            print(f"🤖 Total Models Used: {len(available_providers)}")
+            print(f"📝 Workflow: Local Discussion Only")
+            
+            return f"**🔗 Local Models Conclusion:**\n\n{local_conclusion}"
+            
+        elif cloud_providers:
+            # Only cloud models available - fallback to regular analysis
+            print(f"\n{self._colorize('📊 Summary', Fore.LIGHTYELLOW_EX)}")
+            print("-" * 40)
+            print(f"🔗 Local Models Available: 0")
+            print(f"☁️  Cloud Models Analyzing: {len(cloud_providers)}")
+            print(f"🤖 Total Models Used: {len(available_providers)}")
+            print(f"📝 Workflow: Cloud Analysis Only")
+            
+            return f"❌ No local models available for initial discussion. Cloud models analyzed: {', '.join([p[0].value.title() for p in cloud_providers])}"
         else:
-            return "❌ No models available for synthesis."
+            return "❌ No models available for analysis."
     
     def get_collaborative_status(self) -> str:
         """Get collaborative mode status"""
@@ -6503,18 +6511,19 @@ Create a comprehensive response that:
         print(f"🔄 Current Mode: {'ENABLED' if len(available_providers) >= 2 else 'DISABLED'}")
         
         print(f"\n{self._colorize('🔧 Collaborative Features:', Fore.GREEN)}")
-        print("✅ Local models communicate with each other")
-        print("✅ Cloud models summarize and expand facts")
-        print("✅ Cross-model insight synthesis")
+        print("✅ Local uncensored models discuss first")
+        print("✅ Cloud models expand local conclusions")
+        print("✅ Local-first workflow for maximum freedom")
+        print("✅ Cloud enhancement for comprehensive details")
         print("✅ Automatic error handling and fallback")
-        print("✅ Enhanced response quality and detail")
-        print("✅ Real-time performance monitoring")
+        print("✅ Enhanced response quality and structure")
         
         print(f"\n{self._colorize('💡 Usage:', Fore.YELLOW)}")
         print("• All chat messages automatically use collaborative mode")
-        print("• Local models discuss and share insights")
-        print("• Cloud models provide comprehensive summaries")
-        print("• Automatic fallback to single model if needed")
+        print("• Local models discuss without censorship first")
+        print("• Cloud models expand and enrich the conclusion")
+        print("• Automatic fallback to available models")
+        print("• Best of both: local freedom + cloud knowledge")
         
         return f"✅ Collaborative mode is {'ACTIVE' if len(available_providers) >= 2 else 'INACTIVE'}"
     
