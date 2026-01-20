@@ -2470,7 +2470,7 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             time.sleep(0.3)
         
         if RICH_AVAILABLE:
-            console = Console(width=115)
+            console = Console(width=78)
             
             # Clean main banner with glitch effect only
             def clean_glitch(text, intensity=0.15):
@@ -2487,58 +2487,67 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                         chars[i] = random.choice(glitch_chars)
                 return "".join(chars)
             
-            # Static banner - HACK THE on top, WORLD below
+            # Static banner - HACK THE on top, WORLD below (original style)
             banner_content = Text()
             # HACK THE section - red/orange
-            banner_content.append("\033[31m\033[40m██╗  ██╗  █████╗   ██████╗ ██╗  ██╗    ████████╗ ██╗  ██╗ ███████╗    ██╗    ██╗  ██████╗  ██████╗  ██╗      ██████╗\033[0m\n", style="bold red")
-            banner_content.append("\033[31m\033[40m██║  ██║ ██╔══██╗ ██╔════╝ ██║ ██╔╝    ╚══██╔══╝ ██║  ██║ ██╔════╝    ██║    ██║ ██╔═══██╗ ██╔══██╗ ██║      ██╔══██╗\033[0m\n", style="bold red")
-            banner_content.append("\033[31m\033[40m███████║ ███████║ ██║      █████╔╝        ██║    ███████║ █████╗      ██║ █╗ ██║ ██║   ██║ ██████╔╝ ██║      ██║  ██║\033[0m\n", style="bold red")
-            banner_content.append("\033[31m\033[40m██╔══██║ ██╔══██║ ██║      ██╔═██╗        ██║    ██╔══██║ ██╔══╝      ██║███╗██║ ██║   ██║ ██╔══██╗ ██║      ██║  ██║\033[0m\n", style="bold red")
-            banner_content.append("\033[31m\033[40m██║  ██║ ██║  ██║ ╚██████╗ ██║  ██╗       ██║    ██║  ██║ ███████╗    ╚███╔███╔╝ ╚██████╔╝ ██║  ██║ ███████╗ ██████╔╝\033[0m\n", style="bold red")
-            banner_content.append("\033[31m\033[40m╚═╝  ╚═╝ ╚═╝  ╚═╝  ╚═════╝ ╚═╝  ╚═╝       ╚═╝    ╚═╝  ╚═╝ ╚══════╝     ╚══╝╚══╝   ╚═════╝  ╚═╝  ╚═╝ ╚══════╝ ╚═════╝\033[0m\n", style="bold red")
+            banner_content.append("\033[31m\033[40m██╗  ██╗ █████╗  ██████╗██╗  ██╗    ████████╗██╗  ██╗███████╗\033[0m\n", style="bold red")
+            banner_content.append("\033[31m\033[40m██║  ██║██╔══██╗██╔════╝██║ ██╔╝    ╚══██╔══╝██║  ██║██╔════╝\033[0m\n", style="bold red")
+            banner_content.append("\033[31m\033[40m███████║███████║██║     █████╔╝        ██║   ███████║█████╗\033[0m\n", style="bold red")
+            banner_content.append("\033[31m\033[40m██╔══██║██╔══██║██║     ██╔═██╗        ██║   ██╔══██║██╔══╝\033[0m\n", style="bold red")
+            banner_content.append("\033[31m\033[40m██║  ██║██║  ██║╚██████╗██║  ██╗       ██║   ██║  ██║███████╗\033[0m\n", style="bold red")
+            banner_content.append("\033[31m\033[40m╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝       ╚═╝   ╚═╝  ╚═╝╚══════╝\033[0m\n", style="bold red")
             # Spacing
             banner_content.append("                    \n", style="bold red")
             # WORLD section - blue, positioned below HACK THE
-            banner_content.append("                    \033[34m\033[40m██╗    ██╗  ██████╗  ██████╗ ██╗     ██████╗\033[0m\n", style="bold blue")
-            banner_content.append("                    \033[34m\033[40m██║    ██║ ██╔═══██╗ ██╔══██╗ ██║     ██╔══██╗\033[0m\n", style="bold blue")
-            banner_content.append("                    \033[34m\033[40m██║ █╗ ██║ ██║   ██║ ██████╔╝ ██║     ██║  ██║\033[0m\n", style="bold blue")
-            banner_content.append("                    \033[34m\033[40m██║███╗██║ ██║   ██║ ██╔══██╗ ██║     ██║  ██║\033[0m\n", style="bold blue")
-            banner_content.append("                    \033[34m\033[40m╚███╔███╔╝ ╚██████╔╝ ██║  ██║ ███████╗ ██████╔╝\033[0m\n", style="bold blue")
-            banner_content.append("                    \033[34m\033[40m ╚══╝╚══╝  ╚═════╝  ╚═╝  ╚═╝ ╚══════╝ ╚═════╝\033[0m\n", style="bold blue")
+            banner_content.append("                    \033[34m\033[40m██╗    ██╗ ██████╗ ██████╗ ██╗     ██████╗\033[0m\n", style="bold blue")
+            banner_content.append("                    \033[34m\033[40m██║    ██║██╔═══██╗██╔══██╗██║     ██╔══██╗\033[0m\n", style="bold blue")
+            banner_content.append("                    \033[34m\033[40m██║ █╗ ██║██║   ██║██████╔╝██║     ██║  ██║\033[0m\n", style="bold blue")
+            banner_content.append("                    \033[34m\033[40m██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║\033[0m\n", style="bold blue")
+            banner_content.append("                    \033[34m\033[40m╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝\033[0m\n", style="bold blue")
+            banner_content.append("                    \033[34m\033[40m ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝\033[0m\n", style="bold blue")
+            # Spacing
+            banner_content.append("                    \n", style="bold red")
+            # Tagline section - purple/magenta
+            banner_content.append("                    \033[35m\033[40m┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\033[0m\n", style="bold magenta")
+            banner_content.append("                    \033[35m\033[40m┃  🔥🔥🔥 HACK THE WORLD 🔥🔥🔥  ┃\033[0m\n", style="bold magenta")
+            banner_content.append("                    \033[35m\033[40m┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\033[0m\n", style="bold magenta")
             
             # Display static banner without animation
             console.print(Panel(banner_content, border_style="red", padding=(1, 7), expand=True))
             
         else:
             # Fallback banner without Rich - Static display, HACK THE on top, WORLD below
-            w = 115
+            w = 78
             pad = lambda s: "║" + s.ljust(w) + "║"
             
             # Display static banner - HACK THE section (red/orange)
             print(f"{Fore.LIGHTRED_EX}╔" + "═"*w + f"╗{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}" + " "*w + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.RED}{Back.BLACK}  ██╗  ██╗  █████╗   ██████╗ ██╗  ██╗    ████████╗ ██╗  ██╗ ███████╗    ██╗    ██╗  ██████╗  ██████╗  ██╗      ██████╗{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.RED}{Back.BLACK}  ██║  ██║ ██╔══██╗ ██╔════╝ ██║ ██╔╝    ╚══██╔══╝ ██║  ██║ ██╔════╝    ██║    ██║ ██╔═══██╗ ██╔══██╗ ██║      ██╔══██╗{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.RED}{Back.BLACK}  ███████║ ███████║ ██║      █████╔╝        ██║    ███████║ █████╗      ██║ █╗ ██║ ██║   ██║ ██████╔╝ ██║      ██║  ██║{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.RED}{Back.BLACK}  ██╔══██║ ██╔══██║ ██║      ██╔═██╗        ██║    ██╔══██║ ██╔══╝      ██║███╗██║ ██║   ██║ ██╔══██╗ ██║      ██║  ██║{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.RED}{Back.BLACK}  ██║  ██║ ██║  ██║ ╚██████╗ ██║  ██╗       ██║    ██║  ██║ ███████╗    ╚███╔███╔╝ ╚██████╔╝ ██║  ██║ ███████╗ ██████╔╝{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.RED}{Back.BLACK}  ╚═╝  ╚═╝ ╚═╝  ╚═╝  ╚═════╝ ╚═╝  ╚═╝       ╚═╝    ╚═╝  ╚═╝ ╚══════╝     ╚══╝╚══╝   ╚═════╝  ╚═╝  ╚═╝ ╚══════╝ ╚═════╝{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}" + " "*w + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            # Spacing
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.RED}{Back.BLACK}██╗  ██╗ █████╗  ██████╗██╗  ██╗    ████████╗██╗  ██╗███████╗{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.RED}{Back.BLACK}██║  ██║██╔══██╗██╔════╝██║ ██╔╝    ╚══██╔══╝██║  ██║██╔════╝{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.RED}{Back.BLACK}███████║███████║██║     █████╔╝        ██║   ███████║█████╗{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.RED}{Back.BLACK}██╔══██║██╔══██║██║     ██╔═██╗        ██║   ██╔══██║██╔══╝{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.RED}{Back.BLACK}██║  ██║██║  ██║╚██████╗██║  ██╗       ██║   ██║  ██║███████╗{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.RED}{Back.BLACK}╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝       ╚═╝   ╚═╝  ╚═╝╚══════╝{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}" + " "*w + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
             # WORLD section (blue, positioned below HACK THE)
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}                    {Fore.BLUE}{Back.BLACK}██╗    ██╗  ██████╗  ██████╗ ██╗     ██████╗{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}                    {Fore.BLUE}{Back.BLACK}██║    ██║ ██╔═══██╗ ██╔══██╗ ██║     ██╔══██╗{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}                    {Fore.BLUE}{Back.BLACK}██║ █╗ ██║ ██║   ██║ ██████╔╝ ██║     ██║  ██║{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}                    {Fore.BLUE}{Back.BLACK}██║███╗██║ ██║   ██║ ██╔══██╗ ██║     ██║  ██║{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}                    {Fore.BLUE}{Back.BLACK}╚███╔███╔╝ ╚██████╔╝ ██║  ██║ ███████╗ ██████╔╝{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}                    {Fore.BLUE}{Back.BLACK} ╚══╝╚══╝  ╚═════╝  ╚═╝  ╚═╝ ╚══════╝ ╚═════╝{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.BLUE}{Back.BLACK}{' '*20}██╗    ██╗ ██████╗ ██████╗ ██╗     ██████╗{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.BLUE}{Back.BLACK}{' '*20}██║    ██║██╔═══██╗██╔══██╗██║     ██╔══██╗{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.BLUE}{Back.BLACK}{' '*20}██║ █╗ ██║██║   ██║██████╔╝██║     ██║  ██║{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.BLUE}{Back.BLACK}{' '*20}██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.BLUE}{Back.BLACK}{' '*20}╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.BLUE}{Back.BLACK}{' '*20} ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}" + " "*w + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+            # Tagline section - purple/magenta
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}{' '*21}{Fore.MAGENTA}{Back.BLACK}┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓{ColoramaStyle.RESET_ALL}{' '*22}{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}{' '*21}{Fore.MAGENTA}{Back.BLACK}┃  🔥🔥🔥 HACK THE WORLD 🔥🔥🔥  ┃{ColoramaStyle.RESET_ALL}{' '*22}{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}{' '*21}{Fore.MAGENTA}{Back.BLACK}┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛{ColoramaStyle.RESET_ALL}{' '*22}{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}" + " "*w + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.LIGHTRED_EX}╚" + "═"*w + f"╝{ColoramaStyle.RESET_ALL}")
             
             if COLORAMA_AVAILABLE:
                 # Security tools overview - Single Panel Style
-                w = 115
+                w = 78
             
                 # Tool categories with enhanced formatting - Single Panel
                 color_map = {
