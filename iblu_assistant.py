@@ -60,6 +60,40 @@ try:
 except ImportError:
     ALIVE_PROGRESS_AVAILABLE = False
 
+# Modern libraries - Typer, Pydantic, Loguru
+try:
+    import typer
+    from typer import Typer, Option, Argument
+    TYPER_AVAILABLE = True
+    app = Typer(
+        name="iblu",
+        help="🔥 IBLU Professional Hacking Assistant - Advanced Security Platform",
+        rich_markup_mode="rich",
+        no_args_is_help=True
+    )
+except ImportError:
+    TYPER_AVAILABLE = False
+    app = None
+
+try:
+    from pydantic import BaseModel, Field, validator
+    PYDANTIC_AVAILABLE = True
+except ImportError:
+    PYDANTIC_AVAILABLE = False
+
+try:
+    from loguru import logger
+    LOGURU_AVAILABLE = True
+    # Configure loguru for beautiful logging
+    logger.remove()
+    logger.add(
+        sys.stderr,
+        format="<green>{time:YYYY-MM-DD HH:mm:ss}</green> | <level>{level: <8}</level> | <cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>",
+        level="INFO"
+    )
+except ImportError:
+    LOGURU_AVAILABLE = False
+
 # Optional transformers for Hugging Face integration
 try:
     from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
