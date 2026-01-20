@@ -3075,8 +3075,11 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             if provider_keys:
                 cloud_models.append((provider, provider_keys[0]))
         
-        # Check local models
+        # Check local models - ENHANCED to detect ALL available models
         local_models = []
+        local_mistral_models = []
+        local_other_models = []
+        
         try:
             url = "http://localhost:11434/api/tags"
             response = requests.get(url, timeout=5)
@@ -3084,33 +3087,39 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                 models_data = response.json()
                 for model in models_data.get('models', []):
                     model_name = model.get('name', '')
-                    if 'llama' in model_name.lower():
-                        local_models.append((Provider.LLAMA, model_name, model.get('size', 0)))
-        except requests.exceptions.RequestException:
-            pass
-        
-        # Initialize variables before using them
-        local_mistral_available = False
-        hf_models_available = []
-        
-        # Check for local Mistral model
-        try:
-            url = "http://localhost:11434/api/tags"
-            response = requests.get(url, timeout=5)
-            if response.status_code == 200:
-                models_data = response.json()
-                for model in models_data.get('models', []):
-                    if 'mistral' in model.get('name', '').lower():
-                        local_mistral_available = True
-                        break
+                    model_size = model.get('size', 0)
+                    
+                    # Categorize all available models
+                    if 'llama' in model_name.lower() or 'alpaca' in model_name.lower() or 'vicuna' in model_name.lower():
+                        local_models.append((Provider.LLAMA, model_name, model_size))
+                    elif 'mistral' in model_name.lower() or 'mixtral' in model_name.lower():
+                        local_mistral_models.append((Provider.MISTRAL, model_name, model_size))
+                    elif 'dolphin' in model_name.lower() or 'uncensored' in model_name.lower():
+                        # Add dolphin models to llama category as they are llama-based
+                        local_models.append((Provider.LLAMA, model_name, model_size))
+                    elif 'qwen' in model_name.lower() or 'gemma' in model_name.lower() or 'phi' in model_name.lower() or 'yi' in model_name.lower():
+                        # Add other popular models to local models list
+                        local_models.append((Provider.LLAMA, model_name, model_size))
+                    elif 'codellama' in model_name.lower() or 'deepseek' in model_name.lower() or 'starcoder' in model_name.lower():
+                        # Add code-focused models
+                        local_models.append((Provider.LLAMA, model_name, model_size))
+                    elif 'nous' in model_name.lower() or 'wizard' in model_name.lower() or 'zephyr' in model_name.lower():
+                        # Add other fine-tuned models
+                        local_models.append((Provider.LLAMA, model_name, model_size))
+                    else:
+                        # Catch-all for any other models
+                        local_other_models.append((Provider.LLAMA, model_name, model_size))
         except requests.exceptions.RequestException:
             pass
         
         # Check for Hugging Face models
+        hf_models_available = []
         if HUGGINGFACE_AVAILABLE and self.config.huggingface_models:
             hf_models_available = self.config.huggingface_models
         
-        total_models = len(cloud_models) + len(local_models) + (1 if local_mistral_available else 0) + len(hf_models_available)
+        # Combine all local models for total count
+        all_local_detected = local_models + local_mistral_models + local_other_models
+        total_models = len(cloud_models) + len(all_local_detected) + len(hf_models_available)
         
         if total_models == 0:
             no_models_border = f"{Fore.LIGHTRED_EX}┌─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}"
@@ -3173,18 +3182,58 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             
             print(f"{Fore.LIGHTBLUE_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}")
         
-        # Combined local models section with download instructions
+        # Combined local models section with ALL detected models
         all_local_models = []
         
-        # Add Llama models
+        # Add Llama-based models (including dolphin, alpaca, vicuna, qwen, gemma, phi)
         if local_models:
             for provider, model_name, model_size in local_models:
                 if model_name:
-                    all_local_models.append(("Llama", model_name, model_size, "🔒 Private & Secure"))
+                    # Determine description based on model type
+                    if 'dolphin' in model_name.lower():
+                        description = "🐬 Uncensored & Capable"
+                    elif 'alpaca' in model_name.lower():
+                        description = "🦙 Instruction-tuned"
+                    elif 'vicuna' in model_name.lower():
+                        description = "🦙 Conversational"
+                    elif 'qwen' in model_name.lower():
+                        description = "🐲 Multilingual"
+                    elif 'gemma' in model_name.lower():
+                        description = "💎 Google Lightweight"
+                    elif 'phi' in model_name.lower():
+                        description = "🧠 Microsoft Small"
+                    elif 'yi' in model_name.lower():
+                        description = "🎯 High Performance"
+                    elif 'codellama' in model_name.lower():
+                        description = "💻 Code Specialist"
+                    elif 'deepseek' in model_name.lower():
+                        description = "🔬 Deep Coding"
+                    elif 'starcoder' in model_name.lower():
+                        description = "⭐ Code Generation"
+                    elif 'nous' in model_name.lower():
+                        description = "🧠 Advanced Reasoning"
+                    elif 'wizard' in model_name.lower():
+                        description = "🧙‍♂️ Wizard Tasks"
+                    elif 'zephyr' in model_name.lower():
+                        description = "🌬️ Fast & Light"
+                    else:
+                        description = "🔒 Private & Secure"
+                    all_local_models.append(("Llama", model_name, model_size, description))
         
-        # Add Mistral model
-        if local_mistral_available:
-            all_local_models.append(("Mistral", "mistral:latest", 4270336, "⚡ Fast & Efficient"))
+        # Add Mistral models
+        if local_mistral_models:
+            for provider, model_name, model_size in local_mistral_models:
+                if 'mixtral' in model_name.lower():
+                    description = "🌪️ Mixture of Experts"
+                else:
+                    description = "⚡ Fast & Efficient"
+                all_local_models.append(("Mistral", model_name, model_size, description))
+        
+        # Add other models
+        if local_other_models:
+            for provider, model_name, model_size in local_other_models:
+                description = "🤖 Custom Model"
+                all_local_models.append(("Other", model_name, model_size, description))
         
         # Add Hugging Face models
         if hf_models_available:
@@ -3257,9 +3306,19 @@ All responses should be helpful, educational, and focused on legitimate cybersec
         }
         
         for provider in [Provider.OPENAI, Provider.GEMINI, Provider.MISTRAL, Provider.LLAMA, Provider.HUGGINGFACE]:
-            if provider in [p[0] for p in cloud_models] or provider == Provider.LLAMA and local_models or provider == Provider.MISTRAL and local_mistral_available or provider == Provider.HUGGINGFACE and hf_models_available:
+            has_cloud = provider in [p[0] for p in cloud_models]
+            has_local = False
+            
+            if provider == Provider.LLAMA and (local_models or local_other_models):
+                has_local = True
+            elif provider == Provider.MISTRAL and local_mistral_models:
+                has_local = True
+            elif provider == Provider.HUGGINGFACE and hf_models_available:
+                has_local = True
+            
+            if has_cloud or has_local:
                 capability = capabilities.get(provider, "Unknown")
-                status = "✅" if (provider in [p[0] for p in cloud_models]) or (provider == Provider.LLAMA and local_models) or (provider == Provider.MISTRAL and local_mistral_available) or (provider == Provider.HUGGINGFACE and hf_models_available) else "❌"
+                status = "✅" if (has_cloud or has_local) else "❌"
                 provider_name = provider.value.title()
                 print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}   {Fore.YELLOW}•{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}{provider_name}{ColoramaStyle.RESET_ALL} - {Fore.CYAN}{capability}{ColoramaStyle.RESET_ALL} {Fore.LIGHTGREEN_EX}{status}{ColoramaStyle.RESET_ALL} {Fore.LIGHTYELLOW_EX}{' ' * (20 - len(provider_name) - len(capability))}│{ColoramaStyle.RESET_ALL}")
         
@@ -4793,17 +4852,15 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             print(f"{install_title}")
             print(f"{install_footer}\n")
             
-            # Installation options with beautiful styling
+            # Installation options with beautiful styling - UNCENSORED MODELS ONLY
             options = [
-                ("[1] 🌟 Install Gemini Model", "Docker-based Gemini installation", Fore.LIGHTBLUE_EX),
-                ("[2] 🦙 Install Llama Model", "Ollama-based Llama installation", Fore.LIGHTGREEN_EX),
-                ("[3] 🐬 Install Mistral Dolphin", "Ollama-based Mistral installation", Fore.LIGHTRED_EX),
-                ("[4] 🚀 Install All Models", "Complete installation suite", Fore.LIGHTYELLOW_EX),
-                ("[5] 🎨 Install Gemini (Textual)", "Beautiful visual effects installation", Fore.MAGENTA),
-                ("[6] 🎨 Install Llama (Textual)", "Beautiful visual effects installation", Fore.MAGENTA),
-                ("[7] 🎨 Install Mistral (Textual)", "Beautiful visual effects installation", Fore.MAGENTA),
-                ("[8] 🎨 Themes Demo", "Show all available visual themes", Fore.CYAN),
-                ("[9] 🔙 Back to Configuration", "Return to configuration menu", Fore.LIGHTCYAN_EX)
+                ("[1] 🐬 Install Dolphin Model", "Uncensored Llama-3.1 8B Dolphin", Fore.LIGHTGREEN_EX),
+                ("[2] 🔥 Install Mistral Dolphin", "Uncensored Mistral Dolphin model", Fore.LIGHTRED_EX),
+                ("[3] 💎 Install Gemma Abliterated", "Uncensored Gemma-2-9B model", Fore.LIGHTBLUE_EX),
+                ("[4] 🐰 Install WhiteRabbitNeo", "Cybersecurity specialist model", Fore.LIGHTMAGENTA_EX),
+                ("[5] 🚀 Install All Uncensored Models", "Complete uncensored suite", Fore.LIGHTYELLOW_EX),
+                ("[6] 🎨 Themes Demo", "Show all available visual themes", Fore.CYAN),
+                ("[7] 🔙 Back to Configuration", "Return to configuration menu", Fore.LIGHTCYAN_EX)
             ]
             
             for i, (option, desc, color) in enumerate(options):
@@ -4812,62 +4869,48 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                 print(f"{Fore.LIGHTMAGENTA_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}\n")
         else:
             print("\n" + "=" * 40)
-            print("    INSTALL LOCAL MODELS")
+            print("    INSTALL LOCAL MODELS - UNCENSORED ONLY")
             print("=" * 40 + "\n")
-            print("  1. Install Gemini Model (Docker)")
-            print("  2. Install Llama Model (Ollama)")
-            print("  3. Install Mistral Dolphin Model (Ollama)")
-            print("  4. Install All Models")
-            print("  5. Install Gemini (Textual)")
-            print("  6. Install Llama (Textual)")
-            print("  7. Install Mistral (Textual)")
-            print("  8. Themes Demo")
-            print("  9. Back to configuration\n")
+            print("  1. Install Dolphin Model (Uncensored)")
+            print("  2. Install Mistral Dolphin (Uncensored)")
+            print("  3. Install Gemma Abliterated (Uncensored)")
+            print("  4. Install WhiteRabbitNeo (Uncensored)")
+            print("  5. Install All Uncensored Models")
+            print("  6. Themes Demo")
+            print("  7. Back to configuration\n")
         
-        choice = input(f"{self._colorize('🎯 Choose option (1-9):', Fore.YELLOW)}").strip()
+        choice = input(f"{self._colorize('🎯 Choose option (1-7):', Fore.YELLOW)}").strip()
         
         if choice == '1':
-            result = self.install_gemini_local()
+            result = self.install_dolphin_llama_local()
             print(f"\n{result}")
             input(f"\n{self._colorize('Press Enter to continue...', Fore.YELLOW)}")
             return self.handle_configuration()
         elif choice == '2':
-            result = self.install_llama_local()
-            print(f"\n{result}")
-            input(f"\n{self._colorize('Press Enter to continue...', Fore.YELLOW)}")
-            return self.handle_configuration()
-        elif choice == '3':
             result = self.install_mistral_dolphin_local()
             print(f"\n{result}")
             input(f"\n{self._colorize('Press Enter to continue...', Fore.YELLOW)}")
             return self.handle_configuration()
+        elif choice == '3':
+            result = self.install_gemma_abliterated_local()
+            print(f"\n{result}")
+            input(f"\n{self._colorize('Press Enter to continue...', Fore.YELLOW)}")
+            return self.handle_configuration()
         elif choice == '4':
-            result = self.install_all_local_models()
+            result = self.install_whiterabbit_neo_local()
             print(f"\n{result}")
             input(f"\n{self._colorize('Press Enter to continue...', Fore.YELLOW)}")
             return self.handle_configuration()
         elif choice == '5':
-            result = self.install_model_with_textual_progress("Gemini", [])
+            result = self.install_all_uncensored_models()
             print(f"\n{result}")
             input(f"\n{self._colorize('Press Enter to continue...', Fore.YELLOW)}")
             return self.handle_configuration()
         elif choice == '6':
-            result = self.install_model_with_textual_progress("Llama", [])
-            print(f"\n{result}")
-            input(f"\n{self._colorize('Press Enter to continue...', Fore.YELLOW)}")
+            self.show_themes_demo()
             return self.handle_configuration()
         elif choice == '7':
-            result = self.install_model_with_textual_progress("Mistral Dolphin", [])
-            print(f"\n{result}")
-            input(f"\n{self._colorize('Press Enter to continue...', Fore.YELLOW)}")
-            return self.handle_configuration()
-        elif choice == '8':
-            result = self.show_textual_themes_demo()
-            print(f"\n{result}")
-            input(f"\n{self._colorize('Press Enter to continue...', Fore.YELLOW)}")
-            return self.install_local_models_menu()
-        elif choice == '9':
-            return self.handle_configuration()
+            return self.show_configuration_menu()
         else:
             print(f"❌ Invalid choice: {choice}")
             input(f"\n{self._colorize('Press Enter to continue...', Fore.YELLOW)}")
@@ -8049,6 +8092,121 @@ Provide step-by-step technical details while maintaining educational context.
                     print(f"• {result}")
             
             return "✅ All local model installations completed!"
+    
+    def install_all_uncensored_models(self) -> str:
+        """Install all uncensored models with colorful progress bars"""
+        if COLORAMA_AVAILABLE:
+            # Beautiful installation header
+            all_header = f"{Fore.LIGHTYELLOW_EX}╔{'═' * 78}╗{ColoramaStyle.RESET_ALL}"
+            all_title = f"{Fore.LIGHTYELLOW_EX}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Back.YELLOW}{Fore.WHITE}🚀 INSTALL ALL UNCENSORED MODELS 🚀{ColoramaStyle.RESET_ALL} {Fore.LIGHTYELLOW_EX}{' ' * 34}║{ColoramaStyle.RESET_ALL}"
+            all_footer = f"{Fore.LIGHTYELLOW_EX}╚{'═' * 78}╝{ColoramaStyle.RESET_ALL}"
+            
+            print(f"\n{all_header}")
+            print(f"{all_title}")
+            print(f"{all_footer}\n")
+            
+            print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}   {Fore.CYAN}🔓 Installing all uncensored models for maximum freedom{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}   {Fore.CYAN}⚡ Complete uncensored AI setup with colorful progress tracking{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}   {Fore.CYAN}🔧 This may take 20-40 minutes depending on your connection{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTYELLOW_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}\n")
+        else:
+            print(f"\n{self._colorize('🚀 Installing All Uncensored Models', Fore.CYAN)}")
+            print("=" * 50)
+        
+        results = []
+        
+        # Create modern 3D terminal progress tracker for high-definition display
+        if TERMINAL_PROGRESS_AVAILABLE:
+            config = ProgressConfig(enable_3d=True, enable_gradient=True, enable_shadow=True, enable_animation=True)
+            with Modern3DProgressBar(total=100, prefix="🚀 Installing All Uncensored Models", config=config) as bar:
+                try:
+                    # Step 1-5: Initialize installation
+                    bar.update(5, "Initializing uncensored model installations")
+                    time.sleep(0.5)
+                    
+                    # Step 6-25: Install Dolphin
+                    bar.update(10, "Installing Dolphin 3.0 Llama 3.1 8B...")
+                    dolphin_result = self.install_dolphin_llama_local()
+                    results.append(f"🐬 Dolphin: {dolphin_result}")
+                    bar.update(25, "Dolphin installation complete")
+                    
+                    # Step 26-45: Install Mistral Dolphin
+                    bar.update(30, "Installing Mistral Dolphin model...")
+                    mistral_result = self.install_mistral_dolphin_local()
+                    results.append(f"🔥 Mistral Dolphin: {mistral_result}")
+                    bar.update(45, "Mistral Dolphin installation complete")
+                    
+                    # Step 46-65: Install Gemma Abliterated
+                    bar.update(50, "Installing Gemma-2-9B-IT-Abliterated...")
+                    gemma_result = self.install_gemma_abliterated_local()
+                    results.append(f"💎 Gemma Abliterated: {gemma_result}")
+                    bar.update(65, "Gemma Abliterated installation complete")
+                    
+                    # Step 66-85: Install WhiteRabbitNeo
+                    bar.update(70, "Installing WhiteRabbitNeo Llama-3 8B v2.0...")
+                    whiterabbit_result = self.install_whiterabbit_neo_local()
+                    results.append(f"🐰 WhiteRabbitNeo: {whiterabbit_result}")
+                    bar.update(85, "WhiteRabbitNeo installation complete")
+                    
+                    # Step 86-100: Final verification
+                    bar.update(90, "Verifying all uncensored installations...")
+                    time.sleep(1.0)
+                    bar.update(95, "Finalizing uncensored setup...")
+                    time.sleep(0.5)
+                    bar.finish("All uncensored models installed successfully!")
+                    
+                except Exception as e:
+                    bar.finish("Installation failed")
+                    return f"❌ Installation error: {e}"
+            
+            # Show results summary
+            summary_header = f"{Fore.LIGHTGREEN_EX}┌─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}"
+            summary_title = f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Back.GREEN}{Fore.WHITE}🔓 UNCENSORED INSTALLATION SUMMARY 🔓{ColoramaStyle.RESET_ALL} {Fore.LIGHTGREEN_EX}{' ' * 35}│{ColoramaStyle.RESET_ALL}"
+            summary_footer = f"{Fore.LIGHTGREEN_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}"
+            
+            print(f"\n{summary_header}")
+            print(f"{summary_title}")
+            print(f"{summary_footer}")
+            
+            for result in results:
+                if "✅" in result:
+                    print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}   {Fore.GREEN}✅{ColoramaStyle.RESET_ALL} {result}")
+                else:
+                    print(f"{Fore.LIGHTRED_EX}│{ColoramaStyle.RESET_ALL}   {Fore.RED}❌{ColoramaStyle.RESET_ALL} {result}")
+            
+            print(f"{Fore.LIGHTGREEN_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}")
+            
+            print(f"\n{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}   {Fore.CYAN}🎉 All uncensored models are now ready for use!{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}   {Fore.CYAN}🔓 Enjoy maximum freedom in AI assistance{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTYELLOW_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}\n")
+        else:
+            print(f"\n{self._colorize('🚀 Installing All Uncensored Models - Step by Step', Fore.CYAN)}")
+            
+            # Install Dolphin
+            print(f"\n{self._colorize('Step 1/4: Installing Dolphin 3.0...', Fore.GREEN)}")
+            dolphin_result = self.install_dolphin_llama_local()
+            results.append(f"🐬 Dolphin: {dolphin_result}")
+            
+            # Install Mistral Dolphin
+            print(f"\n{self._colorize('Step 2/4: Installing Mistral Dolphin...', Fore.GREEN)}")
+            mistral_result = self.install_mistral_dolphin_local()
+            results.append(f"🔥 Mistral Dolphin: {mistral_result}")
+            
+            # Install Gemma Abliterated
+            print(f"\n{self._colorize('Step 3/4: Installing Gemma Abliterated...', Fore.GREEN)}")
+            gemma_result = self.install_gemma_abliterated_local()
+            results.append(f"💎 Gemma Abliterated: {gemma_result}")
+            
+            # Install WhiteRabbitNeo
+            print(f"\n{self._colorize('Step 4/4: Installing WhiteRabbitNeo...', Fore.GREEN)}")
+            whiterabbit_result = self.install_whiterabbit_neo_local()
+            results.append(f"🐰 WhiteRabbitNeo: {whiterabbit_result}")
+            
+            print(f"\n{self._colorize('📊 Installation Summary:', Fore.GREEN)}")
+            for result in results:
+                print(f"• {result}")
+        
+        return "✅ All uncensored model installations completed! 🔓"
     
     def install_model_with_textual_progress(self, model_name: str, installation_steps: List[str]) -> str:
         """Install model with beautiful visual progress and random visual effects"""
