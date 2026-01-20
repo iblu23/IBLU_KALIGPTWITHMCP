@@ -1,4 +1,0 @@
-,.cd /home/iblu/Desktop/IBLU_KALIGPTWITHMCP && git status
-
-gcd /home/iblu/Desktop/IBLU_KALIGPTWITHMCP && git rebase --abort
-

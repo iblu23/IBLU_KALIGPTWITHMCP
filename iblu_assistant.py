@@ -43,6 +43,22 @@ try:
 except ImportError:
     VISUAL_EFFECTS_AVAILABLE = False
 
+# Stunning Rich Progress Bar System
+try:
+    from stunning_progress import (
+        StunningRichProgressBar, 
+        ProgressManager as StunningProgressManager, 
+        ProgressConfig as StunningProgressConfig, 
+        ProgressTheme,
+        progress_manager,
+        create_progress,
+        run_with_progress,
+        show_stunning_startup
+    )
+    STUNNING_PROGRESS_AVAILABLE = True
+except ImportError:
+    STUNNING_PROGRESS_AVAILABLE = False
+
 # Enhanced prompt_toolkit for rich input with auto-completion
 try:
     from prompt_toolkit import prompt
@@ -3690,8 +3706,7 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             return f"❌ Invalid choice: {choice}"
     
     def install_all_tools(self):
-        """Install all HexStrike tools at once with Rich progress tracking"""
-        theme = MODEL_PROGRESS_THEMES["installation"]
+        """Install all HexStrike tools at once with stunning Rich progress tracking"""
         
         if COLORAMA_AVAILABLE:
             # Beautiful installation header
@@ -3712,11 +3727,69 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             print("=" * 50)
         
         if os.path.exists('install_hexstrike_tools.sh'):
-            def install_with_progress(progress_callback=None):
-                """Execute installation with enhanced progress tracking"""
+            def install_with_stunning_progress():
+                """Execute installation with stunning Rich progress tracking"""
                 try:
-                    # Use alive-progress for beautiful animations if available
-                    if ALIVE_PROGRESS_AVAILABLE:
+                    # Use stunning Rich progress bars if available
+                    if STUNNING_PROGRESS_AVAILABLE:
+                        # Create stunning progress with different themes
+                        progress_configs = [
+                            StunningProgressConfig(
+                                total=11,
+                                description="📦 Installing HexStrike Tools",
+                                theme=ProgressTheme.FIRE_ORANGE,
+                                show_percentage=True,
+                                show_time=True,
+                                show_spinner=True
+                            )
+                        ]
+                        
+                        progress = create_progress(
+                            total=11,
+                            description="📦 Installing HexStrike Tools",
+                            theme=ProgressTheme.FIRE_ORANGE
+                        )
+                        
+                        progress.start()
+                        
+                        steps = [
+                            "🔧 Preparing installation environment...",
+                            "📦 Downloading tool dependencies...",
+                            "🛠️ Installing reconnaissance tools...",
+                            "🔍 Installing web analysis tools...",
+                            "🌐 Installing network scanners...",
+                            "💻 Installing exploitation tools...",
+                            "🔓 Installing password crackers...",
+                            "🛡️ Installing defense tools...",
+                            "📋 Configuring tool environments...",
+                            "🔧 Verifying installations...",
+                            "✅ Installation complete!"
+                        ]
+                        
+                        # Start the installation process
+                        process = subprocess.Popen(['sudo', './install_hexstrike_tools.sh'], 
+                                                 stdout=subprocess.PIPE, 
+                                                 stderr=subprocess.PIPE, 
+                                                 text=True,
+                                                 cwd=os.getcwd())
+                        
+                        for i, step in enumerate(steps, 1):
+                            print(f"  {step}")
+                            progress.set_progress(i, step)
+                            time.sleep(2)  # Simulate installation time
+                        
+                        # Wait for process to complete
+                        try:
+                            process.wait(timeout=1800)  # 30 minutes max
+                            progress.finish("🎉 HexStrike Tools Installation Complete!")
+                            return process.returncode == 0
+                        except subprocess.TimeoutExpired:
+                            process.kill()
+                            progress.finish("⏰ Installation Timeout")
+                            return False
+                        
+                    elif ALIVE_PROGRESS_AVAILABLE:
+                        # Fallback to alive-progress
                         import time
                         from alive_progress import alive_bar
                         
@@ -3749,81 +3822,39 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                             
                             # Wait for process to complete
                             process.wait(timeout=1800)  # 30 minutes max
-                            
+                            return process.returncode == 0
                     else:
-                        # Fallback to original progress simulation
-                        # Start the installation process
+                        # Basic fallback
+                        print("🚀 Starting installation...")
                         process = subprocess.Popen(['sudo', './install_hexstrike_tools.sh'], 
                                                  stdout=subprocess.PIPE, 
                                                  stderr=subprocess.PIPE, 
                                                  text=True,
                                                  cwd=os.getcwd())
-                        
-                        # Simulate progress during installation
-                        steps = [
-                            (10, "🔧 Preparing installation environment..."),
-                            (20, "📦 Downloading tool dependencies..."),
-                            (30, "🛠️ Installing reconnaissance tools..."),
-                            (40, "🔍 Installing web analysis tools..."),
-                            (50, "🌐 Installing network scanners..."),
-                            (60, "💻 Installing exploitation tools..."),
-                            (70, "🔓 Installing password crackers..."),
-                            (80, "🛡️ Installing defense tools..."),
-                            (90, "📋 Configuring tool environments..."),
-                            (95, "🔧 Verifying installations..."),
-                            (100, "✅ Installation complete!")
-                        ]
-                        
-                        for i, (progress_val, description) in enumerate(steps):
-                            if progress_callback:
-                                progress_callback(progress_val, description)
-                            time.sleep(3)  # Simulate installation time
-                            progress_callback(progress_val, description)
-                        
-                        # Wait for process to complete
-                    process.wait()
-                    return process.returncode == 0
+                        process.wait()
+                        return process.returncode == 0
                     
                 except Exception as e:
                     print(f"❌ Installation error: {e}")
                     return False
             
-            # Run with enhanced progress tracking
-            if ALIVE_PROGRESS_AVAILABLE:
-                # Use alive-progress for beautiful animations
+            # Run with stunning progress tracking
+            if STUNNING_PROGRESS_AVAILABLE:
+                # Use stunning Rich progress bars
+                result = install_with_stunning_progress()
+                if result:
+                    return "📦 All HexStrike tools installed successfully! 🎉"
+                else:
+                    return "❌ Installation failed. Please check the logs."
+            elif ALIVE_PROGRESS_AVAILABLE:
+                # Fallback to alive-progress
                 result = install_with_progress()
                 if result:
                     return "📦 All HexStrike tools installed successfully! 🎉"
                 else:
                     return "❌ Installation failed. Please check the logs."
-            elif TERMINAL_PROGRESS_AVAILABLE:
-                # Use new terminal progress
-                result = run_with_progress(
-                    "Installing HexStrike Tools", 
-                    install_with_progress,
-                    total_steps=100,
-                    emoji=theme["emoji"],
-                    steps=[
-                        (10, "🔧 Preparing installation environment..."),
-                        (20, "📦 Downloading tool dependencies..."),
-                        (30, "🛠️ Installing reconnaissance tools..."),
-                        (40, "🔍 Installing web analysis tools..."),
-                        (50, "🌐 Installing network scanners..."),
-                        (60, "💻 Installing exploitation tools..."),
-                        (70, "🔓 Installing password crackers..."),
-                        (80, "🛡️ Installing defense tools..."),
-                        (90, "📋 Configuring tool environments..."),
-                        (95, "🔧 Verifying installations..."),
-                        (100, "✅ Installation complete!")
-                    ]
-                )
-                
-                if result:
-                    return "📦 All HexStrike tools installed successfully! 🎉"
-                else:
-                    return "❌ Installation failed. Please check the logs."
             else:
-                # Fallback execution
+                # Basic fallback execution
                 print(f"🔧 Running installation script...")
                 print(f"⚠️  This requires root privileges")
                 print(f"💡 Command: sudo ./install_hexstrike_tools.sh")
@@ -7491,72 +7522,150 @@ Provide step-by-step technical details while maintaining educational context.
         
         print(f"\n{self._colorize('📦 Installing Mistral Dolphin...', Fore.GREEN)}")
         
-        # Show loading animation
-        self.show_loading_animation("Initializing Ollama environment...")
-        
-        try:
-            # Check if Ollama is installed
-            self.show_loading_animation("Checking Ollama availability...")
-            ollama_check = subprocess.run(['which', 'ollama'], capture_output=True, text=True)
+        # Use stunning Rich progress bar if available
+        if STUNNING_PROGRESS_AVAILABLE:
+            progress = create_progress(
+                total=5,
+                description="🐬 Installing Mistral Dolphin",
+                theme=ProgressTheme.OCEAN_BLUE
+            )
+            progress.start()
             
-            if ollama_check.returncode != 0:
-                print("📦 Installing Ollama...")
-                # Try multiple installation methods
-                install_methods = [
-                    "curl -fsSL https://ollama.ai/install.sh | sh",
-                    "wget -qO- https://ollama.ai/install.sh | sh",
-                    "bash -c 'curl -fsSL https://ollama.ai/install.sh | sh'"
-                ]
+            try:
+                # Check if Ollama is installed
+                progress.set_progress(1, "Checking Ollama availability...")
+                ollama_check = subprocess.run(['which', 'ollama'], capture_output=True, text=True)
                 
-                install_success = False
-                for method in install_methods:
-                    print(f"  Trying: {method}")
-                    install_cmd = subprocess.run(method, shell=True, capture_output=True, text=True, timeout=300)
-                    if install_cmd.returncode == 0:
-                        print("✅ Ollama installed successfully")
-                        install_success = True
-                        break
-                
-                if not install_success:
-                    return "❌ Failed to install Ollama. Please install manually: https://ollama.ai/"
-            
-            # Start Ollama service
-            self.show_loading_animation("Starting Ollama service...")
-            subprocess.run(['ollama', 'serve'], capture_output=True, text=True, timeout=10)
-            
-            # Wait a moment for service to start
-            time.sleep(3)
-            
-            # Install Mistral Dolphin model
-            self.show_loading_animation("Downloading Mistral Dolphin model...")
-            install_cmd = subprocess.run(['ollama', 'pull', 'mistral'], capture_output=True, text=True, timeout=600)
-            
-            if install_cmd.returncode == 0:
-                print(f"\n{self._colorize('✅ Mistral Dolphin installed successfully!', Fore.GREEN)}")
-                
-                # Verify installation
-                self.show_loading_animation("Verifying installation...")
-                verify_cmd = subprocess.run(['ollama', 'list'], capture_output=True, text=True)
-                
-                if 'mistral' in verify_cmd.stdout:
-                    print(f"\n{self._colorize('🚀 Mistral Dolphin is ready to use!', Fore.GREEN)}")
-                    print(f"\n{self._colorize('💡 Update config.json:', Fore.YELLOW)}")
-                    print('"mistral_keys": ["local"]')
-                    print(f"\n{self._colorize('🔗 Access via:', Fore.CYAN)}")
-                    print("  • /mistral command")
-                    print("  • Or set as default in config")
+                if ollama_check.returncode != 0:
+                    progress.set_progress(2, "Installing Ollama...")
+                    # Try multiple installation methods
+                    install_methods = [
+                        "curl -fsSL https://ollama.ai/install.sh | sh",
+                        "wget -qO- https://ollama.ai/install.sh | sh",
+                        "bash -c 'curl -fsSL https://ollama.ai/install.sh | sh'"
+                    ]
                     
-                    return "✅ Mistral Dolphin model installed and ready!"
-                else:
-                    return "⚠️  Installation completed but verification failed"
-            else:
-                error_msg = install_cmd.stderr.strip() if install_cmd.stderr else "Unknown error"
-                return f"❌ Failed to install Mistral Dolphin: {error_msg}"
+                    install_success = False
+                    for method in install_methods:
+                        print(f"  Trying: {method}")
+                        install_cmd = subprocess.run(method, shell=True, capture_output=True, text=True, timeout=300)
+                        if install_cmd.returncode == 0:
+                            print("✅ Ollama installed successfully")
+                            install_success = True
+                            break
+                    
+                    if not install_success:
+                        progress.finish("❌ Failed to install Ollama")
+                        return "❌ Failed to install Ollama. Please install manually: https://ollama.ai/"
                 
-        except subprocess.TimeoutExpired:
-            return "❌ Installation timed out. Please check your internet connection."
-        except Exception as e:
-            return f"❌ Installation error: {e}"
+                # Start Ollama service
+                progress.set_progress(3, "Starting Ollama service...")
+                subprocess.run(['ollama', 'serve'], capture_output=True, text=True, timeout=10)
+                
+                # Wait a moment for service to start
+                time.sleep(3)
+                
+                # Install Mistral Dolphin model
+                progress.set_progress(4, "Downloading Mistral Dolphin model...")
+                install_cmd = subprocess.run(['ollama', 'pull', 'mistral'], capture_output=True, text=True, timeout=600)
+                
+                if install_cmd.returncode == 0:
+                    # Verify installation
+                    progress.set_progress(5, "Verifying installation...")
+                    verify_cmd = subprocess.run(['ollama', 'list'], capture_output=True, text=True)
+                    
+                    if 'mistral' in verify_cmd.stdout:
+                        progress.finish("🐬 Mistral Dolphin installed successfully!")
+                        print(f"\n{self._colorize('🚀 Mistral Dolphin is ready to use!', Fore.GREEN)}")
+                        print(f"\n{self._colorize('💡 Update config.json:', Fore.YELLOW)}")
+                        print('"mistral_keys": ["local"]')
+                        print(f"\n{self._colorize('🔗 Access via:', Fore.CYAN)}")
+                        print("  • /mistral command")
+                        print("  • Or set as default in config")
+                        
+                        return "✅ Mistral Dolphin model installed and ready!"
+                    else:
+                        progress.finish("⚠️ Installation completed but verification failed")
+                        return "⚠️  Installation completed but verification failed"
+                else:
+                    error_msg = install_cmd.stderr.strip() if install_cmd.stderr else "Unknown error"
+                    progress.finish(f"❌ Failed to install: {error_msg}")
+                    return f"❌ Failed to install Mistral Dolphin: {error_msg}"
+                    
+            except subprocess.TimeoutExpired:
+                progress.finish("❌ Installation timed out")
+                return "❌ Installation timed out. Please check your internet connection."
+            except Exception as e:
+                progress.finish(f"❌ Installation error: {e}")
+                return f"❌ Installation error: {e}"
+        
+        else:
+            # Fallback to original method without stunning progress
+            self.show_loading_animation("Initializing Ollama environment...")
+            
+            try:
+                # Check if Ollama is installed
+                self.show_loading_animation("Checking Ollama availability...")
+                ollama_check = subprocess.run(['which', 'ollama'], capture_output=True, text=True)
+                
+                if ollama_check.returncode != 0:
+                    print("📦 Installing Ollama...")
+                    # Try multiple installation methods
+                    install_methods = [
+                        "curl -fsSL https://ollama.ai/install.sh | sh",
+                        "wget -qO- https://ollama.ai/install.sh | sh",
+                        "bash -c 'curl -fsSL https://ollama.ai/install.sh | sh'"
+                    ]
+                    
+                    install_success = False
+                    for method in install_methods:
+                        print(f"  Trying: {method}")
+                        install_cmd = subprocess.run(method, shell=True, capture_output=True, text=True, timeout=300)
+                        if install_cmd.returncode == 0:
+                            print("✅ Ollama installed successfully")
+                            install_success = True
+                            break
+                    
+                    if not install_success:
+                        return "❌ Failed to install Ollama. Please install manually: https://ollama.ai/"
+                
+                # Start Ollama service
+                self.show_loading_animation("Starting Ollama service...")
+                subprocess.run(['ollama', 'serve'], capture_output=True, text=True, timeout=10)
+            
+                # Wait a moment for service to start
+                time.sleep(3)
+            
+                # Install Mistral Dolphin model
+                self.show_loading_animation("Downloading Mistral Dolphin model...")
+                install_cmd = subprocess.run(['ollama', 'pull', 'mistral'], capture_output=True, text=True, timeout=600)
+                
+                if install_cmd.returncode == 0:
+                    print(f"\n{self._colorize('✅ Mistral Dolphin installed successfully!', Fore.GREEN)}")
+                    
+                    # Verify installation
+                    self.show_loading_animation("Verifying installation...")
+                    verify_cmd = subprocess.run(['ollama', 'list'], capture_output=True, text=True)
+                    
+                    if 'mistral' in verify_cmd.stdout:
+                        print(f"\n{self._colorize('🚀 Mistral Dolphin is ready to use!', Fore.GREEN)}")
+                        print(f"\n{self._colorize('💡 Update config.json:', Fore.YELLOW)}")
+                        print('"mistral_keys": ["local"]')
+                        print(f"\n{self._colorize('🔗 Access via:', Fore.CYAN)}")
+                        print("  • /mistral command")
+                        print("  • Or set as default in config")
+                        
+                        return "✅ Mistral Dolphin model installed and ready!"
+                    else:
+                        return "⚠️  Installation completed but verification failed"
+                else:
+                    error_msg = install_cmd.stderr.strip() if install_cmd.stderr else "Unknown error"
+                    return f"❌ Failed to install Mistral Dolphin: {error_msg}"
+                    
+            except subprocess.TimeoutExpired:
+                return "❌ Installation timed out. Please check your internet connection."
+            except Exception as e:
+                return f"❌ Installation error: {e}"
     
     def install_dolphin_llama_local(self) -> str:
         """Install Dolphin 3.0 Llama 3.1 8B model locally via Ollama"""
@@ -9392,9 +9501,50 @@ def main():
     import subprocess
     import os
     import sys
+    import time
     
-    # Beautiful startup animation
-    if ALIVE_PROGRESS_AVAILABLE:
+    # Stunning startup animation with Rich progress bars
+    if STUNNING_PROGRESS_AVAILABLE:
+        # Show stunning startup
+        show_stunning_startup()
+        
+        # Create progress configuration
+        startup_config = StunningProgressConfig(
+            total=6,
+            description="🚀 Startup Sequence",
+            theme=ProgressTheme.CYBERPUNK,
+            show_percentage=True,
+            show_time=True,
+            show_spinner=True,
+            bar_width=40,
+            animated=True
+        )
+        
+        progress = create_progress(
+            total=6,
+            description="🚀 Initializing IBLU KALIGPT...",
+            theme=ProgressTheme.CYBERPUNK
+        )
+        
+        progress.start()
+        
+        startup_items = [
+            "🔧 Loading configuration...",
+            "🧠 Initializing AI models...",
+            "🔗 Setting up MCP connections...",
+            "🎨 Preparing stunning visual interface...",
+            "🛡️ Loading security modules...",
+            "⚡ Optimizing performance...",
+        ]
+        
+        for i, item in enumerate(startup_items, 1):
+            time.sleep(0.3)  # Simulate loading
+            progress.set_progress(i, item)
+        
+        progress.finish("✨ System Ready! ✨")
+        time.sleep(0.5)
+    elif ALIVE_PROGRESS_AVAILABLE:
+        # Fallback to alive-progress
         import time
         from alive_progress import alive_bar
         
