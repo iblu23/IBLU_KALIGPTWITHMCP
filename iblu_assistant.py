@@ -2564,21 +2564,10 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             time.sleep(0.5)
                 
         if COLORAMA_AVAILABLE:
-            # Security tools overview - Main Menu Style
+            # Security tools overview - Single Panel Style
             w = 144
             
-            # Header section
-            tools_header = f"{Fore.LIGHTYELLOW_EX}┌{'═'*w}┐{ColoramaStyle.RESET_ALL}"
-            tools_title = f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Back.YELLOW}{Fore.WHITE}⚔️  CHOOSE YOUR DESTINY ⚔️{ColoramaStyle.RESET_ALL} {Fore.LIGHTYELLOW_EX}{' ' * (w-25)}│{ColoramaStyle.RESET_ALL}"
-            tools_subheader = f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.YELLOW}🔥 90+ PROFESSIONAL SECURITY TOOLS 🔥{ColoramaStyle.RESET_ALL} {Fore.LIGHTYELLOW_EX}{' ' * (w-35)}│{ColoramaStyle.RESET_ALL}"
-            tools_footer = f"{Fore.LIGHTYELLOW_EX}└{'═'*w}┘{ColoramaStyle.RESET_ALL}"
-            
-            print(f"\n{tools_header}")
-            print(f"{tools_title}")
-            print(f"{tools_subheader}")
-            print(f"{tools_footer}\n")
-            
-            # Tool categories with enhanced formatting
+            # Tool categories with enhanced formatting - Single Panel
             color_map = {
                 "Fore.CYAN": Fore.CYAN,
                 "Fore.LIGHTBLUE_EX": Fore.LIGHTBLUE_EX,
@@ -2608,14 +2597,18 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                 ("⚙️  UTILITY TOOLS", "Fore.LIGHTGREEN_EX", "tmux, proxychains, chisel, sshuttle, ngrok, netcat, hping3")
             ]
             
+            # Single continuous panel
+            print(f"\n{Fore.LIGHTYELLOW_EX}┌{'═'*w}┐{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Back.YELLOW}{Fore.WHITE}⚔️  CHOOSE YOUR DESTINY ⚔️{ColoramaStyle.RESET_ALL} {Fore.LIGHTYELLOW_EX}{' ' * (w-25)}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.YELLOW}🔥 90+ PROFESSIONAL SECURITY TOOLS 🔥{ColoramaStyle.RESET_ALL} {Fore.LIGHTYELLOW_EX}{' ' * (w-35)}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTYELLOW_EX}├{'═'*w}┤{ColoramaStyle.RESET_ALL}")
+            
+            # Display all categories in one panel without borders between them
             for category, color_key, tools in tool_categories:
-                # Category header box
-                print(f"{Fore.LIGHTYELLOW_EX}┌─ {ColoramaStyle.BRIGHT}{Fore.WHITE}{category}{ColoramaStyle.RESET_ALL}{Fore.LIGHTYELLOW_EX} ─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}")
-                
-                # Apply color to tools text
                 color_code = color_map.get(color_key, Fore.WHITE)
-                print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}  {color_code}{ColoramaStyle.BRIGHT}{tools.ljust(65)}{ColoramaStyle.RESET_ALL}{' ' * (w - 67)}{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}")
-                print(f"{Fore.LIGHTYELLOW_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}\n")
+                print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL} {color_code}{ColoramaStyle.BRIGHT}{category}{ColoramaStyle.RESET_ALL}: {tools.ljust(65)}{' ' * (w - len(category) - len(tools) - 3)}{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}")
+            
+            print(f"{Fore.LIGHTYELLOW_EX}└{'═'*w}┘{ColoramaStyle.RESET_ALL}\n")
         else:
             print("\n" + "=" * 70)
             print("    ⚔️  CHOOSE YOUR DESTINY ⚔️")
