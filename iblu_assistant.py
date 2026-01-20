@@ -2342,14 +2342,14 @@ All responses should be helpful, educational, and focused on legitimate cybersec
         if RICH_AVAILABLE:
             console = Console(width=144)
             
-            # Create Rich banner with Panel - Screen Wide
+            # Create Rich banner with Panel - Screen Wide (Colorful)
             banner_content = Text()
-            banner_content.append("██╗  ██╗  █████╗   ██████╗ ██╗  ██╗    ████████╗ ██╗  ██╗ ███████╗    ██╗    ██╗  ██████╗  ██████╗  ██╗      ██████╗\n", style="bold yellow")
-            banner_content.append("██║  ██║ ██╔══██╗ ██╔════╝ ██║ ██╔╝    ╚══██╔══╝ ██║  ██║ ██╔════╝    ██║    ██║ ██╔═══██╗ ██╔══██╗ ██║      ██╔══██╗\n", style="bold yellow")
-            banner_content.append("███████║ ███████║ ██║      █████╔╝        ██║    ███████║ █████╗      ██║ █╗ ██║ ██║   ██║ ██████╔╝ ██║      ██║  ██║\n", style="bold yellow")
-            banner_content.append("██╔══██║ ██╔══██║ ██║      ██╔═██╗        ██║    ██╔══██║ ██╔══╝      ██║███╗██║ ██║   ██║ ██╔══██╗ ██║      ██║  ██║\n", style="bold yellow")
-            banner_content.append("██║  ██║ ██║  ██║ ╚██████╗ ██║  ██╗       ██║    ██║  ██║ ███████╗    ╚███╔███╔╝ ╚██████╔╝ ██║  ██║ ███████╗ ██████╔╝\n", style="bold yellow")
-            banner_content.append("╚═╝  ╚═╝ ╚═╝  ╚═╝  ╚═════╝ ╚═╝  ╚═╝       ╚═╝    ╚═╝  ╚═╝ ╚══════╝     ╚══╝╚══╝   ╚═════╝  ╚═╝  ╚═╝ ╚══════╝ ╚═════╝\n\n", style="bold yellow")
+            banner_content.append("\033[31m\033[40m██╗  ██╗  █████╗   ██████╗ ██╗  ██╗    ████████╗ ██╗  ██╗ ███████╗    ██╗    ██╗  ██████╗  ██████╗  ██╗      ██████╗\033[0m\n", style="bold red")
+            banner_content.append("\033[31m\033[40m██║  ██║ ██╔══██╗ ██╔════╝ ██║ ██╔╝    ╚══██╔══╝ ██║  ██║ ██╔════╝    ██║    ██║ ██╔═══██╗ ██╔══██╗ ██║      ██╔══██╗\033[0m\n", style="bold red")
+            banner_content.append("\033[31m\033[40m███████║ ███████║ ██║      █████╔╝        ██║    ███████║ █████╗      ██║ █╗ ██║ ██║   ██║ ██████╔╝ ██║      ██║  ██║\033[0m\n", style="bold red")
+            banner_content.append("\033[31m\033[40m██╔══██║ ██╔══██║ ██║      ██╔═██╗        ██║    ██╔══██║ ██╔══╝      ██║███╗██║ ██║   ██║ ██╔══██╗ ██║      ██║  ██║\033[0m\n", style="bold red")
+            banner_content.append("\033[34m\033[40m██║  ██║ ██║  ██║ ╚██████╗ ██║  ██╗       ██║    ██║  ██║ ███████╗    ╚███╔███╔╝ ╚██████╔╝ ██║  ██║ ███████╗ ██████╔╝\033[0m\n", style="bold blue")
+            banner_content.append("\033[34m\033[40m╚═╝  ╚═╝ ╚═╝  ╚═╝  ╚═════╝ ╚═╝  ╚═╝       ╚═╝    ╚═╝  ╚═╝ ╚══════╝     ╚══╝╚══╝   ╚═════╝  ╚═╝  ╚═╝ ╚══════╝ ╚═════╝\033[0m\n\n", style="bold blue")
             
             # Display the main banner - Full Screen (144 chars) with glitch effect
             def glitch(text):
@@ -2362,17 +2362,148 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                         chars[i] = random.choice("@#$%&*")
                 return "".join(chars)
             
-            banner_lines = banner_content.plain.splitlines()
+            # Store original colored lines
+            original_lines = [
+                ("\033[31m\033[40m██╗  ██╗  █████╗   ██████╗ ██╗  ██╗    ████████╗ ██╗  ██╗ ███████╗    ██╗    ██╗  ██████╗  ██████╗  ██╗      ██████╗\033[0m", "bold red"),
+                ("\033[31m\033[40m██║  ██║ ██╔══██╗ ██╔════╝ ██║ ██╔╝    ╚══██╔══╝ ██║  ██║ ██╔════╝    ██║    ██║ ██╔═══██╗ ██╔══██╗ ██║      ██╔══██╗\033[0m", "bold red"),
+                ("\033[31m\033[40m███████║ ███████║ ██║      █████╔╝        ██║    ███████║ █████╗      ██║ █╗ ██║ ██║   ██║ ██████╔╝ ██║      ██║  ██║\033[0m", "bold red"),
+                ("\033[31m\033[40m██╔══██║ ██╔══██║ ██║      ██╔═██╗        ██║    ██╔══██║ ██╔══╝      ██║███╗██║ ██║   ██║ ██╔══██╗ ██║      ██║  ██║\033[0m", "bold red"),
+                ("\033[34m\033[40m██║  ██║ ██║  ██║ ╚██████╗ ██║  ██╗       ██║    ██║  ██║ ███████╗    ╚███╔███╔╝ ╚██████╔╝ ██║  ██║ ███████╗ ██████╔╝\033[0m", "bold blue"),
+                ("\033[34m\033[40m╚═╝  ╚═╝ ╚═╝  ╚═╝  ╚═════╝ ╚═╝  ╚═╝       ╚═╝    ╚═╝  ╚═╝ ╚══════╝     ╚══╝╚══╝   ╚═════╝  ╚═╝  ╚═╝ ╚══════╝ ╚═════╝\033[0m", "bold blue")
+            ]
+            
             banner_text = Text("", justify="left")
             with Live(Panel(banner_text, border_style="red", padding=(1, 7), expand=True), console=console, refresh_per_second=60) as live:
                 for t in range(100):
                     banner_text.plain = ""
-                    for i, line in enumerate(banner_lines):
+                    for i, (line, style) in enumerate(original_lines):
                         if random.random() < 0.1:  # 10% chance to glitch
                             line = glitch(line)
-                        banner_text.append(line + "\n", style="bold yellow")
+                        banner_text.append(line + "\n", style=style)
                     live.refresh()
                     time.sleep(0.05)
+            
+            # HACK MY LIFE x10 sequential animation
+            hack_text = Text("", justify="center")
+            with Live(Panel(hack_text, border_style="magenta", padding=(1, 7), expand=True), 
+                      console=console, refresh_per_second=60) as live:
+                phrases = []
+                
+                # Create 10 phrases appearing one by one
+                for phrase_num in range(10):
+                    # HACK appears for this phrase
+                    for i in range(8):
+                        current_phrase = "🔥🔥🔥 " + "HACK"[:i//2+1] + " 🔥🔥🔥"
+                        display_text = "  ".join(phrases + [current_phrase])
+                        hack_text.plain = display_text
+                        live.refresh()
+                        time.sleep(0.05)
+                    
+                    # MY appears for this phrase
+                    for i in range(4):
+                        current_phrase = "🔥🔥🔥 HACK " + "MY"[:i//2+1] + " 🔥🔥🔥"
+                        display_text = "  ".join(phrases + [current_phrase])
+                        hack_text.plain = display_text
+                        live.refresh()
+                        time.sleep(0.05)
+                    
+                    # LIFE appears for this phrase
+                    for i in range(8):
+                        current_phrase = "🔥🔥🔥 HACK MY " + "LIFE"[:i//2+1] + " 🔥🔥🔥"
+                        display_text = "  ".join(phrases + [current_phrase])
+                        hack_text.plain = display_text
+                        live.refresh()
+                        time.sleep(0.05)
+                    
+                    # Add completed phrase to list
+                    completed_phrase = "🔥🔥🔥 HACK MY LIFE 🔥🔥🔥"
+                    phrases.append(completed_phrase)
+                    
+                    # Show all completed phrases so far
+                    display_text = "  ".join(phrases)
+                    hack_text.plain = display_text
+                    live.refresh()
+                    time.sleep(0.3)
+                
+                # All 11 phrases visible - now glitch them all together
+                time.sleep(0.5)
+                all_phrases = phrases.copy()  # 10 phrases + we'll add the 11th
+                
+                # Add the 11th phrase (original)
+                all_phrases.append("🔥🔥🔥 HACK MY LIFE 🔥🔥🔥")
+                
+                # Glitch all 11 phrases together
+                for _ in range(40):
+                    glitched_phrases = []
+                    for phrase in all_phrases:
+                        if random.random() < 0.4:  # 40% chance to glitch each phrase
+                            glitched = glitch(phrase)
+                            glitched_phrases.append(glitched)
+                        else:
+                            glitched_phrases.append(phrase)
+                    
+                    display_text = "  ".join(glitched_phrases)
+                    hack_text.plain = display_text
+                    live.refresh()
+                    time.sleep(0.03)
+                
+                # Final stable display of all 11 phrases
+                final_display = "  ".join(all_phrases)
+                hack_text.plain = final_display
+                live.refresh()
+                time.sleep(1)
+            
+            # IBLU animation with random placement
+            iblu_text = Text("", justify="left")
+            with Live(Panel(iblu_text, border_style="cyan", padding=(1, 7), expand=True), 
+                      console=console, refresh_per_second=120) as live:
+                
+                # First 5 IBLU appearances in random places
+                for _ in range(5):
+                    iblu_text.plain = ""
+                    # Create a grid of possible positions
+                    positions = []
+                    for row in range(8):
+                        for col in range(12):
+                            if random.random() < 0.3:  # 30% chance to place IBLU here
+                                x_pos = col * 12
+                                y_pos = row
+                                positions.append((x_pos, y_pos))
+                    
+                    # Place up to 5 IBLU phrases
+                    for i in range(min(5, len(positions))):
+                        x, y = positions[i]
+                        lines = [""] * 8
+                        lines[y] = " " * x + "🔥🔥🔥IBLU🔥🔥🔥"
+                        iblu_text.plain = "\n".join(lines)
+                        live.refresh()
+                        time.sleep(0.02)  # Faster animation
+                
+                time.sleep(0.3)
+                
+                # Second 5 IBLU appearances in random places
+                for _ in range(5):
+                    iblu_text.plain = ""
+                    positions = []
+                    for row in range(8):
+                        for col in range(12):
+                            if random.random() < 0.3:
+                                x_pos = col * 12
+                                y_pos = row
+                                positions.append((x_pos, y_pos))
+                    
+                    for i in range(min(5, len(positions))):
+                        x, y = positions[i]
+                        lines = [""] * 8
+                        lines[y] = " " * x + "🔥🔥🔥IBLU🔥🔥🔥"
+                        iblu_text.plain = "\n".join(lines)
+                        live.refresh()
+                        time.sleep(0.02)  # Faster animation
+                
+                # Final IBLU display in center
+                iblu_text.plain = "\n\n\n\n\n\n\n" + "🔥🔥🔥IBLU🔥🔥🔥".center(144)
+                live.refresh()
+                time.sleep(1)
             
         else:
             # Fallback banner without Rich - Screen Wide (144 chars)
@@ -2391,36 +2522,133 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                 return "".join(chars)
             
             banner_lines = [
-                "╔" + "═"*w + "╗",
-                pad(""),
-                pad("  ██╗  ██╗  █████╗   ██████╗ ██╗  ██╗    ████████╗ ██╗  ██╗ ███████╗    ██╗    ██╗  ██████╗  ██████╗  ██╗      ██████╗"),
-                pad("  ██║  ██║ ██╔══██╗ ██╔════╝ ██║ ██╔╝    ╚══██╔══╝ ██║  ██║ ██╔════╝    ██║    ██║ ██╔═══██╗ ██╔══██╗ ██║      ██╔══██╗"),
-                pad("  ███████║ ███████║ ██║      █████╔╝        ██║    ███████║ █████╗      ██║ █╗ ██║ ██║   ██║ ██████╔╝ ██║      ██║  ██║"),
-                pad("  ██╔══██║ ██╔══██║ ██║      ██╔═██╗        ██║    ██╔══██║ ██╔══╝      ██║███╗██║ ██║   ██║ ██╔══██╗ ██║      ██║  ██║"),
-                pad("  ██║  ██║ ██║  ██║ ╚██████╗ ██║  ██╗       ██║    ██║  ██║ ███████╗    ╚███╔███╔╝ ╚██████╔╝ ██║  ██║ ███████╗ ██████╔╝"),
-                pad("  ╚═╝  ╚═╝ ╚═╝  ╚═╝  ╚═════╝ ╚═╝  ╚═╝       ╚═╝    ╚═╝  ╚═╝ ╚══════╝     ╚══╝╚══╝   ╚═════╝  ╚═╝  ╚═╝ ╚══════╝ ╚═════╝"),
-                pad(""),
-                "╚" + "═"*w + "╝"
+                f"{Fore.LIGHTRED_EX}╔" + "═"*w + f"╗{ColoramaStyle.RESET_ALL}",
+                f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}" + " "*w + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}",
+                f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.RED}{Back.BLACK}  ██╗  ██╗  █████╗   ██████╗ ██╗  ██╗    ████████╗ ██╗  ██╗ ███████╗    ██╗    ██╗  ██████╗  ██████╗  ██╗      ██████╗{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}",
+                f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.RED}{Back.BLACK}  ██║  ██║ ██╔══██╗ ██╔════╝ ██║ ██╔╝    ╚══██╔══╝ ██║  ██║ ██╔════╝    ██║    ██║ ██╔═══██╗ ██╔══██╗ ██║      ██╔══██╗{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}",
+                f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.RED}{Back.BLACK}  ███████║ ███████║ ██║      █████╔╝        ██║    ███████║ █████╗      ██║ █╗ ██║ ██║   ██║ ██████╔╝ ██║      ██║  ██║{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}",
+                f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.RED}{Back.BLACK}  ██╔══██║ ██╔══██║ ██║      ██╔═██╗        ██║    ██╔══██║ ██╔══╝      ██║███╗██║ ██║   ██║ ██╔══██╗ ██║      ██║  ██║{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}",
+                f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.BLUE}{Back.BLACK}  ██║  ██║ ██║  ██║ ╚██████╗ ██║  ██╗       ██║    ██║  ██║ ███████╗    ╚███╔███╔╝ ╚██████╔╝ ██║  ██║ ███████╗ ██████╔╝{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}",
+                f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.BLUE}{Back.BLACK}  ╚═╝  ╚═╝ ╚═╝  ╚═╝  ╚═════╝ ╚═╝  ╚═╝       ╚═╝    ╚═╝  ╚═╝ ╚══════╝     ╚══╝╚══╝   ╚═════╝  ╚═╝  ╚═╝ ╚══════╝ ╚═════╝{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}",
+                f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}" + " "*w + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}",
+                f"{Fore.LIGHTRED_EX}╚" + "═"*w + f"╝{ColoramaStyle.RESET_ALL}"
             ]
 
+            # Store original content lines for glitching
+            content_lines = [
+                "\033[31m\033[40m  ██╗  ██╗  █████╗   ██████╗ ██╗  ██╗    ████████╗ ██╗  ██╗ ███████╗    ██╗    ██╗  ██████╗  ██████╗  ██╗      ██████╗",
+                "\033[31m\033[40m  ██║  ██║ ██╔══██╗ ██╔════╝ ██║ ██╔╝    ╚══██╔══╝ ██║  ██║ ██╔════╝    ██║    ██║ ██╔═══██╗ ██╔══██╗ ██║      ██╔══██╗",
+                "\033[31m\033[40m  ███████║ ███████║ ██║      █████╔╝        ██║    ███████║ █████╗      ██║ █╗ ██║ ██║   ██║ ██████╔╝ ██║      ██║  ██║",
+                "\033[31m\033[40m  ██╔══██║ ██╔══██║ ██║      ██╔═██╗        ██║    ██╔══██║ ██╔══╝      ██║███╗██║ ██║   ██║ ██╔══██╗ ██║      ██║  ██║",
+                "\033[34m\033[40m  ██║  ██║ ██║  ██║ ╚██████╗ ██║  ██╗       ██║    ██║  ██║ ███████╗    ╚███╔███╔╝ ╚██████╔╝ ██║  ██║ ███████╗ ██████╔╝",
+                "\033[34m\033[40m  ╚═╝  ╚═╝ ╚═╝  ╚═╝  ╚═════╝ ╚═╝  ╚═╝       ╚═╝    ╚═╝  ╚═╝ ╚══════╝     ╚══╝╚══╝   ╚═════╝  ╚═╝  ╚═╝ ╚══════╝ ╚═════╝"
+            ]
+            
+            colors = [Fore.RED, Fore.YELLOW, Fore.GREEN, Fore.CYAN, Fore.MAGENTA, Fore.WHITE]
+            
             for t in range(100):
                 os.system("clear")
-                for line in banner_lines:
+                # Print borders
+                print(f"{Fore.LIGHTRED_EX}╔" + "═"*w + f"╗{ColoramaStyle.RESET_ALL}")
+                print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}" + " "*w + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+                
+                # Print content with colors and potential glitches
+                for i, content in enumerate(content_lines):
                     if random.random() < 0.1:  # 10% chance to glitch
-                        if "║" in line:
-                            # Handle bordered lines - glitch only the content
-                            parts = line.split("║")
-                            if len(parts) == 3:
-                                content = parts[1].strip()
-                                if content:
-                                    glitched_content = glitch(content)
-                                    line = f"║{glitched_content.ljust(w)}║"
-                    print(line)
+                        content = glitch(content)
+                    print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {colors[i]}{content.ljust(w)}{ColoramaStyle.RESET_ALL} {Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+                
+                print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}" + " "*w + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+                print(f"{Fore.LIGHTRED_EX}╚" + "═"*w + f"╝{ColoramaStyle.RESET_ALL}")
                 time.sleep(0.05)
             
             # Print final static banner
             for line in banner_lines:
                 print(line)
+            
+            # HACK MY LIFE x10 sequential animation (fallback)
+            time.sleep(0.5)
+            phrases = []
+            
+            # Create 10 phrases appearing one by one
+            for phrase_num in range(10):
+                # HACK appears for this phrase
+                for i in range(8):
+                    os.system("clear")
+                    current_phrase = "🔥🔥🔥 " + "HACK"[:i//2+1] + " 🔥🔥🔥"
+                    display_text = "  ".join(phrases + [current_phrase])
+                    
+                    print(f"{Fore.LIGHTMAGENTA_EX}╔" + "═"*w + f"╗{ColoramaStyle.RESET_ALL}")
+                    print(f"{Fore.LIGHTMAGENTA_EX}║{ColoramaStyle.RESET_ALL}" + f"{display_text.center(w)}" + f"{Fore.LIGHTMAGENTA_EX}║{ColoramaStyle.RESET_ALL}")
+                    print(f"{Fore.LIGHTMAGENTA_EX}╚" + "═"*w + f"╝{ColoramaStyle.RESET_ALL}")
+                    time.sleep(0.05)
+                
+                # MY appears for this phrase
+                for i in range(4):
+                    os.system("clear")
+                    current_phrase = "🔥🔥🔥 HACK " + "MY"[:i//2+1] + " 🔥🔥🔥"
+                    display_text = "  ".join(phrases + [current_phrase])
+                    
+                    print(f"{Fore.LIGHTMAGENTA_EX}╔" + "═"*w + f"╗{ColoramaStyle.RESET_ALL}")
+                    print(f"{Fore.LIGHTMAGENTA_EX}║{ColoramaStyle.RESET_ALL}" + f"{display_text.center(w)}" + f"{Fore.LIGHTMAGENTA_EX}║{ColoramaStyle.RESET_ALL}")
+                    print(f"{Fore.LIGHTMAGENTA_EX}╚" + "═"*w + f"╝{ColoramaStyle.RESET_ALL}")
+                    time.sleep(0.05)
+                
+                # LIFE appears for this phrase
+                for i in range(8):
+                    os.system("clear")
+                    current_phrase = "🔥🔥🔥 HACK MY " + "LIFE"[:i//2+1] + " 🔥🔥🔥"
+                    display_text = "  ".join(phrases + [current_phrase])
+                    
+                    print(f"{Fore.LIGHTMAGENTA_EX}╔" + "═"*w + f"╗{ColoramaStyle.RESET_ALL}")
+                    print(f"{Fore.LIGHTMAGENTA_EX}║{ColoramaStyle.RESET_ALL}" + f"{display_text.center(w)}" + f"{Fore.LIGHTMAGENTA_EX}║{ColoramaStyle.RESET_ALL}")
+                    print(f"{Fore.LIGHTMAGENTA_EX}╚" + "═"*w + f"╝{ColoramaStyle.RESET_ALL}")
+                    time.sleep(0.05)
+                
+                # Add completed phrase to list
+                completed_phrase = "🔥🔥🔥 HACK MY LIFE 🔥🔥🔥"
+                phrases.append(completed_phrase)
+                
+                # Show all completed phrases so far
+                os.system("clear")
+                display_text = "  ".join(phrases)
+                print(f"{Fore.LIGHTMAGENTA_EX}╔" + "═"*w + f"╗{ColoramaStyle.RESET_ALL}")
+                print(f"{Fore.LIGHTMAGENTA_EX}║{ColoramaStyle.RESET_ALL}" + f"{display_text.center(w)}" + f"{Fore.LIGHTMAGENTA_EX}║{ColoramaStyle.RESET_ALL}")
+                print(f"{Fore.LIGHTMAGENTA_EX}╚" + "═"*w + f"╝{ColoramaStyle.RESET_ALL}")
+                time.sleep(0.3)
+            
+            # All 11 phrases visible - now glitch them all together
+            time.sleep(0.5)
+            all_phrases = phrases.copy()  # 10 phrases + we'll add the 11th
+            
+            # Add the 11th phrase (original)
+            all_phrases.append("🔥🔥🔥 HACK MY LIFE 🔥🔥🔥")
+            
+            # Glitch all 11 phrases together
+            for _ in range(40):
+                os.system("clear")
+                print(f"{Fore.LIGHTMAGENTA_EX}╔" + "═"*w + f"╗{ColoramaStyle.RESET_ALL}")
+                
+                glitched_phrases = []
+                for phrase in all_phrases:
+                    if random.random() < 0.4:  # 40% chance to glitch each phrase
+                        glitched = glitch(phrase)
+                        glitched_phrases.append(glitched)
+                    else:
+                        glitched_phrases.append(phrase)
+                
+                display_text = "  ".join(glitched_phrases)
+                print(f"{Fore.LIGHTMAGENTA_EX}║{ColoramaStyle.RESET_ALL}" + f"{display_text.center(w)}" + f"{Fore.LIGHTMAGENTA_EX}║{ColoramaStyle.RESET_ALL}")
+                print(f"{Fore.LIGHTMAGENTA_EX}╚" + "═"*w + f"╝{ColoramaStyle.RESET_ALL}")
+                time.sleep(0.03)
+            
+            # Final stable display of all 11 phrases
+            os.system("clear")
+            display_text = "  ".join(all_phrases)
+            print(f"{Fore.LIGHTMAGENTA_EX}╔" + "═"*w + f"╗{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTMAGENTA_EX}║{ColoramaStyle.RESET_ALL}" + f"{display_text.center(w)}" + f"{Fore.LIGHTMAGENTA_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTMAGENTA_EX}╚" + "═"*w + f"╝{ColoramaStyle.RESET_ALL}")
+            time.sleep(1)
         
                 
         if COLORAMA_AVAILABLE:
