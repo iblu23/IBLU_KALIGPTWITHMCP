@@ -4811,7 +4811,7 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             return status
     
     def install_local_models_menu(self):
-        """Show local model installation menu with colorful styling"""
+        """Show local model installation menu with colorful styling and current model status"""
         if COLORAMA_AVAILABLE:
             # Beautiful installation header
             install_header = f"{Fore.LIGHTMAGENTA_EX}╔══════════════════════════════════════════════════════════════════════════════╗{ColoramaStyle.RESET_ALL}"
@@ -4821,6 +4821,9 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             print(f"\n{install_header}")
             print(f"{install_title}")
             print(f"{install_footer}\n")
+            
+            # Add model status overview here
+            self._show_model_status_overview()
             
             # Installation options with beautiful styling - UNCENSORED MODELS ONLY
             options = [
@@ -4841,6 +4844,10 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             print("\n" + "=" * 40)
             print("    INSTALL LOCAL MODELS - UNCENSORED ONLY")
             print("=" * 40 + "\n")
+            
+            # Add model status overview for non-colorama systems
+            self._show_model_status_overview()
+            
             print("  1. Install Dolphin Model (Uncensored)")
             print("  2. Install Mistral Dolphin (Uncensored)")
             print("  3. Install Gemma Abliterated (Uncensored)")
@@ -4885,6 +4892,114 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             print(f"❌ Invalid choice: {choice}")
             input(f"\n{self._colorize('Press Enter to continue...', Fore.YELLOW)}")
             return self.install_local_models_menu()
+
+    def _show_model_status_overview(self):
+        """Show current model status overview - extracted from list_available_models"""
+        # Enhanced overview section with gradient colors
+        overview_border = f"{Fore.LIGHTGREEN_EX}┌─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}"
+        overview_title = f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Back.GREEN}{Fore.WHITE}📊 MODEL STATUS OVERVIEW:{ColoramaStyle.RESET_ALL} {Fore.LIGHTGREEN_EX}{' ' * 44}│{ColoramaStyle.RESET_ALL}"
+        overview_border2 = f"{Fore.LIGHTGREEN_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}"
+        
+        print(f"{overview_border}")
+        print(f"{overview_title}")
+        print(f"{overview_border2}")
+        
+        # Add description for MODEL STATUS OVERVIEW
+        print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}   {Fore.CYAN}📈 Real-time status of all configured and available AI models{ColoramaStyle.RESET_ALL}")
+        print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}   {Fore.CYAN}🔍 Shows cloud API status and local model availability{ColoramaStyle.RESET_ALL}")
+        print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}   {Fore.CYAN}⚡ Includes model capabilities and download instructions{ColoramaStyle.RESET_ALL}")
+        print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}")
+        
+        # Check local models - FOCUS ON UNCENSORED MODELS
+        local_models = []
+        local_mistral_models = []
+        local_other_models = []
+        
+        try:
+            url = "http://localhost:11434/api/tags"
+            response = requests.get(url, timeout=5)
+            if response.status_code == 200:
+                models_data = response.json()
+                for model in models_data.get('models', []):
+                    model_name = model.get('name', '')
+                    model_size = model.get('size', 0)
+                    
+                    # Focus on uncensored and security models
+                    if 'dolphin' in model_name.lower() or 'uncensored' in model_name.lower():
+                        local_models.append(("Llama", model_name, model_size, "🐬 Uncensored & Capable"))
+                    elif 'whiterabbit' in model_name.lower() or 'white-rabbit' in model_name.lower():
+                        local_models.append(("Llama", model_name, model_size, "🐰 Cybersecurity Specialist"))
+                    elif 'gemma' in model_name.lower() and ('abliterated' in model_name.lower() or 'uncensored' in model_name.lower()):
+                        local_models.append(("Llama", model_name, model_size, "💎 Uncensored Gemma"))
+                    elif 'mistral' in model_name.lower() and ('dolphin' in model_name.lower() or 'uncensored' in model_name.lower()):
+                        local_mistral_models.append(("Mistral", model_name, model_size, "🔥 Uncensored Mistral"))
+                    elif 'llama' in model_name.lower() or 'alpaca' in model_name.lower() or 'vicuna' in model_name.lower():
+                        local_models.append(("Llama", model_name, model_size, "🦙 Llama Family"))
+        except requests.exceptions.RequestException:
+            pass
+        
+        # Combine all local models for display
+        all_local_models = local_models + local_mistral_models + local_other_models
+        
+        if all_local_models:
+            # Show available local models
+            print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}   {ColoramaStyle.BRIGHT}{Back.GREEN}{Fore.WHITE}🏠 LOCAL UNCENSORED MODELS:{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}")
+            
+            for i, (provider_type, model_name, model_size, description) in enumerate(all_local_models, 1):
+                size_str = f"({model_size/1024:.1f}GB)" if model_size > 0 else ""
+                print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}   {Fore.GREEN}•{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}{model_name}{ColoramaStyle.RESET_ALL} {Fore.MAGENTA}{size_str}{ColoramaStyle.RESET_ALL}")
+                print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}     {Fore.CYAN}{description}{ColoramaStyle.RESET_ALL}")
+                if i < len(all_local_models):
+                    print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}")
+            
+            print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}")
+        else:
+            # Show no local models message
+            print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}   {Fore.YELLOW}❌ No local uncensored models installed{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}")
+        
+        # Show download instructions
+        print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}   {ColoramaStyle.BRIGHT}{Fore.YELLOW}📥 DOWNLOAD INSTRUCTIONS:{ColoramaStyle.RESET_ALL}")
+        print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}   {Fore.GREEN}•{ColoramaStyle.RESET_ALL} {Fore.WHITE}Dolphin:{ColoramaStyle.RESET_ALL} {Fore.CYAN}Choose option 1 below{ColoramaStyle.RESET_ALL}")
+        print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}   {Fore.GREEN}•{ColoramaStyle.RESET_ALL} {Fore.WHITE}Mistral Dolphin:{ColoramaStyle.RESET_ALL} {Fore.CYAN}Choose option 2 below{ColoramaStyle.RESET_ALL}")
+        print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}   {Fore.GREEN}•{ColoramaStyle.RESET_ALL} {Fore.WHITE}Gemma Abliterated:{ColoramaStyle.RESET_ALL} {Fore.CYAN}Choose option 3 below{ColoramaStyle.RESET_ALL}")
+        print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}   {Fore.GREEN}•{ColoramaStyle.RESET_ALL} {Fore.WHITE}WhiteRabbitNeo:{ColoramaStyle.RESET_ALL} {Fore.CYAN}Choose option 4 below{ColoramaStyle.RESET_ALL}")
+        print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}   {Fore.GREEN}•{ColoramaStyle.RESET_ALL} {Fore.WHITE}All Uncensored:{ColoramaStyle.RESET_ALL} {Fore.CYAN}Choose option 5 below{ColoramaStyle.RESET_ALL}")
+        
+        print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}")
+        
+        # Model capabilities section
+        print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}   {ColoramaStyle.BRIGHT}{Back.YELLOW}{Fore.WHITE}🔧 MODEL CAPABILITIES:{ColoramaStyle.RESET_ALL}")
+        print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}   {Fore.YELLOW}•{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}Llama{ColoramaStyle.RESET_ALL} - {Fore.CYAN}🔒 Privacy-focused & 🛡️ Cybersecurity specialist{ColoramaStyle.RESET_ALL} {Fore.LIGHTGREEN_EX}✅{ColoramaStyle.RESET_ALL}")
+        print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}")
+        
+        # Collaborative status section
+        total_models = len(all_local_models)
+        print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}   {ColoramaStyle.BRIGHT}{Back.MAGENTA}{Fore.WHITE}🤝 COLLABORATIVE STATUS:{ColoramaStyle.RESET_ALL}")
+        if total_models >= 2:
+            print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}   {Fore.LIGHTGREEN_EX}✅{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Back.GREEN}{Fore.WHITE}Collaborative mode: ACTIVE{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}   {Fore.MAGENTA}•{ColoramaStyle.RESET_ALL} Models will work together for comprehensive responses")
+        else:
+            print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}   {Fore.LIGHTRED_EX}❌{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Back.RED}{Fore.WHITE}Collaborative mode: INACTIVE{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}   {Fore.MAGENTA}•{ColoramaStyle.RESET_ALL} Need 2+ models for collaborative mode")
+            print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}   {Fore.MAGENTA}•{ColoramaStyle.RESET_ALL} Single model mode will be used")
+        print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}")
+        
+        # Usage tips section
+        print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}   {ColoramaStyle.BRIGHT}{Back.CYAN}{Fore.WHITE}💡 USAGE TIPS:{ColoramaStyle.RESET_ALL}")
+        print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}   {Fore.CYAN}•{ColoramaStyle.RESET_ALL} Chat normally - collaborative mode activates automatically")
+        print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}   {Fore.CYAN}•{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}/collaborative{ColoramaStyle.RESET_ALL} - Check collaborative status")
+        print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}   {Fore.CYAN}•{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}/stack_models{ColoramaStyle.RESET_ALL} - Manual model stacking")
+        print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}   {Fore.CYAN}•{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}/model_chat{ColoramaStyle.RESET_ALL} - Enable model communication")
+        print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}")
+        
+        # Final summary
+        print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}   {ColoramaStyle.BRIGHT}{Back.BLUE}{Fore.WHITE}✅ Total uncensored models available: {total_models}{ColoramaStyle.RESET_ALL}")
+        print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}")
+        
+        print(f"{Fore.LIGHTGREEN_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}")
+        print()
 
 # ... (rest of the code remains the same)
     def _colorize(self, text: str, color: str = "") -> str:
