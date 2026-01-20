@@ -1809,7 +1809,7 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             time.sleep(0.3)
         
         if COLORAMA_AVAILABLE:
-            # Display the ASCII art banner
+            # Display the ASCII art banner with perfect alignment
             border = f"{Fore.RED}╔{'═'*78}╗\n"
             line1 = f"{Fore.RED}║ {Style.BRIGHT}{Fore.YELLOW}██╗  ██╗ █████╗  ██████╗██╗  ██╗    ████████╗██╗  ██╗███████╗ {Fore.RED}║\n"
             line2 = f"{Fore.RED}║ {Fore.YELLOW}██║  ██║██╔══██╗██╔════╝██║ ██╔╝    ╚══██╔══╝██║  ██║██╔════╝ {Fore.RED}║\n"
@@ -1823,9 +1823,10 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             line10 = f"{Fore.RED}║ {Fore.CYAN}{' '*20}██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║ {Fore.RED}║\n"
             line11 = f"{Fore.RED}║ {Fore.CYAN}{' '*20}╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝ {Fore.RED}║\n"
             line12 = f"{Fore.RED}║ {Fore.CYAN}{' '*20} ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝  {Fore.RED}║\n"
-            line13 = f"{Fore.RED}║ {Style.BRIGHT}{Fore.MAGENTA}{' '*16}🔥🔥🔥 HACK THE WORLD 🔥🔥🔥{Fore.RED}{' '*16}║\n"
+            line13 = f"{Fore.RED}║ {Style.BRIGHT}{Fore.MAGENTA}{' '*17}🔥🔥🔥 HACK THE WORLD 🔥🔥🔥{Fore.RED}{' '*17}║\n"
             banner = border + line1 + line2 + line3 + line4 + line5 + line6 + line7 + line8 + line9 + line10 + line11 + line12 + line13 + border
         else:
+            # Display the ASCII art banner with perfect alignment (fallback)
             border = "╔" + "═"*78 + "╗\n"
             line1 = "║ ██╗  ██╗ █████╗  ██████╗██╗  ██╗    ████████╗██╗  ██╗███████╗ ║\n"
             line2 = "║ ██║  ██║██╔══██╗██╔════╝██║ ██╔╝    ╚══██╔══╝██║  ██║██╔════╝ ║\n"
@@ -1839,7 +1840,7 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             line10 = "║                     ██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║              ║\n"
             line11 = "║                     ╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝              ║\n"
             line12 = "║                      ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝               ║\n"
-            line13 = "║          🔥🔥🔥 HACK THE WORLD 🔥🔥🔥          ║\n"
+            line13 = "║                   🔥🔥🔥 HACK THE WORLD 🔥🔥🔥                   ║\n"
             banner = border + line1 + line2 + line3 + line4 + line5 + line6 + line7 + line8 + line9 + line10 + line11 + line12 + line13 + border
         
         print(banner)
