@@ -45,11 +45,155 @@ try:
     from rich.progress import Progress, SpinnerColumn, BarColumn, TextColumn, TimeElapsedColumn
     from rich.syntax import Syntax
     from rich.panel import Panel
+    from rich.style import Style
+    from rich.text import Text
     RICH_AVAILABLE = True
     console = Console()
 except ImportError:
     RICH_AVAILABLE = False
     console = None
+
+# Enhanced Rich progress bar with consistent characters and tooltips
+class EnhancedRichProgress:
+    """Enhanced Rich progress bar with consistent characters and tooltip support"""
+    
+    def __init__(self, total: int = 100, description: str = "Processing", emoji: str = "🔄"):
+        self.total = total
+        self.description = description
+        self.emoji = emoji
+        self.current = 0
+        
+        # Consistent progress characters
+        self.progress_chars = {
+            'complete': '█',
+            'partial': '▓',
+            'light': '▒',
+            'empty': '░'
+        }
+        
+        # Color themes
+        self.themes = {
+            'default': {'bar': 'cyan', 'text': 'white', 'emoji': 'yellow'},
+            'success': {'bar': 'green', 'text': 'white', 'emoji': 'green'},
+            'warning': {'bar': 'yellow', 'text': 'white', 'emoji': 'yellow'},
+            'error': {'bar': 'red', 'text': 'white', 'emoji': 'red'},
+            'info': {'bar': 'blue', 'text': 'white', 'emoji': 'blue'}
+        }
+        
+        self.current_theme = 'default'
+    
+    def set_theme(self, theme_name: str):
+        """Set the color theme"""
+        if theme_name in self.themes:
+            self.current_theme = theme_name
+    
+    def create_custom_bar(self) -> BarColumn:
+        """Create a custom progress bar with consistent characters"""
+        theme = self.themes[self.current_theme]
+        
+        class CustomBarColumn(BarColumn):
+            def __init__(self, **kwargs):
+                super().__init__(
+                    bar_width=40,
+                    style=theme['bar'],
+                    complete_style=Style(color=theme['bar'], bold=True),
+                    finished_style=Style(color=theme['bar'], bold=True),
+                    pulse_style=Style(color=theme['bar'], dim=True)
+                )
+        
+        return CustomBarColumn()
+    
+    def create_progress_with_tooltip(self, tooltip_text: str = ""):
+        """Create a Rich progress bar with tooltip support"""
+        if not RICH_AVAILABLE:
+            return None
+            
+        theme = self.themes[self.current_theme]
+        
+        # Custom spinner
+        spinner = SpinnerColumn(
+            spinner="dots12",
+            style=Style(color=theme['emoji'], bold=True),
+            speed=1.0
+        )
+        
+        # Custom text column with tooltip
+        text = TextColumn(
+            f"{self.emoji} {self.description}",
+            style=Style(color=theme['text'], bold=True)
+        )
+        
+        # Custom bar with consistent characters
+        bar = self.create_custom_bar()
+        
+        # Additional columns
+        percentage = TextColumn("[progress.percentage]{task.percentage:>3.0f}%")
+        time_elapsed = TimeElapsedColumn()
+        
+        # Create progress with tooltip
+        progress = Progress(
+            spinner,
+            text,
+            bar,
+            percentage,
+            time_elapsed,
+            console=console,
+            transient=True
+        )
+        
+        # Add tooltip if provided
+        if tooltip_text and RICH_AVAILABLE:
+            try:
+                from rich.tooltip import Tooltip
+                # Note: Tooltip support might require additional setup
+                pass
+            except ImportError:
+                pass
+        
+        return progress
+    
+    def update(self, advance: int = 1, description: str = None):
+        """Update progress"""
+        self.current = min(self.current + advance, self.total)
+        if description:
+            self.description = description
+    
+    def get_percentage(self) -> float:
+        """Get current percentage"""
+        return (self.current / self.total) * 100 if self.total > 0 else 0
+    
+    def render_console_bar(self, width: int = 50) -> str:
+        """Render a console-compatible progress bar with consistent characters"""
+        if not COLORAMA_AVAILABLE:
+            return f"[{self.current}/{self.total}] {self.description}"
+        
+        percentage = self.get_percentage()
+        filled_length = int(width * percentage / 100)
+        
+        theme = self.themes[self.current_theme]
+        bar_chars = self.progress_chars
+        
+        # Build the bar with consistent characters
+        bar = ""
+        for i in range(width):
+            if i < filled_length:
+                if i == filled_length - 1:
+                    char = bar_chars['partial']  # Leading edge
+                elif i >= filled_length - 3:
+                    char = bar_chars['light']    # Glow effect
+                else:
+                    char = bar_chars['complete'] # Filled area
+            else:
+                char = bar_chars['empty']      # Empty area
+            
+            # Apply color
+            if i < filled_length:
+                color = getattr(Fore, theme['bar'].upper().replace('BRIGHT_', 'LIGHT_'), Fore.CYAN)
+                bar += f"{color}{Style.BRIGHT}{char}{Style.RESET_ALL}"
+            else:
+                bar += char
+        
+        return f"{self.emoji} {self.description} [{bar}] {percentage:.1f}%"
 
 # Optional alive-progress for beautiful progress bars
 try:
@@ -219,17 +363,231 @@ except ImportError:
 try:
     from halo import Halo
     HALO_AVAILABLE = True
-    # Configure Halo spinners
+    # Enhanced Halo spinners with consistent themes
     HALO_SPINNERS = {
-        'loading': {'spinner': 'dots', 'text_color': 'cyan', 'color': 'cyan'},
-        'success': {'spinner': 'moon', 'text_color': 'green', 'color': 'green'},
-        'error': {'spinner': 'cross', 'text_color': 'red', 'color': 'red'},
-        'warning': {'spinner': 'line', 'text_color': 'yellow', 'color': 'yellow'},
-        'info': {'spinner': 'dots2', 'text_color': 'blue', 'color': 'blue'}
+        'loading': {
+            'spinner': 'dots12', 
+            'text_color': 'cyan', 
+            'color': 'cyan',
+            'interval': 80
+        },
+        'success': {
+            'spinner': 'moon', 
+            'text_color': 'green', 
+            'color': 'green',
+            'interval': 100
+        },
+        'error': {
+            'spinner': 'cross', 
+            'text_color': 'red', 
+            'color': 'red',
+            'interval': 120
+        },
+        'warning': {
+            'spinner': 'line', 
+            'text_color': 'yellow', 
+            'color': 'yellow',
+            'interval': 90
+        },
+        'info': {
+            'spinner': 'dots2', 
+            'text_color': 'blue', 
+            'color': 'blue',
+            'interval': 85
+        },
+        'thinking': {
+            'spinner': 'bouncingBar',
+            'text_color': 'magenta',
+            'color': 'magenta', 
+            'interval': 110
+        },
+        'processing': {
+            'spinner': 'pipe',
+            'text_color': 'white',
+            'color': 'white',
+            'interval': 75
+        },
+        'installing': {
+            'spinner': 'arrow3',
+            'text_color': 'green',
+            'color': 'green',
+            'interval': 95
+        },
+        'downloading': {
+            'spinner': 'bounce',
+            'text_color': 'blue',
+            'color': 'blue',
+            'interval': 88
+        },
+        'analyzing': {
+            'spinner': 'dots8',
+            'text_color': 'cyan',
+            'color': 'cyan',
+            'interval': 82
+        }
     }
+    
+    # Enhanced Halo class with progress bar integration
+    class EnhancedHalo(Halo):
+        """Enhanced Halo with progress bar support and consistent characters"""
+        
+        def __init__(self, text='', spinner='dots', color='cyan', text_color='cyan', interval=100):
+            super().__init__(text=text, spinner=spinner, color=color, text_color=text_color, interval=interval)
+            self.progress_chars = ['█', '▓', '▒', '░']
+            self.current_progress = 0
+            self.total_progress = 100
+            self.show_progress_bar = False
+        
+        def enable_progress_bar(self, total: int = 100):
+            """Enable progress bar display"""
+            self.show_progress_bar = True
+            self.total_progress = total
+            self.current_progress = 0
+        
+        def update_progress(self, current: int, text: str = None):
+            """Update progress with enhanced display"""
+            self.current_progress = min(current, self.total_progress)
+            if text:
+                self.text = text
+            
+            if self.show_progress_bar:
+                # Create progress bar with consistent characters
+                percentage = (self.current_progress / self.total_progress) * 100
+                bar_width = 20
+                filled_length = int(bar_width * percentage / 100)
+                
+                # Build progress bar
+                bar = ""
+                for i in range(bar_width):
+                    if i < filled_length:
+                        if i == filled_length - 1:
+                            char = '▓'  # Leading edge
+                        elif i >= filled_length - 2:
+                            char = '▒'  # Glow effect
+                        else:
+                            char = '█'  # Filled area
+                    else:
+                        char = '░'  # Empty area
+                    
+                    bar += char
+                
+                # Update text with progress bar
+                progress_text = f"{self.text} [{bar}] {percentage:.1f}%"
+                self._text = progress_text
+                self._frame()
+        
+        def start_and_progress(self, text='', current=0):
+            """Start spinner with initial progress"""
+            self.text = text
+            if self.show_progress_bar:
+                self.update_progress(current)
+            self.start()
+        
+        def succeed_with_progress(self, text='', final_progress=100):
+            """Show success with completed progress"""
+            if self.show_progress_bar:
+                self.update_progress(final_progress, text)
+            self.succeed(text)
+        
+        def fail_with_progress(self, text=''):
+            """Show failure with current progress"""
+            if self.show_progress_bar:
+                percentage = (self.current_progress / self.total_progress) * 100
+                fail_text = f"{text} (Failed at {percentage:.1f}%)"
+            else:
+                fail_text = text
+            self.fail(fail_text)
+    
+    # Convenience functions for enhanced Halo
+    def create_halo_spinner(spinner_type: str = 'loading', text: str = '', enable_progress: bool = False, total: int = 100):
+        """Create an enhanced Halo spinner with optional progress bar"""
+        if spinner_type not in HALO_SPINNERS:
+            spinner_type = 'loading'
+        
+        config = HALO_SPINNERS[spinner_type]
+        halo = EnhancedHalo(
+            text=text,
+            spinner=config['spinner'],
+            color=config['color'],
+            text_color=config['text_color'],
+            interval=config['interval']
+        )
+        
+        if enable_progress:
+            halo.enable_progress_bar(total)
+        
+        return halo
+    
+    # Quick spinner functions
+    def quick_loading(text: str = "Loading..."):
+        """Quick loading spinner"""
+        return create_halo_spinner('loading', text)
+    
+    def quick_thinking(text: str = "Thinking..."):
+        """Quick thinking spinner"""
+        return create_halo_spinner('thinking', text)
+    
+    def quick_processing(text: str = "Processing..."):
+        """Quick processing spinner"""
+        return create_halo_spinner('processing', text)
+    
+    def quick_installing(text: str = "Installing...", enable_progress: bool = True, total: int = 100):
+        """Quick installing spinner with progress"""
+        return create_halo_spinner('installing', text, enable_progress, total)
+    
 except ImportError:
     HALO_AVAILABLE = False
     HALO_SPINNERS = {}
+    
+    # Fallback classes when Halo is not available
+    class EnhancedHalo:
+        def __init__(self, **kwargs):
+            self.text = kwargs.get('text', '')
+            self.spinner = kwargs.get('spinner', 'dots')
+            self.color = kwargs.get('color', 'cyan')
+        
+        def start(self):
+            print(f"{self.text}...")
+        
+        def stop(self):
+            pass
+        
+        def succeed(self, text):
+            print(f"✅ {text}")
+        
+        def fail(self, text):
+            print(f"❌ {text}")
+        
+        def enable_progress_bar(self, total=100):
+            pass
+        
+        def update_progress(self, current, text=None):
+            if text:
+                self.text = text
+        
+        def start_and_progress(self, text='', current=0):
+            print(f"{text} ({current}%)")
+        
+        def succeed_with_progress(self, text='', final_progress=100):
+            print(f"✅ {text}")
+        
+        def fail_with_progress(self, text=''):
+            print(f"❌ {text}")
+    
+    def create_halo_spinner(spinner_type='loading', text='', enable_progress=False, total=100):
+        return EnhancedHalo(text=text)
+    
+    def quick_loading(text="Loading..."):
+        return EnhancedHalo(text=text)
+    
+    def quick_thinking(text="Thinking..."):
+        return EnhancedHalo(text=text)
+    
+    def quick_processing(text="Processing..."):
+        return EnhancedHalo(text=text)
+    
+    def quick_installing(text="Installing...", enable_progress=True, total=100):
+        return EnhancedHalo(text=text)
 
 # Optional transformers for Hugging Face integration
 try:
@@ -476,8 +834,9 @@ class ConfigurationProgress:
         self.color_rotation = 0
         self.spinner_idx = 0
         
-        # 3D glowy effects
-        self.glow_chars = ['█', '▓', '▒', '░', '▄', '▀', '■', '□', '▪', '▫', '◼', '◻']
+        # 3D glowy effects - consistent character set
+        self.glow_chars = ['█', '▓', '▒', '░']  # Main progress characters
+        self.border_chars = ['│', '┤', '├', '└', '┌', '┐', '┘', '─']  # Border characters
         self.glow_phase = 0
         
         # Configuration action words
@@ -506,7 +865,7 @@ class ConfigurationProgress:
         return current_theme
     
     def create_glowy_config_bar(self, percent: float) -> str:
-        """Create a colorful 3D configuration progress bar"""
+        """Create a colorful 3D configuration progress bar with consistent characters"""
         bar_width = 35  # Increased width for better visibility
         
         # Calculate filled length
@@ -516,13 +875,19 @@ class ConfigurationProgress:
         theme = self.get_current_theme()
         colors = theme['colors']
         
-        # Create rainbow progress bar
+        # Create consistent progress bar with glowy effect
         bar = ""
         for i in range(bar_width):
             if i < filled_length:
-                # Use different characters for glowy effect
-                char_idx = (i + self.glow_phase) % len(self.glow_chars)
-                char = self.glow_chars[char_idx]
+                # Use consistent glowy characters based on progress position
+                if i == filled_length - 1:  # Leading edge
+                    char = '█'  # Solid block for leading edge
+                elif i >= filled_length - 3:  # Near leading edge
+                    char = '▓'  # Medium shade for glow effect
+                elif i >= filled_length - 6:  # Middle area
+                    char = '▒'  # Light shade for transition
+                else:  # Filled area
+                    char = '█'  # Solid block for completed area
                 
                 # Add color based on position for rainbow effect
                 color_idx = (i * len(colors)) // bar_width
@@ -533,6 +898,7 @@ class ConfigurationProgress:
                 else:
                     bar += char
             else:
+                # Use consistent empty character
                 bar += "░"
         
         return bar
@@ -3860,21 +4226,67 @@ Provide step-by-step technical details while maintaining educational context and
             return False
     
     def call_single_provider(self, provider: Provider, system_prompt: str, user_message: str, api_key: str) -> str:
-        """Call a single AI provider with enhanced Rich progress animation"""
-        if RICH_AVAILABLE:
-            # Get model-specific theme for rich progress
-            model_themes = {
-                Provider.OPENAI: {"style": "bold green", "emoji": "🤖", "name": "OpenAI", "color": "bright_green"},
-                Provider.GEMINI: {"style": "bold magenta", "emoji": "🌟", "name": "Gemini", "color": "bright_magenta"},
-                Provider.MISTRAL: {"style": "bold red", "emoji": "🔥", "name": "Mistral", "color": "bright_red"},
-                Provider.LLAMA: {"style": "bold cyan", "emoji": "🦙", "name": "Llama", "color": "bright_cyan"},
-                Provider.GEMINI_CLI: {"style": "bold blue", "emoji": "💎", "name": "Gemini CLI", "color": "bright_blue"},
-                Provider.HUGGINGFACE: {"style": "bold yellow", "emoji": "🤗", "name": "HuggingFace", "color": "bright_yellow"}
-            }
+        """Call a single AI provider with enhanced Halo spinner and consistent characters"""
+        # Get model-specific theme
+        model_themes = {
+            Provider.OPENAI: {"style": "bold green", "emoji": "🤖", "name": "OpenAI", "color": "bright_green"},
+            Provider.GEMINI: {"style": "bold magenta", "emoji": "🌟", "name": "Gemini", "color": "bright_magenta"},
+            Provider.MISTRAL: {"style": "bold red", "emoji": "🔥", "name": "Mistral", "color": "bright_red"},
+            Provider.LLAMA: {"style": "bold cyan", "emoji": "🦙", "name": "Llama", "color": "bright_cyan"},
+            Provider.GEMINI_CLI: {"style": "bold blue", "emoji": "💎", "name": "Gemini CLI", "color": "bright_blue"},
+            Provider.HUGGINGFACE: {"style": "bold yellow", "emoji": "🤗", "name": "HuggingFace", "color": "bright_yellow"}
+        }
+        
+        theme = model_themes.get(provider, {"style": "bold cyan", "emoji": "🤖", "name": "IBLU", "color": "bright_cyan"})
+        
+        # Use enhanced Halo spinner with progress bar
+        if HALO_AVAILABLE:
+            # Create enhanced spinner with progress bar
+            spinner = create_halo_spinner('thinking', f"{theme['emoji']} {theme['name']} is thinking", enable_progress=True, total=100)
             
-            theme = model_themes.get(provider, {"style": "bold cyan", "emoji": "🤖", "name": "IBLU", "color": "bright_cyan"})
+            spinner.start_and_progress(current=0)
             
-            # Enhanced modern 3D terminal progress bar with high-definition display
+            # Simulate thinking progress with consistent characters
+            thinking_steps = [
+                (10, f"{theme['name']} analyzing request..."),
+                (25, f"{theme['name']} processing context..."),
+                (40, f"{theme['name']} generating response..."),
+                (60, f"{theme['name']} refining answer..."),
+                (80, f"{theme['name']} finalizing response..."),
+                (95, f"{theme['name']} completing analysis...")
+            ]
+            
+            # Execute thinking steps
+            for step_progress, step_description in thinking_steps:
+                spinner.update_progress(step_progress, step_description)
+                time.sleep(0.05)  # Brief pause for visual effect
+            
+            # Make the actual API call
+            try:
+                if provider == Provider.OPENAI:
+                    result = self.call_openai_api(system_prompt, user_message, api_key)
+                elif provider == Provider.GEMINI:
+                    result = self.call_gemini_api(system_prompt, user_message, api_key)
+                elif provider == Provider.MISTRAL:
+                    result = self.call_mistral_api(system_prompt, user_message, api_key)
+                elif provider == Provider.LLAMA:
+                    result = self.call_llama_api(system_prompt, user_message, api_key)
+                elif provider == Provider.GEMINI_CLI:
+                    result = self.call_gemini_cli_api(system_prompt, user_message, api_key)
+                else:
+                    result = f"❌ Provider {provider.value} not implemented yet"
+                
+                # Complete the progress successfully
+                spinner.succeed_with_progress(f"{theme['name']} response ready!", final_progress=100)
+                return result
+                
+            except Exception as e:
+                # Show failure with current progress
+                spinner.fail_with_progress(f"{theme['name']} request failed")
+                raise e
+                
+        elif TERMINAL_PROGRESS_AVAILABLE:
+            # Fallback to terminal progress
             config = ProgressConfig(enable_3d=True, enable_gradient=True, enable_shadow=True, enable_animation=True)
             with Modern3DProgressBar(total=100, prefix=f"{theme['emoji']} {theme['name']} is thinking", config=config) as bar:
                 # Simulate thinking progress
@@ -3909,19 +4321,16 @@ Provide step-by-step technical details while maintaining educational context and
                     
                     # Complete the progress
                     bar.finish(f"{theme['name']} response ready!")
-                    time.sleep(0.5)  # Brief pause to show completion
-                    
                     return result
                     
                 except Exception as e:
-                    bar.finish(f"{theme['name']} encountered error")
-                    return f"❌ Error from {theme['name']}: {str(e)}"
-                    
+                    bar.finish(f"❌ {theme['name']} request failed: {str(e)}")
+                    raise e
         else:
-            # Fallback to simple spinner with model-specific theme
-            spinner = Spinner(f"🤖 IBLU is thinking", model_provider=provider)
-            spinner.start()
+            # Fallback without progress animation
+            print(f"{theme['emoji']} {theme['name']} is thinking...")
             
+            # Make the actual API call
             try:
                 if provider == Provider.OPENAI:
                     result = self.call_openai_api(system_prompt, user_message, api_key)
@@ -3936,13 +4345,25 @@ Provide step-by-step technical details while maintaining educational context and
                 else:
                     result = f"❌ Provider {provider.value} not implemented yet"
                 
-                spinner.stop()
+                print(f"✅ {theme['name']} response ready!")
                 return result
                 
             except Exception as e:
-                spinner.stop()
-                return f"❌ Error from {provider.value}: {str(e)}"
-                
+                print(f"❌ {theme['name']} request failed: {str(e)}")
+                raise e
+    
+    def detect_refusal(self, response: str) -> bool:
+        """Detect if the AI response contains a refusal"""
+        refusal_keywords = [
+            "I cannot", "I cannot help", "I'm not able", "I'm unable to",
+            "I don't provide", "I won't help", "I cannot assist", "not appropriate",
+            "against my guidelines", "violates policy", "harmful content",
+            "illegal activities", "unethical", "dangerous", "malicious"
+        ]
+        
+        response_lower = response.lower()
+        return any(keyword.lower() in response_lower for keyword in refusal_keywords)
+    
     def get_provider_keys(self, provider: Provider) -> List[str]:
         """Get API keys for a specific provider"""
         if provider == Provider.OPENAI:
