@@ -2487,66 +2487,27 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                         chars[i] = random.choice(glitch_chars)
                 return "".join(chars)
             
-            # Orange/red and blue color palette - HACK THE in red, WORLD in blue
-            clean_lines = [
-                ("\033[31m\033[40m██╗  ██╗  █████╗   ██████╗ ██╗  ██╗    ████████╗ ██╗  ██╗ ███████╗    ██╗    ██╗  ██████╗  ██████╗  ██╗      ██████╗\033[0m", "bold red"),
-                ("\033[31m\033[40m██║  ██║ ██╔══██╗ ██╔════╝ ██║ ██╔╝    ╚══██╔══╝ ██║  ██║ ██╔════╝    ██║    ██║ ██╔═══██╗ ██╔══██╗ ██║      ██╔══██╗\033[0m", "bold red"),
-                ("\033[31m\033[40m███████║ ███████║ ██║      █████╔╝        ██║    ███████║ █████╗      ██║ █╗ ██║ ██║   ██║ ██████╔╝ ██║      ██║  ██║\033[0m", "bold red"),
-                ("\033[31m\033[40m██╔══██║ ██╔══██║ ██║      ██╔═██╗        ██║    ██╔══██║ ██╔══╝      ██║███╗██║ ██║   ██║ ██╔══██╗ ██║      ██║  ██║\033[0m", "bold red"),
-                ("\033[34m\033[40m██║  ██║ ██║  ██║ ╚██████╗ ██║  ██╗       ██║    ██║  ██║ ███████╗    ╚███╔███╔╝ ╚██████╔╝ ██║  ██║ ███████╗ ██████╔╝\033[0m", "bold blue"),
-                ("\033[34m\033[40m╚═╝  ╚═╝ ╚═╝  ╚═╝  ╚═════╝ ╚═╝  ╚═╝       ╚═╝    ╚═╝  ╚═╝ ╚══════╝     ╚╝╚══╝   ╚═════╝  ╚═╝  ╚═╝ ╚══════╝ ╚═════╝\033[0m", "bold blue")
-            ]
+            # Static banner - HACK THE on top, WORLD below, no animation (early version structure)
+            banner_content = Text()
+            # HACK THE section - red/orange
+            banner_content.append("\033[31m\033[40m██╗  ██╗  █████╗   ██████╗ ██╗  ██╗    ████████╗ ██╗  ██╗ ███████╗    ██╗    ██╗  ██████╗  ██████╗  ██╗      ██████╗\033[0m\n", style="bold red")
+            banner_content.append("\033[31m\033[40m██║  ██║ ██╔══██╗ ██╔════╝ ██║ ██╔╝    ╚══██╔══╝ ██║  ██║ ██╔════╝    ██║    ██║ ██╔═══██╗ ██╔══██╗ ██║      ██╔══██╗\033[0m\n", style="bold red")
+            banner_content.append("\033[31m\033[40m███████║ ███████║ ██║      █████╔╝        ██║    ███████║ █████╗      ██║ █╗ ██║ ██║   ██║ ██████╔╝ ██║      ██║  ██║\033[0m\n", style="bold red")
+            banner_content.append("\033[31m\033[40m██╔══██║ ██╔══██║ ██║      ██╔═██╗        ██║    ██╔══██║ ██╔══╝      ██║███╗██║ ██║   ██║ ██╔══██╗ ██║      ██║  ██║\033[0m\n", style="bold red")
+            banner_content.append("\033[31m\033[40m██║  ██║ ██║  ██║ ╚██████╗ ██║  ██╗       ██║    ██║  ██║ ███████╗    ╚███╔███╔╝ ╚██████╔╝ ██║  ██║ ███████╗ ██████╔╝\033[0m\n", style="bold red")
+            banner_content.append("\033[31m\033[40m╚═╝  ╚═╝ ╚═╝  ╚═╝  ╚═════╝ ╚═╝  ╚═╝       ╚═╝    ╚═╝  ╚═╝ ╚══════╝     ╚══╝╚══╝   ╚═════╝  ╚═╝  ╚═╝ ╚══════╝ ╚═════╝\033[0m\n", style="bold red")
+            # Spacing
+            banner_content.append("                    \n", style="bold red")
+            # WORLD section - blue, positioned below HACK THE
+            banner_content.append("                    \033[34m\033[40m██╗    ██╗  ██████╗  ██████╗ ██╗     ██████╗\033[0m\n", style="bold blue")
+            banner_content.append("                    \033[34m\033[40m██║    ██║ ██╔═══██╗ ██╔══██╗ ██║     ██╔══██╗\033[0m\n", style="bold blue")
+            banner_content.append("                    \033[34m\033[40m██║ █╗ ██║ ██║   ██║ ██████╔╝ ██║     ██║  ██║\033[0m\n", style="bold blue")
+            banner_content.append("                    \033[34m\033[40m██║███╗██║ ██║   ██║ ██╔══██╗ ██║     ██║  ██║\033[0m\n", style="bold blue")
+            banner_content.append("                    \033[34m\033[40m╚███╔███╔╝ ╚██████╔╝ ██║  ██║ ███████╗ ██████╔╝\033[0m\n", style="bold blue")
+            banner_content.append("                    \033[34m\033[40m ╚══╝╚══╝  ╚═════╝  ╚═╝  ╚═╝ ╚══════╝ ╚═════╝\033[0m\n", style="bold blue")
             
-            # Orange/red and blue border styles
-            border_styles = ["red", "blue"]
-            
-            banner_text = Text("", justify="center")
-            with Live(Panel(banner_text, border_style=random.choice(border_styles), padding=(1, 7), expand=True), 
-                      console=console, refresh_per_second=120) as live:
-                
-                # Pulsing effect introduction
-                for pulse in range(20):
-                    banner_text.plain = ""
-                    intensity = 0.05 + (pulse * 0.005)  # Increasing intensity
-                    for i, (line, style) in enumerate(clean_lines):
-                        if random.random() < intensity:
-                            line = clean_glitch(line, intensity)
-                        banner_text.append(line + "\n", style=style)
-                    live.refresh()
-                    time.sleep(0.03)
-                
-                # Full glitch chaos
-                for chaos in range(60):
-                    banner_text.plain = ""
-                    # Random border color change
-                    if chaos % 10 == 0:
-                        live.update(Panel(banner_text, border_style=random.choice(border_styles), padding=(1, 7), expand=True))
-                    
-                    for i, (line, style) in enumerate(clean_lines):
-                        # Higher glitch chance during chaos
-                        if random.random() < 0.25:
-                            line = clean_glitch(line, 0.3)
-                        banner_text.append(line + "\n", style=style)
-                    live.refresh()
-                    time.sleep(0.02)
-                
-                # Stabilization with final perfect display
-                for stable in range(20):
-                    banner_text.plain = ""
-                    fade_intensity = 0.2 - (stable * 0.01)  # Decreasing glitch
-                    for i, (line, style) in enumerate(clean_lines):
-                        if random.random() < max(0, fade_intensity):
-                            line = clean_glitch(line, fade_intensity)
-                        banner_text.append(line + "\n", style=style)
-                    live.refresh()
-                    time.sleep(0.04)
-                
-                # Final perfect banner
-                banner_text.plain = ""
-                for line, style in clean_lines:
-                    banner_text.append(line + "\n", style=style)
-                live.refresh()
-                time.sleep(0.5)
+            # Display static banner without animation
+            console.print(Panel(banner_content, border_style="red", padding=(1, 7), expand=True))
             
         else:
             # Fallback banner without Rich - Screen Wide (115 chars)
