@@ -422,7 +422,12 @@ if TEXTUAL_AVAILABLE:
             super().__init__()
             self.title = title
             self.tasks = tasks
-            self.theme = theme
+            # Don't set theme as reactive - just store it
+            self._theme = theme
+        
+        @property
+        def theme(self):
+            return self._theme
         
         def on_mount(self) -> None:
             """Initialize the app"""
