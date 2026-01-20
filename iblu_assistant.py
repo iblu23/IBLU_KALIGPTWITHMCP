@@ -2397,7 +2397,7 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                         display_text = "  ".join(phrases + [current_phrase])
                         hack_text.plain = display_text
                         live.refresh()
-                        time.sleep(0.05)
+                        time.sleep(0.02)
                     
                     # MY appears for this phrase
                     for i in range(4):
@@ -2405,15 +2405,40 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                         display_text = "  ".join(phrases + [current_phrase])
                         hack_text.plain = display_text
                         live.refresh()
-                        time.sleep(0.05)
+                        time.sleep(0.02)
                     
                     # LIFE appears for this phrase
                     for i in range(8):
                         current_phrase = "🔥🔥🔥 HACK MY " + "LIFE"[:i//2+1] + " 🔥🔥🔥"
                         display_text = "  ".join(phrases + [current_phrase])
-                        hack_text.plain = display_text
+                        
+                        # Add random skull emojis within the panel
+                        skull_positions = []
+                        for _ in range(10):  # Spawn 10 skulls
+                            x_pos = random.randint(0, 130)  # Random position within panel width
+                            y_pos = random.randint(0, 7)   # Random position within panel height
+                            skull_positions.append((x_pos, y_pos))
+                        
+                        # Create display with skulls
+                        lines = ["" * 144 for _ in range(8)]  # 8 lines of 144 chars each
+                        
+                        # Add the main text centered
+                        text_line = 3  # Center vertically
+                        text_start = (144 - len(display_text)) // 2
+                        if text_start >= 0 and text_start + len(display_text) <= 144:
+                            lines[text_line] = lines[text_line][:text_start] + display_text + lines[text_line][text_start + len(display_text):]
+                        
+                        # Add skulls at random positions
+                        for x, y in skull_positions:
+                            if y < 8 and x + 2 <= 144:  # Ensure skull fits
+                                line_content = lines[y]
+                                # Replace characters with skull emoji
+                                if x < len(line_content):
+                                    lines[y] = line_content[:x] + "💀" + line_content[x+1:]
+                        
+                        hack_text.plain = "\n".join(lines)
                         live.refresh()
-                        time.sleep(0.05)
+                        time.sleep(0.02)
                     
                     # Add completed phrase to list
                     completed_phrase = "🔥🔥🔥 HACK MY LIFE 🔥🔥🔥"
@@ -2423,17 +2448,17 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                     display_text = "  ".join(phrases)
                     hack_text.plain = display_text
                     live.refresh()
-                    time.sleep(0.3)
+                    time.sleep(0.1)
                 
                 # All 11 phrases visible - now glitch them all together
-                time.sleep(0.5)
+                time.sleep(0.2)
                 all_phrases = phrases.copy()  # 10 phrases + we'll add the 11th
                 
                 # Add the 11th phrase (original)
                 all_phrases.append("🔥🔥🔥 HACK MY LIFE 🔥🔥🔥")
                 
-                # Glitch all 11 phrases together
-                for _ in range(40):
+                # Glitch all 11 phrases together with skulls
+                for _ in range(30):
                     glitched_phrases = []
                     for phrase in all_phrases:
                         if random.random() < 0.4:  # 40% chance to glitch each phrase
@@ -2443,67 +2468,39 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                             glitched_phrases.append(phrase)
                     
                     display_text = "  ".join(glitched_phrases)
-                    hack_text.plain = display_text
+                    
+                    # Add random skull emojis during glitch
+                    skull_positions = []
+                    for _ in range(random.randint(5, 15)):  # Random number of skulls
+                        x_pos = random.randint(0, 130)
+                        y_pos = random.randint(0, 7)
+                        skull_positions.append((x_pos, y_pos))
+                    
+                    # Create display with skulls
+                    lines = ["" * 144 for _ in range(8)]
+                    
+                    # Add the main text centered
+                    text_line = 3
+                    text_start = (144 - len(display_text)) // 2
+                    if text_start >= 0 and text_start + len(display_text) <= 144:
+                        lines[text_line] = lines[text_line][:text_start] + display_text + lines[text_line][text_start + len(display_text):]
+                    
+                    # Add skulls at random positions
+                    for x, y in skull_positions:
+                        if y < 8 and x + 2 <= 144:
+                            line_content = lines[y]
+                            if x < len(line_content):
+                                lines[y] = line_content[:x] + "💀" + line_content[x+1:]
+                    
+                    hack_text.plain = "\n".join(lines)
                     live.refresh()
-                    time.sleep(0.03)
+                    time.sleep(0.02)
                 
                 # Final stable display of all 11 phrases
                 final_display = "  ".join(all_phrases)
                 hack_text.plain = final_display
                 live.refresh()
-                time.sleep(1)
-            
-            # IBLU animation with random placement
-            iblu_text = Text("", justify="left")
-            with Live(Panel(iblu_text, border_style="cyan", padding=(1, 7), expand=True), 
-                      console=console, refresh_per_second=120) as live:
-                
-                # First 5 IBLU appearances in random places
-                for _ in range(5):
-                    iblu_text.plain = ""
-                    # Create a grid of possible positions
-                    positions = []
-                    for row in range(8):
-                        for col in range(12):
-                            if random.random() < 0.3:  # 30% chance to place IBLU here
-                                x_pos = col * 12
-                                y_pos = row
-                                positions.append((x_pos, y_pos))
-                    
-                    # Place up to 5 IBLU phrases
-                    for i in range(min(5, len(positions))):
-                        x, y = positions[i]
-                        lines = [""] * 8
-                        lines[y] = " " * x + "🔥🔥🔥IBLU🔥🔥🔥"
-                        iblu_text.plain = "\n".join(lines)
-                        live.refresh()
-                        time.sleep(0.02)  # Faster animation
-                
-                time.sleep(0.3)
-                
-                # Second 5 IBLU appearances in random places
-                for _ in range(5):
-                    iblu_text.plain = ""
-                    positions = []
-                    for row in range(8):
-                        for col in range(12):
-                            if random.random() < 0.3:
-                                x_pos = col * 12
-                                y_pos = row
-                                positions.append((x_pos, y_pos))
-                    
-                    for i in range(min(5, len(positions))):
-                        x, y = positions[i]
-                        lines = [""] * 8
-                        lines[y] = " " * x + "🔥🔥🔥IBLU🔥🔥🔥"
-                        iblu_text.plain = "\n".join(lines)
-                        live.refresh()
-                        time.sleep(0.02)  # Faster animation
-                
-                # Final IBLU display in center
-                iblu_text.plain = "\n\n\n\n\n\n\n" + "🔥🔥🔥IBLU🔥🔥🔥".center(144)
-                live.refresh()
-                time.sleep(1)
+                time.sleep(0.5)
             
         else:
             # Fallback banner without Rich - Screen Wide (144 chars)
@@ -2581,7 +2578,7 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                     print(f"{Fore.LIGHTMAGENTA_EX}╔" + "═"*w + f"╗{ColoramaStyle.RESET_ALL}")
                     print(f"{Fore.LIGHTMAGENTA_EX}║{ColoramaStyle.RESET_ALL}" + f"{display_text.center(w)}" + f"{Fore.LIGHTMAGENTA_EX}║{ColoramaStyle.RESET_ALL}")
                     print(f"{Fore.LIGHTMAGENTA_EX}╚" + "═"*w + f"╝{ColoramaStyle.RESET_ALL}")
-                    time.sleep(0.05)
+                    time.sleep(0.02)
                 
                 # MY appears for this phrase
                 for i in range(4):
@@ -2592,7 +2589,7 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                     print(f"{Fore.LIGHTMAGENTA_EX}╔" + "═"*w + f"╗{ColoramaStyle.RESET_ALL}")
                     print(f"{Fore.LIGHTMAGENTA_EX}║{ColoramaStyle.RESET_ALL}" + f"{display_text.center(w)}" + f"{Fore.LIGHTMAGENTA_EX}║{ColoramaStyle.RESET_ALL}")
                     print(f"{Fore.LIGHTMAGENTA_EX}╚" + "═"*w + f"╝{ColoramaStyle.RESET_ALL}")
-                    time.sleep(0.05)
+                    time.sleep(0.02)
                 
                 # LIFE appears for this phrase
                 for i in range(8):
@@ -2600,10 +2597,28 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                     current_phrase = "🔥🔥🔥 HACK MY " + "LIFE"[:i//2+1] + " 🔥🔥🔥"
                     display_text = "  ".join(phrases + [current_phrase])
                     
+                    # Create panel content with skulls
+                    panel_content = [" " * w for _ in range(8)]  # 8 lines of panel content
+                    
+                    # Add main text centered
+                    text_line = 3  # Center vertically
+                    text_start = (w - len(display_text)) // 2
+                    if text_start >= 0 and text_start + len(display_text) <= w:
+                        panel_content[text_line] = panel_content[text_line][:text_start] + display_text + panel_content[text_line][text_start + len(display_text):]
+                    
+                    # Add random skulls
+                    for _ in range(10):  # Spawn 10 skulls
+                        x_pos = random.randint(0, w - 2)
+                        y_pos = random.randint(0, 7)
+                        if x_pos < len(panel_content[y_pos]):
+                            line_content = panel_content[y_pos]
+                            panel_content[y_pos] = line_content[:x_pos] + "💀" + line_content[x_pos+1:]
+                    
                     print(f"{Fore.LIGHTMAGENTA_EX}╔" + "═"*w + f"╗{ColoramaStyle.RESET_ALL}")
-                    print(f"{Fore.LIGHTMAGENTA_EX}║{ColoramaStyle.RESET_ALL}" + f"{display_text.center(w)}" + f"{Fore.LIGHTMAGENTA_EX}║{ColoramaStyle.RESET_ALL}")
+                    for line in panel_content:
+                        print(f"{Fore.LIGHTMAGENTA_EX}║{ColoramaStyle.RESET_ALL}" + line + f"{Fore.LIGHTMAGENTA_EX}║{ColoramaStyle.RESET_ALL}")
                     print(f"{Fore.LIGHTMAGENTA_EX}╚" + "═"*w + f"╝{ColoramaStyle.RESET_ALL}")
-                    time.sleep(0.05)
+                    time.sleep(0.02)
                 
                 # Add completed phrase to list
                 completed_phrase = "🔥🔥🔥 HACK MY LIFE 🔥🔥🔥"
@@ -2615,17 +2630,17 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                 print(f"{Fore.LIGHTMAGENTA_EX}╔" + "═"*w + f"╗{ColoramaStyle.RESET_ALL}")
                 print(f"{Fore.LIGHTMAGENTA_EX}║{ColoramaStyle.RESET_ALL}" + f"{display_text.center(w)}" + f"{Fore.LIGHTMAGENTA_EX}║{ColoramaStyle.RESET_ALL}")
                 print(f"{Fore.LIGHTMAGENTA_EX}╚" + "═"*w + f"╝{ColoramaStyle.RESET_ALL}")
-                time.sleep(0.3)
+                time.sleep(0.1)
             
             # All 11 phrases visible - now glitch them all together
-            time.sleep(0.5)
+            time.sleep(0.2)
             all_phrases = phrases.copy()  # 10 phrases + we'll add the 11th
             
             # Add the 11th phrase (original)
             all_phrases.append("🔥🔥🔥 HACK MY LIFE 🔥🔥🔥")
             
-            # Glitch all 11 phrases together
-            for _ in range(40):
+            # Glitch all 11 phrases together with skulls
+            for _ in range(30):
                 os.system("clear")
                 print(f"{Fore.LIGHTMAGENTA_EX}╔" + "═"*w + f"╗{ColoramaStyle.RESET_ALL}")
                 
@@ -2638,9 +2653,28 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                         glitched_phrases.append(phrase)
                 
                 display_text = "  ".join(glitched_phrases)
-                print(f"{Fore.LIGHTMAGENTA_EX}║{ColoramaStyle.RESET_ALL}" + f"{display_text.center(w)}" + f"{Fore.LIGHTMAGENTA_EX}║{ColoramaStyle.RESET_ALL}")
+                
+                # Create panel content with skulls
+                panel_content = [" " * w for _ in range(8)]
+                
+                # Add main text centered
+                text_line = 3
+                text_start = (w - len(display_text)) // 2
+                if text_start >= 0 and text_start + len(display_text) <= w:
+                    panel_content[text_line] = panel_content[text_line][:text_start] + display_text + panel_content[text_line][text_start + len(display_text):]
+                
+                # Add random skulls during glitch
+                for _ in range(random.randint(5, 15)):  # Random number of skulls
+                    x_pos = random.randint(0, w - 2)
+                    y_pos = random.randint(0, 7)
+                    if x_pos < len(panel_content[y_pos]):
+                        line_content = panel_content[y_pos]
+                        panel_content[y_pos] = line_content[:x_pos] + "💀" + line_content[x_pos+1:]
+                
+                for line in panel_content:
+                    print(f"{Fore.LIGHTMAGENTA_EX}║{ColoramaStyle.RESET_ALL}" + line + f"{Fore.LIGHTMAGENTA_EX}║{ColoramaStyle.RESET_ALL}")
                 print(f"{Fore.LIGHTMAGENTA_EX}╚" + "═"*w + f"╝{ColoramaStyle.RESET_ALL}")
-                time.sleep(0.03)
+                time.sleep(0.02)
             
             # Final stable display of all 11 phrases
             os.system("clear")
@@ -2648,7 +2682,7 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             print(f"{Fore.LIGHTMAGENTA_EX}╔" + "═"*w + f"╗{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.LIGHTMAGENTA_EX}║{ColoramaStyle.RESET_ALL}" + f"{display_text.center(w)}" + f"{Fore.LIGHTMAGENTA_EX}║{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.LIGHTMAGENTA_EX}╚" + "═"*w + f"╝{ColoramaStyle.RESET_ALL}")
-            time.sleep(1)
+            time.sleep(0.5)
         
                 
         if COLORAMA_AVAILABLE:
