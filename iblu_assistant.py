@@ -2351,48 +2351,23 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             banner_content.append("██║  ██║ ██║  ██║ ╚██████╗ ██║  ██╗       ██║    ██║  ██║ ███████╗    ╚███╔███╔╝ ╚██████╔╝ ██║  ██║ ███████╗ ██████╔╝\n", style="bold yellow")
             banner_content.append("╚═╝  ╚═╝ ╚═╝  ╚═╝  ╚═════╝ ╚═╝  ╚═╝       ╚═╝    ╚═╝  ╚═╝ ╚══════╝     ╚══╝╚══╝   ╚═════╝  ╚═╝  ╚═╝ ╚══════╝ ╚═════╝\n\n", style="bold yellow")
             
-            # Display the main banner - Full Screen (144 chars) with wave effect
+            # Display the main banner - Full Screen (144 chars) with glitch effect
+            def glitch(text):
+                chars = list(text)
+                for _ in range(10):
+                    i = random.randint(0, len(chars)-1)
+                    chars[i] = random.choice("@#$%&*")
+                return "".join(chars)
+            
             banner_lines = banner_content.plain.splitlines()
             banner_text = Text("", justify="left")
             with Live(Panel(banner_text, border_style="red", padding=(1, 7), expand=True), console=console, refresh_per_second=60) as live:
                 for t in range(100):
                     banner_text.plain = ""
                     for i, line in enumerate(banner_lines):
-                        offset = int(5 * math.sin(t / 5 + i))
-                        banner_text.append(" " * max(0, offset) + line + "\n", style="bold yellow")
-                    live.refresh()
-                    time.sleep(0.05)
-            
-            # Display HACK THE WORLD text panel - Full Screen with typing effect
-            # Pac-Man art lines for side-by-side display (2 left, 2 right)
-            pacman_lines = [
-                "⠀⠀⠀⠀⣀⣤⣴⣶⣶⣶⣦⣤⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀",
-                "⠀⠀⣠⣾⣿⣿⣿⣿⣿⣿⢿⣿⣿⣷⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀",
-                "⢀⣾⣿⣿⣿⣿⣿⣿⣿⣅⢀⣽⣿⣿⡿⠃⠀⠀⠀⠀⠀⠀⠀⠀",
-                "⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠛⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀",
-                "⣿⣿⣿⣿⣿⣿⣿⣿⣿⠛⠁⠀⠀⣴⣶⡄⠀⣶⣶⡄⠀⣴⣶⡄",
-                "⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣦⣀⠀⠙⠋⠁⠀⠉⠋⠁⠀⠙⠋⠀",
-                "⠸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀",
-                "⠀⠙⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠃⠀⠀⠀⠀⠀⠀⠀⠀",
-                "⠀⠀⠈⠙⠿⣿⣿⣿⣿⣿⣿⣿⠿⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀",
-                "⠀⠀⠀⠀⠀⠀⠉⠉⠉⠉⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀"
-            ]
-            
-            # Build the combined art: 2 pacmans on left, 2 on right (moved left)
-            combined_art = ""
-            for line in pacman_lines:
-                combined_art += f"  {line}  {line}          {line}  {line}\n"
-            
-            world_lines = combined_art.splitlines()
-            world_text = Text("", justify="left")
-            with Live(Panel(world_text, border_style="magenta", padding=(1, 7), expand=True), 
-                      console=console, refresh_per_second=60) as live:
-                for t in range(100):
-                    world_text.plain = ""
-                    for i, line in enumerate(world_lines):
-                        offset = int(5 * math.sin(t / 5 + i))
-                        world_text.append(" " * max(0, offset) + line + "\n", style="bold yellow")
-                    world_text.append("\n🔥🔥🔥 HACK THE WORLD 🔥🔥🔥", style="bold magenta")
+                        if random.random() < 0.1:  # 10% chance to glitch
+                            line = glitch(line)
+                        banner_text.append(line + "\n", style="bold yellow")
                     live.refresh()
                     time.sleep(0.05)
             
@@ -2401,18 +2376,13 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             w = 144
             pad = lambda s: "║" + s.ljust(w) + "║"
             
-            pacman_lines = [
-                "⠀⠀⠀⠀⣀⣤⣴⣶⣶⣶⣦⣤⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀",
-                "⠀⠀⣠⣾⣿⣿⣿⣿⣿⣿⢿⣿⣿⣷⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀",
-                "⢀⣾⣿⣿⣿⣿⣿⣿⣿⣅⢀⣽⣿⣿⡿⠃⠀⠀⠀⠀⠀⠀⠀⠀",
-                "⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠛⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀",
-                "⣿⣿⣿⣿⣿⣿⣿⣿⣿⠛⠁⠀⠀⣴⣶⡄⠀⣶⣶⡄⠀⣴⣶⡄",
-                "⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣦⣀⠀⠙⠋⠁⠀⠉⠋⠁⠀⠙⠋⠀",
-                "⠸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀",
-                "⠀⠙⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠃⠀⠀⠀⠀⠀⠀⠀⠀",
-                "⠀⠀⠈⠙⠿⣿⣿⣿⣿⣿⣿⣿⠿⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀",
-                "⠀⠀⠀⠀⠀⠀⠉⠉⠉⠉⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀"
-            ]
+            # Display the main banner with glitch effect (fallback)
+            def glitch(text):
+                chars = list(text)
+                for _ in range(10):
+                    i = random.randint(0, len(chars)-1)
+                    chars[i] = random.choice("@#$%&*")
+                return "".join(chars)
             
             banner_lines = [
                 "╔" + "═"*w + "╗",
@@ -2423,13 +2393,6 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                 pad("  ██╔══██║ ██╔══██║ ██║      ██╔═██╗        ██║    ██╔══██║ ██╔══╝      ██║███╗██║ ██║   ██║ ██╔══██╗ ██║      ██║  ██║"),
                 pad("  ██║  ██║ ██║  ██║ ╚██████╗ ██║  ██╗       ██║    ██║  ██║ ███████╗    ╚███╔███╔╝ ╚██████╔╝ ██║  ██║ ███████╗ ██████╔╝"),
                 pad("  ╚═╝  ╚═╝ ╚═╝  ╚═╝  ╚═════╝ ╚═╝  ╚═╝       ╚═╝    ╚═╝  ╚═╝ ╚══════╝     ╚══╝╚══╝   ╚═════╝  ╚═╝  ╚═╝ ╚══════╝ ╚═════╝"),
-                pad("")
-            ]
-            
-            pacman_block = [f"  {line}  {line}          {line}  {line}" for line in pacman_lines]
-            final_lines = [
-                pad(""),
-                pad("🔥🔥🔥 HACK THE WORLD 🔥🔥🔥".center(w)),
                 pad(""),
                 "╚" + "═"*w + "╝"
             ]
@@ -2437,13 +2400,21 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             for t in range(100):
                 os.system("clear")
                 for line in banner_lines:
-                    print(line)
-                for i, line in enumerate(pacman_block):
-                    offset = int(5 * math.sin(t / 5 + i))
-                    print(pad((" " * max(0, offset)) + line))
-                for line in final_lines:
+                    if random.random() < 0.1:  # 10% chance to glitch
+                        if "║" in line:
+                            # Handle bordered lines - glitch only the content
+                            parts = line.split("║")
+                            if len(parts) == 3:
+                                content = parts[1].strip()
+                                if content:
+                                    glitched_content = glitch(content)
+                                    line = f"║{glitched_content.ljust(w)}║"
                     print(line)
                 time.sleep(0.05)
+            
+            # Print final static banner
+            for line in banner_lines:
+                print(line)
         
                 
         if COLORAMA_AVAILABLE:
