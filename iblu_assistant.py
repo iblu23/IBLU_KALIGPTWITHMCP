@@ -68,6 +68,13 @@ except ImportError:
     TEXTUAL_PROGRESS_AVAILABLE = False
     TEXTUAL_AVAILABLE = False
 
+# Custom terminal progress bars with modern 3D effects
+try:
+    from terminal_progress import Modern3DProgressBar, ProgressManager, run_task_with_progress, ProgressConfig
+    TERMINAL_PROGRESS_AVAILABLE = True
+except ImportError:
+    TERMINAL_PROGRESS_AVAILABLE = False
+
 
 # API Key Protection - Anti-Detection Measures
 import os
@@ -226,71 +233,69 @@ try:
 except ImportError:
     HUGGINGFACE_AVAILABLE = False
 
-# Universal Rich Progress Bar Utility
-def create_rich_progress_bar(title: str, total: int = 100, style: str = "bold cyan", 
-                           emoji: str = "🔄", show_percentage: bool = True, 
-                           show_time: bool = True, bar_width: int = 40) -> Progress:
-    """Create a universal Rich progress bar with customizable styling"""
-    if not RICH_AVAILABLE or not console:
+# Universal Progress Bar Utility - Using modern 3D terminal style
+def create_progress_bar(title: str, total: int = 100, emoji: str = "🔄", 
+                      show_percentage: bool = True, show_time: bool = True) -> "Modern3DProgressBar":
+    """Create a universal progress bar with modern 3D visual effects"""
+    if not TERMINAL_PROGRESS_AVAILABLE:
+        # Fallback to simple text output
         return None
     
-    columns = [SpinnerColumn(style=style)]
-    columns.append(TextColumn(f"[{style}]{emoji} {{task.description}}"))
-    columns.append(BarColumn(bar_width=bar_width, complete_style=style, 
-                           finished_style=f"bold {style}", pulse_style="bold yellow"))
+    # Create modern 3D config
+    config = ProgressConfig(
+        enable_3d=True,
+        enable_gradient=True,
+        enable_shadow=True,
+        enable_animation=True,
+        show_percentage=show_percentage,
+        show_time=show_time
+    )
     
-    if show_percentage:
-        columns.append(TextColumn("[progress.percentage]{task.percentage:>3.1f}%"))
-    
-    if show_time:
-        columns.append(TimeElapsedColumn())
-    
-    return Progress(*columns, console=console, transient=False)
+    return Modern3DProgressBar(total=total, prefix=f"{emoji} {title}", config=config)
 
-def run_with_rich_progress(title: str, task_func, total_steps: int = 100, 
-                          style: str = "bold cyan", emoji: str = "🔄",
-                          steps: List[Tuple[int, str]] = None) -> Any:
-    """Run a function with Rich progress bar tracking"""
-    if not RICH_AVAILABLE:
+def run_with_progress(title: str, task_func, total_steps: int = 100, 
+                     emoji: str = "🔄", steps: List[Tuple[int, str]] = None) -> Any:
+    """Run a function with progress bar tracking using modern 3D terminal style"""
+    if not TERMINAL_PROGRESS_AVAILABLE:
         # Fallback to simple execution
         return task_func()
     
-    progress = create_rich_progress_bar(title, total_steps, style, emoji)
+    # Create modern 3D config
+    config = ProgressConfig(
+        enable_3d=True,
+        enable_gradient=True,
+        enable_shadow=True,
+        enable_animation=True
+    )
     
-    with progress:
-        task = progress.add_task(f"{emoji} {title}", total=total_steps)
-        
-        if steps:
-            # Execute with predefined steps
+    if steps:
+        # Execute with predefined steps using Modern3DProgressBar
+        with Modern3DProgressBar(total=total_steps, prefix=f"{emoji} {title}", config=config) as bar:
             result = None
-            last_progress = 0
             
             for step_progress, step_description in steps:
                 if callable(task_func):
                     # Execute portion of work
                     result = task_func()
                 
-                progress.update(task, completed=step_progress, 
-                              description=f"{emoji} {step_description}")
+                bar.update(step_progress, step_description)
                 time.sleep(0.1)  # Brief pause for visual effect
-                last_progress = step_progress
             
             # Complete the progress
-            progress.update(task, completed=total_steps, 
-                          description=f"{emoji} ✅ {title} complete!")
+            bar.finish(f"{emoji} ✅ {title} complete!")
             return result
-        else:
-            # Execute with dynamic progress updates
+    else:
+        # Execute with dynamic progress updates
+        with Modern3DProgressBar(total=total_steps, prefix=f"{emoji} {title}", config=config) as bar:
             def update_wrapper(progress_val, desc):
-                progress.update(task, completed=progress_val, description=f"{emoji} {desc}")
+                bar.update(progress_val, desc)
             
             # Call the function with progress callback
             if callable(task_func):
                 return task_func(update_wrapper)
             
             # Default completion
-            progress.update(task, completed=total_steps, 
-                          description=f"{emoji} ✅ {title} complete!")
+            bar.finish(f"{emoji} ✅ {title} complete!")
             return None
 
 # Model-specific progress themes
@@ -1984,10 +1989,10 @@ All responses should be helpful, educational, and focused on legitimate cybersec
         # Menu options header
         if COLORAMA_AVAILABLE:
             menu_header = f"{Fore.LIGHTCYAN_EX}┌─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}"
-            menu_title = f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL} {Style.BRIGHT}{Back.CYAN}{Fore.WHITE}🧠 MAIN MENU 🧠{Style.RESET_ALL} {Fore.LIGHTCYAN_EX}{' ' * 51}│{Style.RESET_ALL}"
+            menu_title = f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL} {Style.BRIGHT}{Fore.WHITE}🧠 MAIN MENU 🧠{Style.RESET_ALL} {Fore.LIGHTCYAN_EX}{' ' * 51}│{Style.RESET_ALL}"
             menu_footer = f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}"
             
-            print(f"{menu_header}")
+            print(f"\n{menu_header}")
             print(f"{menu_title}")
             print(f"{menu_footer}\n")
             
@@ -2001,13 +2006,13 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             ]
             
             for i, (option, title, color, desc1, desc2) in enumerate(options):
-                print(f"{color}┌─ {Style.BRIGHT}{Fore.WHITE}{option}{Style.RESET_ALL}{color} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
-                print(f"{color}│{Style.RESET_ALL}  {Style.BRIGHT}{Fore.WHITE}{title}{Style.RESET_ALL}{' ' * (55 - len(title))}{color}│{Style.RESET_ALL}")
+                print(f"{Fore.LIGHTCYAN_EX}┌─ {Style.BRIGHT}{Fore.WHITE}{option}{Style.RESET_ALL}{Fore.LIGHTCYAN_EX} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
+                print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}  {Style.BRIGHT}{Fore.WHITE}{title}{Style.RESET_ALL}{' ' * (55 - len(title))}{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
                 if desc1:
-                    print(f"{color}│{Style.RESET_ALL}  {Fore.CYAN}{desc1}{Style.RESET_ALL}{' ' * (55 - len(desc1))}{color}│{Style.RESET_ALL}")
+                    print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}  {Fore.CYAN}{desc1}{Style.RESET_ALL}{' ' * (55 - len(desc1))}{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
                 if desc2:
-                    print(f"{color}│{Style.RESET_ALL}  {Fore.CYAN}{desc2}{Style.RESET_ALL}{' ' * (55 - len(desc2))}{color}│{Style.RESET_ALL}")
-                print(f"{color}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
+                    print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}  {Fore.CYAN}{desc2}{Style.RESET_ALL}{' ' * (55 - len(desc2))}{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
+                print(f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
             
             # Footer with instructions
             footer_border = f"{Fore.LIGHTGREEN_EX}┌─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}"
@@ -2038,42 +2043,42 @@ All responses should be helpful, educational, and focused on legitimate cybersec
     def handle_hacking_toys(self):
         """Handle Hacking Toys menu - install and manage tools"""
         if COLORAMA_AVAILABLE:
-            print(f"\n{Fore.CYAN}╔{'═' * 78}╗{Style.RESET_ALL}")
-            print(f"{Fore.CYAN}║{Style.RESET_ALL}{Fore.YELLOW}{' ' * 20}🎮 HACKING TOYS - INSTALLATION & MANAGEMENT 🎮{' ' * 20}{Style.RESET_ALL}{Fore.CYAN}║{Style.RESET_ALL}")
-            print(f"{Fore.CYAN}╚{'═' * 78}╝{Style.RESET_ALL}\n")
+            print(f"\n{Fore.CYAN}╔══════════════════════════════════════════════════════════════════════════════╗{Style.RESET_ALL}")
+            print(f"{Fore.CYAN}║{Style.RESET_ALL} {Style.BRIGHT}{Fore.WHITE}🎮 HACKING TOYS - INSTALLATION & MANAGEMENT 🎮{Style.RESET_ALL} {Fore.CYAN}{' ' * 20}║{Style.RESET_ALL}")
+            print(f"{Fore.CYAN}╚══════════════════════════════════════════════════════════════════════════════╝{Style.RESET_ALL}\n")
             
-            print(f"{Fore.GREEN}┌─ {Fore.YELLOW}[1]{Fore.GREEN} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
-            print(f"{Fore.GREEN}│{Style.RESET_ALL}  {Fore.YELLOW}⚡ INSTALL ALL{Style.RESET_ALL} - Quick install 50+ tools                           {Fore.GREEN}│{Style.RESET_ALL}")
-            print(f"{Fore.GREEN}│{Style.RESET_ALL}     {Fore.CYAN}⏱️  Time:{Style.RESET_ALL} 15-30 minutes  {Fore.CYAN}🔑 Requires:{Style.RESET_ALL} sudo                    {Fore.GREEN}│{Style.RESET_ALL}")
-            print(f"{Fore.GREEN}└───────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
+            print(f"{Fore.LIGHTCYAN_EX}┌─ {Style.BRIGHT}{Fore.WHITE}[1] ⚡ INSTALL ALL{Style.RESET_ALL}{Fore.LIGHTCYAN_EX} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}  {Style.BRIGHT}{Fore.WHITE}Quick install 50+ tools{Style.RESET_ALL}{' ' * (35)}{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}  {Fore.CYAN}• Time: 15-30 minutes • Requires: sudo{Style.RESET_ALL}{' ' * (22)}{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
             
-            print(f"{Fore.BLUE}┌─ {Fore.YELLOW}[2]{Fore.BLUE} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
-            print(f"{Fore.BLUE}│{Style.RESET_ALL}  {Fore.YELLOW}🎯 INSTALL ONE-BY-ONE{Style.RESET_ALL} - Choose specific tools                     {Fore.BLUE}│{Style.RESET_ALL}")
-            print(f"{Fore.BLUE}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} Browse numbered list with descriptions                     {Fore.BLUE}│{Style.RESET_ALL}")
-            print(f"{Fore.BLUE}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} Organized by category (Recon, Web, Network, etc.)         {Fore.BLUE}│{Style.RESET_ALL}")
-            print(f"{Fore.BLUE}└───────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
+            print(f"{Fore.LIGHTCYAN_EX}┌─ {Style.BRIGHT}{Fore.WHITE}[2] 🎯 INSTALL ONE-BY-ONE{Style.RESET_ALL}{Fore.LIGHTCYAN_EX} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}  {Style.BRIGHT}{Fore.WHITE}Choose specific tools{Style.RESET_ALL}{' ' * (37)}{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}  {Fore.CYAN}• Browse numbered list with descriptions{Style.RESET_ALL}{' ' * (21)}{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}  {Fore.CYAN}• Organized by category (Recon, Web, Network, etc.){Style.RESET_ALL}{' ' * (8)}{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
             
-            print(f"{Fore.MAGENTA}┌─ {Fore.YELLOW}[3]{Fore.MAGENTA} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
-            print(f"{Fore.MAGENTA}│{Style.RESET_ALL}  {Fore.YELLOW}📋 LIST TOOLS{Style.RESET_ALL} - View all installed hacking tools                {Fore.MAGENTA}│{Style.RESET_ALL}")
-            print(f"{Fore.MAGENTA}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} Show tools organized by category                           {Fore.MAGENTA}│{Style.RESET_ALL}")
-            print(f"{Fore.MAGENTA}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} Display tool descriptions and usage                        {Fore.MAGENTA}│{Style.RESET_ALL}")
-            print(f"{Fore.MAGENTA}└───────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
+            print(f"{Fore.LIGHTCYAN_EX}┌─ {Style.BRIGHT}{Fore.WHITE}[3] 📋 LIST TOOLS{Style.RESET_ALL}{Fore.LIGHTCYAN_EX} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}  {Style.BRIGHT}{Fore.WHITE}View all installed hacking tools{Style.RESET_ALL}{' ' * (30)}{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}  {Fore.CYAN}• Show tools organized by category{Style.RESET_ALL}{' ' * (25)}{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}  {Fore.CYAN}• Display tool descriptions and usage{Style.RESET_ALL}{' ' * (19)}{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
             
-            print(f"{Fore.RED}┌─ {Fore.YELLOW}[4]{Fore.RED} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
-            print(f"{Fore.RED}│{Style.RESET_ALL}  {Fore.YELLOW}🗑️  DELETE TOOLS{Style.RESET_ALL} - Remove hacking tools                           {Fore.RED}│{Style.RESET_ALL}")
-            print(f"{Fore.RED}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} Delete individual tools or all at once                      {Fore.RED}│{Style.RESET_ALL}")
-            print(f"{Fore.RED}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} Free up disk space by removing unused tools                 {Fore.RED}│{Style.RESET_ALL}")
-            print(f"{Fore.RED}└───────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
+            print(f"{Fore.LIGHTCYAN_EX}┌─ {Style.BRIGHT}{Fore.WHITE}[4] 🗑️  DELETE TOOLS{Style.RESET_ALL}{Fore.LIGHTCYAN_EX} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}  {Style.BRIGHT}{Fore.WHITE}Remove hacking tools{Style.RESET_ALL}{' ' * (37)}{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}  {Fore.CYAN}• Delete individual tools or all at once{Style.RESET_ALL}{' ' * (19)}{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}  {Fore.CYAN}• Free up disk space by removing unused tools{Style.RESET_ALL}{' ' * (13)}{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
             
-            print(f"{Fore.LIGHTMAGENTA_EX}┌─ {Fore.YELLOW}[5]{Fore.LIGHTMAGENTA_EX} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}  {Fore.YELLOW}🗑️  DELETE MODELS{Style.RESET_ALL} - Remove local AI models                        {Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} Delete Llama, Mistral, or HuggingFace models              {Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} Free up disk space by removing unused models                 {Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTMAGENTA_EX}└───────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
+            print(f"{Fore.LIGHTCYAN_EX}┌─ {Style.BRIGHT}{Fore.WHITE}[5] 🗑️  DELETE MODELS{Style.RESET_ALL}{Fore.LIGHTCYAN_EX} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}  {Style.BRIGHT}{Fore.WHITE}Remove local AI models{Style.RESET_ALL}{' ' * (36)}{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}  {Fore.CYAN}• Delete Llama, Mistral, or HuggingFace models{Style.RESET_ALL}{' ' * (14)}{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}  {Fore.CYAN}• Free up disk space by removing unused models{Style.RESET_ALL}{' ' * (13)}{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
             
-            print(f"{Fore.LIGHTYELLOW_EX}┌─ {Fore.YELLOW}[6]{Fore.LIGHTYELLOW_EX} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}  {Fore.YELLOW}🔙 BACK{Style.RESET_ALL} - Return to main menu                                    {Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTYELLOW_EX}└───────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
+            print(f"{Fore.LIGHTCYAN_EX}┌─ {Style.BRIGHT}{Fore.WHITE}[6] 🔙 BACK{Style.RESET_ALL}{Fore.LIGHTCYAN_EX} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}  {Style.BRIGHT}{Fore.WHITE}Return to main menu{Style.RESET_ALL}{' ' * (39)}{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
         else:
             print("\n" + "=" * 70)
             print("    HACKING TOYS - INSTALLATION & MANAGEMENT")
@@ -2105,19 +2110,19 @@ All responses should be helpful, educational, and focused on legitimate cybersec
     def handle_delete_models(self):
         """Handle model deletion menu"""
         if COLORAMA_AVAILABLE:
-            print(f"\n{Fore.LIGHTMAGENTA_EX}╔{'═' * 78}╗{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTMAGENTA_EX}║{Style.RESET_ALL}{Fore.YELLOW}{' ' * 20}🗑️  DELETE MODELS - REMOVE LOCAL MODELS 🗑️{' ' * 20}{Style.RESET_ALL}{Fore.LIGHTMAGENTA_EX}║{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTMAGENTA_EX}╚{'═' * 78}╝{Style.RESET_ALL}\n")
+            print(f"\n{Fore.LIGHTMAGENTA_EX}╔══════════════════════════════════════════════════════════════════════════════╗{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTMAGENTA_EX}║{Style.RESET_ALL} {Style.BRIGHT}{Fore.WHITE}🗑️  DELETE MODELS - REMOVE LOCAL MODELS 🗑️{Style.RESET_ALL} {Fore.LIGHTMAGENTA_EX}{' ' * 20}║{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTMAGENTA_EX}╚══════════════════════════════════════════════════════════════════════════════╝{Style.RESET_ALL}\n")
             
-            print(f"{Fore.RED}┌─ {Fore.YELLOW}[1]{Fore.RED} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
-            print(f"{Fore.RED}│{Style.RESET_ALL}  {Fore.YELLOW}🗑️  DELETE LLAMA MODELS{Style.RESET_ALL} - Remove local Llama models                {Fore.RED}│{Style.RESET_ALL}")
-            print(f"{Fore.RED}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} Free up disk space by removing Llama models                 {Fore.RED}│{Style.RESET_ALL}")
-            print(f"{Fore.RED}│{Style.RESET_ALL}     {Fore.CYAN}✓{Style.RESET_ALL} Select specific models or delete all                          {Fore.RED}│{Style.RESET_ALL}")
-            print(f"{Fore.RED}└───────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
+            print(f"{Fore.LIGHTMAGENTA_EX}┌─ {Style.BRIGHT}{Fore.WHITE}[1] 🗑️  DELETE LLAMA MODELS{Style.RESET_ALL}{Fore.LIGHTMAGENTA_EX} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}  {Style.BRIGHT}{Fore.WHITE}Remove local Llama models{Style.RESET_ALL}{' ' * (33)}{Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}  {Fore.CYAN}• Free up disk space by removing Llama models{Style.RESET_ALL}{' ' * (13)}{Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}  {Fore.CYAN}• Select specific models or delete all{Style.RESET_ALL}{' ' * (19)}{Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTMAGENTA_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
             
-            print(f"{Fore.LIGHTYELLOW_EX}┌─ {Fore.YELLOW}[2]{Fore.LIGHTYELLOW_EX} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}  {Fore.YELLOW}🔙 BACK{Style.RESET_ALL} - Return to main menu                                    {Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTYELLOW_EX}└───────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
+            print(f"{Fore.LIGHTMAGENTA_EX}┌─ {Style.BRIGHT}{Fore.WHITE}[2] 🔙 BACK{Style.RESET_ALL}{Fore.LIGHTMAGENTA_EX} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}  {Style.BRIGHT}{Fore.WHITE}Return to main menu{Style.RESET_ALL}{' ' * (39)}{Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTMAGENTA_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
         else:
             print("\n" + "=" * 70)
             print("    DELETE MODELS - REMOVE LOCAL MODELS")
@@ -3089,9 +3094,9 @@ All responses should be helpful, educational, and focused on legitimate cybersec
         """Handle configuration settings with colorful styling"""
         if COLORAMA_AVAILABLE:
             # Beautiful configuration header
-            config_header = f"{Fore.LIGHTRED_EX}╔{'═' * 78}╗{Style.RESET_ALL}"
-            config_title = f"{Fore.LIGHTRED_EX}║{Style.RESET_ALL} {Style.BRIGHT}{Back.RED}{Fore.WHITE}⚙️  CONFIGURATION SETTINGS ⚙️{Style.RESET_ALL} {Fore.LIGHTRED_EX}{' ' * 38}║{Style.RESET_ALL}"
-            config_footer = f"{Fore.LIGHTRED_EX}╚{'═' * 78}╝{Style.RESET_ALL}"
+            config_header = f"{Fore.LIGHTRED_EX}╔══════════════════════════════════════════════════════════════════════════════╗{Style.RESET_ALL}"
+            config_title = f"{Fore.LIGHTRED_EX}║{Style.RESET_ALL} {Style.BRIGHT}{Fore.WHITE}⚙️  CONFIGURATION SETTINGS ⚙️{Style.RESET_ALL} {Fore.LIGHTRED_EX}{' ' * 38}║{Style.RESET_ALL}"
+            config_footer = f"{Fore.LIGHTRED_EX}╚══════════════════════════════════════════════════════════════════════════════╝{Style.RESET_ALL}"
             
             print(f"\n{config_header}")
             print(f"{config_title}")
@@ -3099,7 +3104,7 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             
             # Current status with colorful display
             status_border = f"{Fore.LIGHTCYAN_EX}┌─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}"
-            status_title = f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL} {Style.BRIGHT}{Back.CYAN}{Fore.WHITE}🔧 CURRENT STATUS 🔧{Style.RESET_ALL} {Fore.LIGHTCYAN_EX}{' ' * 47}│{Style.RESET_ALL}"
+            status_title = f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL} {Style.BRIGHT}{Fore.WHITE}🔧 CURRENT STATUS 🔧{Style.RESET_ALL} {Fore.LIGHTCYAN_EX}{' ' * 47}│{Style.RESET_ALL}"
             status_border2 = f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}"
             
             print(f"{status_border}")
@@ -3132,9 +3137,9 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             ]
             
             for i, (option, desc, color) in enumerate(options):
-                print(f"{color}┌─ {Style.BRIGHT}{Fore.WHITE}{option}{Style.RESET_ALL}{color} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
-                print(f"{color}│{Style.RESET_ALL}  {Style.BRIGHT}{Fore.WHITE}{desc}{Style.RESET_ALL}{' ' * (55 - len(desc))}{color}│{Style.RESET_ALL}")
-                print(f"{color}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
+                print(f"{Fore.LIGHTCYAN_EX}┌─ {Style.BRIGHT}{Fore.WHITE}{option}{Style.RESET_ALL}{Fore.LIGHTCYAN_EX} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
+                print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}  {Style.BRIGHT}{Fore.WHITE}{desc}{Style.RESET_ALL}{' ' * (55 - len(desc))}{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
+                print(f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
         else:
             print("\n" + "=" * 40)
             print("    CONFIGURATION SETTINGS")
@@ -3251,9 +3256,9 @@ All responses should be helpful, educational, and focused on legitimate cybersec
         """Show local model installation menu with colorful styling"""
         if COLORAMA_AVAILABLE:
             # Beautiful installation header
-            install_header = f"{Fore.LIGHTMAGENTA_EX}╔{'═' * 78}╗{Style.RESET_ALL}"
-            install_title = f"{Fore.LIGHTMAGENTA_EX}║{Style.RESET_ALL} {Style.BRIGHT}{Back.MAGENTA}{Fore.WHITE}📦 INSTALL LOCAL MODELS 📦{Style.RESET_ALL} {Fore.LIGHTMAGENTA_EX}{' ' * 38}║{Style.RESET_ALL}"
-            install_footer = f"{Fore.LIGHTMAGENTA_EX}╚{'═' * 78}╝{Style.RESET_ALL}"
+            install_header = f"{Fore.LIGHTMAGENTA_EX}╔══════════════════════════════════════════════════════════════════════════════╗{Style.RESET_ALL}"
+            install_title = f"{Fore.LIGHTMAGENTA_EX}║{Style.RESET_ALL} {Style.BRIGHT}{Fore.WHITE}📦 INSTALL LOCAL MODELS 📦{Style.RESET_ALL} {Fore.LIGHTMAGENTA_EX}{' ' * 38}║{Style.RESET_ALL}"
+            install_footer = f"{Fore.LIGHTMAGENTA_EX}╚══════════════════════════════════════════════════════════════════════════════╝{Style.RESET_ALL}"
             
             print(f"\n{install_header}")
             print(f"{install_title}")
@@ -3273,9 +3278,9 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             ]
             
             for i, (option, desc, color) in enumerate(options):
-                print(f"{color}┌─ {Style.BRIGHT}{Fore.WHITE}{option}{Style.RESET_ALL}{color} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
-                print(f"{color}│{Style.RESET_ALL}  {Style.BRIGHT}{Fore.WHITE}{desc}{Style.RESET_ALL}{' ' * (55 - len(desc))}{color}│{Style.RESET_ALL}")
-                print(f"{color}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
+                print(f"{Fore.LIGHTMAGENTA_EX}┌─ {Style.BRIGHT}{Fore.WHITE}{option}{Style.RESET_ALL}{Fore.LIGHTMAGENTA_EX} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
+                print(f"{Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}  {Style.BRIGHT}{Fore.WHITE}{desc}{Style.RESET_ALL}{' ' * (55 - len(desc))}{Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}")
+                print(f"{Fore.LIGHTMAGENTA_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
         else:
             print("\n" + "=" * 40)
             print("    INSTALL LOCAL MODELS")
@@ -4321,68 +4326,103 @@ Provide step-by-step technical details while maintaining educational context and
                 print(f"📦 Downloading Docker image: {image} ({i}/{len(images_to_try)})")
                 print(f"{'='*60}")
                 
-                # Create spinner for Docker pull (same style as thinking animation)
-                spinner_chars = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏']
-                docker_actions = ['pulling', 'downloading', 'fetching', 'retrieving', 'grabbing', 'loading', 'importing', 'acquiring', 'getting', 'obtaining']
-                
-                # Start Docker pull animation
-                import threading
-                pull_complete = threading.Event()
-                pull_result = {'success': False, 'error': None}
-                
-                def animate_docker_pull():
-                    """Animate Docker pull process with spinner"""
-                    idx = 0
-                    current_action_idx = 0
-                    last_action_change = time.time()
+                # Use modern 3D progress bars for Docker pull
+                if TERMINAL_PROGRESS_AVAILABLE:
+                    config = ProgressConfig(
+                        enable_3d=True,
+                        enable_gradient=True,
+                        enable_shadow=True,
+                        enable_animation=True
+                    )
                     
-                    while not pull_complete.is_set():
-                        # Change action every 1 second
-                        current_time = time.time()
-                        if current_time - last_action_change >= 1.0:
-                            current_action_idx = (current_action_idx + 1) % len(docker_actions)
-                            last_action_change = current_time
+                    with Modern3DProgressBar(total=100, prefix=f"🐳 Pulling {image}", config=config) as bar:
+                        def pull_image_with_progress():
+                            try:
+                                # Simulate progress during Docker pull
+                                for progress in range(0, 101, 10):
+                                    bar.update(progress, f"Downloading {image}...")
+                                    time.sleep(0.5)  # Simulate progress
+                                
+                                # Actual Docker pull
+                                pull_cmd = subprocess.run(['docker', 'pull', image], 
+                                                       capture_output=True, text=True, timeout=300)
+                                pull_result['success'] = pull_cmd.returncode == 0
+                                pull_result['error'] = pull_cmd.stderr if pull_cmd.returncode != 0 else None
+                                
+                                if pull_result['success']:
+                                    bar.update(100, f"✅ Successfully pulled: {image}")
+                                else:
+                                    error_msg = pull_result['error'] or "Unknown error"
+                                    bar.finish(f"❌ Failed to pull {image}")
+                            except Exception as e:
+                                pull_result['success'] = False
+                                pull_result['error'] = str(e)
+                                bar.finish(f"❌ Error pulling {image}")
                         
-                        current_action = docker_actions[current_action_idx]
-                        sys.stdout.write(f'\r{spinner_chars[idx]} 🐳 {image} {current_action}...')
-                        sys.stdout.flush()
-                        idx = (idx + 1) % len(spinner_chars)
-                        time.sleep(0.1)
-                    
-                    # Clean up
-                    sys.stdout.write('\r' + ' ' * (len(image) + 20) + '\r')
-                    sys.stdout.flush()
-                
-                def pull_image():
-                    try:
-                        pull_cmd = subprocess.run(['docker', 'pull', image], 
-                                               capture_output=True, text=True, timeout=300)
-                        pull_result['success'] = pull_cmd.returncode == 0
-                        pull_result['error'] = pull_cmd.stderr if pull_cmd.returncode != 0 else None
-                    except Exception as e:
-                        pull_result['success'] = False
-                        pull_result['error'] = str(e)
-                    finally:
-                        pull_complete.set()
-                
-                # Start the download and animation
-                pull_thread = threading.Thread(target=pull_image)
-                animation_thread = threading.Thread(target=animate_docker_pull)
-                pull_thread.start()
-                animation_thread.start()
-                
-                # Wait for actual download to complete
-                pull_thread.join()
-                pull_complete.set()
-                animation_thread.join()
-                
-                if pull_result['success']:
-                    print(f"✅ Successfully pulled: {image}")
-                    pull_success = True
-                    break
+                        pull_image_with_progress()
                 else:
-                    error_msg = pull_result['error'] or "Unknown error"
-                    print(f"❌ Failed to pull {image}: {error_msg}")
+                    # Fallback to original spinner animation
+                    spinner_chars = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏']
+                    docker_actions = ['pulling', 'downloading', 'fetching', 'retrieving', 'grabbing', 'loading', 'importing', 'acquiring', 'getting', 'obtaining']
+                    
+                    # Start Docker pull animation
+                    import threading
+                    pull_complete = threading.Event()
+                    pull_result = {'success': False, 'error': None}
+                    
+                    def animate_docker_pull():
+                        """Animate Docker pull process with spinner"""
+                        idx = 0
+                        current_action_idx = 0
+                        last_action_change = time.time()
+                        
+                        while not pull_complete.is_set():
+                            # Change action every 1 second
+                            current_time = time.time()
+                            if current_time - last_action_change >= 1.0:
+                                current_action_idx = (current_action_idx + 1) % len(docker_actions)
+                                last_action_change = current_time
+                            
+                            current_action = docker_actions[current_action_idx]
+                            sys.stdout.write(f'\r{spinner_chars[idx]} 🐳 {image} {current_action}...')
+                            sys.stdout.flush()
+                            idx = (idx + 1) % len(spinner_chars)
+                            time.sleep(0.1)
+                        
+                        # Clean up
+                        sys.stdout.write('\r' + ' ' * (len(image) + 20) + '\r')
+                        sys.stdout.flush()
+                    
+                    def pull_image():
+                        try:
+                            pull_cmd = subprocess.run(['docker', 'pull', image], 
+                                                   capture_output=True, text=True, timeout=300)
+                            pull_result['success'] = pull_cmd.returncode == 0
+                            pull_result['error'] = pull_cmd.stderr if pull_cmd.returncode != 0 else None
+                        except Exception as e:
+                            pull_result['success'] = False
+                            pull_result['error'] = str(e)
+                        finally:
+                            pull_complete.set()
+                    
+                    # Start the download and animation
+                    pull_thread = threading.Thread(target=pull_image)
+                    animation_thread = threading.Thread(target=animate_docker_pull)
+                    pull_thread.start()
+                    animation_thread.start()
+                    
+                    # Wait for actual download to complete
+                    pull_thread.join()
+                    pull_complete.set()
+                    animation_thread.join()
+                    
+                    if pull_result['success']:
+                        print(f"✅ Successfully pulled: {image}")
+                        pull_success = True
+                        break
+                    else:
+                        error_msg = pull_result['error'] or "Unknown error"
+                        print(f"❌ Failed to pull {image}: {error_msg}")
             
             if not pull_success:
                 return f"❌ Failed to pull any base image. Docker setup may need manual configuration."
@@ -4403,10 +4443,30 @@ Provide step-by-step technical details while maintaining educational context and
             return f"❌ Installation error: {e}"
     
     def show_loading_animation(self, message: str):
-        """Show a beautiful loading animation with Textual, alive-progress, or fallback"""
+        """Show a beautiful loading animation with modern 3D progress bars"""
         timer = None
         
-        # Priority 1: Textual with random visual effects
+        # Priority 1: Modern 3D Terminal Progress
+        if TERMINAL_PROGRESS_AVAILABLE:
+            try:
+                config = ProgressConfig(
+                    enable_3d=True,
+                    enable_gradient=True,
+                    enable_shadow=True,
+                    enable_animation=True
+                )
+                
+                with Modern3DProgressBar(total=100, prefix=f"🎨 {message}", config=config) as bar:
+                    for i in range(0, 101, 20):
+                        bar.update(i, f"Processing...")
+                        time.sleep(0.1)
+                
+                return None
+            except Exception as e:
+                # Fallback to other systems if 3D fails
+                pass
+        
+        # Priority 2: Textual with random visual effects
         if TEXTUAL_PROGRESS_AVAILABLE and TEXTUAL_AVAILABLE:
             try:
                 import asyncio
@@ -4424,7 +4484,7 @@ Provide step-by-step technical details while maintaining educational context and
                 # Fallback to alive-progress if Textual fails
                 pass
         
-        # Priority 2: alive-progress
+        # Priority 3: alive-progress
         if ALIVE_PROGRESS_AVAILABLE:
             import time
             from alive_progress import alive_bar
@@ -6727,117 +6787,6 @@ def main():
             
         except Exception as e:
             return f"❌ Search failed: {str(e)}"
-
-# Modern Typer CLI Commands
-if TYPER_AVAILABLE and RICH_AVAILABLE and LOGURU_AVAILABLE:
-    from rich import print
-    from rich.panel import Panel
-    
-    # Create modern CLI app
-    modern_app = Typer(
-        name="iblu",
-        help="🔥 IBLU Professional Hacking Assistant - Advanced Security Platform",
-        add_completion=True,
-        rich_markup_mode="rich",
-        no_args_is_help=True
-    )
-
-    @modern_app.command()
-    def chat(
-        query: str = typer.Argument(..., help="Your query for the AI assistant"),
-        provider: str = typer.Option("auto", "--provider", "-p", help="AI provider to use"),
-        verbose: bool = typer.Option(False, "--verbose", "-v", help="Enable verbose logging"),
-    ):
-        """🤖 Chat with the AI assistant for security analysis."""
-        if verbose:
-            logger.info(f"Starting chat with query: {query[:50]}...")
-        
-        print(Panel.fit(
-            f"[bold green]Query:[/bold green] {query}\n"
-            f"[bold cyan]Provider:[/bold cyan] {provider}",
-            title="🤖 Chat Configuration",
-        ))
-        
-        assistant = KaliGPTMCPAssistant(load_config())
-        response = assistant.process_command(query)
-        
-        print(Panel.fit(
-            response,
-            title="🤖 AI Response",
-            border_style="blue"
-        ))
-
-    @modern_app.command()
-    def version():
-        """📋 Show version information."""
-        print(Panel.fit(
-            "[bold blue]🔥 IBLU Professional Hacking Assistant v2.4[/bold blue]\n\n"
-            "[green]🚀 Advanced Cybersecurity Automation Platform[/green]\n"
-            "[yellow]🧠 Built with Rich, Typer, Pydantic & Loguru[/yellow]\n"
-            "[cyan]🌀 Beautiful Halo Spinners & Progress Bars[/cyan]",
-            title="📋 Version Information",
-            border_style="cyan"
-        ))
-    
-    @modern_app.command()
-    def menu():
-        """🎯 Show main menu with installation options."""
-        try:
-            # Create assistant and show main menu
-            assistant = KaliGPTMCPAssistant(load_config())
-            assistant.show_main_menu()
-        except Exception as e:
-            print(f"❌ Error loading menu: {e}")
-    
-    @modern_app.command()
-    def install_llama():
-        """🦙 Install Llama model with Textual visual progress."""
-        try:
-            assistant = KaliGPTMCPAssistant(load_config())
-            print("🎨 Starting Textual Llama Installation...")
-            result = assistant.install_model_with_textual_progress("Llama", [])
-            print(f"Result: {result}")
-        except Exception as e:
-            print(f"❌ Error: {e}")
-    
-    @modern_app.command()
-    def install_gemini():
-        """🌟 Install Gemini model with Textual visual progress."""
-        try:
-            assistant = KaliGPTMCPAssistant(load_config())
-            print("🎨 Starting Textual Gemini Installation...")
-            result = assistant.install_model_with_textual_progress("Gemini", [])
-            print(f"Result: {result}")
-        except Exception as e:
-            print(f"❌ Error: {e}")
-    
-    @modern_app.command()
-    def install_mistral():
-        """🐬 Install Mistral model with Textual visual progress."""
-        try:
-            assistant = KaliGPTMCPAssistant(load_config())
-            print("🎨 Starting Textual Mistral Installation...")
-            result = assistant.install_model_with_textual_progress("Mistral Dolphin", [])
-            print(f"Result: {result}")
-        except Exception as e:
-            print(f"❌ Error: {e}")
-    
-    @modern_app.command()
-    def themes_demo():
-        """🎨 Show all available Textual visual themes."""
-        try:
-            assistant = KaliGPTMCPAssistant(load_config())
-            result = assistant.show_textual_themes_demo()
-            print(f"Result: {result}")
-        except Exception as e:
-            print(f"❌ Error: {e}")
-
-    def modern_main():
-        """Main entry point for modern CLI."""
-        modern_app()
-
-    # Override main if modern dependencies are available
-    main = modern_main
 
 if __name__ == "__main__":
     main()
