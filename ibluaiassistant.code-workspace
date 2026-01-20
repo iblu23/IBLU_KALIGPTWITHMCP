@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "../../hexstrike-ai-1"
+		},
+		{
+			"path": "."
+		},
+		{
+			"path": "../IBLUKALIGPT"
+		}
+	],
+	"settings": {}
+}
