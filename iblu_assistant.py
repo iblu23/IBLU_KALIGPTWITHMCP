@@ -60,6 +60,13 @@ try:
 except ImportError:
     ALIVE_PROGRESS_AVAILABLE = False
 
+# Custom terminal progress bars with modern 3D effects
+try:
+    from terminal_progress import Modern3DProgressBar, ProgressManager, run_task_with_progress, ProgressConfig
+    TERMINAL_PROGRESS_AVAILABLE = True
+except ImportError:
+    TERMINAL_PROGRESS_AVAILABLE = False
+
 # Optional Textual for advanced TUI visual effects
 try:
     from textual_progress import progress_manager, TEXTUAL_AVAILABLE, VisualThemes
@@ -235,7 +242,7 @@ except ImportError:
 
 # Universal Progress Bar Utility - Using modern 3D terminal style
 def create_progress_bar(title: str, total: int = 100, emoji: str = "🔄", 
-                      show_percentage: bool = True, show_time: bool = True) -> "Modern3DProgressBar":
+                      show_percentage: bool = True, show_time: bool = True) -> Modern3DProgressBar:
     """Create a universal progress bar with modern 3D visual effects"""
     if not TERMINAL_PROGRESS_AVAILABLE:
         # Fallback to simple text output
@@ -1669,13 +1676,12 @@ class IBLUCommandHelper:
             
             return deleted_count, failed_deletions
         
-        # Run with Rich progress
-        if RICH_AVAILABLE:
-            deleted_count, failed_deletions = run_with_rich_progress(
+        # Run with new terminal progress
+        if TERMINAL_PROGRESS_AVAILABLE:
+            deleted_count, failed_deletions = run_with_progress(
                 "Deleting All Tools",
                 delete_with_progress,
                 total_steps=100,
-                style=theme["style"],
                 emoji=theme["emoji"],
                 steps=[
                     (5, "🔒 Preparing mass deletion..."),
@@ -2785,13 +2791,12 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                     return "📦 All HexStrike tools installed successfully! 🎉"
                 else:
                     return "❌ Installation failed. Please check the logs."
-            elif RICH_AVAILABLE:
-                # Fallback to Rich progress
-                result = run_with_rich_progress(
+            elif TERMINAL_PROGRESS_AVAILABLE:
+                # Use new terminal progress
+                result = run_with_progress(
                     "Installing HexStrike Tools", 
                     install_with_progress,
                     total_steps=100,
-                    style=theme["style"],
                     emoji=theme["emoji"],
                     steps=[
                         (10, "🔧 Preparing installation environment..."),
@@ -2889,50 +2894,45 @@ All responses should be helpful, educational, and focused on legitimate cybersec
         confirm = input(f"\n{self._colorize('🔧 Install ' + tool_name + '? (yes/no):', Fore.YELLOW)} ").strip().lower()
         
         if confirm in ['yes', 'y']:
-            if RICH_AVAILABLE:
-                # Use rich progress bar for installation with colors
-                with Progress(
-                    SpinnerColumn(style="bold magenta"),
-                    TextColumn("[bold cyan]{task.description}"),
-                    BarColumn(complete_style="bold green", finished_style="bold green"),
-                    TextColumn("[bold yellow][progress.percentage]{task.percentage:>3.0f}%"),
-                    TimeElapsedColumn(),
-                    console=console
-                ) as progress:
-                    task = progress.add_task(f"[bold cyan]Installing {tool_name}...", total=100)
-                    
-                    # Simulate installation steps with progress and colors
-                    progress.update(task, advance=20, description=f"[bold blue]Updating package lists...")
+            if TERMINAL_PROGRESS_AVAILABLE:
+                # Use modern 3D terminal progress bar for installation
+                config = ProgressConfig(enable_3d=True, enable_gradient=True, enable_shadow=True)
+                with Modern3DProgressBar(total=100, prefix=f"🔨 Installing {tool_name}", config=config) as bar:
+                    # Simulate installation steps with progress
+                    bar.update(20, "Updating package lists...")
                     time.sleep(0.3)
                     
-                    progress.update(task, advance=20, description=f"[bold yellow]Downloading {tool_name}...")
+                    bar.update(40, f"Downloading {tool_name}...")
                     
                     # Run actual installation
                     try:
                         result = subprocess.run(['sudo', 'apt', 'install', '-y', tool_name], 
                                               capture_output=True, text=True)
                         
-                        progress.update(task, advance=40, description=f"[bold magenta]Installing {tool_name}...")
+                        bar.update(80, f"Installing {tool_name}...")
                         time.sleep(0.2)
                         
-                        progress.update(task, advance=20, description=f"[bold cyan]Configuring {tool_name}...")
+                        bar.update(95, f"Configuring {tool_name}...")
                         time.sleep(0.2)
                         
                         if result.returncode == 0:
-                            progress.update(task, completed=100, description=f"[bold green]✅ {tool_name} installed successfully!")
+                            bar.finish(f"{tool_name} installed successfully!")
                             time.sleep(0.5)
                             
-                            console.print(f"\n[bold green]✅ Successfully installed {tool_name}![/bold green]\n")
+                            if COLORAMA_AVAILABLE:
+                                print(f"\n{Fore.GREEN}✅ Successfully installed {tool_name}!{Style.RESET_ALL}\n")
+                            else:
+                                print(f"\n✅ Successfully installed {tool_name}!\n")
                             
                             # Show usage commands
                             self.show_tool_usage(tool_name, tool_info)
                             return f"✅ {tool_name} installed and ready to use!"
                         else:
-                            progress.update(task, description=f"❌ Installation failed")
+                            bar.finish("Installation failed")
                             return f"❌ Installation failed. Try manually: sudo apt install {tool_name}"
                     except Exception as e:
-                        progress.update(task, description=f"❌ Error occurred")
-                        return f"❌ Error during installation: {e}"
+                        bar.finish("Error occurred")
+                        return f"❌ Error during installation: {str(e)}"
             else:
                 # Fallback without rich
                 print(f"\n{self._colorize('🚀 Installing ' + tool_name + '...', Fore.GREEN)}")
@@ -3874,32 +3874,22 @@ Provide step-by-step technical details while maintaining educational context and
             
             theme = model_themes.get(provider, {"style": "bold cyan", "emoji": "🤖", "name": "IBLU", "color": "bright_cyan"})
             
-            # Enhanced Rich progress bar with high-definition display
-            with Progress(
-                SpinnerColumn(style=theme["style"]),
-                TextColumn(f"[{theme['style']}]{theme['emoji']} {{task.description}}"),
-                BarColumn(bar_width=40, complete_style=theme["color"], finished_style=f"bold {theme['color']}", pulse_style="bold yellow"),
-                TextColumn("[progress.percentage]{task.percentage:>3.1f}%"),
-                TimeElapsedColumn(),
-                console=console,
-                transient=False
-            ) as progress:
-                # Create thinking task with animated progress
-                task = progress.add_task(f"[{theme['style']}]{theme['name']} is thinking...", total=100)
-                
+            # Enhanced modern 3D terminal progress bar with high-definition display
+            config = ProgressConfig(enable_3d=True, enable_gradient=True, enable_shadow=True, enable_animation=True)
+            with Modern3DProgressBar(total=100, prefix=f"{theme['emoji']} {theme['name']} is thinking", config=config) as bar:
                 # Simulate thinking progress
                 thinking_steps = [
-                    (10, f"[{theme['style']}]{theme['name']} analyzing request..."),
-                    (25, f"[{theme['style']}]{theme['name']} processing context..."),
-                    (40, f"[{theme['style']}]{theme['name']} generating response..."),
-                    (60, f"[{theme['style']}]{theme['name']} refining answer..."),
-                    (80, f"[{theme['style']}]{theme['name']} finalizing response..."),
-                    (95, f"[{theme['style']}]{theme['name']} completing analysis...")
+                    (10, f"{theme['name']} analyzing request..."),
+                    (25, f"{theme['name']} processing context..."),
+                    (40, f"{theme['name']} generating response..."),
+                    (60, f"{theme['name']} refining answer..."),
+                    (80, f"{theme['name']} finalizing response..."),
+                    (95, f"{theme['name']} completing analysis...")
                 ]
                 
                 # Start thinking animation
                 for step_progress, step_description in thinking_steps:
-                    progress.update(task, advance=step_progress - progress.tasks[task].completed, description=step_description)
+                    bar.update(step_progress, step_description)
                     time.sleep(0.1)  # Brief pause for visual effect
                 
                 # Make the actual API call
@@ -3918,13 +3908,13 @@ Provide step-by-step technical details while maintaining educational context and
                         result = f"❌ Provider {provider.value} not implemented yet"
                     
                     # Complete the progress
-                    progress.update(task, completed=100, description=f"[{theme['style']}✅ {theme['name']} response ready!")
+                    bar.finish(f"{theme['name']} response ready!")
                     time.sleep(0.5)  # Brief pause to show completion
                     
                     return result
                     
                 except Exception as e:
-                    progress.update(task, description=f"[{theme['style']}❌ {theme['name']} encountered error")
+                    bar.finish(f"{theme['name']} encountered error")
                     return f"❌ Error from {theme['name']}: {str(e)}"
                     
         else:
@@ -5049,58 +5039,45 @@ Provide step-by-step technical details while maintaining educational context and
         
         results = []
         
-        # Create Rich progress tracker for high-definition display
-        if RICH_AVAILABLE:
-            from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TimeRemainingColumn, TimeElapsedColumn
-            
-            with Progress(
-                SpinnerColumn(),
-                TextColumn("[bold blue]{task.description}"),
-                BarColumn(bar_width=40, complete_style="bright_green", finished_style="bold green"),
-                TextColumn("[progress.percentage]{task.percentage:>3.1f}%"),
-                TimeRemainingColumn(),
-                TimeElapsedColumn(),
-                console=console,
-                transient=False
-            ) as progress:
-                # Create main task
-                main_task = progress.add_task("🚀 Installing All Models", total=100)
-                
+        # Create modern 3D terminal progress tracker for high-definition display
+        if TERMINAL_PROGRESS_AVAILABLE:
+            config = ProgressConfig(enable_3d=True, enable_gradient=True, enable_shadow=True, enable_animation=True)
+            with Modern3DProgressBar(total=100, prefix="🚀 Installing All Models", config=config) as bar:
                 try:
                     # Step 1-10: Initialize installation
-                    progress.update(main_task, advance=5, description="🚀 Initializing all model installations")
+                    bar.update(5, "Initializing all model installations")
                     time.sleep(0.5)
                     
                     # Step 11-35: Install Gemini
-                    progress.update(main_task, advance=10, description="🌟 Installing Gemini model...")
+                    bar.update(15, "Installing Gemini model...")
                     gemini_result = self.install_gemini_local()
                     results.append(f"🌟 Gemini: {gemini_result}")
-                    progress.update(main_task, advance=20, description="✅ Gemini installation complete")
+                    bar.update(35, "Gemini installation complete")
                     
                     # Step 36-60: Install Llama
-                    progress.update(main_task, advance=5, description="🦙 Installing Llama model...")
+                    bar.update(40, "Installing Llama model...")
                     llama_result = self.install_llama_local()
                     results.append(f"🦙 Llama: {llama_result}")
-                    progress.update(main_task, advance=20, description="✅ Llama installation complete")
+                    bar.update(60, "Llama installation complete")
                     
                     # Step 61-85: Install Mistral Dolphin
-                    progress.update(main_task, advance=5, description="🐬 Installing Mistral Dolphin model...")
+                    bar.update(65, "Installing Mistral Dolphin model...")
                     mistral_result = self.install_mistral_dolphin_local()
                     results.append(f"🐬 Mistral Dolphin: {mistral_result}")
-                    progress.update(main_task, advance=20, description="✅ Mistral Dolphin installation complete")
+                    bar.update(85, "Mistral Dolphin installation complete")
                     
                     # Step 86-100: Final verification
-                    progress.update(main_task, advance=5, description="🔍 Verifying all installations...")
+                    bar.update(90, "Verifying all installations...")
                     time.sleep(1.0)
-                    progress.update(main_task, advance=10, description="🎉 Finalizing setup...")
+                    bar.update(100, "Finalizing setup...")
                     time.sleep(0.5)
                     
                     # Complete the progress
-                    progress.update(main_task, completed=100, description="🎊 All models installed successfully!")
+                    bar.finish("All models installed successfully!")
                     time.sleep(1.0)
                     
                 except Exception as e:
-                    progress.update(main_task, description=f"❌ Installation failed: {e}")
+                    bar.finish(f"Installation failed: {e}")
                     return f"❌ Installation error: {e}"
         else:
             # Fallback to ConfigurationProgress if Rich is not available
@@ -5915,181 +5892,23 @@ Provide step-by-step technical details while maintaining educational context and
                         bar()
                         return provider, f"Error: {str(e)}", elapsed
                 
-                # Execute parallel requests
-                with ThreadPoolExecutor(max_workers=len(available_providers)) as executor:
-                    future_to_provider = {
-                        executor.submit(get_model_response, provider_info): provider_info[0]
-                        for provider_info in available_providers
-                    }
+                # Execute all model requests
+                total_models = len(available_providers)
+                completed_models = 0
+                
+                for provider_info in available_providers:
+                    provider, response, resp_time = get_model_response(provider_info)
+                    initial_responses[provider] = response
+                    response_times[provider] = resp_time
+                    completed_models += 1
                     
-                    for future in as_completed(future_to_provider):
-                        provider, response, elapsed = future.result()
-                        initial_responses[provider] = response
-                        response_times[provider] = elapsed
-                        
-        elif RICH_PROGRESS_AVAILABLE:
-            # Create Rich console for progress display
-            from rich.console import Console
-            console = Console()
-            
-            # Create enhanced progress with multiple columns and effects
-            with Progress(
-                SpinnerColumn("dots12", style="cyan", speed=0.5),
-                TextColumn("[bold cyan]🤖 Collaborative Analysis: {task.description}"),
-                BarColumn(
-                    bar_width=50, 
-                    complete_style=Style(color="bright_cyan", bold=True),
-                    finished_style=Style(color="cyan", bold=True),
-                    pulse_style=Style(color="cyan", dim=True)
-                ),
-                TaskProgressColumn(
-                    text_format="• {task.completed}/{task.total}",
-                    style="yellow",
-                    show_speed=True
-                ),
-                TextColumn("[progress.percentage]{task.percentage:>3.1f}%", style="magenta"),
-                MofNCompleteColumn(),
-                TimeElapsedColumn(),
-                console=console,
-                transient=False,
-                refresh_per_second=10
-            ) as progress:
-                
-                # Create main collaborative task
-                collab_task = progress.add_task("🔄 Synchronizing models for parallel analysis...", total=100)
-                
-                # Simulate collaborative setup
-                progress.update(collab_task, advance=10, description="🔗 Establishing model connections...")
-                time.sleep(0.2)
-                progress.update(collab_task, advance=20, description="📊 Preparing parallel analysis framework...")
-                time.sleep(0.2)
-                progress.update(collab_task, advance=30, description="🚀 Initiating simultaneous model queries...")
-                time.sleep(0.2)
-                
-                # Get responses from all models
-                initial_responses = {}
-                response_times = {}
-                
-                def get_model_response(provider_info):
-                    """Get response from a single model with progress tracking"""
-                    provider, api_key = provider_info
-                    start_time = time.time()
-                    theme = model_themes.get(provider, {"style": "bold cyan", "emoji": "🤖", "name": "Model"})
-                    
-                    try:
-                        # Create individual model progress with enhanced effects
-                        model_color = theme.get('color', 'bright_cyan')
-                        model_emoji = theme.get('emoji', '🤖')
-                        model_name = theme.get('name', 'Model')
-                        
-                        # Create animated progress task with model-specific styling
-                        model_task = progress.add_task(
-                            f"[{theme['style']}]{model_emoji} {model_name} initializing...", 
-                            total=100,
-                            style=Style(color=model_color, bold=True)
-                        )
-                        
-                        # Stage 1: Initialization (0-20%)
-                        progress.update(model_task, advance=5, description=f"[{theme['style']}]{model_emoji} {model_name} 🔌 connecting...")
-                        time.sleep(0.05)
-                        progress.update(model_task, advance=10, description=f"[{theme['style']}]{model_emoji} {model_name} 🌐 establishing link...")
-                        time.sleep(0.05)
-                        progress.update(model_task, advance=5, description=f"[{theme['style']}]{model_emoji} {model_name} ✨ link established!")
-                        time.sleep(0.05)
-                        
-                        # Stage 2: Processing (20-80%)
-                        progress.update(model_task, advance=20, description=f"[{theme['style']}]{model_emoji} {model_name} 🧠 analyzing query...")
-                        time.sleep(0.1)
-                        
-                        if provider == Provider.LLAMA:
-                            progress.update(model_task, advance=20, description=f"[{theme['style']}]{model_emoji} {model_name} 🦙 processing locally...")
-                            response = self.call_llama_api(self.SYSTEM_PROMPT, user_message, api_key)
-                        elif provider == Provider.OPENAI:
-                            progress.update(model_task, advance=20, description=f"[{theme['style']}]{model_emoji} {model_name} 🤖 GPT thinking...")
-                            response = self.call_openai_api(self.SYSTEM_PROMPT, user_message, api_key)
-                        elif provider == Provider.GEMINI:
-                            progress.update(model_task, advance=20, description=f"[{theme['style']}]{model_emoji} {model_name} 🌟 Gemini analyzing...")
-                            response = self.call_gemini_api(self.SYSTEM_PROMPT, user_message, api_key)
-                        elif provider == Provider.MISTRAL:
-                            progress.update(model_task, advance=20, description=f"[{theme['style']}]{model_emoji} {model_name} 🔥 Mistral processing...")
-                            response = self.call_mistral_api(self.SYSTEM_PROMPT, user_message, api_key)
-                        
-                        # Stage 3: Finalization (80-100%)
-                        progress.update(model_task, advance=10, description=f"[{theme['style']}]{model_emoji} {model_name} ⚡ finalizing response...")
-                        time.sleep(0.05)
-                        progress.update(model_task, advance=10, description=f"[{theme['style']}✅ {model_name} completed!", style=Style(color=model_color, bold=True, blink=True))
-                        
-                        response_time = time.time() - start_time
-                        return provider, response, response_time
-                        
-                    except Exception as e:
-                        model_color = theme.get('color', 'bright_red')
-                        progress.update(model_task, completed=100, description=f"[bold red]❌ {model_name} failed!", style=Style(color=model_color, bold=True, dim=True))
-                        return provider, f"Error: {str(e)}", time.time() - start_time
-                
-                # Execute parallel model responses
-                from concurrent.futures import ThreadPoolExecutor, as_completed
-                
-                with ThreadPoolExecutor(max_workers=len(available_providers)) as executor:
-                    # Submit all model tasks
-                    future_to_provider = {
-                        executor.submit(get_model_response, provider_info): provider_info[0]
-                        for provider_info in available_providers
-                    }
-                    
-                    # Track progress as models complete
-                    completed_models = 0
-                    total_models = len(available_providers)
-                    
-                    for future in as_completed(future_to_provider):
-                        provider, response, resp_time = future.result()
-                        initial_responses[provider] = response
-                        response_times[provider] = resp_time
-                        completed_models += 1
-                        
-                        # Update collaborative progress
-                        progress_percentage = 30 + (completed_models * 50 // total_models)
-                        progress.update(collab_task, completed=progress_percentage, 
-                                      description=f"📊 {completed_models}/{total_models} models completed analysis...")
+                    # Update collaborative progress
+                    progress_percentage = 30 + (completed_models * 50 // total_models)
+                    collab_bar.update(progress_percentage, f"{completed_models}/{total_models} models completed analysis...")
                 
                 # Complete collaborative analysis
-                progress.update(collab_task, completed=100, description="✅ Collaborative analysis complete!")
+                collab_bar.finish("Collaborative analysis complete!")
                 time.sleep(0.5)
-                
-        else:
-            # Fallback without Rich progress
-            print(f"\n{self._colorize('📊 Phase 1: Parallel Analysis', Fore.YELLOW)}")
-            print("-" * 40)
-            
-            initial_responses = {}
-            response_times = {}
-            
-            def get_model_response(provider_info):
-                """Get response from a single model"""
-                provider, api_key = provider_info
-                start_time = time.time()
-                
-                try:
-                    if provider == Provider.LLAMA:
-                        response = self.call_llama_api(self.SYSTEM_PROMPT, user_message, api_key)
-                    elif provider == Provider.OPENAI:
-                        response = self.call_openai_api(self.SYSTEM_PROMPT, user_message, api_key)
-                    elif provider == Provider.GEMINI:
-                        response = self.call_gemini_api(self.SYSTEM_PROMPT, user_message, api_key)
-                    elif provider == Provider.MISTRAL:
-                        response = self.call_mistral_api(self.SYSTEM_PROMPT, user_message, api_key)
-                    
-                    response_time = time.time() - start_time
-                    return provider, response, response_time
-                    
-                except Exception as e:
-                    return provider, f"Error: {str(e)}", time.time() - start_time
-            
-            # Execute sequentially without Rich
-            for provider_info in available_providers:
-                provider, response, resp_time = get_model_response(provider_info)
-                initial_responses[provider] = response
-                response_times[provider] = resp_time
         
         # Continue with response synthesis (rest of the function remains the same)
         # ... (existing code for response synthesis)
