@@ -2338,41 +2338,58 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             time.sleep(0.3)
         
         if COLORAMA_AVAILABLE:
-            # Display the ASCII art banner with perfect alignment
-            border = f"{Fore.RED}╔{'═'*78}╗\n"
-            line1 = f"{Fore.RED}║ {ColoramaStyle.BRIGHT}{Fore.YELLOW}██╗  ██╗ █████╗  ██████╗██╗  ██╗    ████████╗██╗  ██╗███████╗ {Fore.RED}║\n"
-            line2 = f"{Fore.RED}║ {Fore.YELLOW}██║  ██║██╔══██╗██╔════╝██║ ██╔╝    ╚══██╔══╝██║  ██║██╔════╝ {Fore.RED}║\n"
-            line3 = f"{Fore.RED}║ {Fore.YELLOW}███████║███████║██║     █████╔╝        ██║   ███████║█████╗   {Fore.RED}║\n"
-            line4 = f"{Fore.RED}║ {Fore.YELLOW}██╔══██║██╔══██║██║     ██╔═██╗        ██║   ██╔══██║██╔══╝   {Fore.RED}║\n"
-            line5 = f"{Fore.RED}║ {Fore.YELLOW}██║  ██║██║  ██║╚██████╗██║  ██╗       ██║   ██║  ██║███████╗ {Fore.RED}║\n"
-            line6 = f"{Fore.RED}║ {Fore.YELLOW}╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝       ╚═╝   ╚═╝  ╚═╝╚══════╝ {Fore.RED}║\n"
-            line7 = f"{Fore.RED}║ {Fore.CYAN}{' '*20}██╗    ██╗ ██████╗ ██████╗ ██╗     ██████╗  {Fore.RED}║\n"
-            line8 = f"{Fore.RED}║ {Fore.CYAN}{' '*20}██║    ██║██╔═══██╗██╔══██╗██║     ██╔══██╗ {Fore.RED}║\n"
-            line9 = f"{Fore.RED}║ {Fore.CYAN}{' '*20}██║ █╗ ██║██║   ██║██████╔╝██║     ██║  ██║ {Fore.RED}║\n"
-            line10 = f"{Fore.RED}║ {Fore.CYAN}{' '*20}██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║ {Fore.RED}║\n"
-            line11 = f"{Fore.RED}║ {Fore.CYAN}{' '*20}╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝ {Fore.RED}║\n"
-            line12 = f"{Fore.RED}║ {Fore.CYAN}{' '*20} ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝  {Fore.RED}║\n"
-            line13 = f"{Fore.RED}║ {ColoramaStyle.BRIGHT}{Fore.MAGENTA}{' '*17}🔥🔥🔥 HACK THE WORLD 🔥🔥🔥{Fore.RED}{' '*17}║\n"
-            banner = border + line1 + line2 + line3 + line4 + line5 + line6 + line7 + line8 + line9 + line10 + line11 + line12 + line13 + border
+            # Enhanced banner with improved spacing and decorative box
+            banner_lines = [
+                f"{Fore.RED}╔{'═'*78}╗",
+                f"{Fore.RED}║{' '*78}║",
+                f"{Fore.RED}║ {ColoramaStyle.BRIGHT}{Fore.YELLOW}██╗  ██╗ █████╗  ██████╗██╗  ██╗    ████████╗██╗  ██╗███████╗ {Fore.RED}║",
+                f"{Fore.RED}║ {ColoramaStyle.BRIGHT}{Fore.YELLOW}██║  ██║██╔══██╗██╔════╝██║ ██╔╝    ╚══██╔══╝██║  ██║██╔════╝ {Fore.RED}║",
+                f"{Fore.RED}║ {ColoramaStyle.BRIGHT}{Fore.YELLOW}███████║███████║██║     █████╔╝        ██║   ███████║█████╗   {Fore.RED}║",
+                f"{Fore.RED}║ {ColoramaStyle.BRIGHT}{Fore.YELLOW}██╔══██║██╔══██║██║     ██╔═██╗        ██║   ██╔══██║██╔══╝   {Fore.RED}║",
+                f"{Fore.RED}║ {ColoramaStyle.BRIGHT}{Fore.YELLOW}██║  ██║██║  ██║╚██████╗██║  ██╗       ██║   ██║  ██║███████╗ {Fore.RED}║",
+                f"{Fore.RED}║ {ColoramaStyle.BRIGHT}{Fore.YELLOW}╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝       ╚═╝   ╚═╝  ╚═╝╚══════╝ {Fore.RED}║",
+                f"{Fore.RED}║{' '*78}║",
+                f"{Fore.RED}║ {Fore.CYAN}{' '*20}██╗    ██╗ ██████╗ ██████╗ ██╗     ██████╗  {Fore.RED}║",
+                f"{Fore.RED}║ {Fore.CYAN}{' '*20}██║    ██║██╔═══██╗██╔══██╗██║     ██╔══██╗ {Fore.RED}║",
+                f"{Fore.RED}║ {Fore.CYAN}{' '*20}██║ █╗ ██║██║   ██║██████╔╝██║     ██║  ██║ {Fore.RED}║",
+                f"{Fore.RED}║ {Fore.CYAN}{' '*20}██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║ {Fore.RED}║",
+                f"{Fore.RED}║ {Fore.CYAN}{' '*20}╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝ {Fore.RED}║",
+                f"{Fore.RED}║ {Fore.CYAN}{' '*20} ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝  {Fore.RED}║",
+                f"{Fore.RED}║{' '*78}║",
+                f"{Fore.RED}║{' '*21}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓{Fore.RED}{' '*22}║",
+                f"{Fore.RED}║{' '*21}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}┃  🔥🔥🔥 HACK THE WORLD 🔥🔥🔥  ┃{Fore.RED}{' '*22}║",
+                f"{Fore.RED}║{' '*21}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛{Fore.RED}{' '*22}║",
+                f"{Fore.RED}║{' '*78}║",
+                f"{Fore.RED}╚{'═'*78}╝"
+            ]
         else:
-            # Display the ASCII art banner with perfect alignment (fallback)
-            border = "╔" + "═"*78 + "╗\n"
-            line1 = "║ ██╗  ██╗ █████╗  ██████╗██╗  ██╗    ████████╗██╗  ██╗███████╗ ║\n"
-            line2 = "║ ██║  ██║██╔══██╗██╔════╝██║ ██╔╝    ╚══██╔══╝██║  ██║██╔════╝ ║\n"
-            line3 = "║ ███████║███████║██║     █████╔╝        ██║   ███████║█████╗   ║\n"
-            line4 = "║ ██╔══██║██╔══██║██║     ██╔═██╗        ██║   ██╔══██║██╔══╝   ║\n"
-            line5 = "║ ██║  ██║██║  ██║╚██████╗██║  ██╗       ██║   ██║  ██║███████╗ ║\n"
-            line6 = "║ ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝       ╚═╝   ╚═╝  ╚═╝╚══════╝ ║\n"
-            line7 = "║                     ██╗    ██╗ ██████╗ ██████╗ ██╗     ██████╗               ║\n"
-            line8 = "║                     ██║    ██║██╔═══██╗██╔══██╗██║     ██╔══██╗              ║\n"
-            line9 = "║                     ██║ █╗ ██║██║   ██║██████╔╝██║     ██║  ██║              ║\n"
-            line10 = "║                     ██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║              ║\n"
-            line11 = "║                     ╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝              ║\n"
-            line12 = "║                      ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝               ║\n"
-            line13 = "║                   🔥🔥🔥 HACK THE WORLD 🔥🔥🔥                   ║\n"
-            banner = border + line1 + line2 + line3 + line4 + line5 + line6 + line7 + line8 + line9 + line10 + line11 + line12 + line13 + border
+            # Enhanced banner fallback without colorama
+            banner_lines = [
+                "╔" + "═"*78 + "╗",
+                "║" + " "*78 + "║",
+                "║ ██╗  ██╗ █████╗  ██████╗██╗  ██╗    ████████╗██╗  ██╗███████╗ ║",
+                "║ ██║  ██║██╔══██╗██╔════╝██║ ██╔╝    ╚══██╔══╝██║  ██║██╔════╝ ║",
+                "║ ███████║███████║██║     █████╔╝        ██║   ███████║█████╗   ║",
+                "║ ██╔══██║██╔══██║██║     ██╔═██╗        ██║   ██╔══██║██╔══╝   ║",
+                "║ ██║  ██║██║  ██║╚██████╗██║  ██╗       ██║   ██║  ██║███████╗ ║",
+                "║ ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝       ╚═╝   ╚═╝  ╚═╝╚══════╝ ║",
+                "║" + " "*78 + "║",
+                "║                     ██╗    ██╗ ██████╗ ██████╗ ██╗     ██████╗  ║",
+                "║                     ██║    ██║██╔═══██╗██╔══██╗██║     ██╔══██╗ ║",
+                "║                     ██║ █╗ ██║██║   ██║██████╔╝██║     ██║  ██║ ║",
+                "║                     ██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║ ║",
+                "║                     ╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝ ║",
+                "║                      ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝  ║",
+                "║" + " "*78 + "║",
+                "║                     ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓        ║",
+                "║                     ┃  🔥🔥🔥 HACK THE WORLD 🔥🔥🔥  ┃        ║",
+                "║                     ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛        ║",
+                "║" + " "*78 + "║",
+                "╚" + "═"*78 + "╝"
+            ]
         
-        print(banner)
+        for line in banner_lines:
+            print(line)
         
         if COLORAMA_AVAILABLE:
             # Security tools overview
