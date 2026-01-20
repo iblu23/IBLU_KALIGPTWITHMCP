@@ -4411,12 +4411,18 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                 Provider.GEMINI_CLI: Fore.LIGHTBLUE_EX,
                 Provider.HUGGINGFACE: Fore.LIGHTCYAN_EX
             }
-            provider_color = provider_colors.get(self.current_ai_provider, Fore.LIGHTWHITE_EX)
+            provider_color = provider_colors.get(self.current_ai_provider, Fore.LIGHTWHITE_EX) if self.current_ai_provider else Fore.LIGHTWHITE_EX
             
             # Status panel
             print(f"{Fore.LIGHTRED_EX}╔{'═'*header_width}╗{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}🔧 CURRENT STATUS 🔧{ColoramaStyle.RESET_ALL} {Fore.LIGHTRED_EX}{' ' * 47}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}  {Fore.YELLOW}🔑{ColoramaStyle.RESET_ALL} Current AI Provider: {provider_color}{ColoramaStyle.BRIGHT}{self.current_ai_provider.value.title()}{ColoramaStyle.RESET_ALL}{' ' * (header_width - len(self.current_ai_provider.value.title()) - 40)}{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+            
+            # Safe display of current provider
+            provider_display = "None"
+            if self.current_ai_provider:
+                provider_display = self.current_ai_provider.value.title()
+            
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}  {Fore.YELLOW}🔑{ColoramaStyle.RESET_ALL} Current AI Provider: {provider_color}{ColoramaStyle.BRIGHT}{provider_display}{ColoramaStyle.RESET_ALL}{' ' * (header_width - len(provider_display) - 40)}{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}  {Fore.YELLOW}🔓{ColoramaStyle.RESET_ALL} Rephrasing Mode: {Fore.LIGHTGREEN_EX if self.rephrasing_mode else Fore.LIGHTRED_EX}{'✅ Enabled' if self.rephrasing_mode else '❌ Disabled'}{ColoramaStyle.RESET_ALL}{' ' * (header_width - 30)}{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.LIGHTRED_EX}╚{'═'*header_width}╝{ColoramaStyle.RESET_ALL}\n")
             
