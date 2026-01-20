@@ -5,6 +5,7 @@ colorama>=0.4.0                  # 🎨 Terminal colors and formatting
 requests>=2.31.0                 # 🌐 HTTP requests library
 prompt_toolkit>=3.0.47           # ⌨️ Rich CLI input and menus
 rich>=13.7.0                     # 🎨 Rich terminal formatting and tables
+alive-progress>=3.3.0            # ⚡ Beautiful progress bars and animations
 
 # Built-in modules (no installation needed):
 # - asyncio, pathlib, dataclasses, time, enum, sys, os, json, subprocess

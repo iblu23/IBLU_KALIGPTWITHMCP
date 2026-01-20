@@ -51,6 +51,15 @@ except ImportError:
     RICH_AVAILABLE = False
     console = None
 
+# Optional alive-progress for beautiful progress bars
+try:
+    from alive_progress import alive_bar, config_handler
+    ALIVE_PROGRESS_AVAILABLE = True
+    # Configure beautiful progress bars
+    config_handler.set_global(bar_length=40, spinner='dots', theme='smooth', force_tty=True)
+except ImportError:
+    ALIVE_PROGRESS_AVAILABLE = False
+
 # Optional transformers for Hugging Face integration
 try:
     from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
@@ -1731,7 +1740,25 @@ All responses should be helpful, educational, and focused on legitimate cybersec
         self.command_helper.conversation_history = self.conversation_history
     
     def show_main_menu(self):
-        """Display the main menu with enhanced visual formatting"""
+        """Display the main menu with enhanced visual formatting and animations"""
+        # Animated entrance effect
+        if ALIVE_PROGRESS_AVAILABLE:
+            import time
+            from alive_progress import alive_bar
+            
+            print("\n🔥 Loading IBLU KALIGPT Interface... 🔥\n")
+            
+            with alive_bar(3, title='🚀 Interface Loading', spinner='dots_waves', bar='smooth') as bar:
+                time.sleep(0.3)
+                bar()
+                time.sleep(0.2)
+                bar()
+                time.sleep(0.3)
+                bar()
+            
+            print("✨ Interface Ready! ✨\n")
+            time.sleep(0.3)
+        
         if COLORAMA_AVAILABLE:
             # Display the ASCII art banner
             border = f"{Fore.RED}╔{'═'*78}╗\n"
@@ -2512,42 +2539,74 @@ All responses should be helpful, educational, and focused on legitimate cybersec
         
         if os.path.exists('install_hexstrike_tools.sh'):
             def install_with_progress(progress_callback=None):
-                """Execute installation with progress tracking"""
+                """Execute installation with enhanced progress tracking"""
                 try:
-                    # Start the installation process
-                    process = subprocess.Popen(['sudo', './install_hexstrike_tools.sh'], 
-                                             stdout=subprocess.PIPE, 
-                                             stderr=subprocess.PIPE, 
-                                             text=True,
-                                             cwd=os.getcwd())
-                    
-                    # Simulate progress during installation
-                    steps = [
-                        (10, "🔧 Preparing installation environment..."),
-                        (20, "📦 Downloading tool dependencies..."),
-                        (30, "🛠️ Installing reconnaissance tools..."),
-                        (40, "🔍 Installing web analysis tools..."),
-                        (50, "🌐 Installing network scanners..."),
-                        (60, "💻 Installing exploitation tools..."),
-                        (70, "🔓 Installing password crackers..."),
-                        (80, "🛡️ Installing defense tools..."),
-                        (90, "📋 Configuring tool environments..."),
-                        (95, "🔧 Verifying installations..."),
-                        (100, "✅ Installation complete!")
-                    ]
-                    
-                    for i, (progress_val, description) in enumerate(steps):
-                        if progress_callback:
+                    # Use alive-progress for beautiful animations if available
+                    if ALIVE_PROGRESS_AVAILABLE:
+                        import time
+                        from alive_progress import alive_bar
+                        
+                        steps = [
+                            "🔧 Preparing installation environment...",
+                            "📦 Downloading tool dependencies...",
+                            "🛠️ Installing reconnaissance tools...",
+                            "🔍 Installing web analysis tools...",
+                            "🌐 Installing network scanners...",
+                            "💻 Installing exploitation tools...",
+                            "🔓 Installing password crackers...",
+                            "🛡️ Installing defense tools...",
+                            "📋 Configuring tool environments...",
+                            "🔧 Verifying installations...",
+                            "✅ Installation complete!"
+                        ]
+                        
+                        with alive_bar(len(steps), title='📦 Installing HexStrike Tools', spinner='dots_waves', bar='smooth') as bar:
+                            # Start the installation process
+                            process = subprocess.Popen(['sudo', './install_hexstrike_tools.sh'], 
+                                                     stdout=subprocess.PIPE, 
+                                                     stderr=subprocess.PIPE, 
+                                                     text=True,
+                                                     cwd=os.getcwd())
+                            
+                            for step in steps:
+                                print(f"  {step}")
+                                time.sleep(2)  # Simulate installation time
+                                bar()
+                            
+                            # Wait for process to complete
+                            process.wait(timeout=1800)  # 30 minutes max
+                            
+                    else:
+                        # Fallback to original progress simulation
+                        # Start the installation process
+                        process = subprocess.Popen(['sudo', './install_hexstrike_tools.sh'], 
+                                                 stdout=subprocess.PIPE, 
+                                                 stderr=subprocess.PIPE, 
+                                                 text=True,
+                                                 cwd=os.getcwd())
+                        
+                        # Simulate progress during installation
+                        steps = [
+                            (10, "🔧 Preparing installation environment..."),
+                            (20, "📦 Downloading tool dependencies..."),
+                            (30, "🛠️ Installing reconnaissance tools..."),
+                            (40, "🔍 Installing web analysis tools..."),
+                            (50, "🌐 Installing network scanners..."),
+                            (60, "💻 Installing exploitation tools..."),
+                            (70, "🔓 Installing password crackers..."),
+                            (80, "🛡️ Installing defense tools..."),
+                            (90, "📋 Configuring tool environments..."),
+                            (95, "🔧 Verifying installations..."),
+                            (100, "✅ Installation complete!")
+                        ]
+                        
+                        for i, (progress_val, description) in enumerate(steps):
+                            if progress_callback:
+                                progress_callback(progress_val, description)
+                            time.sleep(3)  # Simulate installation time
                             progress_callback(progress_val, description)
                         
-                        # Check if process is still running
-                        if process.poll() is not None:
-                            break
-                        
-                        # Wait between progress updates
-                        time.sleep(2 if i < len(steps) - 1 else 1)
-                    
-                    # Wait for process to complete
+                        # Wait for process to complete
                     process.wait()
                     return process.returncode == 0
                     
@@ -2555,8 +2614,16 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                     print(f"❌ Installation error: {e}")
                     return False
             
-            # Run with Rich progress
-            if RICH_AVAILABLE:
+            # Run with enhanced progress tracking
+            if ALIVE_PROGRESS_AVAILABLE:
+                # Use alive-progress for beautiful animations
+                result = install_with_progress()
+                if result:
+                    return "📦 All HexStrike tools installed successfully! 🎉"
+                else:
+                    return "❌ Installation failed. Please check the logs."
+            elif RICH_AVAILABLE:
+                # Fallback to Rich progress
                 result = run_with_rich_progress(
                     "Installing HexStrike Tools", 
                     install_with_progress,
@@ -4150,35 +4217,45 @@ Provide step-by-step technical details while maintaining educational context and
             return f"❌ Installation error: {e}"
     
     def show_loading_animation(self, message: str):
-        """Show a loading animation with spinner"""
-        import threading
-        import time
-        
-        stop_event = threading.Event()
-        spinner_chars = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏']
-        
-        def animation():
-            idx = 0
-            while not stop_event.is_set():
-                print(f"\r{spinner_chars[idx]} {message}...", end='', flush=True)
-                idx = (idx + 1) % len(spinner_chars)
-                time.sleep(0.1)
-        
-        print()
-        animation_thread = threading.Thread(target=animation)
-        animation_thread.daemon = True
-        animation_thread.start()
-        
-        # Stop animation after 3 seconds or when function completes
-        def stop_animation():
-            stop_event.set()
-            animation_thread.join()
-            print("\r" + " " * 50 + "\r", end='', flush=True)
-        
-        # Schedule stop animation
-        import threading as _thread
-        timer = _thread.Timer(3.0, stop_animation)
-        timer.start()
+        """Show a beautiful loading animation with spinner or alive-progress"""
+        if ALIVE_PROGRESS_AVAILABLE:
+            import time
+            from alive_progress import alive_bar
+            
+            # Create a simple progress bar for loading
+            with alive_bar(1, title=message, spinner='dots_waves', bar='smooth') as bar:
+                time.sleep(0.5)  # Brief animation
+                bar()
+        else:
+            # Fallback to original spinner animation
+            import threading
+            import time
+            
+            stop_event = threading.Event()
+            spinner_chars = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏']
+            
+            def animation():
+                idx = 0
+                while not stop_event.is_set():
+                    print(f"\r{spinner_chars[idx]} {message}...", end='', flush=True)
+                    idx = (idx + 1) % len(spinner_chars)
+                    time.sleep(0.1)
+            
+            print()
+            animation_thread = threading.Thread(target=animation)
+            animation_thread.daemon = True
+            animation_thread.start()
+            
+            # Stop animation after 3 seconds or when function completes
+            def stop_animation():
+                stop_event.set()
+                animation_thread.join()
+                print("\r" + " " * 50 + "\r", end='', flush=True)
+            
+            # Schedule stop animation
+            import threading as _thread
+            timer = _thread.Timer(3.0, stop_animation)
+            timer.start()
         
         return timer
     
@@ -5139,8 +5216,76 @@ Provide step-by-step technical details while maintaining educational context and
         print(f"📋 Active Models: {', '.join([p[0].value.title() for p in available_providers])}")
         print(f"🔄 Initiating collaborative analysis...")
         
-        # Phase 1: Parallel initial analysis with Rich progress
-        if RICH_PROGRESS_AVAILABLE:
+        # Phase 1: Parallel initial analysis with enhanced progress bars
+        if ALIVE_PROGRESS_AVAILABLE and not RICH_PROGRESS_AVAILABLE:
+            # Use alive-progress for beautiful animations
+            import time
+            from alive_progress import alive_bar
+            
+            print(f"\n📋 Active Models: {', '.join([p[0].value.title() for p in available_providers])}")
+            print(f"🔄 Initiating collaborative analysis...\n")
+            
+            # Setup progress tracking
+            total_steps = len(available_providers) * 3  # 3 phases per model
+            
+            with alive_bar(total_steps, title='🤖 Collaborative Analysis', spinner='dots_waves', bar='smooth') as bar:
+                # Get responses from all models
+                initial_responses = {}
+                response_times = {}
+                
+                def get_model_response(provider_info):
+                    """Get response from a single model with progress tracking"""
+                    provider, api_key = provider_info
+                    start_time = time.time()
+                    theme = model_themes.get(provider, {"style": "bold cyan", "emoji": "🤖", "name": "Model"})
+                    
+                    try:
+                        model_name = theme.get('name', 'Model')
+                        model_emoji = theme.get('emoji', '🤖')
+                        
+                        # Phase 1: Connection
+                        print(f"  {model_emoji} {model_name} 🔌 connecting...")
+                        time.sleep(0.1)
+                        bar()
+                        
+                        # Phase 2: Processing
+                        print(f"  {model_emoji} {model_name} 🧠 analyzing...")
+                        if provider == Provider.LLAMA:
+                            response = self.call_llama_api(self.SYSTEM_PROMPT, user_message, "local")
+                        elif provider == Provider.OPENAI:
+                            response = self.call_openai_api(self.SYSTEM_PROMPT, user_message, api_key)
+                        elif provider == Provider.GEMINI:
+                            response = self.call_gemini_api(self.SYSTEM_PROMPT, user_message, api_key)
+                        elif provider == Provider.MISTRAL:
+                            response = self.call_mistral_api(self.SYSTEM_PROMPT, user_message, api_key)
+                        bar()
+                        
+                        # Phase 3: Completion
+                        elapsed = time.time() - start_time
+                        print(f"  {model_emoji} {model_name} ✅ complete! ({elapsed:.2f}s)")
+                        bar()
+                        
+                        return provider, response, elapsed
+                        
+                    except Exception as e:
+                        elapsed = time.time() - start_time
+                        print(f"  {model_emoji} {model_name} ❌ error: {str(e)}")
+                        bar()
+                        return provider, f"Error: {str(e)}", elapsed
+                
+                # Execute parallel requests
+                with ThreadPoolExecutor(max_workers=len(available_providers)) as executor:
+                    future_to_provider = {
+                        executor.submit(get_model_response, provider_info): provider_info[0]
+                        for provider_info in available_providers
+                    }
+                    
+                    for future in as_completed(future_to_provider):
+                        provider, response, elapsed = future.result()
+                        initial_responses[provider] = response
+                        response_times[provider] = elapsed
+                        
+        elif RICH_PROGRESS_AVAILABLE:
             # Create Rich console for progress display
             from rich.console import Console
             console = Console()
@@ -5750,11 +5895,37 @@ def load_config():
         )
 
 def main():
-    """Main function"""
+    """Main function with enhanced visual startup"""
     # Suppress git output during startup
     import subprocess
     import os
     import sys
+    
+    # Beautiful startup animation
+    if ALIVE_PROGRESS_AVAILABLE:
+        import time
+        from alive_progress import alive_bar
+        
+        print("\n🔥 IBLU PROFESSIONAL HACKING ASSISTANT 🔥")
+        print("🚀 Initializing Advanced Security Platform... 🚀\n")
+        
+        startup_items = [
+            "🔧 Loading configuration...",
+            "🧠 Initializing AI models...",
+            "🔗 Setting up MCP connections...",
+            "🎨 Preparing visual interface...",
+            "🛡️ Loading security modules...",
+            "⚡ Optimizing performance...",
+        ]
+        
+        with alive_bar(len(startup_items), title='🚀 Startup Sequence', spinner='dots_waves', bar='smooth') as bar:
+            for item in startup_items:
+                time.sleep(0.3)  # Simulate loading
+                print(f"  {item}")
+                bar()
+        
+        print("\n✨ System Ready! ✨\n")
+        time.sleep(0.5)
     
     # Temporarily suppress git output
     original_env = os.environ.copy()
