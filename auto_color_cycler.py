@@ -22,7 +22,8 @@ class AutoColorCycler:
     def __init__(self):
         self.color_index = 0
         self.base_config = {
-            'bar_width': 100,
+            'bar_width': 60,  # Shorter but fatter
+            'bar_height': 3,  # 3 lines tall for fat appearance
             'particle_effects': True,
             'show_time_left': True,
             'interactive': True,

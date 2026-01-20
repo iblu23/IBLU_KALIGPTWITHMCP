@@ -3767,11 +3767,12 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                         
                         progress = create_hybrid_progress(
                             total=11,
-                            description="📦 Hybrid Installing HexStrike Tools",
+                            description="📦 Fat Bar Hybrid Installing HexStrike Tools",
                             theme=HybridProgressTheme.FIRE_PLASMA,
                             use_textual=True,
                             use_rich=True,
-                            bar_width=120,  # Bigger bars for installation
+                            bar_width=60,  # Shorter but fatter
+                            bar_height=4,   # 4 lines tall for installation
                             particle_effects=True,
                             show_time_left=True,
                             interactive=True,
@@ -7555,11 +7556,12 @@ Provide step-by-step technical details while maintaining educational context.
         if HYBRID_PROGRESS_AVAILABLE:
             progress = create_hybrid_progress(
                 total=5,
-                description="🐬 Hybrid Installing Mistral Dolphin",
+                description="🐬 Fat Bar Hybrid Installing Mistral Dolphin",
                 theme=HybridProgressTheme.OCEAN_WAVE,
                 use_textual=True,
                 use_rich=True,
-                bar_width=100,  # Bigger bars for model installation
+                bar_width=60,  # Shorter but fatter
+                bar_height=3,   # 3 lines tall for model installation
                 particle_effects=True,
                 show_time_left=True,
                 interactive=True,
@@ -9560,11 +9562,12 @@ def main():
         
         progress = create_hybrid_progress(
             total=6,
-            description="🚀 Initializing TrueColor Hybrid IBLU KALIGPT...",
+            description="🚀 Initializing Fat Bar Hybrid IBLU KALIGPT...",
             theme=HybridProgressTheme.CYBERPUNK_FUSION,
             use_textual=True,
             use_rich=True,
-            bar_width=100,  # Even bigger bars for startup
+            bar_width=60,  # Shorter but fatter
+            bar_height=3,   # 3 lines tall for fat appearance
             particle_effects=True,
             show_time_left=True,
             interactive=True,

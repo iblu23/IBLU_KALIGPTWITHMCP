@@ -242,7 +242,8 @@ class HybridProgressConfig:
     show_percentage: bool = True
     show_time: bool = True
     show_spinner: bool = True
-    bar_width: int = 80  # Increased from 40 for bigger bars
+    bar_width: int = 60  # Reduced from 80 for shorter but fatter bars
+    bar_height: int = 3  # New: fatter/taller bars
     animated: bool = True
     use_textual: bool = True
     use_rich: bool = True
@@ -287,7 +288,7 @@ class HybridRichProgressBar:
             style=text_style
         )
         
-        # Enhanced bar with truecolor and gradient effects
+        # Enhanced bar with truecolor and gradient effects - FATTER VERSION
         bar_color = theme['rich_bar_color']
         if theme.get('truecolor', False) and self.config.glow_effect:
             # Create gradient effect for truecolor themes
@@ -302,13 +303,36 @@ class HybridRichProgressBar:
             finished_style = Style(color=bar_color, bold=True, reverse=True)
             pulse_style = Style(color=bar_color, dim=True, italic=True)
         
-        bar = BarColumn(
-            bar_width=self.config.bar_width,  # Bigger bars
-            style=bar_style,
-            complete_style=complete_style,
-            finished_style=finished_style,
-            pulse_style=pulse_style
-        )
+        # Create fatter progress bar with multiple lines if height > 1
+        if self.config.bar_height > 1:
+            # Multi-line fat progress bar
+            class FatBarColumn(BarColumn):
+                def __init__(self, bar_width: int, height: int, **kwargs):
+                    super().__init__(bar_width=bar_width, **kwargs)
+                    self.height = height
+                
+                def __rich_console__(self, console, options):
+                    # Render multiple lines for fat effect
+                    for _ in range(self.height):
+                        yield super().__rich_console__(console, options)
+            
+            bar = FatBarColumn(
+                bar_width=self.config.bar_width,  # Shorter but fatter
+                height=self.config.bar_height,
+                style=bar_style,
+                complete_style=complete_style,
+                finished_style=finished_style,
+                pulse_style=pulse_style
+            )
+        else:
+            # Standard single-line bar
+            bar = BarColumn(
+                bar_width=self.config.bar_width,  # Shorter but fatter
+                style=bar_style,
+                complete_style=complete_style,
+                finished_style=finished_style,
+                pulse_style=pulse_style
+            )
         
         # Enhanced percentage with truecolor
         percentage_style = Style(color=theme['rich_text_color'], bold=True)
@@ -485,12 +509,17 @@ class HybridTextualProgressBar(Widget):
         
         yield Static(f"[{header_style}] {self.config.description} [/{header_style}]", id="description")
         
-        # Enhanced progress bar with bigger size
+        # Enhanced progress bar with bigger size and fat height
+        progress_bar_style = f"bold {theme['textual_style']}"
+        if self.config.bar_height > 1:
+            # Create fat progress bar with increased height
+            progress_bar_style += f" height {self.config.bar_height}"
+        
         yield ProgressBar(
             total=self.config.total, 
             show_percentage=self.config.show_percentage,
             id="progress",
-            style=f"bold {theme['textual_style']}"
+            style=progress_bar_style
         )
         
         # Enhanced time tracking section
@@ -836,11 +865,11 @@ def create_hybrid_progress(total: int = 100, description: str = "Processing...",
                          theme: HybridProgressTheme = HybridProgressTheme.CYBERPUNK_FUSION,
                          use_textual: bool = True, use_rich: bool = True,
                          show_percentage: bool = True, show_time: bool = True, 
-                         show_spinner: bool = True, bar_width: int = 80,
+                         show_spinner: bool = True, bar_width: int = 60, bar_height: int = 3,
                          particle_effects: bool = True, show_time_left: bool = True,
                          interactive: bool = True, glow_effect: bool = True,
                          pulse_animation: bool = True) -> HybridStunningProgressBar:
-    """Create an enhanced hybrid Rich+Textual progress bar"""
+    """Create an enhanced hybrid Rich+Textual progress bar with fat bars"""
     config = HybridProgressConfig(
         total=total, 
         description=description, 
@@ -851,6 +880,7 @@ def create_hybrid_progress(total: int = 100, description: str = "Processing...",
         show_time=show_time,
         show_spinner=show_spinner,
         bar_width=bar_width,
+        bar_height=bar_height,
         particle_effects=particle_effects,
         show_time_left=show_time_left,
         interactive=interactive,
