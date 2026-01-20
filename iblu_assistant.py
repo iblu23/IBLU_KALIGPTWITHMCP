@@ -2470,7 +2470,7 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             time.sleep(0.3)
         
         if RICH_AVAILABLE:
-            console = Console(width=144)
+            console = Console(width=115)
             
             # Clean main banner with glitch effect only
             def clean_glitch(text, intensity=0.15):
@@ -2549,8 +2549,8 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                 time.sleep(0.5)
             
         else:
-            # Fallback banner without Rich - Screen Wide (144 chars)
-            w = 144
+            # Fallback banner without Rich - Screen Wide (115 chars)
+            w = 115
             pad = lambda s: "║" + s.ljust(w) + "║"
             
             # Display the main banner with glitch effect (fallback)
@@ -2601,7 +2601,7 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             
             if COLORAMA_AVAILABLE:
                 # Security tools overview - Single Panel Style
-                w = 144
+                w = 115
             
                 # Tool categories with enhanced formatting - Single Panel
                 color_map = {
@@ -2677,7 +2677,7 @@ All responses should be helpful, educational, and focused on legitimate cybersec
         
         # Menu options in single panel
         if COLORAMA_AVAILABLE:
-            w = 144
+            w = 115
             
             # Single continuous panel for main menu
             print(f"\n{Fore.LIGHTCYAN_EX}┌{'═'*w}┐{ColoramaStyle.RESET_ALL}")
@@ -3785,7 +3785,7 @@ All responses should be helpful, educational, and focused on legitimate cybersec
     def handle_configuration(self):
         """Handle configuration settings with colorful styling"""
         if COLORAMA_AVAILABLE:
-            w = 144
+            w = 115
             
             # Single continuous panel for configuration
             print(f"\n{Fore.LIGHTRED_EX}╔{'═'*w}╗{ColoramaStyle.RESET_ALL}")
@@ -3863,7 +3863,7 @@ All responses should be helpful, educational, and focused on legitimate cybersec
     def handle_ai_text_suggestions(self):
         """Handle AI Text Suggestions / Autocomplete with multiple approaches"""
         if COLORAMA_AVAILABLE:
-            w = 144
+            w = 115
             
             # Single continuous panel for AI suggestions
             print(f"\n{Fore.LIGHTMAGENTA_EX}╔{'═'*w}╗{ColoramaStyle.RESET_ALL}")
