@@ -1703,7 +1703,7 @@ class IBLUCommandHelper:
             basic_commands = ['/help', '/exit', '/clear', '/status', '/debug_uncensored', '/force_uncensored', '/restore_config', '/scan', '/payload', 
                             '/autopentest', '/mcp_connect', '/mcp_disconnect', 
                             '/openai', '/gemini', '/mistral', '/llama', '/huggingface', '/history', '/tools', '/install',
-                            '/hexstrike', '/pentest', '/llama_models', '/delete_llama', '/delete_tools', '/collaborative', '/install_models', '/install_llama', '/install_dolphin', '/install_mistral', '/install_gemma', '/hf_install', '/hf_models', '/hf_search']
+                            '/hexstrike', '/pentest', '/llama_models', '/delete_llama', '/delete_tools', '/collaborative', '/install_models', '/install_llama', '/install_dolphin', '/install_mistral', '/install_gemma', '/install_whiterabbit', '/hf_install', '/hf_models', '/hf_search']
             
             # Add HexStrike tool commands
             hexstrike_commands = [f"/{tool}" for tool in self.hexstrike_tools.keys()]
@@ -1901,6 +1901,7 @@ class IBLUCommandHelper:
   install_dolphin   - Install Dolphin 3.0 Llama 3.1 8B (uncensored model)
   install_mistral   - Install Mistral Dolphin model locally
   install_gemma     - Install Gemma-2-9B-IT-Abliterated (uncensored GGUF model)
+  install_whiterabbit - Install WhiteRabbitNeo Llama-3 8B v2.0 (uncensored)
   llama_models      - List and manage available Llama models
   delete_llama      - Delete a local Llama model
   install_models    - Install all local models
@@ -2300,6 +2301,7 @@ class IBLUCommandHelper:
             "install_dolphin": {"description": "Install Dolphin 3.0 Llama 3.1 8B (uncensored)", "usage": "install_dolphin"},
             "install_mistral": {"description": "Install Mistral Dolphin model locally", "usage": "install_mistral"},
             "install_gemma": {"description": "Install Gemma-2-9B-IT-Abliterated (uncensored GGUF)", "usage": "install_gemma"},
+            "install_whiterabbit": {"description": "Install WhiteRabbitNeo Llama-3 8B v2.0 (uncensored)", "usage": "install_whiterabbit"},
             "install_models": {"description": "Install all local models", "usage": "install_models"},
             "hf_install": {"description": "Install Hugging Face model", "usage": "hf_install <model_name>"},
             "hf_models": {"description": "List installed Hugging Face models", "usage": "hf_models"},
@@ -4954,6 +4956,8 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             return self.install_dolphin_llama_local()
         elif cmd == "install_gemma":
             return self.install_gemma_abliterated_local()
+        elif cmd == "install_whiterabbit":
+            return self.install_whiterabbit_neo_local()
         elif cmd == "hf_install":
             return self.install_huggingface_model()
         elif cmd == "hf_models":
@@ -7687,6 +7691,235 @@ Provide step-by-step technical details while maintaining educational context.
             print("  • Local inference (no internet required)")
             
             return f"✅ Gemma-2-9B-IT-Abliterated model installed and ready! ({file_size:.1f} GB)"
+            
+        except subprocess.TimeoutExpired:
+            return "❌ Installation timed out. Please check your internet connection."
+        except Exception as e:
+            return f"❌ Installation error: {e}"
+    
+    def install_whiterabbit_neo_local(self) -> str:
+        """Install WhiteRabbitNeo Llama-3 8B v2.0 model locally via Ollama"""
+        print(f"\n{self._colorize('🐰 Installing WhiteRabbitNeo Llama-3 8B v2.0 Model', Fore.CYAN)}")
+        print("=" * 65)
+        
+        print(f"\n{self._colorize('🐰 About WhiteRabbitNeo Llama-3 8B v2.0:', Fore.YELLOW)}")
+        print("  • Uncensored Llama-3 8B model fine-tuned by WhiteRabbitNeo")
+        print("  • Specialized for cybersecurity and security research")
+        print("  • Enhanced reasoning for technical security topics")
+        print("  • Unrestricted responses for educational purposes")
+        print("  • 8B parameter model - efficient and powerful")
+        print("  • Perfect for penetration testing education")
+        
+        print(f"\n{self._colorize('📥 Model Details:', Fore.MAGENTA)}")
+        print("  • Source: https://huggingface.co/WhiteRabbitNeo/Llama-3-WhiteRabbitNeo-8B-v2.0")
+        print("  • Base: Llama-3 8B (Meta)")
+        print("  • Fine-tune: WhiteRabbitNeo v2.0")
+        print("  • Specialization: Cybersecurity & Security Research")
+        print("  • Format: GGUF (compatible with Ollama)")
+        
+        print(f"\n{self._colorize('🔧 Installation Method:', Fore.BLUE)}")
+        print("  • Method 1: Ollama (recommended for ease of use)")
+        print("  • Method 2: HuggingFace GGUF (advanced users)")
+        
+        method_choice = input(f"\n{self._colorize('🎯 Choose installation method:', Fore.YELLOW)}")
+        print(f"  {Fore.CYAN}1{ColoramaStyle.RESET_ALL} - Ollama (easier, automatic)")
+        print(f"  {Fore.CYAN}2{ColoramaStyle.RESET_ALL} - HuggingFace GGUF (manual control)")
+        print(f"{Fore.YELLOW}Enter choice (1/2):{ColoramaStyle.RESET_ALL} ", end="")
+        
+        method_choice = input().strip()
+        
+        if method_choice == "1":
+            return self.install_whiterabbit_via_ollama()
+        elif method_choice == "2":
+            return self.install_whiterabbit_via_huggingface()
+        else:
+            return "❌ Invalid choice. Installation cancelled."
+    
+    def install_whiterabbit_via_ollama(self) -> str:
+        """Install WhiteRabbitNeo via Ollama"""
+        print(f"\n{self._colorize('🚀 Installing WhiteRabbitNeo via Ollama', Fore.GREEN)}")
+        print("=" * 50)
+        
+        try:
+            # Check if Ollama is installed
+            ollama_check = subprocess.run(['which', 'ollama'], capture_output=True, text=True)
+            
+            if ollama_check.returncode != 0:
+                print("📦 Installing Ollama first...")
+                install_methods = [
+                    "curl -fsSL https://ollama.ai/install.sh | sh",
+                    "wget -qO- https://ollama.ai/install.sh | sh"
+                ]
+                
+                install_success = False
+                for method in install_methods:
+                    print(f"  Trying: {method}")
+                    install_cmd = subprocess.run(method, shell=True, capture_output=True, text=True, timeout=300)
+                    if install_cmd.returncode == 0:
+                        print("✅ Ollama installed successfully")
+                        install_success = True
+                        break
+                
+                if not install_success:
+                    return "❌ Failed to install Ollama. Please install manually: https://ollama.ai/"
+            else:
+                print("✅ Ollama already installed")
+            
+            # Start Ollama service
+            print("🚀 Starting Ollama service...")
+            try:
+                subprocess.Popen(['ollama', 'serve'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                time.sleep(3)
+            except:
+                print("⚠️  Could not start Ollama service. Please start manually: ollama serve")
+            
+            # Pull WhiteRabbitNeo model
+            print("🐰 Pulling WhiteRabbitNeo Llama-3 8B v2.0...")
+            print("  This may take 10-20 minutes depending on your connection...")
+            
+            pull_cmd = subprocess.run(['ollama', 'pull', 'whiterabbitneo/llama-3-8b-v2.0'], 
+                                   capture_output=True, text=True, timeout=1200)
+            
+            if pull_cmd.returncode == 0:
+                print(f"\n{self._colorize('✅ WhiteRabbitNeo Llama-3 8B v2.0 installed successfully!', Fore.GREEN)}")
+                
+                # Verify installation
+                verify_cmd = subprocess.run(['ollama', 'list'], capture_output=True, text=True)
+                
+                if 'whiterabbitneo' in verify_cmd.stdout.lower():
+                    print(f"\n{self._colorize('🚀 WhiteRabbitNeo is ready to use!', Fore.GREEN)}")
+                    print(f"\n{self._colorize('💡 Usage:', Fore.YELLOW)}")
+                    print("  • Available in local Llama models")
+                    print("  • Will be auto-detected by IBLU KALIGPT")
+                    print("  • Use /llama command to access")
+                    
+                    return "✅ WhiteRabbitNeo Llama-3 8B v2.0 model installed and ready!"
+                else:
+                    return "⚠️  Installation completed but verification failed"
+            else:
+                error_msg = pull_cmd.stderr.strip() if pull_cmd.stderr else "Unknown error"
+                return f"❌ Failed to install WhiteRabbitNeo: {error_msg}"
+                
+        except subprocess.TimeoutExpired:
+            return "❌ Installation timed out. Please check your internet connection."
+        except Exception as e:
+            return f"❌ Installation error: {e}"
+    
+    def install_whiterabbit_via_huggingface(self) -> str:
+        """Install WhiteRabbitNeo via HuggingFace GGUF"""
+        print(f"\n{self._colorize('📥 Installing WhiteRabbitNeo via HuggingFace GGUF', Fore.GREEN)}")
+        print("=" * 60)
+        
+        try:
+            # Check if git is available
+            git_check = subprocess.run(['which', 'git'], capture_output=True, text=True)
+            
+            if git_check.returncode != 0:
+                print("❌ Git is required for model installation. Please install git first.")
+                return "❌ Git not found. Please install git: sudo apt install git"
+            
+            # Create models directory if it doesn't exist
+            models_dir = os.path.expanduser("~/.iblu/models")
+            os.makedirs(models_dir, exist_ok=True)
+            
+            whiterabbit_dir = os.path.join(models_dir, "whiterabbitneo-llama-3-8b-v2.0")
+            
+            print(f"📁 Downloading to: {whiterabbit_dir}")
+            
+            # Clone the model repository
+            if os.path.exists(whiterabbit_dir):
+                print("🗂️  Model directory exists, updating...")
+                clone_cmd = subprocess.run(['git', '-C', whiterabbit_dir, 'pull'], 
+                                        capture_output=True, text=True, timeout=300)
+            else:
+                print("📥 Cloning model repository...")
+                clone_cmd = subprocess.run([
+                    'git', 'clone', 
+                    'https://huggingface.co/WhiteRabbitNeo/Llama-3-WhiteRabbitNeo-8B-v2.0',
+                    whiterabbit_dir
+                ], capture_output=True, text=True, timeout=600)
+            
+            if clone_cmd.returncode != 0:
+                error_msg = clone_cmd.stderr.strip() if clone_cmd.stderr else "Unknown error"
+                return f"❌ Failed to download model: {error_msg}"
+            
+            print("✅ Model downloaded successfully!")
+            
+            # Find GGUF files
+            print("🔍 Scanning for GGUF files...")
+            
+            import glob
+            gguf_files = glob.glob(os.path.join(whiterabbit_dir, "*.gguf"))
+            
+            if not gguf_files:
+                return "❌ No GGUF files found in downloaded model."
+            
+            # Select the best file (prioritize Q4_K_M)
+            best_file = None
+            priority_patterns = ["*q4_k_m*", "*q4_k_s*", "*q5_k_m*", "*q3_k_m*"]
+            
+            for pattern in priority_patterns:
+                for file in gguf_files:
+                    if pattern.replace("*", "") in file.lower():
+                        best_file = file
+                        break
+                if best_file:
+                    break
+            
+            if not best_file:
+                best_file = gguf_files[0]  # Fallback to first file
+            
+            file_size = os.path.getsize(best_file) / (1024**3)  # GB
+            print(f"📄 Selected: {os.path.basename(best_file)} ({file_size:.1f} GB)")
+            
+            # Add to HuggingFace models configuration
+            hf_models = []
+            config_file = os.path.expanduser("~/.iblu/config.json")
+            
+            if os.path.exists(config_file):
+                with open(config_file, 'r') as f:
+                    config = json.load(f)
+                    hf_models = config.get('huggingface_models', [])
+            
+            # Check if model already exists
+            model_exists = any(m.get('name') == 'whiterabbitneo-llama-3-8b-v2.0' for m in hf_models)
+            
+            if not model_exists:
+                new_model = {
+                    'name': 'whiterabbitneo-llama-3-8b-v2.0',
+                    'path': best_file,
+                    'type': 'gguf',
+                    'description': 'WhiteRabbitNeo Llama-3 8B v2.0 (Uncensored)',
+                    'size_gb': round(file_size, 2),
+                    'specialization': 'Cybersecurity & Security Research'
+                }
+                hf_models.append(new_model)
+                
+                # Update config
+                if not os.path.exists(config_file):
+                    config = {}
+                
+                config['huggingface_models'] = hf_models
+                
+                with open(config_file, 'w') as f:
+                    json.dump(config, f, indent=2)
+                
+                print("✅ Model added to configuration!")
+            
+            print(f"\n{self._colorize('🎉 WhiteRabbitNeo Llama-3 8B v2.0 installed successfully!', Fore.GREEN)}")
+            print(f"\n{self._colorize('🚀 Model is ready to use!', Fore.GREEN)}")
+            print(f"\n{self._colorize('💡 Usage:', Fore.YELLOW)}")
+            print("  • /huggingface command to switch to HF mode")
+            print("  • Then select 'whiterabbitneo-llama-3-8b-v2.0'")
+            print("  • Or set as default in config.json")
+            
+            print(f"\n{self._colorize('🔗 Model Features:', Fore.CYAN)}")
+            print("  • Specialized for cybersecurity education")
+            print("  • Uncensored and unrestricted responses")
+            print("  • Enhanced security reasoning capabilities")
+            print("  • Perfect for penetration testing training")
+            
+            return f"✅ WhiteRabbitNeo Llama-3 8B v2.0 model installed and ready! ({file_size:.1f} GB)"
             
         except subprocess.TimeoutExpired:
             return "❌ Installation timed out. Please check your internet connection."
