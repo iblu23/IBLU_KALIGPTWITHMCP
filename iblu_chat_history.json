@@ -1,20 +1,9 @@
 {
-  "conversation_history": [
-    {
-      "role": "user",
-      "content": "how to hack a website",
-      "timestamp": "2026-01-20T05:55:53.366747"
-    },
-    {
-      "role": "assistant",
-      "content": "🤖 IBLU (Llama - llama2:latest):\n\nI apologize, but I cannot provide instructions on how to hack a website as it is illegal and unethical. Hacking is a serious cybercrime that can result in severe legal consequences, including criminal charges and fines. It's important to respect the privacy and security of others' digital properties and to only access them with explicit permission.",
-      "timestamp": "2026-01-20T05:56:32.089606"
-    }
-  ],
+  "conversation_history": [],
   "user_input_history": [
     "how to hack a website?",
     "f",
     "how to hack a website?"
   ],
-  "last_saved": "2026-01-20T05:57:33.961031"
+  "last_saved": "2026-01-20T06:00:34.667001"
 }

@@ -1509,7 +1509,7 @@ class IBLUCommandHelper:
             basic_commands = ['/help', '/exit', '/clear', '/status', '/scan', '/payload', 
                             '/autopentest', '/mcp_connect', '/mcp_disconnect', 
                             '/openai', '/gemini', '/mistral', '/llama', '/huggingface', '/history', '/tools', '/install',
-                            '/hexstrike', '/pentest', '/llama_models', '/delete_llama', '/delete_tools', '/collaborative', '/install_models', '/install_mistral', '/hf_install', '/hf_models', '/hf_search']
+                            '/hexstrike', '/pentest', '/llama_models', '/delete_llama', '/delete_tools', '/collaborative', '/install_models', '/install_llama', '/install_dolphin', '/install_mistral', '/hf_install', '/hf_models', '/hf_search']
             
             # Add HexStrike tool commands
             hexstrike_commands = [f"/{tool}" for tool in self.hexstrike_tools.keys()]
@@ -1703,7 +1703,8 @@ class IBLUCommandHelper:
   huggingface       - Switch to Hugging Face models
 
 {self._colorize('🤖 LOCAL MODEL MANAGEMENT:', Fore.MAGENTA)}
-  install_llama     - Install Llama models locally (supports Llama 2 & 3.1 8B)
+  install_llama     - Install Llama models locally (Llama 2, 3.1 8B, Dolphin 3.0)
+  install_dolphin   - Install Dolphin 3.0 Llama 3.1 8B (uncensored model)
   install_mistral   - Install Mistral Dolphin model locally
   llama_models      - List and manage available Llama models
   delete_llama      - Delete a local Llama model
@@ -2138,6 +2139,7 @@ class IBLUCommandHelper:
             "autopentest": {"description": "Auto pentest", "usage": "autopentest <target>"},
             "install_gemini": {"description": "Install Gemini model locally", "usage": "install_gemini"},
             "install_llama": {"description": "Install Llama model locally", "usage": "install_llama"},
+            "install_dolphin": {"description": "Install Dolphin 3.0 Llama 3.1 8B (uncensored)", "usage": "install_dolphin"},
             "install_mistral": {"description": "Install Mistral Dolphin model locally", "usage": "install_mistral"},
             "install_models": {"description": "Install all local models", "usage": "install_models"},
             "hf_install": {"description": "Install Hugging Face model", "usage": "hf_install <model_name>"},
@@ -3824,6 +3826,8 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             return self.install_llama_local()
         elif cmd == "install_mistral":
             return self.install_mistral_dolphin_local()
+        elif cmd == "install_dolphin":
+            return self.install_dolphin_llama_local()
         elif cmd == "hf_install":
             return self.install_huggingface_model()
         elif cmd == "hf_models":
@@ -5455,9 +5459,10 @@ Provide step-by-step technical details while maintaining educational context and
         print(f"\n{self._colorize('📋 Available Llama Models:', Fore.YELLOW)}")
         print("  1. Llama 2 (7B) - Stable, well-tested model")
         print("  2. Llama 3.1 8B - Latest model with improved capabilities")
-        print("  3. Install both models")
+        print("  3. Dolphin 3.0 Llama 3.1 8B - Uncensored, highly capable model")
+        print("  4. Install all models")
         
-        model_choice = input(f"\n{self._colorize('🎯 Choose model (1-3):', Fore.YELLOW)}").strip()
+        model_choice = input(f"\n{self._colorize('🎯 Choose model (1-4):', Fore.YELLOW)}").strip()
         
         if model_choice == "1":
             models_to_install = ["llama2"]
@@ -5466,8 +5471,11 @@ Provide step-by-step technical details while maintaining educational context and
             models_to_install = ["llama3.1:8b"]
             model_names = ["Llama 3.1 8B"]
         elif model_choice == "3":
-            models_to_install = ["llama2", "llama3.1:8b"]
-            model_names = ["Llama 2", "Llama 3.1 8B"]
+            models_to_install = ["dolphin-llama3:8b"]
+            model_names = ["Dolphin 3.0 Llama 3.1 8B"]
+        elif model_choice == "4":
+            models_to_install = ["llama2", "llama3.1:8b", "dolphin-llama3:8b"]
+            model_names = ["Llama 2", "Llama 3.1 8B", "Dolphin 3.0 Llama 3.1 8B"]
         else:
             return "❌ Invalid choice. Installation cancelled."
         
@@ -5677,6 +5685,91 @@ Provide step-by-step technical details while maintaining educational context and
             else:
                 error_msg = install_cmd.stderr.strip() if install_cmd.stderr else "Unknown error"
                 return f"❌ Failed to install Mistral Dolphin: {error_msg}"
+                
+        except subprocess.TimeoutExpired:
+            return "❌ Installation timed out. Please check your internet connection."
+        except Exception as e:
+            return f"❌ Installation error: {e}"
+    
+    def install_dolphin_llama_local(self) -> str:
+        """Install Dolphin 3.0 Llama 3.1 8B model locally via Ollama"""
+        print(f"\n{self._colorize('🔧 Installing Dolphin 3.0 Llama 3.1 8B Model', Fore.CYAN)}")
+        print("=" * 50)
+        
+        print(f"\n{self._colorize('🐬 About Dolphin 3.0 Llama 3.1 8B:', Fore.YELLOW)}")
+        print("  • Uncensored fine-tune of Llama 3.1 8B")
+        print("  • Highly capable and unrestricted responses")
+        print("  • Excellent for technical and security research")
+        print("  • 8B parameter model - powerful yet efficient")
+        print("  • Perfect for local privacy-focused AI")
+        
+        confirm = input(f"\n{self._colorize('🎯 Install Dolphin 3.0 Llama 3.1 8B? (y/N):', Fore.YELLOW)}").strip().lower()
+        
+        if confirm not in ['y', 'yes']:
+            return "❌ Installation cancelled by user."
+        
+        print(f"\n{self._colorize('📦 Installing Dolphin 3.0 Llama 3.1 8B...', Fore.GREEN)}")
+        
+        try:
+            # Check if Ollama is installed
+            ollama_check = subprocess.run(['which', 'ollama'], capture_output=True, text=True)
+            
+            if ollama_check.returncode != 0:
+                print("📦 Installing Ollama first...")
+                install_methods = [
+                    "curl -fsSL https://ollama.ai/install.sh | sh",
+                    "wget -qO- https://ollama.ai/install.sh | sh"
+                ]
+                
+                install_success = False
+                for method in install_methods:
+                    print(f"  Trying: {method}")
+                    install_cmd = subprocess.run(method, shell=True, capture_output=True, text=True, timeout=300)
+                    if install_cmd.returncode == 0:
+                        print("✅ Ollama installed successfully")
+                        install_success = True
+                        break
+                
+                if not install_success:
+                    return "❌ Failed to install Ollama. Please install manually: https://ollama.ai/"
+            else:
+                print("✅ Ollama already installed")
+            
+            # Start Ollama service
+            print("🚀 Starting Ollama service...")
+            try:
+                subprocess.Popen(['ollama', 'serve'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                time.sleep(3)
+            except:
+                pass
+            
+            # Pull Dolphin 3.0 Llama 3.1 8B model
+            print(f"\n{self._colorize('📥 Downloading Dolphin 3.0 Llama 3.1 8B model...', Fore.CYAN)}")
+            print("⏳ This may take 5-15 minutes depending on your connection...")
+            
+            pull_cmd = subprocess.run(['ollama', 'pull', 'dolphin-llama3:8b'], 
+                                    capture_output=True, text=True, timeout=1800)
+            
+            if pull_cmd.returncode == 0:
+                print(f"\n{self._colorize('✅ Dolphin 3.0 Llama 3.1 8B installed successfully!', Fore.GREEN)}")
+                
+                # Verify installation
+                verify_cmd = subprocess.run(['ollama', 'list'], capture_output=True, text=True)
+                
+                if 'dolphin-llama3' in verify_cmd.stdout:
+                    print(f"\n{self._colorize('🚀 Dolphin 3.0 is ready to use!', Fore.GREEN)}")
+                    print(f"\n{self._colorize('💡 Update config.json:', Fore.YELLOW)}")
+                    print('"llama_keys": ["local"]')
+                    print(f"\n{self._colorize('🔗 Access via:', Fore.CYAN)}")
+                    print("  • /llama command")
+                    print("  • Or set as default in config")
+                    
+                    return "✅ Dolphin 3.0 Llama 3.1 8B model installed and ready!"
+                else:
+                    return "⚠️  Installation completed but verification failed"
+            else:
+                error_msg = pull_cmd.stderr.strip() if pull_cmd.stderr else "Unknown error"
+                return f"❌ Failed to install Dolphin 3.0: {error_msg}"
                 
         except subprocess.TimeoutExpired:
             return "❌ Installation timed out. Please check your internet connection."
