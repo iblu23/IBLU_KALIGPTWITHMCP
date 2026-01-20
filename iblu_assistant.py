@@ -2369,18 +2369,18 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                         chars[i] = random.choice(glitch_chars)
                 return "".join(chars)
             
-            # Clean color palette without emojis
+            # Black and red color palette without emojis
             clean_lines = [
                 ("\033[91m\033[40m██╗  ██╗  █████╗   ██████╗ ██╗  ██╗    ████████╗ ██╗  ██╗ ███████╗    ██╗    ██╗  ██████╗  ██████╗  ██╗      ██████╗\033[0m", "bold bright_red"),
-                ("\033[93m\033[40m██║  ██║ ██╔══██╗ ██╔════╝ ██║ ██╔╝    ╚══██╔══╝ ██║  ██║ ██╔════╝    ██║    ██║ ██╔═══██╗ ██╔══██╗ ██║      ██╔══██╗\033[0m", "bold bright_yellow"),
-                ("\033[92m\033[40m███████║ ███████║ ██║      █████╔╝        ██║    ███████║ █████╗      ██║ █╗ ██║ ██║   ██║ ██████╔╝ ██║      ██║  ██║\033[0m", "bold bright_green"),
-                ("\033[96m\033[40m██╔══██║ ██╔══██║ ██║      ██╔═██╗        ██║    ██╔══██║ ██╔══╝      ██║███╗██║ ██║   ██║ ██╔══██╗ ██║      ██║  ██║\033[0m", "bold bright_cyan"),
-                ("\033[95m\033[40m██║  ██║ ██║  ██║ ╚██████╗ ██║  ██╗       ██║    ██║  ██║ ███████╗    ╚███╔███╔╝ ╚██████╔╝ ██║  ██║ ███████╗ ██████╔╝\033[0m", "bold bright_magenta"),
-                ("\033[97m\033[40m╚═╝  ╚═╝ ╚═╝  ╚═╝  ╚═════╝ ╚═╝  ╚═╝       ╚═╝    ╚═╝  ╚═╝ ╚══════╝     ╚══╝╚══╝   ╚═════╝  ╚═╝  ╚═╝ ╚══════╝ ╚═════╝\033[0m", "bold bright_white")
+                ("\033[91m\033[40m██║  ██║ ██╔══██╗ ██╔════╝ ██║ ██╔╝    ╚══██╔══╝ ██║  ██║ ██╔════╝    ██║    ██║ ██╔═══██╗ ██╔══██╗ ██║      ██╔══██╗\033[0m", "bold bright_red"),
+                ("\033[91m\033[40m███████║ ███████║ ██║      █████╔╝        ██║    ███████║ █████╗      ██║ █╗ ██║ ██║   ██║ ██████╔╝ ██║      ██║  ██║\033[0m", "bold bright_red"),
+                ("\033[91m\033[40m██╔══██║ ██╔══██║ ██║      ██╔═██╗        ██║    ██╔══██║ ██╔══╝      ██║███╗██║ ██║   ██║ ██╔══██╗ ██║      ██║  ██║\033[0m", "bold bright_red"),
+                ("\033[91m\033[40m██║  ██║ ██║  ██║ ╚██████╗ ██║  ██╗       ██║    ██║  ██║ ███████╗    ╚███╔███╔╝ ╚██████╔╝ ██║  ██║ ███████╗ ██████╔╝\033[0m", "bold bright_red"),
+                ("\033[91m\033[40m╚═╝  ╚═╝ ╚═╝  ╚═╝  ╚═════╝ ╚═╝  ╚═╝       ╚═╝    ╚═╝  ╚═╝ ╚══════╝     ╚══╝╚══╝   ╚═════╝  ╚═╝  ╚═╝ ╚══════╝ ╚═════╝\033[0m", "bold bright_red")
             ]
             
-            # Dynamic border styles
-            border_styles = ["red", "bright_red", "yellow", "bright_yellow", "magenta", "bright_magenta"]
+            # Black and red border styles
+            border_styles = ["red", "bright_red"]
             
             banner_text = Text("", justify="center")
             with Live(Panel(banner_text, border_style=random.choice(border_styles), padding=(1, 7), expand=True), 
@@ -2443,23 +2443,23 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                 f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.RED}{Back.BLACK}  ██║  ██║ ██╔══██╗ ██╔════╝ ██║ ██╔╝    ╚══██╔══╝ ██║  ██║ ██╔════╝    ██║    ██║ ██╔═══██╗ ██╔══██╗ ██║      ██╔══██╗{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}",
                 f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.RED}{Back.BLACK}  ███████║ ███████║ ██║      █████╔╝        ██║    ███████║ █████╗      ██║ █╗ ██║ ██║   ██║ ██████╔╝ ██║      ██║  ██║{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}",
                 f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.RED}{Back.BLACK}  ██╔══██║ ██╔══██║ ██║      ██╔═██╗        ██║    ██╔══██║ ██╔══╝      ██║███╗██║ ██║   ██║ ██╔══██╗ ██║      ██║  ██║{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}",
-                f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.BLUE}{Back.BLACK}  ██║  ██║ ██║  ██║ ╚██████╗ ██║  ██╗       ██║    ██║  ██║ ███████╗    ╚███╔███╔╝ ╚██████╔╝ ██║  ██║ ███████╗ ██████╔╝{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}",
-                f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.BLUE}{Back.BLACK}  ╚═╝  ╚═╝ ╚═╝  ╚═╝  ╚═════╝ ╚═╝  ╚═╝       ╚═╝    ╚═╝  ╚═╝ ╚══════╝     ╚══╝╚══╝   ╚═════╝  ╚═╝  ╚═╝ ╚══════╝ ╚═════╝{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}",
+                f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.RED}{Back.BLACK}  ██║  ██║ ██║  ██║ ╚██████╗ ██║  ██╗       ██║    ██║  ██║ ███████╗    ╚███╔███╔╝ ╚██████╔╝ ██║  ██║ ███████╗ ██████╔╝{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}",
+                f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.RED}{Back.BLACK}  ╚═╝  ╚═╝ ╚═╝  ╚═╝  ╚═════╝ ╚═╝  ╚═╝       ╚═╝    ╚═╝  ╚═╝ ╚══════╝     ╚══╝╚══╝   ╚═════╝  ╚═╝  ╚═╝ ╚══════╝ ╚═════╝{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}",
                 f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}" + " "*w + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}",
                 f"{Fore.LIGHTRED_EX}╚" + "═"*w + f"╝{ColoramaStyle.RESET_ALL}"
             ]
 
-            # Store original content lines for glitching
+            # Store original content lines for glitching (black and red only)
             content_lines = [
                 "\033[31m\033[40m  ██╗  ██╗  █████╗   ██████╗ ██╗  ██╗    ████████╗ ██╗  ██╗ ███████╗    ██╗    ██╗  ██████╗  ██████╗  ██╗      ██████╗",
                 "\033[31m\033[40m  ██║  ██║ ██╔══██╗ ██╔════╝ ██║ ██╔╝    ╚══██╔══╝ ██║  ██║ ██╔════╝    ██║    ██║ ██╔═══██╗ ██╔══██╗ ██║      ██╔══██╗",
                 "\033[31m\033[40m  ███████║ ███████║ ██║      █████╔╝        ██║    ███████║ █████╗      ██║ █╗ ██║ ██║   ██║ ██████╔╝ ██║      ██║  ██║",
                 "\033[31m\033[40m  ██╔══██║ ██╔══██║ ██║      ██╔═██╗        ██║    ██╔══██║ ██╔══╝      ██║███╗██║ ██║   ██║ ██╔══██╗ ██║      ██║  ██║",
-                "\033[34m\033[40m  ██║  ██║ ██║  ██║ ╚██████╗ ██║  ██╗       ██║    ██║  ██║ ███████╗    ╚███╔███╔╝ ╚██████╔╝ ██║  ██║ ███████╗ ██████╔╝",
-                "\033[34m\033[40m  ╚═╝  ╚═╝ ╚═╝  ╚═╝  ╚═════╝ ╚═╝  ╚═╝       ╚═╝    ╚═╝  ╚═╝ ╚══════╝     ╚══╝╚══╝   ╚═════╝  ╚═╝  ╚═╝ ╚══════╝ ╚═════╝"
+                "\033[31m\033[40m  ██║  ██║ ██║  ██║ ╚██████╗ ██║  ██╗       ██║    ██║  ██║ ███████╗    ╚███╔███╔╝ ╚██████╔╝ ██║  ██║ ███████╗ ██████╔╝",
+                "\033[31m\033[40m  ╚═╝  ╚═╝ ╚═╝  ╚═╝  ╚═════╝ ╚═╝  ╚═╝       ╚═╝    ╚═╝  ╚═╝ ╚══════╝     ╚══╝╚══╝   ╚═════╝  ╚═╝  ╚═╝ ╚══════╝ ╚═════╝"
             ]
             
-            colors = [Fore.RED, Fore.YELLOW, Fore.GREEN, Fore.CYAN, Fore.MAGENTA, Fore.WHITE]
+            colors = [Fore.RED, Fore.LIGHTRED_EX, Fore.RED, Fore.LIGHTRED_EX, Fore.RED, Fore.LIGHTRED_EX]
             
             for t in range(100):
                 os.system("clear")
