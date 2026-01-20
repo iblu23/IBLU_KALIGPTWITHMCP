@@ -59,6 +59,7 @@ class VisualThemes:
         ProgressTheme("Galaxy Purple", "#9966ff", "#ff66ff", "#110022", ProgressEffect.GALAXY, 0.7, 0.9),
         ProgressTheme("Rainbow Wave", "#ff0000", "#00ff00", "#000011", ProgressEffect.RAINBOW, 1.0, 0.8),
         ProgressTheme("Aurora Green", "#00ff99", "#66ffcc", "#001133", ProgressEffect.AURORA, 0.5, 0.6),
+        ProgressTheme("Terminal Pink", "#ff00ff", "#cc00cc", "#333333", ProgressEffect.PULSE, 1.0, 0.8),
     ]
     
     @classmethod
