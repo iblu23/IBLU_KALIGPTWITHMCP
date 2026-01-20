@@ -652,8 +652,7 @@ def run_with_progress(title: str, task_func, total_steps: int = 100,
                 bar.update(step_progress, step_description)
                 time.sleep(0.1)  # Brief pause for visual effect
             
-            # Complete the progress
-            bar.finish(f"{emoji} ✅ {title} complete!")
+            # The context manager will automatically call finish()
             return result
     else:
         # Execute with dynamic progress updates
@@ -665,8 +664,7 @@ def run_with_progress(title: str, task_func, total_steps: int = 100,
             if callable(task_func):
                 return task_func(update_wrapper)
             
-            # Default completion
-            bar.finish(f"{emoji} ✅ {title} complete!")
+            # The context manager will automatically call finish()
             return None
 
 # Model-specific progress themes

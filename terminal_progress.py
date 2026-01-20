@@ -265,7 +265,11 @@ class Modern3DProgressBar:
     
     def finish(self, message: str = "Complete!"):
         """Finish the progress bar with a celebration effect"""
+        if not self._active:
+            return  # Already finished
+        
         self.current = self.total
+        self._active = False
         elapsed = time.time() - self.start_time
         
         # Celebration completion display
@@ -281,16 +285,12 @@ class Modern3DProgressBar:
         
         completion_text = " | ".join(completion_parts)
         
-        # Final 3D bar at 100%
-        bar_lines = self._create_3d_bar(1.0)
+        # Clear current line completely
+        print(f"\r{' ' * 200}\r", end="", flush=True)
         
-        # Clear and show completion
-        print(f"\r{' ' * 100}\r", end="", flush=True)
-        print(bar_lines)
-        print(f"  {self.config.fill_color}██████████████████████████████{self.config.reset_color} 100.0% | {completion_text}")
-        print()  # Extra line for spacing
-        
-        self._active = False
+        # Show final completion message
+        print(f"  {self.config.fill_color}████████████████████████████████████████{self.config.reset_color} 100.0% | {completion_text}")
+        print()  # Final spacing
     
     def __enter__(self):
         """Context manager entry"""
