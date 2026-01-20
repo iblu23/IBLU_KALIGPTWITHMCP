@@ -43,6 +43,24 @@ try:
 except ImportError:
     VISUAL_EFFECTS_AVAILABLE = False
 
+# Hybrid Rich+Textual Progress Bar System
+try:
+    from hybrid_progress import (
+        HybridStunningProgressBar, 
+        HybridProgressManager as HybridProgressManagerClass, 
+        HybridProgressConfig, 
+        HybridProgressTheme,
+        hybrid_progress_manager,
+        create_hybrid_progress,
+        run_with_hybrid_progress,
+        show_hybrid_startup,
+        HybridRichProgressBar,
+        HybridTextualProgressBar
+    )
+    HYBRID_PROGRESS_AVAILABLE = True
+except ImportError:
+    HYBRID_PROGRESS_AVAILABLE = False
+
 # Stunning Rich Progress Bar System
 try:
     from stunning_progress import (
@@ -3730,24 +3748,29 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             def install_with_stunning_progress():
                 """Execute installation with stunning Rich progress tracking"""
                 try:
-                    # Use stunning Rich progress bars if available
-                    if STUNNING_PROGRESS_AVAILABLE:
-                        # Create stunning progress with different themes
+                    # Use hybrid Rich+Textual progress bars if available
+                    if HYBRID_PROGRESS_AVAILABLE:
+                        # Create hybrid progress with stunning themes
                         progress_configs = [
-                            StunningProgressConfig(
+                            HybridProgressConfig(
                                 total=11,
-                                description="📦 Installing HexStrike Tools",
-                                theme=ProgressTheme.FIRE_ORANGE,
+                                description="📦 Hybrid Installing HexStrike Tools",
+                                theme=HybridProgressTheme.FIRE_PLASMA,
                                 show_percentage=True,
                                 show_time=True,
-                                show_spinner=True
+                                show_spinner=True,
+                                use_textual=True,
+                                use_rich=True,
+                                particle_effects=True
                             )
                         ]
                         
-                        progress = create_progress(
+                        progress = create_hybrid_progress(
                             total=11,
-                            description="📦 Installing HexStrike Tools",
-                            theme=ProgressTheme.FIRE_ORANGE
+                            description="📦 Hybrid Installing HexStrike Tools",
+                            theme=HybridProgressTheme.FIRE_PLASMA,
+                            use_textual=True,
+                            use_rich=True
                         )
                         
                         progress.start()
@@ -3838,15 +3861,15 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                     print(f"❌ Installation error: {e}")
                     return False
             
-            # Run with stunning progress tracking
-            if STUNNING_PROGRESS_AVAILABLE:
-                # Use stunning Rich progress bars
+            # Run with hybrid Rich+Textual progress tracking
+            if HYBRID_PROGRESS_AVAILABLE:
+                # Use hybrid Rich+Textual progress bars
                 result = install_with_stunning_progress()
                 if result:
                     return "📦 All HexStrike tools installed successfully! 🎉"
                 else:
                     return "❌ Installation failed. Please check the logs."
-            elif ALIVE_PROGRESS_AVAILABLE:
+            elif STUNNING_PROGRESS_AVAILABLE:
                 # Fallback to alive-progress
                 result = install_with_progress()
                 if result:
@@ -7522,12 +7545,14 @@ Provide step-by-step technical details while maintaining educational context.
         
         print(f"\n{self._colorize('📦 Installing Mistral Dolphin...', Fore.GREEN)}")
         
-        # Use stunning Rich progress bar if available
-        if STUNNING_PROGRESS_AVAILABLE:
-            progress = create_progress(
+        # Use hybrid Rich+Textual progress bar if available
+        if HYBRID_PROGRESS_AVAILABLE:
+            progress = create_hybrid_progress(
                 total=5,
-                description="🐬 Installing Mistral Dolphin",
-                theme=ProgressTheme.OCEAN_BLUE
+                description="🐬 Hybrid Installing Mistral Dolphin",
+                theme=HybridProgressTheme.OCEAN_WAVE,
+                use_textual=True,
+                use_rich=True
             )
             progress.start()
             
@@ -7575,7 +7600,7 @@ Provide step-by-step technical details while maintaining educational context.
                     verify_cmd = subprocess.run(['ollama', 'list'], capture_output=True, text=True)
                     
                     if 'mistral' in verify_cmd.stdout:
-                        progress.finish("🐬 Mistral Dolphin installed successfully!")
+                        progress.finish("🐬 Hybrid Mistral Dolphin installed successfully!")
                         print(f"\n{self._colorize('🚀 Mistral Dolphin is ready to use!', Fore.GREEN)}")
                         print(f"\n{self._colorize('💡 Update config.json:', Fore.YELLOW)}")
                         print('"mistral_keys": ["local"]')
@@ -7599,7 +7624,7 @@ Provide step-by-step technical details while maintaining educational context.
                 progress.finish(f"❌ Installation error: {e}")
                 return f"❌ Installation error: {e}"
         
-        else:
+        elif STUNNING_PROGRESS_AVAILABLE:
             # Fallback to original method without stunning progress
             self.show_loading_animation("Initializing Ollama environment...")
             
@@ -9503,8 +9528,50 @@ def main():
     import sys
     import time
     
-    # Stunning startup animation with Rich progress bars
-    if STUNNING_PROGRESS_AVAILABLE:
+    # Hybrid Rich+Textual startup animation with stunning effects
+    if HYBRID_PROGRESS_AVAILABLE:
+        # Show hybrid startup
+        show_hybrid_startup()
+        
+        # Create hybrid progress configuration
+        startup_config = HybridProgressConfig(
+            total=6,
+            description="🚀 Hybrid Startup Sequence",
+            theme=HybridProgressTheme.CYBERPUNK_FUSION,
+            show_percentage=True,
+            show_time=True,
+            show_spinner=True,
+            use_textual=True,
+            use_rich=True,
+            particle_effects=True
+        )
+        
+        progress = create_hybrid_progress(
+            total=6,
+            description="🚀 Initializing Hybrid IBLU KALIGPT...",
+            theme=HybridProgressTheme.CYBERPUNK_FUSION,
+            use_textual=True,
+            use_rich=True
+        )
+        
+        progress.start()
+        
+        startup_items = [
+            "🔧 Loading hybrid configuration...",
+            "🧠 Initializing Rich+Textual AI models...",
+            "🔗 Setting up hybrid MCP connections...",
+            "🎨 Preparing stunning hybrid visual interface...",
+            "🛡️ Loading hybrid security modules...",
+            "⚡ Optimizing hybrid performance...",
+        ]
+        
+        for i, item in enumerate(startup_items, 1):
+            time.sleep(0.3)  # Simulate loading
+            progress.set_progress(i, item)
+        
+        progress.finish("✨ Hybrid System Ready! ✨")
+        time.sleep(0.5)
+    elif STUNNING_PROGRESS_AVAILABLE:
         # Show stunning startup
         show_stunning_startup()
         
