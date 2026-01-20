@@ -2342,55 +2342,90 @@ All responses should be helpful, educational, and focused on legitimate cybersec
         if RICH_AVAILABLE:
             console = Console(width=144)
             
-            # Create Rich banner with Panel - Screen Wide (Colorful)
-            banner_content = Text()
-            banner_content.append("\033[31m\033[40m██╗  ██╗  █████╗   ██████╗ ██╗  ██╗    ████████╗ ██╗  ██╗ ███████╗    ██╗    ██╗  ██████╗  ██████╗  ██╗      ██████╗\033[0m\n", style="bold red")
-            banner_content.append("\033[31m\033[40m██║  ██║ ██╔══██╗ ██╔════╝ ██║ ██╔╝    ╚══██╔══╝ ██║  ██║ ██╔════╝    ██║    ██║ ██╔═══██╗ ██╔══██╗ ██║      ██╔══██╗\033[0m\n", style="bold red")
-            banner_content.append("\033[31m\033[40m███████║ ███████║ ██║      █████╔╝        ██║    ███████║ █████╗      ██║ █╗ ██║ ██║   ██║ ██████╔╝ ██║      ██║  ██║\033[0m\n", style="bold red")
-            banner_content.append("\033[31m\033[40m██╔══██║ ██╔══██║ ██║      ██╔═██╗        ██║    ██╔══██║ ██╔══╝      ██║███╗██║ ██║   ██║ ██╔══██╗ ██║      ██║  ██║\033[0m\n", style="bold red")
-            banner_content.append("\033[34m\033[40m██║  ██║ ██║  ██║ ╚██████╗ ██║  ██╗       ██║    ██║  ██║ ███████╗    ╚███╔███╔╝ ╚██████╔╝ ██║  ██║ ███████╗ ██████╔╝\033[0m\n", style="bold blue")
-            banner_content.append("\033[34m\033[40m╚═╝  ╚═╝ ╚═╝  ╚═╝  ╚═════╝ ╚═╝  ╚═╝       ╚═╝    ╚═╝  ╚═╝ ╚══════╝     ╚══╝╚══╝   ╚═════╝  ╚═╝  ╚═╝ ╚══════╝ ╚═════╝\033[0m\n\n", style="bold blue")
-            
-            # Display the main banner - Full Screen (144 chars) with glitch effect
-            def glitch(text):
+            # Enhanced main banner with dynamic effects
+            def advanced_glitch(text, intensity=0.15):
                 if not text or len(text) == 0:
                     return text
                 chars = list(text)
-                for _ in range(10):
+                # Random glitch intensity
+                num_glitches = random.randint(1, min(15, len(chars)//2))
+                for _ in range(num_glitches):
                     if len(chars) > 0:
                         i = random.randint(0, len(chars)-1)
-                        chars[i] = random.choice("@#$%&*")
+                        # Mix of glitch characters
+                        glitch_chars = ["@#$%&*", "░▒▓█", "⚡🔥💀", "▓▒░█"][random.randint(0, 3)]
+                        chars[i] = random.choice(glitch_chars)
                 return "".join(chars)
             
-            # Store original colored lines
-            original_lines = [
-                ("\033[31m\033[40m██╗  ██╗  █████╗   ██████╗ ██╗  ██╗    ████████╗ ██╗  ██╗ ███████╗    ██╗    ██╗  ██████╗  ██████╗  ██╗      ██████╗\033[0m", "bold red"),
-                ("\033[31m\033[40m██║  ██║ ██╔══██╗ ██╔════╝ ██║ ██╔╝    ╚══██╔══╝ ██║  ██║ ██╔════╝    ██║    ██║ ██╔═══██╗ ██╔══██╗ ██║      ██╔══██╗\033[0m", "bold red"),
-                ("\033[31m\033[40m███████║ ███████║ ██║      █████╔╝        ██║    ███████║ █████╗      ██║ █╗ ██║ ██║   ██║ ██████╔╝ ██║      ██║  ██║\033[0m", "bold red"),
-                ("\033[31m\033[40m██╔══██║ ██╔══██║ ██║      ██╔═██╗        ██║    ██╔══██║ ██╔══╝      ██║███╗██║ ██║   ██║ ██╔══██╗ ██║      ██║  ██║\033[0m", "bold red"),
-                ("\033[34m\033[40m██║  ██║ ██║  ██║ ╚██████╗ ██║  ██╗       ██║    ██║  ██║ ███████╗    ╚███╔███╔╝ ╚██████╔╝ ██║  ██║ ███████╗ ██████╔╝\033[0m", "bold blue"),
-                ("\033[34m\033[40m╚═╝  ╚═╝ ╚═╝  ╚═╝  ╚═════╝ ╚═╝  ╚═╝       ╚═╝    ╚═╝  ╚═╝ ╚══════╝     ╚══╝╚══╝   ╚═════╝  ╚═╝  ╚═╝ ╚══════╝ ╚═════╝\033[0m", "bold blue")
+            # Enhanced color palette with gradients
+            enhanced_lines = [
+                ("🔥💀🔥 \033[91m\033[40m██╗  ██╗  █████╗   ██████╗ ██╗  ██╗    ████████╗ ██╗  ██╗ ███████╗    ██╗    ██╗  ██████╗  ██████╗  ██╗      ██████╗\033[0m 💀🔥💀", "bold bright_red"),
+                ("⚡🔥⚡ \033[93m\033[40m██║  ██║ ██╔══██╗ ██╔════╝ ██║ ██╔╝    ╚══██╔══╝ ██║  ██║ ██╔════╝    ██║    ██║ ██╔═══██╗ ██╔══██╗ ██║      ██╔══██╗\033[0m ⚡🔥⚡", "bold bright_yellow"),
+                ("💀⚡💀 \033[92m\033[40m███████║ ███████║ ██║      █████╔╝        ██║    ███████║ █████╗      ██║ █╗ ██║ ██║   ██║ ██████╔╝ ██║      ██║  ██║\033[0m 💀⚡💀", "bold bright_green"),
+                ("🔥💀🔥 \033[96m\033[40m██╔══██║ ██╔══██║ ██║      ██╔═██╗        ██║    ██╔══██║ ██╔══╝      ██║███╗██║ ██║   ██║ ██╔══██╗ ██║      ██║  ██║\033[0m 🔥💀🔥", "bold bright_cyan"),
+                ("⚡🔥⚡ \033[95m\033[40m██║  ██║ ██║  ██║ ╚██████╗ ██║  ██╗       ██║    ██║  ██║ ███████╗    ╚███╔███╔╝ ╚██████╔╝ ██║  ██║ ███████╗ ██████╔╝\033[0m ⚡🔥⚡", "bold bright_magenta"),
+                ("💀⚡💀 \033[97m\033[40m╚═╝  ╚═╝ ╚═╝  ╚═╝  ╚═════╝ ╚═╝  ╚═╝       ╚═╝    ╚═╝  ╚═╝ ╚══════╝     ╚══╝╚══╝   ╚═════╝  ╚═╝  ╚═╝ ╚══════╝ ╚═════╝\033[0m 💀⚡💀", "bold bright_white")
             ]
             
-            banner_text = Text("", justify="left")
-            with Live(Panel(banner_text, border_style="red", padding=(1, 7), expand=True), console=console, refresh_per_second=60) as live:
-                for t in range(100):
+            # Dynamic border styles
+            border_styles = ["red", "bright_red", "yellow", "bright_yellow", "magenta", "bright_magenta"]
+            
+            banner_text = Text("", justify="center")
+            with Live(Panel(banner_text, border_style=random.choice(border_styles), padding=(1, 7), expand=True), 
+                      console=console, refresh_per_second=120) as live:
+                
+                # Pulsing effect introduction
+                for pulse in range(20):
                     banner_text.plain = ""
-                    for i, (line, style) in enumerate(original_lines):
-                        if random.random() < 0.1:  # 10% chance to glitch
-                            line = glitch(line)
+                    intensity = 0.05 + (pulse * 0.005)  # Increasing intensity
+                    for i, (line, style) in enumerate(enhanced_lines):
+                        if random.random() < intensity:
+                            line = advanced_glitch(line, intensity)
                         banner_text.append(line + "\n", style=style)
                     live.refresh()
-                    time.sleep(0.05)
+                    time.sleep(0.03)
+                
+                # Full glitch chaos
+                for chaos in range(60):
+                    banner_text.plain = ""
+                    # Random border color change
+                    if chaos % 10 == 0:
+                        live.update(Panel(banner_text, border_style=random.choice(border_styles), padding=(1, 7), expand=True))
+                    
+                    for i, (line, style) in enumerate(enhanced_lines):
+                        # Higher glitch chance during chaos
+                        if random.random() < 0.25:
+                            line = advanced_glitch(line, 0.3)
+                        banner_text.append(line + "\n", style=style)
+                    live.refresh()
+                    time.sleep(0.02)
+                
+                # Stabilization with final perfect display
+                for stable in range(20):
+                    banner_text.plain = ""
+                    fade_intensity = 0.2 - (stable * 0.01)  # Decreasing glitch
+                    for i, (line, style) in enumerate(enhanced_lines):
+                        if random.random() < max(0, fade_intensity):
+                            line = advanced_glitch(line, fade_intensity)
+                        banner_text.append(line + "\n", style=style)
+                    live.refresh()
+                    time.sleep(0.04)
+                
+                # Final perfect banner
+                banner_text.plain = ""
+                for line, style in enhanced_lines:
+                    banner_text.append(line + "\n", style=style)
+                live.refresh()
+                time.sleep(0.5)
             
-            # HACK MY LIFE x10 sequential animation
+            # HACK MY LIFE x5 sequential animation
             hack_text = Text("", justify="center")
             with Live(Panel(hack_text, border_style="magenta", padding=(1, 7), expand=True), 
                       console=console, refresh_per_second=60) as live:
                 phrases = []
                 
-                # Create 10 phrases appearing one by one
-                for phrase_num in range(10):
+                # Create 5 phrases appearing one by one
+                for phrase_num in range(5):
                     # HACK appears for this phrase
                     for i in range(8):
                         current_phrase = "🔥🔥🔥 " + "HACK"[:i//2+1] + " 🔥🔥🔥"
@@ -2414,7 +2449,7 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                         
                         # Add random skull emojis within the panel
                         skull_positions = []
-                        for _ in range(10):  # Spawn 10 skulls
+                        for _ in range(5):  # Spawn 5 skulls
                             x_pos = random.randint(0, 130)  # Random position within panel width
                             y_pos = random.randint(0, 7)   # Random position within panel height
                             skull_positions.append((x_pos, y_pos))
@@ -2563,12 +2598,12 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             for line in banner_lines:
                 print(line)
             
-            # HACK MY LIFE x10 sequential animation (fallback)
+            # HACK MY LIFE x5 sequential animation (fallback)
             time.sleep(0.5)
             phrases = []
             
-            # Create 10 phrases appearing one by one
-            for phrase_num in range(10):
+            # Create 5 phrases appearing one by one
+            for phrase_num in range(5):
                 # HACK appears for this phrase
                 for i in range(8):
                     os.system("clear")
@@ -2607,7 +2642,7 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                         panel_content[text_line] = panel_content[text_line][:text_start] + display_text + panel_content[text_line][text_start + len(display_text):]
                     
                     # Add random skulls
-                    for _ in range(10):  # Spawn 10 skulls
+                    for _ in range(5):  # Spawn 5 skulls
                         x_pos = random.randint(0, w - 2)
                         y_pos = random.randint(0, 7)
                         if x_pos < len(panel_content[y_pos]):
@@ -7532,6 +7567,54 @@ def main():
         if not HUGGINGFACE_AVAILABLE:
             return "❌ Hugging Face libraries not installed"
         
+        print(f"\n{self._colorize('🔍 Search Hugging Face Models', Fore.BLUE)}")
+        print("=" * 50)
+        
+        query = input(f"\n{self._colorize('🎯 Enter search query:', Fore.YELLOW)}").strip()
+        
+        if not query:
+            return "❌ No search query provided"
+        
+        print(f"\n{self._colorize(f'🔍 Searching for \"{query}\"...', Fore.GREEN)}")
+        
+        try:
+            from huggingface_hub import HfApi
+            api = HfApi()
+            
+            # Search models
+            models = api.list_models(
+                search=query,
+                limit=10,
+                sort="downloads",
+                direction=-1
+            )
+            
+            if not models:
+                return f"❌ No models found for '{query}'"
+            
+            print(f"\n{self._colorize('📋 Search Results:', Fore.CYAN)}")
+            print("=" * 50)
+            
+            for i, model in enumerate(models, 1):
+                print(f"\n{self._colorize(f'{i}. {model.id}', Fore.GREEN)}")
+                print(f"   📝 {model.modelId}")
+                print(f"   👥 Downloads: {model.downloads:,}")
+                print(f"   🏷️  Tags: {', '.join(model.tags[:3])}")
+                print(f"   📊 Likes: {model.likes:,}")
+                
+                if i >= 5:  # Limit to 5 results
+                    break
+            
+            print(f"\n{self._colorize('💡 Install a model with:', Fore.YELLOW)}")
+            print(f"  /hf_install {models[0].id if models else '<model_name>'}")
+            
+            return f"✅ Found {len(models)} models for '{query}'"
+            
+        except Exception as e:
+            return f"❌ Search failed: {str(e)}"
+
+if __name__ == "__main__":
+    main()
         print(f"\n{self._colorize('🔍 Search Hugging Face Models', Fore.BLUE)}")
         print("=" * 50)
         
