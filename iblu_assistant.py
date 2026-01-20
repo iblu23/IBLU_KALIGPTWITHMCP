@@ -5607,14 +5607,38 @@ Provide step-by-step technical details while maintaining educational context and
             return f"❌ Installation error: {e}"
     
     def show_loading_animation(self, message: str):
-        # Stop animation after 3 seconds or when function completes
+        """Show a loading animation with spinner"""
+        import threading as _thread
+        import time
+        import sys
+        
+        # Animation characters
+        spinner_chars = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏']
+        
+        # Create stop event and animation thread
+        stop_event = _thread.Event()
+        
+        def animate():
+            """Animation thread function"""
+            while not stop_event.is_set():
+                for char in spinner_chars:
+                    if stop_event.is_set():
+                        break
+                    sys.stdout.write(f'\r{char} {message}...')
+                    sys.stdout.flush()
+                    time.sleep(0.1)
+        
+        # Stop animation function
         def stop_animation():
             stop_event.set()
-            animation_thread.join()
             print("\r" + " " * 50 + "\r", end='', flush=True)
         
-        # Schedule stop animation
-        import threading as _thread
+        # Start animation thread
+        animation_thread = _thread.Thread(target=animate)
+        animation_thread.daemon = True
+        animation_thread.start()
+        
+        # Schedule stop animation after 3 seconds
         timer = _thread.Timer(3.0, stop_animation)
         timer.start()
         
