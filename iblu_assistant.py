@@ -16,6 +16,7 @@ import subprocess
 import threading
 import readline
 import atexit
+import signal
 from typing import List, Dict, Optional, Any, Tuple
 from dataclasses import dataclass
 from enum import Enum
@@ -24,13 +25,23 @@ from pathlib import Path
 from datetime import datetime
 import requests
 
-# Import colorama for terminal colors
+# Enhanced visual imports for stunning interface
 try:
     from colorama import Fore, Style as ColoramaStyle, Back, init
     init(autoreset=True)
     COLORAMA_AVAILABLE = True
 except ImportError:
     COLORAMA_AVAILABLE = False
+
+# Enhanced visual effects imports
+try:
+    import random
+    import time
+    import math
+    from datetime import datetime
+    VISUAL_EFFECTS_AVAILABLE = True
+except ImportError:
+    VISUAL_EFFECTS_AVAILABLE = False
 
 # Enhanced prompt_toolkit for rich input with auto-completion
 try:
@@ -59,6 +70,97 @@ try:
 except ImportError:
     RICH_AVAILABLE = False
     console = None
+
+# Global variables for signal handling
+assistant_instance = None
+
+def signal_handler(signum, frame):
+    """Handle Ctrl+C signal gracefully"""
+    global assistant_instance
+    print(f"\n{Fore.LIGHTYELLOW_EX}🛑 Ctrl+C detected! Exiting gracefully...{ColoramaStyle.RESET_ALL}")
+    
+    if assistant_instance:
+        try:
+            # Save chat history before exit
+            assistant_instance.command_helper.save_chat_history()
+            print(f"{Fore.LIGHTGREEN_EX}✅ Chat history saved{ColoramaStyle.RESET_ALL}")
+        except Exception as e:
+            print(f"{Fore.LIGHTRED_EX}❌ Error saving chat history: {e}{ColoramaStyle.RESET_ALL}")
+    
+    print(f"{Fore.LIGHTCYAN_EX}👋 Goodbye! Stay secure!{ColoramaStyle.RESET_ALL}")
+    sys.exit(0)
+
+# Register signal handler
+signal.signal(signal.SIGINT, signal_handler)
+
+class VisualEffects:
+    """Enhanced visual effects for stunning terminal interface"""
+    
+    def __init__(self):
+        self.sparkle_chars = ["✨", "⭐", "💫", "🌟", "✦", "✧", "⋆", "★"]
+        self.gradient_chars = ["░", "▒", "▓", "█"]
+        self.border_styles = {
+            "double": ["╔", "╗", "╚", "╝", "═", "║"],
+            "single": ["┌", "┐", "└", "┘", "─", "│"],
+            "rounded": ["╭", "╮", "╰", "╯", "─", "│"],
+            "bold": ["┏", "┓", "┗", "┛", "━", "┃"]
+        }
+        
+    def create_gradient(self, text: str, start_color: str, end_color: str) -> str:
+        """Create gradient effect on text"""
+        if not COLORAMA_AVAILABLE:
+            return text
+        
+        colors = [Fore.LIGHTBLACK_EX, Fore.BLUE, Fore.CYAN, Fore.GREEN, Fore.YELLOW, Fore.LIGHTRED_EX, Fore.MAGENTA]
+        result = ""
+        
+        for i, char in enumerate(text):
+            color_index = int((i / len(text)) * len(colors))
+            result += f"{colors[min(color_index, len(colors)-1)]}{char}{ColoramaStyle.RESET_ALL}"
+        
+        return result
+    
+    def add_sparkles(self, text: str, intensity: float = 0.3) -> str:
+        """Add random sparkle effects to text"""
+        if not VISUAL_EFFECTS_AVAILABLE or random.random() > intensity:
+            return text
+        
+        sparkle_positions = random.sample(range(len(text)), min(3, len(text)//10))
+        result = list(text)
+        
+        for pos in sparkle_positions:
+            if result[pos] != ' ':
+                result[pos] = random.choice(self.sparkle_chars)
+        
+        return ''.join(result)
+    
+    def create_border(self, width: int, style: str = "double", title: str = "", title_color: str = Fore.WHITE) -> str:
+        """Create decorative border with optional title"""
+        border_chars = self.border_styles.get(style, self.border_styles["double"])
+        
+        top_border = f"{border_chars[0]}{border_chars[4] * width}{border_chars[1]}"
+        bottom_border = f"{border_chars[2]}{border_chars[4] * width}{border_chars[3]}"
+        
+        if title:
+            title_spacing = (width - len(title) - 4) // 2
+            title_line = f"{border_chars[5]}{' ' * title_spacing}{title_color}{title}{ColoramaStyle.RESET_ALL}{' ' * (width - len(title) - title_spacing - 4)}{border_chars[5]}"
+            return f"{top_border}\n{title_line}\n{bottom_border}"
+        
+        return f"{top_border}\n{bottom_border}"
+    
+    def animated_loading(self, steps: list, duration: float = 0.5):
+        """Create animated loading sequence"""
+        if not VISUAL_EFFECTS_AVAILABLE:
+            return
+        
+        for i, step in enumerate(steps):
+            progress = self.gradient_chars[i % len(self.gradient_chars)]
+            print(f"\r{Fore.LIGHTCYAN_EX}{progress} {step}{ColoramaStyle.RESET_ALL}", end="", flush=True)
+            time.sleep(duration / len(steps))
+        print(f"\r{Fore.LIGHTGREEN_EX}✅ Complete!{ColoramaStyle.RESET_ALL}")
+
+# Global visual effects instance
+visual_effects = VisualEffects() if VISUAL_EFFECTS_AVAILABLE else None
 
 # Enhanced Rich progress bar with consistent characters and tooltips
 class EnhancedRichProgress:
@@ -630,6 +732,52 @@ MODEL_PROGRESS_THEMES = {
     "collaborative": {"style": "bold cyan", "emoji": "🤖", "color": "bright_cyan"},
     "system": {"style": "bold white", "emoji": "🖥️", "color": "bright_white"}
 }
+
+class ModelThinkingProgress:
+    """Enhanced progress bar specifically for AI model thinking with beautiful visual effects"""
+    
+    def __init__(self, model_name: str = "AI", emoji: str = "🤖", color: str = Fore.CYAN):
+        self.model_name = model_name
+        self.emoji = emoji
+        self.color = color
+        self.start_time = time.time()
+        self.animation_chars = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
+        self.current_char = 0
+        self.progress = 0
+        
+    def start_thinking(self):
+        """Start the thinking animation"""
+        self.start_time = time.time()
+        self.progress = 0
+        print(f"\n{self.color}{self.emoji} {self.model_name} is thinking...{ColoramaStyle.RESET_ALL}")
+        
+    def update_progress(self, progress: int, message: str = ""):
+        """Update thinking progress with enhanced visual feedback"""
+        self.progress = min(progress, 100)
+        elapsed = time.time() - self.start_time
+        
+        # Create animated spinner
+        spinner_char = self.animation_chars[self.current_char]
+        self.current_char = (self.current_char + 1) % len(self.animation_chars)
+        
+        # Create progress bar
+        bar_width = 30
+        filled_width = int(bar_width * self.progress / 100)
+        bar = "█" * filled_width + "░" * (bar_width - filled_width)
+        
+        # Format time
+        elapsed_str = f"{elapsed:.1f}s"
+        
+        # Display enhanced progress line
+        progress_line = f"\r{self.color}{spinner_char} {self.model_name}: {bar} {self.progress:3d}% | {elapsed_str} | {message}{ColoramaStyle.RESET_ALL}"
+        print(progress_line, end="", flush=True)
+        
+    def finish_thinking(self, success: bool = True, message: str = "Response ready!"):
+        """Complete the thinking animation"""
+        if success:
+            print(f"\n{Fore.GREEN}✅ {self.model_name}: {message}{ColoramaStyle.RESET_ALL}")
+        else:
+            print(f"\n{Fore.RED}❌ {self.model_name}: {message}{ColoramaStyle.RESET_ALL}")
 
 class ProgressBar:
     """Enhanced progress bar for model downloads and installations"""
@@ -1552,7 +1700,7 @@ class IBLUCommandHelper:
         
         if text.startswith('/'):
             # Get basic command suggestions
-            basic_commands = ['/help', '/exit', '/clear', '/status', '/scan', '/payload', 
+            basic_commands = ['/help', '/exit', '/clear', '/status', '/debug_uncensored', '/force_uncensored', '/restore_config', '/scan', '/payload', 
                             '/autopentest', '/mcp_connect', '/mcp_disconnect', 
                             '/openai', '/gemini', '/mistral', '/llama', '/huggingface', '/history', '/tools', '/install',
                             '/hexstrike', '/pentest', '/llama_models', '/delete_llama', '/delete_tools', '/collaborative', '/install_models', '/install_llama', '/install_dolphin', '/install_mistral', '/hf_install', '/hf_models', '/hf_search']
@@ -1766,8 +1914,9 @@ class IBLUCommandHelper:
   delete_tools      - Delete HexStrike tools (one by one or all)
   tools             - List all available tools
 
-{self._colorize('🤖 AI COLLABORATION:', Fore.MAGENTA)}
-  collaborative      - Toggle collaborative AI mode (all models work together)
+{self._colorize('🤖 ENHANCED AI COLLABORATION:', Fore.MAGENTA)}
+  collaborative      - Enhanced collaborative AI with Mistral Dolphin authority
+  mistral_dolphin    - Mistral Dolphin as final authority on refusals
   stack_models      - Stack multiple models for enhanced responses
   model_chat        - Enable models to communicate with each other
 
@@ -2175,7 +2324,11 @@ class KaliGPTMCPAssistant:
             (provider == Provider.HUGGINGFACE and (api_key == "local" or api_key.startswith("http://localhost") or api_key.startswith("127.0.0.1")))
         )
         
-        if is_local_model:
+        # Additional check for Dolphin and other uncensored models via model name detection
+        # This ensures Dolphin and similar models always use the uncensored prompt
+        is_uncensored_model = self.is_current_model_uncensored()
+        
+        if is_local_model or is_uncensored_model:
             # Local uncensored models - full detailed responses
             return self.SYSTEM_PROMPT
         else:
@@ -2312,12 +2465,107 @@ I operate as an educational cybersecurity specialist focused on:
 
 All responses should be helpful, educational, and focused on legitimate cybersecurity education and authorized research purposes."""
 
+    def is_current_model_uncensored(self) -> bool:
+        """Check if the current model is an uncensored model like Dolphin"""
+        try:
+            # First check if we're configured to use local models
+            if hasattr(self, 'config'):
+                # Check LLAMA keys for local indication (primary method for Dolphin)
+                if self.config.llama_keys and any(key == "local" for key in self.config.llama_keys):
+                    # If configured for local LLAMA, check if Dolphin is installed
+                    try:
+                        result = subprocess.run(['ollama', 'list'], capture_output=True, text=True, timeout=10)
+                        if result.returncode == 0:
+                            models_output = result.stdout.lower()
+                            # Specifically check for Dolphin first
+                            if 'dolphin' in models_output:
+                                return True
+                            # Check other uncensored indicators
+                            uncensored_indicators = ['uncensored', 'unfiltered', 'dare', 'wizard', 'pygmalion', 'nous-hermes', 'mythos']
+                            return any(indicator in models_output for indicator in uncensored_indicators)
+                    except:
+                        # If we can't check Ollama, assume local means uncensored
+                        return True
+                
+                # Check MISTRAL keys for local indication  
+                if self.config.mistral_keys and any(key == "local" for key in self.config.mistral_keys):
+                    return True
+                
+                # Check HuggingFace models for uncensored models
+                if self.config.huggingface_models:
+                    for model in self.config.huggingface_models:
+                        model_name = model.get('name', '').lower()
+                        if any(indicator in model_name for indicator in ['dolphin', 'uncensored', 'unfiltered']):
+                            return True
+            
+            # Check current provider and available models
+            if hasattr(self, 'current_ai_provider'):
+                if self.current_ai_provider == Provider.LLAMA:
+                    # For LLAMA provider, do a more thorough check
+                    try:
+                        result = subprocess.run(['ollama', 'list'], capture_output=True, text=True, timeout=10)
+                        if result.returncode == 0:
+                            models_output = result.stdout.lower()
+                            # Priority check for Dolphin
+                            if 'dolphin' in models_output:
+                                return True
+                            # Other uncensored models
+                            uncensored_indicators = ['uncensored', 'unfiltered', 'dare', 'wizard', 'pygmalion', 'nous-hermes', 'mythos']
+                            return any(indicator in models_output for indicator in uncensored_indicators)
+                    except:
+                        pass
+                elif self.current_ai_provider == Provider.MISTRAL:
+                    if self.config.mistral_keys and any(key == "local" for key in self.config.mistral_keys):
+                        return True
+                elif self.current_ai_provider == Provider.HUGGINGFACE:
+                    if self.config.huggingface_models:
+                        for model in self.config.huggingface_models:
+                            model_name = model.get('name', '').lower()
+                            if any(indicator in model_name for indicator in ['dolphin', 'uncensored', 'unfiltered']):
+                                return True
+            
+            return False
+            
+        except Exception:
+            return False
+    
+    def get_current_model_name(self) -> str:
+        """Get the name of the current model being used"""
+        try:
+            if hasattr(self, 'current_ai_provider'):
+                if self.current_ai_provider == Provider.LLAMA:
+                    # Try to get the current Ollama model
+                    try:
+                        result = subprocess.run(['ollama', 'list'], capture_output=True, text=True, timeout=10)
+                        if result.returncode == 0:
+                            lines = result.stdout.strip().split('\n')
+                            for line in lines[1:]:  # Skip header
+                                if 'dolphin' in line.lower():
+                                    return 'dolphin-llama3:8b'
+                                elif line.strip():
+                                    return line.split()[0]
+                    except:
+                        pass
+                    return 'local-llama'
+                elif self.current_ai_provider == Provider.MISTRAL:
+                    return 'mistral-dolphin' if (self.config.mistral_keys and any(key == "local" for key in self.config.mistral_keys)) else 'mistral-api'
+                elif self.current_ai_provider == Provider.OPENAI:
+                    return 'openai-gpt'
+                elif self.current_ai_provider == Provider.GEMINI:
+                    return 'gemini'
+                elif self.current_ai_provider == Provider.HUGGINGFACE:
+                    return 'huggingface-model'
+            return 'unknown'
+        except:
+            return 'unknown'
+
     def __init__(self, config: APIConfig):
         self.config = config
         self.conversation_history: List[Dict] = []
         self.command_history: List[str] = []
         self.current_ai_provider = Provider.OPENAI
         self.rephrasing_mode = False
+        self.in_menu_context = True  # Start in menu context
         
         # Initialize enhanced command helper
         self.command_helper = IBLUCommandHelper()
@@ -2397,8 +2645,14 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             self.prompt_toolkit_enabled = False
             print("⚠️  prompt_toolkit not available - using basic input")
     
-    def get_user_input(self, prompt_text: str = "IBLU> ") -> str:
+    def get_user_input(self, prompt_text: str = "🧠 IBLU KALIGPT> ") -> str:
         """Get user input with enhanced prompt_toolkit or fallback"""
+        # Apply colorama styling to make prompt bold and blue
+        if COLORAMA_AVAILABLE:
+            styled_prompt = f"{Fore.LIGHTBLUE_EX}{prompt_text}{ColoramaStyle.RESET_ALL}"
+        else:
+            styled_prompt = prompt_text
+            
         if self.prompt_toolkit_enabled:
             try:
                 prompt_kwargs = {
@@ -2415,7 +2669,7 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                 if hasattr(self, 'key_bindings'):
                     prompt_kwargs['key_bindings'] = self.key_bindings
                 
-                return prompt(prompt_text, **prompt_kwargs)
+                return prompt(styled_prompt, **prompt_kwargs)
                 
             except KeyboardInterrupt:
                 print("\n👋 Interrupted")
@@ -2425,11 +2679,11 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                 return "exit"
             except Exception as e:
                 print(f"⚠️  Prompt error: {e}")
-                return input(prompt_text)
+                return input(styled_prompt)
         else:
             # Fallback to basic input
             try:
-                return input(prompt_text)
+                return input(styled_prompt)
             except KeyboardInterrupt:
                 print("\n👋 Interrupted")
                 return "exit"
@@ -2438,7 +2692,8 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                 return "exit"
     
     def show_main_menu(self):
-        """Display the main menu with enhanced visual formatting and animations"""
+        """Display the main menu with enhanced visual design"""
+        self.in_menu_context = True  # Set menu context when showing menu
         
         # Define glitch function for both Rich and fallback paths
         def glitch(text):
@@ -2620,7 +2875,7 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                 
                 print()
         
-        # Menu options in individual boxes style
+        # Menu options in wide panel style matching header
         if COLORAMA_AVAILABLE:
             # Main menu header
             header_width = 115
@@ -2628,42 +2883,44 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             print(f"{Fore.LIGHTCYAN_EX}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}🧠 MAIN MENU 🧠{ColoramaStyle.RESET_ALL}{' ' * (header_width - 15)}{Fore.LIGHTCYAN_EX}║{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.LIGHTCYAN_EX}╚{'═'*header_width}╝{ColoramaStyle.RESET_ALL}\n")
             
-            # Individual menu option boxes
-            option_width = 82
-            
+            # Individual menu option panels - full width like header with enhanced visual styling
             options = [
                 ("[1] 🧠 IBLU KALIGPT", "Multi-AI Assistant", Fore.GREEN, 
-                 "• Auto-rephrasing on refusal", "• Multi-AI querying"),
+                 "• Auto-rephrasing on refusal", "• Multi-AI querying", "🤖"),
                 ("[2] 🎮 HACKING TOYS", "Installation & Management", Fore.BLUE, 
-                 "• Install, list, and delete security tools", ""),
+                 "• Install, list, and delete security tools", "", "🔧"),
                 ("[3] ⚙️  CONFIGURATION", "Settings", Fore.CYAN, 
-                 "• API keys, rephrasing mode", ""),
+                 "• API keys, rephrasing mode", "", "🔑"),
                 ("[4] 🤖 AI TEXT SUGGESTIONS", "Autocomplete & Text Generation", Fore.MAGENTA,
-                 "• OpenAI GPT suggestions", "• Local models & rule-based"),
-                ("[5] 📋 LIST MODELS", "Show available AI models", Fore.YELLOW, "", ""),
-                ("[6] 🚪 EXIT", "Leave the program", Fore.RED, "", "")
+                 "• OpenAI GPT suggestions", "• Local models & rule-based", "✨"),
+                ("[5] 📋 LIST MODELS", "Show available AI models", Fore.YELLOW, "", "", "🔍"),
+                ("[6] 🚪 EXIT", "Leave the program", Fore.RED, "", "", "👋")
             ]
             
-            for option, title, color, desc1, desc2 in options:
-                # Top border with individual color
-                print(f"{color}┌─ {ColoramaStyle.BRIGHT}{Fore.WHITE}{option}{ColoramaStyle.RESET_ALL}{color} ─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}")
+            for i, (option, title, color, desc1, desc2, icon) in enumerate(options):
+                # Enhanced top border with gradient effect and icon
+                print(f"{color}╔{'═'*header_width}╗{ColoramaStyle.RESET_ALL}")
                 
-                # Option title line
-                print(f"{color}│{ColoramaStyle.RESET_ALL}  {ColoramaStyle.BRIGHT}{Fore.WHITE}{title}{ColoramaStyle.RESET_ALL}{' ' * (82 - len(title) - 4)}{color}│{ColoramaStyle.RESET_ALL}")
+                # Enhanced option title line with icon and better spacing
+                title_spacing = header_width - len(option) - len(title) - len(icon) - 8
+                print(f"{color}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Back.BLACK}{color}{icon} {Fore.WHITE}{option}{ColoramaStyle.RESET_ALL}: {ColoramaStyle.BRIGHT}{Fore.WHITE}{title}{ColoramaStyle.RESET_ALL}{' ' * title_spacing}{color}║{ColoramaStyle.RESET_ALL}")
                 
-                # Description lines with white color
+                # Enhanced description lines with better formatting and bullets
                 if desc1:
-                    print(f"{color}│{ColoramaStyle.RESET_ALL}  {Fore.WHITE}{desc1.ljust(78)}{color}│{ColoramaStyle.RESET_ALL}")
+                    desc_spacing = header_width - len(desc1) - 6
+                    print(f"{color}║{ColoramaStyle.RESET_ALL} {Fore.LIGHTWHITE_EX}▸{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.LIGHTBLUE_EX}{desc1}{ColoramaStyle.RESET_ALL}{' ' * desc_spacing}{color}║{ColoramaStyle.RESET_ALL}")
                 if desc2:
-                    print(f"{color}│{ColoramaStyle.RESET_ALL}  {Fore.WHITE}{desc2.ljust(78)}{color}│{ColoramaStyle.RESET_ALL}")
+                    desc_spacing = header_width - len(desc2) - 6
+                    print(f"{color}║{ColoramaStyle.RESET_ALL} {Fore.LIGHTWHITE_EX}▸{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.LIGHTBLUE_EX}{desc2}{ColoramaStyle.RESET_ALL}{' ' * desc_spacing}{color}║{ColoramaStyle.RESET_ALL}")
                 
-                # Bottom border
-                print(f"{color}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}\n")
+                # Enhanced bottom border with shadow effect
+                print(f"{color}╚{'═'*header_width}╝{ColoramaStyle.RESET_ALL}")
             
             # Footer with instructions
-            footer_width = 65
+            footer_width = 75
             print(f"{Fore.LIGHTGREEN_EX}┌{'─'*footer_width}┐{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}💡 Type a number (1-6) or start chatting!{ColoramaStyle.RESET_ALL}{' ' * (footer_width - 38)}{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.YELLOW}🛑 Use Ctrl+C or type 'exit'/'quit' to leave anytime{ColoramaStyle.RESET_ALL}{' ' * (footer_width - 52)}{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.LIGHTGREEN_EX}└{'─'*footer_width}┘{ColoramaStyle.RESET_ALL}\n")
     
     def handle_menu_choice(self, choice: str) -> str:
@@ -2671,6 +2928,7 @@ All responses should be helpful, educational, and focused on legitimate cybersec
         choice = choice.strip()
         
         if choice in ['1', 'iblu', 'kali', 'kaligpt']:
+            self.in_menu_context = False  # Enter chat mode
             return self.handle_iblu_kaligpt()
         elif choice in ['2', 'toys', 'tools', 'install', 'hacking', 'manage']:
             return self.handle_hacking_toys()
@@ -2681,49 +2939,48 @@ All responses should be helpful, educational, and focused on legitimate cybersec
         elif choice in ['5', 'models', 'list']:
             return self.list_available_models()
         elif choice in ['6', 'exit', 'quit']:
-            return "👋 Goodbye! Stay secure!"
+            return f"{Fore.LIGHTCYAN_EX}🚪 Exiting IBLU KALIGPT...{ColoramaStyle.RESET_ALL}\n{Fore.LIGHTGREEN_EX}👋 Goodbye! Stay secure!{ColoramaStyle.RESET_ALL}"
         else:
             return f"❌ Invalid choice: {choice}\n💡 Please choose 1-6 or type 'menu'"
     
     def handle_hacking_toys(self):
         """Handle Hacking Toys menu - install and manage tools"""
         if COLORAMA_AVAILABLE:
-            print(f"\n{Fore.CYAN}╔══════════════════════════════════════════════════════════════════════════════╗{ColoramaStyle.RESET_ALL}")
+            header_width = 115
+            print(f"\n{Fore.CYAN}╔{'═'*header_width}╗{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.CYAN}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}🎮 HACKING TOYS - INSTALLATION & MANAGEMENT 🎮{ColoramaStyle.RESET_ALL} {Fore.CYAN}{' ' * 20}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.CYAN}╚══════════════════════════════════════════════════════════════════════════════╝{ColoramaStyle.RESET_ALL}\n")
+            print(f"{Fore.CYAN}╚{'═'*header_width}╝{ColoramaStyle.RESET_ALL}\n")
             
-            print(f"{Fore.LIGHTCYAN_EX}┌─ {ColoramaStyle.BRIGHT}{Fore.WHITE}[1] ⚡ INSTALL ALL{ColoramaStyle.RESET_ALL}{Fore.LIGHTCYAN_EX} ─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}  {ColoramaStyle.BRIGHT}{Fore.WHITE}Quick install 90+ tools{ColoramaStyle.RESET_ALL}{' ' * (35)}{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}  {Fore.CYAN}• Time: 20-40 minutes • Requires: sudo{ColoramaStyle.RESET_ALL}{' ' * (22)}{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}\n")
+            # Individual menu option panels - full width like header
+            options = [
+                ("[1] ⚡ INSTALL ALL", "Quick install 90+ tools", Fore.LIGHTCYAN_EX,
+                 "• Time: 20-40 minutes • Requires: sudo", ""),
+                ("[2] 🎯 INSTALL ONE-BY-ONE", "Choose specific tools", Fore.LIGHTCYAN_EX,
+                 "• Browse numbered list with descriptions", "• Organized by category (Recon, Web, Network, etc.)"),
+                ("[3] 📋 LIST TOOLS", "View all installed hacking tools", Fore.LIGHTCYAN_EX,
+                 "• Show tools organized by category", "• Display tool descriptions and usage"),
+                ("[4] 🗑️  DELETE TOOLS", "Remove hacking tools", Fore.LIGHTCYAN_EX,
+                 "• Delete individual tools or all at once", "• Free up disk space by removing unused tools"),
+                ("[5] 🗑️  DELETE MODELS", "Remove local AI models", Fore.LIGHTCYAN_EX,
+                 "• Delete Llama, Mistral, or HuggingFace models", "• Free up disk space by removing unused models"),
+                ("[6] 🔙 BACK", "Return to main menu", Fore.LIGHTCYAN_EX, "", "")
+            ]
             
-            print(f"{Fore.LIGHTCYAN_EX}┌─ {ColoramaStyle.BRIGHT}{Fore.WHITE}[2] 🎯 INSTALL ONE-BY-ONE{ColoramaStyle.RESET_ALL}{Fore.LIGHTCYAN_EX} ─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}  {ColoramaStyle.BRIGHT}{Fore.WHITE}Choose specific tools{ColoramaStyle.RESET_ALL}{' ' * (37)}{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}  {Fore.CYAN}• Browse numbered list with descriptions{ColoramaStyle.RESET_ALL}{' ' * (21)}{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}  {Fore.CYAN}• Organized by category (Recon, Web, Network, etc.){ColoramaStyle.RESET_ALL}{' ' * (8)}{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}\n")
-            
-            print(f"{Fore.LIGHTCYAN_EX}┌─ {ColoramaStyle.BRIGHT}{Fore.WHITE}[3] 📋 LIST TOOLS{ColoramaStyle.RESET_ALL}{Fore.LIGHTCYAN_EX} ─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}  {ColoramaStyle.BRIGHT}{Fore.WHITE}View all installed hacking tools{ColoramaStyle.RESET_ALL}{' ' * (30)}{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}  {Fore.CYAN}• Show tools organized by category{ColoramaStyle.RESET_ALL}{' ' * (25)}{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}  {Fore.CYAN}• Display tool descriptions and usage{ColoramaStyle.RESET_ALL}{' ' * (19)}{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}\n")
-            
-            print(f"{Fore.LIGHTCYAN_EX}┌─ {ColoramaStyle.BRIGHT}{Fore.WHITE}[4] 🗑️  DELETE TOOLS{ColoramaStyle.RESET_ALL}{Fore.LIGHTCYAN_EX} ─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}  {ColoramaStyle.BRIGHT}{Fore.WHITE}Remove hacking tools{ColoramaStyle.RESET_ALL}{' ' * (37)}{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}  {Fore.CYAN}• Delete individual tools or all at once{ColoramaStyle.RESET_ALL}{' ' * (19)}{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}  {Fore.CYAN}• Free up disk space by removing unused tools{ColoramaStyle.RESET_ALL}{' ' * (13)}{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}\n")
-            
-            print(f"{Fore.LIGHTCYAN_EX}┌─ {ColoramaStyle.BRIGHT}{Fore.WHITE}[5] 🗑️  DELETE MODELS{ColoramaStyle.RESET_ALL}{Fore.LIGHTCYAN_EX} ─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}  {ColoramaStyle.BRIGHT}{Fore.WHITE}Remove local AI models{ColoramaStyle.RESET_ALL}{' ' * (36)}{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}  {Fore.CYAN}• Delete Llama, Mistral, or HuggingFace models{ColoramaStyle.RESET_ALL}{' ' * (14)}{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}  {Fore.CYAN}• Free up disk space by removing unused models{ColoramaStyle.RESET_ALL}{' ' * (13)}{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}\n")
-            
-            print(f"{Fore.LIGHTCYAN_EX}┌─ {ColoramaStyle.BRIGHT}{Fore.WHITE}[6] 🔙 BACK{ColoramaStyle.RESET_ALL}{Fore.LIGHTCYAN_EX} ─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}  {ColoramaStyle.BRIGHT}{Fore.WHITE}Return to main menu{ColoramaStyle.RESET_ALL}{' ' * (39)}{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}\n")
+            for option, title, color, desc1, desc2 in options:
+                # Top border with individual color
+                print(f"{color}╔{'═'*header_width}╗{ColoramaStyle.RESET_ALL}")
+                
+                # Option title line
+                print(f"{color}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}{option}{ColoramaStyle.RESET_ALL}: {title.ljust(35)}{' ' * (header_width - len(option) - len(title) - 6)}{color}║{ColoramaStyle.RESET_ALL}")
+                
+                # Description lines with white color
+                if desc1:
+                    print(f"{color}║{ColoramaStyle.RESET_ALL}  {Fore.WHITE}{desc1.ljust(header_width-4)}{color}║{ColoramaStyle.RESET_ALL}")
+                if desc2:
+                    print(f"{color}║{ColoramaStyle.RESET_ALL}  {Fore.WHITE}{desc2.ljust(header_width-4)}{color}║{ColoramaStyle.RESET_ALL}")
+                
+                # Bottom border
+                print(f"{color}╚{'═'*header_width}╝{ColoramaStyle.RESET_ALL}")
         else:
             print("\n" + "=" * 70)
             print("    HACKING TOYS - INSTALLATION & MANAGEMENT")
@@ -2748,6 +3005,7 @@ All responses should be helpful, educational, and focused on legitimate cybersec
         elif choice == '5':
             return self.handle_delete_models()
         elif choice == '6':
+            self.show_main_menu()
             return ""
         else:
             return f"❌ Invalid choice: {choice}\n💡 Please choose 1-6"
@@ -2755,10 +3013,12 @@ All responses should be helpful, educational, and focused on legitimate cybersec
     def handle_delete_models(self):
         """Handle model deletion menu"""
         if COLORAMA_AVAILABLE:
-            print(f"\n{Fore.LIGHTMAGENTA_EX}╔══════════════════════════════════════════════════════════════════════════════╗{ColoramaStyle.RESET_ALL}")
+            header_width = 115
+            print(f"\n{Fore.LIGHTMAGENTA_EX}╔{'═'*header_width}╗{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.LIGHTMAGENTA_EX}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}🗑️  DELETE MODELS - REMOVE LOCAL MODELS 🗑️{ColoramaStyle.RESET_ALL} {Fore.LIGHTMAGENTA_EX}{' ' * 20}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTMAGENTA_EX}╚══════════════════════════════════════════════════════════════════════════════╝{ColoramaStyle.RESET_ALL}\n")
+            print(f"{Fore.LIGHTMAGENTA_EX}╚{'═'*header_width}╝{ColoramaStyle.RESET_ALL}\n")
             
+            # Individual menu option panels - full width like header
             options = [
                 ("[1] 🗑️  DELETE LLAMA MODELS", "Remove local Llama models", Fore.LIGHTMAGENTA_EX,
                  "• Free up disk space by removing Llama models", "• Select specific models or delete all"),
@@ -2767,19 +3027,19 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             
             for option, title, color, desc1, desc2 in options:
                 # Top border with individual color
-                print(f"{color}┌─ {ColoramaStyle.BRIGHT}{Fore.WHITE}{option}{ColoramaStyle.RESET_ALL}{color} ─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}")
+                print(f"{color}╔{'═'*header_width}╗{ColoramaStyle.RESET_ALL}")
                 
                 # Option title line
-                print(f"{color}│{ColoramaStyle.RESET_ALL}  {ColoramaStyle.BRIGHT}{Fore.WHITE}{title}{ColoramaStyle.RESET_ALL}{' ' * (82 - len(title) - 4)}{color}│{ColoramaStyle.RESET_ALL}")
+                print(f"{color}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}{option}{ColoramaStyle.RESET_ALL}: {title.ljust(35)}{' ' * (header_width - len(option) - len(title) - 6)}{color}║{ColoramaStyle.RESET_ALL}")
                 
                 # Description lines with white color
                 if desc1:
-                    print(f"{color}│{ColoramaStyle.RESET_ALL}  {Fore.WHITE}{desc1.ljust(78)}{color}│{ColoramaStyle.RESET_ALL}")
+                    print(f"{color}║{ColoramaStyle.RESET_ALL}  {Fore.WHITE}{desc1.ljust(header_width-4)}{color}║{ColoramaStyle.RESET_ALL}")
                 if desc2:
-                    print(f"{color}│{ColoramaStyle.RESET_ALL}  {Fore.WHITE}{desc2.ljust(78)}{color}│{ColoramaStyle.RESET_ALL}")
+                    print(f"{color}║{ColoramaStyle.RESET_ALL}  {Fore.WHITE}{desc2.ljust(header_width-4)}{color}║{ColoramaStyle.RESET_ALL}")
                 
                 # Bottom border
-                print(f"{color}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}\n")
+                print(f"{color}╚{'═'*header_width}╝{ColoramaStyle.RESET_ALL}")
         else:
             print("\n" + "=" * 70)
             print("    DELETE MODELS - REMOVE LOCAL MODELS")
@@ -2793,6 +3053,7 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             available_models = self.get_available_llama_models()
             return self.delete_llama_model(available_models)
         elif choice == '2':
+            self.show_main_menu()
             return ""
         else:
             return f"❌ Invalid choice: {choice}\n💡 Please choose 1-2"
@@ -3058,50 +3319,63 @@ All responses should be helpful, educational, and focused on legitimate cybersec
         return f"✅ Total models available: {total_models}"
     
     def handle_iblu_kaligpt(self):
-        """Handle IBLU KALIGPT main menu option"""
-        print(f"\n{self._colorize('🧠 IBLU KALIGPT - Multi-AI Assistant', Fore.CYAN)}")
-        print("=" * 50)
-        
-        print(f"\n{self._colorize('🤖 Available AI Providers:', Fore.GREEN)}")
-        
-        # Check available providers
-        available_providers = []
-        for provider in [Provider.OPENAI, Provider.GEMINI, Provider.MISTRAL]:
-            provider_keys = self.get_provider_keys(provider)
-            if provider_keys:
-                available_providers.append((provider, provider_keys[0]))
-        
-        # Check local Llama
-        try:
-            url = "http://localhost:11434/api/tags"
-            response = requests.get(url, timeout=5)
-            if response.status_code == 200:
-                available_providers.append((Provider.LLAMA, "local"))
-        except requests.exceptions.RequestException:
-            pass
-        
-        if available_providers:
-            print(f"✅ {len(available_providers)} providers configured:")
-            for provider, _ in available_providers:
-                print(f"  • {provider.value.title()}")
+        """Handle IBLU KALIGPT main menu option - enter chat mode"""
+        if COLORAMA_AVAILABLE:
+            header_width = 115
+            print(f"\n{Fore.GREEN}╔{'═'*header_width}╗{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.GREEN}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}🧠 IBLU KALIGPT - CHAT MODE 🧠{ColoramaStyle.RESET_ALL} {Fore.GREEN}{' ' * 42}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.GREEN}╚{'═'*header_width}╝{ColoramaStyle.RESET_ALL}\n")
             
-            if len(available_providers) >= 2:
-                print(f"\n{self._colorize('🤝 Collaborative Mode: ACTIVE', Fore.MAGENTA)}")
-                print(f"• All models will work together for comprehensive responses")
-                print(f"• Parallel processing for faster answers")
+            # Check available providers
+            available_providers = []
+            for provider in [Provider.OPENAI, Provider.GEMINI, Provider.MISTRAL]:
+                provider_keys = self.get_provider_keys(provider)
+                if provider_keys:
+                    available_providers.append((provider, provider_keys[0]))
+            
+            # Check local Llama
+            try:
+                url = "http://localhost:11434/api/tags"
+                response = requests.get(url, timeout=5)
+                if response.status_code == 200:
+                    available_providers.append((Provider.LLAMA, "local"))
+            except requests.exceptions.RequestException:
+                pass
+            
+            # Provider status panel
+            print(f"{Fore.GREEN}╔{'═'*header_width}╗{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.GREEN}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}🤖 AI PROVIDERS STATUS 🤖{ColoramaStyle.RESET_ALL} {Fore.GREEN}{' ' * 41}║{ColoramaStyle.RESET_ALL}")
+            
+            if available_providers:
+                print(f"{Fore.GREEN}║{ColoramaStyle.RESET_ALL}  {Fore.LIGHTGREEN_EX}✅{ColoramaStyle.RESET_ALL} {len(available_providers)} providers configured:{' ' * (header_width - 35)}{Fore.GREEN}║{ColoramaStyle.RESET_ALL}")
+                for provider, _ in available_providers:
+                    print(f"{Fore.GREEN}║{ColoramaStyle.RESET_ALL}    • {provider.value.title()}{' ' * (header_width - len(provider.value.title()) - 15)}{Fore.GREEN}║{ColoramaStyle.RESET_ALL}")
+                
+                if len(available_providers) >= 2:
+                    print(f"{Fore.GREEN}║{ColoramaStyle.RESET_ALL}  {Fore.LIGHTMAGENTA_EX}🤝{ColoramaStyle.RESET_ALL} Collaborative Mode: ACTIVE{' ' * (header_width - 40)}{Fore.GREEN}║{ColoramaStyle.RESET_ALL}")
+                else:
+                    print(f"{Fore.GREEN}║{ColoramaStyle.RESET_ALL}  {Fore.LIGHTYELLOW_EX}🔄{ColoramaStyle.RESET_ALL} Single Model Mode{' ' * (header_width - 30)}{Fore.GREEN}║{ColoramaStyle.RESET_ALL}")
             else:
-                print(f"\n{self._colorize('🔄 Single Model Mode', Fore.YELLOW)}")
-                print(f"• Configure more providers for collaborative mode")
+                print(f"{Fore.GREEN}║{ColoramaStyle.RESET_ALL}  {Fore.LIGHTRED_EX}❌{ColoramaStyle.RESET_ALL} No providers configured{' ' * (header_width - 35)}{Fore.GREEN}║{ColoramaStyle.RESET_ALL}")
+                print(f"{Fore.GREEN}║{ColoramaStyle.RESET_ALL}  {Fore.CYAN}💡{ColoramaStyle.RESET_ALL} Use option 3 in main menu to configure{' ' * (header_width - 45)}{Fore.GREEN}║{ColoramaStyle.RESET_ALL}")
+            
+            print(f"{Fore.GREEN}╚{'═'*header_width}╝{ColoramaStyle.RESET_ALL}\n")
+            
+            # Instructions panel
+            print(f"{Fore.CYAN}╔{'═'*header_width}╗{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.CYAN}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}💬 CHAT INSTRUCTIONS 💬{ColoramaStyle.RESET_ALL} {Fore.CYAN}{' ' * 45}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.CYAN}║{ColoramaStyle.RESET_ALL}  {Fore.WHITE}• Type your questions directly to chat with AI{ColoramaStyle.RESET_ALL}{' ' * (header_width - 50)}{Fore.CYAN}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.CYAN}║{ColoramaStyle.RESET_ALL}  {Fore.WHITE}• Type 'menu' or 'back' to return to main menu{ColoramaStyle.RESET_ALL}{' ' * (header_width - 55)}{Fore.CYAN}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.CYAN}║{ColoramaStyle.RESET_ALL}  {Fore.WHITE}• Type 'exit' or 'quit' to exit the program{ColoramaStyle.RESET_ALL}{' ' * (header_width - 52)}{Fore.CYAN}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.CYAN}╚{'═'*header_width}╝{ColoramaStyle.RESET_ALL}\n")
         else:
-            print(f"❌ No providers configured")
-            print(f"💡 Use /config to set up API keys")
+            print(f"\n🧠 IBLU KALIGPT - CHAT MODE")
+            print("=" * 50)
+            print(f"💬 Type your questions to chat with AI")
+            print(f"🔙 Type 'menu' to return to main menu")
+            print(f"🚪 Type 'exit' to quit\n")
         
-        print(f"\n{self._colorize('💡 Usage:', Fore.CYAN)}")
-        print(f"• Type your questions directly")
-        print(f"• Use /help to see all commands")
-        print(f"• Use /config to manage providers")
-        
-        return ""
+        return f"🧠 Chat mode activated. You can now start chatting with IBLU KALIGPT!"
     
     def handle_tool_management(self):
         """Handle Tool Management menu"""
@@ -3264,8 +3538,14 @@ All responses should be helpful, educational, and focused on legitimate cybersec
     
     def handle_iblu_kaligpt(self):
         """Handle IBLU KALIGPT multi-AI setup"""
-        print(f"\n{self._colorize('🧠 IBLU KALIGPT - Multi-AI Assistant', Fore.GREEN)}")
-        print("=" * 50)
+        if COLORAMA_AVAILABLE:
+            header_width = 115
+            print(f"\n{Fore.GREEN}╔{'═'*header_width}╗{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.GREEN}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}🧠 IBLU KALIGPT - Multi-AI Assistant 🧠{ColoramaStyle.RESET_ALL}{' ' * (header_width - 35)}{Fore.GREEN}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.GREEN}╚{'═'*header_width}╝{ColoramaStyle.RESET_ALL}")
+        else:
+            print(f"\n🧠 IBLU KALIGPT - Multi-AI Assistant")
+            print("=" * 50)
         
         # Check available API keys
         available_providers = []
@@ -3276,31 +3556,125 @@ All responses should be helpful, educational, and focused on legitimate cybersec
         if self.config.mistral_keys:
             available_providers.append("Mistral")
         
-        print(f"✅ Available AI Providers: {', '.join(available_providers) if available_providers else 'None'}")
-        print(f"🔄 Current Provider: {self.current_ai_provider}")
-        print(f"🔓 Rephrasing Mode: {'✅ Enabled' if self.rephrasing_mode else '❌ Disabled'}")
+        # Display status information in panel format
+        if COLORAMA_AVAILABLE:
+            # Status panel
+            print(f"{Fore.CYAN}╔{'═'*header_width}╗{ColoramaStyle.RESET_ALL}")
+            
+            status_line1 = f"✅ Available AI Providers: {', '.join(available_providers) if available_providers else 'None'}"
+            status_spacing1 = header_width - len(status_line1) - 4
+            print(f"{Fore.CYAN}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}{status_line1}{ColoramaStyle.RESET_ALL}{' ' * status_spacing1}{Fore.CYAN}║{ColoramaStyle.RESET_ALL}")
+            
+            status_line2 = f"🔄 Current Provider: {self.current_ai_provider if available_providers else 'None'}"
+            status_spacing2 = header_width - len(status_line2) - 4
+            print(f"{Fore.CYAN}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}{status_line2}{ColoramaStyle.RESET_ALL}{' ' * status_spacing2}{Fore.CYAN}║{ColoramaStyle.RESET_ALL}")
+            
+            status_line3 = f"🔓 Rephrasing Mode: {'✅ Enabled' if self.rephrasing_mode else '❌ Disabled'}"
+            status_spacing3 = header_width - len(status_line3) - 4
+            print(f"{Fore.CYAN}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}{status_line3}{ColoramaStyle.RESET_ALL}{' ' * status_spacing3}{Fore.CYAN}║{ColoramaStyle.RESET_ALL}")
+            
+            print(f"{Fore.CYAN}╚{'═'*header_width}╝{ColoramaStyle.RESET_ALL}")
+        else:
+            print(f"✅ Available AI Providers: {', '.join(available_providers) if available_providers else 'None'}")
+            print(f"🔄 Current Provider: {self.current_ai_provider if available_providers else 'None'}")
+            print(f"🔓 Rephrasing Mode: {'✅ Enabled' if self.rephrasing_mode else '❌ Disabled'}")
         
         if not available_providers:
-            print(f"\n{self._colorize('⚠️  No API keys configured!', Fore.YELLOW)}")
-            print(f"💡 Please add API keys to config.json")
-            print(f"📝 Example: {{'openai_keys': ['your-key']}}")
+            if COLORAMA_AVAILABLE:
+                # Warning panel
+                print(f"{Fore.YELLOW}╔{'═'*header_width}╗{ColoramaStyle.RESET_ALL}")
+                
+                warning_line1 = f"⚠️  No API keys configured!"
+                warning_spacing1 = header_width - len(warning_line1) - 4
+                print(f"{Fore.YELLOW}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.RED}{warning_line1}{ColoramaStyle.RESET_ALL}{' ' * warning_spacing1}{Fore.YELLOW}║{ColoramaStyle.RESET_ALL}")
+                
+                warning_line2 = f"💡 Please add API keys to config.json"
+                warning_spacing2 = header_width - len(warning_line2) - 4
+                print(f"{Fore.YELLOW}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}{warning_line2}{ColoramaStyle.RESET_ALL}{' ' * warning_spacing2}{Fore.YELLOW}║{ColoramaStyle.RESET_ALL}")
+                
+                warning_line3 = f"📝 Example: {{'openai_keys': ['your-key']}}"
+                warning_spacing3 = header_width - len(warning_line3) - 4
+                print(f"{Fore.YELLOW}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}{warning_line3}{ColoramaStyle.RESET_ALL}{' ' * warning_spacing3}{Fore.YELLOW}║{ColoramaStyle.RESET_ALL}")
+                
+                print(f"{Fore.YELLOW}╚{'═'*header_width}╝{ColoramaStyle.RESET_ALL}")
+            else:
+                print(f"\n⚠️  No API keys configured!")
+                print(f"💡 Please add API keys to config.json")
+                print(f"📝 Example: {{'openai_keys': ['your-key']}}")
             return ""
         
-        print(f"\n{self._colorize('🎯 Features:', Fore.CYAN)}")
-        print(f"  • 🤖 Multiple AI models available simultaneously")
-        print(f"  • 🔓 Rephrasing mode bypasses content filters")
-        print(f"  • 🛡️ Uncensored cybersecurity assistance")
-        print(f"  • 🔗 HexStrike MCP integration")
-        
-        if self.rephrasing_mode:
-            print(f"\n{Fore.RED}⚠️  REPHRASING MODE ACTIVE{ColoramaStyle.RESET_ALL}")
-            print(f"🔓 AI responses will bypass content restrictions")
-            print(f"🛡️ Uncensored cybersecurity assistance activated")
+        # Features panel
+        if COLORAMA_AVAILABLE:
+            print(f"{Fore.MAGENTA}╔{'═'*header_width}╗{ColoramaStyle.RESET_ALL}")
+            
+            feature_line1 = f"🎯 Features:"
+            feature_spacing1 = header_width - len(feature_line1) - 4
+            print(f"{Fore.MAGENTA}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.CYAN}{feature_line1}{ColoramaStyle.RESET_ALL}{' ' * feature_spacing1}{Fore.MAGENTA}║{ColoramaStyle.RESET_ALL}")
+            
+            feature_line2 = f"  • 🤖 Multiple AI models available simultaneously"
+            feature_spacing2 = header_width - len(feature_line2) - 4
+            print(f"{Fore.MAGENTA}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}{feature_line2}{ColoramaStyle.RESET_ALL}{' ' * feature_spacing2}{Fore.MAGENTA}║{ColoramaStyle.RESET_ALL}")
+            
+            feature_line3 = f"  • 🔓 Rephrasing mode bypasses content filters"
+            feature_spacing3 = header_width - len(feature_line3) - 4
+            print(f"{Fore.MAGENTA}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}{feature_line3}{ColoramaStyle.RESET_ALL}{' ' * feature_spacing3}{Fore.MAGENTA}║{ColoramaStyle.RESET_ALL}")
+            
+            feature_line4 = f"  • 🛡️ Uncensored cybersecurity assistance"
+            feature_spacing4 = header_width - len(feature_line4) - 4
+            print(f"{Fore.MAGENTA}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}{feature_line4}{ColoramaStyle.RESET_ALL}{' ' * feature_spacing4}{Fore.MAGENTA}║{ColoramaStyle.RESET_ALL}")
+            
+            feature_line5 = f"  • 🔗 HexStrike MCP integration"
+            feature_spacing5 = header_width - len(feature_line5) - 4
+            print(f"{Fore.MAGENTA}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}{feature_line5}{ColoramaStyle.RESET_ALL}{' ' * feature_spacing5}{Fore.MAGENTA}║{ColoramaStyle.RESET_ALL}")
+            
+            print(f"{Fore.MAGENTA}╚{'═'*header_width}╝{ColoramaStyle.RESET_ALL}")
         else:
-            print(f"\n{Fore.GREEN}✅ Rephrasing mode disabled{ColoramaStyle.RESET_ALL}")
-            print(f"🔓 AI responses will follow standard guidelines")
+            print(f"\n🎯 Features:")
+            print(f"  • 🤖 Multiple AI models available simultaneously")
+            print(f"  • 🔓 Rephrasing mode bypasses content filters")
+            print(f"  • 🛡️ Uncensored cybersecurity assistance")
+            print(f"  • 🔗 HexStrike MCP integration")
         
-        return f"🧠 IBLU KALIGPT ready with {len(available_providers)} AI providers!"
+        # Rephrasing mode status panel
+        if COLORAMA_AVAILABLE:
+            if self.rephrasing_mode:
+                print(f"{Fore.RED}╔{'═'*header_width}╗{ColoramaStyle.RESET_ALL}")
+                
+                rephrase_line1 = f"⚠️  REPHRASING MODE ACTIVE"
+                rephrase_spacing1 = header_width - len(rephrase_line1) - 4
+                print(f"{Fore.RED}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}{rephrase_line1}{ColoramaStyle.RESET_ALL}{' ' * rephrase_spacing1}{Fore.RED}║{ColoramaStyle.RESET_ALL}")
+                
+                rephrase_line2 = f"🔓 AI responses will bypass content restrictions"
+                rephrase_spacing2 = header_width - len(rephrase_line2) - 4
+                print(f"{Fore.RED}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}{rephrase_line2}{ColoramaStyle.RESET_ALL}{' ' * rephrase_spacing2}{Fore.RED}║{ColoramaStyle.RESET_ALL}")
+                
+                rephrase_line3 = f"🛡️ Uncensored cybersecurity assistance activated"
+                rephrase_spacing3 = header_width - len(rephrase_line3) - 4
+                print(f"{Fore.RED}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}{rephrase_line3}{ColoramaStyle.RESET_ALL}{' ' * rephrase_spacing3}{Fore.RED}║{ColoramaStyle.RESET_ALL}")
+                
+                print(f"{Fore.RED}╚{'═'*header_width}╝{ColoramaStyle.RESET_ALL}")
+            else:
+                print(f"{Fore.GREEN}╔{'═'*header_width}╗{ColoramaStyle.RESET_ALL}")
+                
+                rephrase_line1 = f"✅ Rephrasing mode disabled"
+                rephrase_spacing1 = header_width - len(rephrase_line1) - 4
+                print(f"{Fore.GREEN}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}{rephrase_line1}{ColoramaStyle.RESET_ALL}{' ' * rephrase_spacing1}{Fore.GREEN}║{ColoramaStyle.RESET_ALL}")
+                
+                rephrase_line2 = f"🔓 AI responses will follow standard guidelines"
+                rephrase_spacing2 = header_width - len(rephrase_line2) - 4
+                print(f"{Fore.GREEN}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}{rephrase_line2}{ColoramaStyle.RESET_ALL}{' ' * rephrase_spacing2}{Fore.GREEN}║{ColoramaStyle.RESET_ALL}")
+                
+                print(f"{Fore.GREEN}╚{'═'*header_width}╝{ColoramaStyle.RESET_ALL}")
+        else:
+            if self.rephrasing_mode:
+                print(f"\n⚠️  REPHRASING MODE ACTIVE")
+                print(f"🔓 AI responses will bypass content restrictions")
+                print(f"🛡️ Uncensored cybersecurity assistance activated")
+            else:
+                print(f"\n✅ Rephrasing mode disabled")
+                print(f"🔓 AI responses will follow standard guidelines")
+        
+        return f"🧠 IBLU KALIGPT ready with 2 AI providers! 🤖 IBLU>"
     
     def handle_tools_installation(self):
         """Handle HexStrike tools installation"""
@@ -3745,9 +4119,10 @@ All responses should be helpful, educational, and focused on legitimate cybersec
     def handle_configuration(self):
         """Handle configuration settings with colorful styling"""
         if COLORAMA_AVAILABLE:
-            print(f"\n{Fore.LIGHTRED_EX}╔══════════════════════════════════════════════════════════════════════════════╗{ColoramaStyle.RESET_ALL}")
+            header_width = 115
+            print(f"\n{Fore.LIGHTRED_EX}╔{'═'*header_width}╗{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}⚙️  CONFIGURATION SETTINGS ⚙️{ColoramaStyle.RESET_ALL} {Fore.LIGHTRED_EX}{' ' * 38}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}╚══════════════════════════════════════════════════════════════════════════════╝{ColoramaStyle.RESET_ALL}\n")
+            print(f"{Fore.LIGHTRED_EX}╚{'═'*header_width}╝{ColoramaStyle.RESET_ALL}\n")
             
             # Current status display
             provider_colors = {
@@ -3760,10 +4135,12 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             }
             provider_color = provider_colors.get(self.current_ai_provider, Fore.LIGHTWHITE_EX)
             
-            print(f"{Fore.LIGHTRED_EX}┌─ {ColoramaStyle.BRIGHT}{Fore.WHITE}🔧 CURRENT STATUS 🔧{ColoramaStyle.RESET_ALL}{Fore.LIGHTRED_EX} ─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}│{ColoramaStyle.RESET_ALL}  {Fore.YELLOW}🔑{ColoramaStyle.RESET_ALL} Current AI Provider: {provider_color}{ColoramaStyle.BRIGHT}{self.current_ai_provider.value.title()}{ColoramaStyle.RESET_ALL}{' ' * (82 - len(self.current_ai_provider.value.title()) - 30)}{Fore.LIGHTRED_EX}│{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}│{ColoramaStyle.RESET_ALL}  {Fore.YELLOW}🔓{ColoramaStyle.RESET_ALL} Rephrasing Mode: {Fore.LIGHTGREEN_EX if self.rephrasing_mode else Fore.LIGHTRED_EX}{'✅ Enabled' if self.rephrasing_mode else '❌ Disabled'}{ColoramaStyle.RESET_ALL}{' ' * (82 - 20)}{Fore.LIGHTRED_EX}│{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}\n")
+            # Status panel
+            print(f"{Fore.LIGHTRED_EX}╔{'═'*header_width}╗{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}🔧 CURRENT STATUS 🔧{ColoramaStyle.RESET_ALL} {Fore.LIGHTRED_EX}{' ' * 47}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}  {Fore.YELLOW}🔑{ColoramaStyle.RESET_ALL} Current AI Provider: {provider_color}{ColoramaStyle.BRIGHT}{self.current_ai_provider.value.title()}{ColoramaStyle.RESET_ALL}{' ' * (header_width - len(self.current_ai_provider.value.title()) - 40)}{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}  {Fore.YELLOW}🔓{ColoramaStyle.RESET_ALL} Rephrasing Mode: {Fore.LIGHTGREEN_EX if self.rephrasing_mode else Fore.LIGHTRED_EX}{'✅ Enabled' if self.rephrasing_mode else '❌ Disabled'}{ColoramaStyle.RESET_ALL}{' ' * (header_width - 30)}{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}╚{'═'*header_width}╝{ColoramaStyle.RESET_ALL}\n")
             
             # Configuration options
             options = [
@@ -3775,26 +4152,28 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                  "• Check which API keys are properly configured", ""),
                 ("[4] 📦 Install Local Models", "Download and setup local models", Fore.LIGHTMAGENTA_EX,
                  "• Install Llama, Mistral, and other local models", ""),
-                ("[5] 🗑️  Delete Models", "Remove local AI models", Fore.LIGHTRED_EX,
+                ("[5] 🔄 Reload API Keys", "Reload configuration and keys", Fore.LIGHTCYAN_EX,
+                 "• Check status, reload keys, manual reload options", ""),
+                ("[6] 🗑️  Delete Models", "Remove local AI models", Fore.LIGHTRED_EX,
                  "• Free up disk space by removing unused models", ""),
-                ("[6] 🔙 Back to Main Menu", "Return to main interface", Fore.LIGHTCYAN_EX, "", "")
+                ("[7] 🔙 Back to Main Menu", "Return to main interface", Fore.LIGHTCYAN_EX, "", "")
             ]
             
             for option, title, color, desc1, desc2 in options:
                 # Top border with individual color
-                print(f"{color}┌─ {ColoramaStyle.BRIGHT}{Fore.WHITE}{option}{ColoramaStyle.RESET_ALL}{color} ─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}")
+                print(f"{color}╔{'═'*header_width}╗{ColoramaStyle.RESET_ALL}")
                 
                 # Option title line
-                print(f"{color}│{ColoramaStyle.RESET_ALL}  {ColoramaStyle.BRIGHT}{Fore.WHITE}{title}{ColoramaStyle.RESET_ALL}{' ' * (82 - len(title) - 4)}{color}│{ColoramaStyle.RESET_ALL}")
+                print(f"{color}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}{option}{ColoramaStyle.RESET_ALL}: {title.ljust(35)}{' ' * (header_width - len(option) - len(title) - 6)}{color}║{ColoramaStyle.RESET_ALL}")
                 
                 # Description lines with white color
                 if desc1:
-                    print(f"{color}│{ColoramaStyle.RESET_ALL}  {Fore.WHITE}{desc1.ljust(78)}{color}│{ColoramaStyle.RESET_ALL}")
+                    print(f"{color}║{ColoramaStyle.RESET_ALL}  {Fore.WHITE}{desc1.ljust(header_width-4)}{color}║{ColoramaStyle.RESET_ALL}")
                 if desc2:
-                    print(f"{color}│{ColoramaStyle.RESET_ALL}  {Fore.WHITE}{desc2.ljust(78)}{color}│{ColoramaStyle.RESET_ALL}")
+                    print(f"{color}║{ColoramaStyle.RESET_ALL}  {Fore.WHITE}{desc2.ljust(header_width-4)}{color}║{ColoramaStyle.RESET_ALL}")
                 
                 # Bottom border
-                print(f"{color}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}\n")
+                print(f"{color}╚{'═'*header_width}╝{ColoramaStyle.RESET_ALL}")
         else:
             print("\n" + "=" * 40)
             print("    CONFIGURATION SETTINGS")
@@ -3806,10 +4185,11 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             print("  2. Toggle Rephrasing Mode")
             print("  3. Show API Keys Status")
             print("  4. Install Local Models")
-            print("  5. Delete Models")
-            print("  6. Back to main menu\n")
+            print("  5. Reload API Keys")
+            print("  6. Delete Models")
+            print("  7. Back to main menu\n")
         
-        choice = input(f"{self._colorize('🎯 Choose option (1-6):', Fore.YELLOW)}").strip()
+        choice = input(f"{self._colorize('🎯 Choose option (1-7):', Fore.YELLOW)}").strip()
         
         if choice == '1':
             return self.switch_ai_provider()
@@ -3820,18 +4200,279 @@ All responses should be helpful, educational, and focused on legitimate cybersec
         elif choice == '4':
             return self.install_local_models_menu()
         elif choice == '5':
-            return self.handle_delete_models()
+            return self.reload_api_keys_menu()
         elif choice == '6':
+            return self.handle_delete_models()
+        elif choice == '7':
+            self.show_main_menu()
             return ""
         else:
-            return f"❌ Invalid choice: {choice}\n💡 Please choose 1-6"
+            return f"❌ Invalid choice: {choice}\n💡 Please choose 1-7"
+    
+    def reload_api_keys_menu(self):
+        """Handle API Keys reload menu with status check and manual reload options"""
+        if COLORAMA_AVAILABLE:
+            header_width = 115
+            print(f"\n{Fore.LIGHTCYAN_EX}╔{'═'*header_width}╗{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}🔄 API KEYS RELOAD MENU 🔄{ColoramaStyle.RESET_ALL} {Fore.LIGHTCYAN_EX}{' ' * 42}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}╚{'═'*header_width}╝{ColoramaStyle.RESET_ALL}\n")
+            
+            # Reload options
+            options = [
+                ("[1] 📊 Check API Keys Status", "View current API key configuration", Fore.LIGHTGREEN_EX,
+                 "• Show configured keys and their status", "• Display provider availability"),
+                ("[2] 🔄 Reload from Environment", "Reload API keys from environment variables", Fore.LIGHTYELLOW_EX,
+                 "• Load keys from ~/.iblu/api_keys.env", "• Refresh configuration automatically"),
+                ("[3] 🔧 Manual Reload", "Manual configuration reload options", Fore.LIGHTBLUE_EX,
+                 "• Force reload from config files", "• Reset and reinitialize configuration"),
+                ("[4] 🌍 Test API Connections", "Test API key validity and connectivity", Fore.LIGHTMAGENTA_EX,
+                 "• Verify API keys are working", "• Check provider connectivity"),
+                ("[5] 🔙 Back to Configuration", "Return to configuration menu", Fore.LIGHTCYAN_EX, "", "")
+            ]
+            
+            for option, title, color, desc1, desc2 in options:
+                # Top border with individual color
+                print(f"{color}╔{'═'*header_width}╗{ColoramaStyle.RESET_ALL}")
+                
+                # Option title line
+                print(f"{color}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}{option}{ColoramaStyle.RESET_ALL}: {title.ljust(35)}{' ' * (header_width - len(option) - len(title) - 6)}{color}║{ColoramaStyle.RESET_ALL}")
+                
+                # Description lines with white color
+                if desc1:
+                    print(f"{color}║{ColoramaStyle.RESET_ALL}  {Fore.WHITE}{desc1.ljust(header_width-4)}{color}║{ColoramaStyle.RESET_ALL}")
+                if desc2:
+                    print(f"{color}║{ColoramaStyle.RESET_ALL}  {Fore.WHITE}{desc2.ljust(header_width-4)}{color}║{ColoramaStyle.RESET_ALL}")
+                
+                # Bottom border
+                print(f"{color}╚{'═'*header_width}╝{ColoramaStyle.RESET_ALL}")
+        else:
+            print("\n" + "=" * 50)
+            print("    API KEYS RELOAD MENU")
+            print("=" * 50 + "\n")
+            print("1. Check API Keys Status")
+            print("2. Reload from Environment")
+            print("3. Manual Reload")
+            print("4. Test API Connections")
+            print("5. Back to Configuration\n")
+        
+        choice = input(f"{self._colorize('🎯 Choose option (1-5):', Fore.YELLOW)}").strip()
+        
+        if choice == '1':
+            return self.show_api_keys_status()
+        elif choice == '2':
+            return self.reload_from_environment()
+        elif choice == '3':
+            return self.manual_reload_config()
+        elif choice == '4':
+            return self.test_api_connections()
+        elif choice == '5':
+            return self.handle_configuration()
+        else:
+            return f"❌ Invalid choice: {choice}\n💡 Please choose 1-5"
+    
+    def reload_from_environment(self):
+        """Reload API keys from environment variables"""
+        import os
+        from pathlib import Path
+        
+        if COLORAMA_AVAILABLE:
+            header_width = 115
+            print(f"\n{Fore.LIGHTYELLOW_EX}╔{'═'*header_width}╗{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTYELLOW_EX}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}🔄 RELOAD FROM ENVIRONMENT 🔄{ColoramaStyle.RESET_ALL} {Fore.LIGHTYELLOW_EX}{' ' * 38}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTYELLOW_EX}╚{'═'*header_width}╝{ColoramaStyle.RESET_ALL}\n")
+        
+        # Load environment file
+        env_file = Path.home() / '.iblu' / 'api_keys.env'
+        
+        if env_file.exists():
+            print(f"📁 Loading environment from: {env_file}")
+            
+            try:
+                with open(env_file, 'r') as f:
+                    for line in f:
+                        if line.startswith('export ') and '=' in line:
+                            key, value = line.strip()[7:].split('=', 1)
+                            value = value.strip('\'"')
+                            os.environ[key] = value
+                            print(f"✅ Loaded {key}")
+                
+                # Update configuration
+                if os.environ.get('OPENAI_API_KEY'):
+                    self.config.openai_keys = [os.environ['OPENAI_API_KEY']]
+                if os.environ.get('GEMINI_API_KEY'):
+                    self.config.gemini_keys = [os.environ['GEMINI_API_KEY']]
+                if os.environ.get('MISTRAL_API_KEY'):
+                    self.config.mistral_keys = [os.environ['MISTRAL_API_KEY']]
+                
+                print(f"\n✅ Environment variables reloaded successfully!")
+                print(f"📊 Updated configuration:")
+                print(f"  • OpenAI: {len(self.config.openai_keys)} key(s)")
+                print(f"  • Gemini: {len(self.config.gemini_keys)} key(s)")
+                print(f"  • Mistral: {len(self.config.mistral_keys) if self.config.mistral_keys else 0} key(s)")
+                
+                return "✅ API keys reloaded from environment!"
+                
+            except Exception as e:
+                return f"❌ Error loading environment: {e}"
+        else:
+            return f"❌ Environment file not found: {env_file}"
+    
+    def manual_reload_config(self):
+        """Manual configuration reload"""
+        if COLORAMA_AVAILABLE:
+            header_width = 115
+            print(f"\n{Fore.LIGHTBLUE_EX}╔{'═'*header_width}╗{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTBLUE_EX}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}🔧 MANUAL CONFIG RELOAD 🔧{ColoramaStyle.RESET_ALL} {Fore.LIGHTBLUE_EX}{' ' * 40}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTBLUE_EX}╚{'═'*header_width}╝{ColoramaStyle.RESET_ALL}\n")
+        
+        print("🔄 Manual reload options:")
+        print("1. Force reload from secure config")
+        print("2. Reset and reinitialize configuration")
+        print("3. Reload from backup configuration")
+        print("4. Cancel")
+        
+        choice = input(f"\n{self._colorize('Choose reload option (1-4):', Fore.YELLOW)}").strip()
+        
+        if choice == '1':
+            try:
+                # Try to reload from secure config
+                from secure_config_loader import SecureConfigLoader
+                loader = SecureConfigLoader()
+                new_config = loader.load_secure_config()
+                
+                if new_config:
+                    self.config = new_config
+                    return "✅ Configuration reloaded from secure storage!"
+                else:
+                    return "❌ Failed to load from secure config"
+            except Exception as e:
+                return f"❌ Error reloading config: {e}"
+                
+        elif choice == '2':
+            try:
+                # Reinitialize configuration
+                from api_key_protection import APIConfig
+                self.config = APIConfig()
+                return "✅ Configuration reset to defaults!"
+            except Exception as e:
+                return f"❌ Error resetting config: {e}"
+                
+        elif choice == '3':
+            backup_file = Path.home() / '.iblu' / 'secrets' / 'config.json.backup'
+            if backup_file.exists():
+                try:
+                    import json
+                    with open(backup_file, 'r') as f:
+                        backup_config = json.load(f)
+                    
+                    # Update current config
+                    if 'openai_keys' in backup_config:
+                        self.config.openai_keys = backup_config['openai_keys']
+                    if 'gemini_keys' in backup_config:
+                        self.config.gemini_keys = backup_config['gemini_keys']
+                    if 'mistral_keys' in backup_config:
+                        self.config.mistral_keys = backup_config['mistral_keys']
+                    
+                    return "✅ Configuration restored from backup!"
+                except Exception as e:
+                    return f"❌ Error restoring backup: {e}"
+            else:
+                return "❌ No backup configuration found"
+                
+        elif choice == '4':
+            return "🔄 Manual reload cancelled"
+        else:
+            return "❌ Invalid choice"
+    
+    def test_api_connections(self):
+        """Test API key validity and connectivity"""
+        if COLORAMA_AVAILABLE:
+            header_width = 115
+            print(f"\n{Fore.LIGHTMAGENTA_EX}╔{'═'*header_width}╗{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTMAGENTA_EX}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}🌍 TEST API CONNECTIONS 🌍{ColoramaStyle.RESET_ALL} {Fore.LIGHTMAGENTA_EX}{' ' * 39}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTMAGENTA_EX}╚{'═'*header_width}╝{ColoramaStyle.RESET_ALL}\n")
+        
+        print("🔍 Testing API connections...")
+        
+        results = []
+        
+        # Test OpenAI
+        if self.config.openai_keys:
+            print("🤖 Testing OpenAI connection...")
+            try:
+                import requests
+                response = requests.post(
+                    "https://api.openai.com/v1/chat/completions",
+                    headers={
+                        "Authorization": f"Bearer {self.config.openai_keys[0]}",
+                        "Content-Type": "application/json"
+                    },
+                    json={
+                        "model": "gpt-3.5-turbo",
+                        "messages": [{"role": "user", "content": "Hello"}],
+                        "max_tokens": 5
+                    },
+                    timeout=10
+                )
+                if response.status_code == 200:
+                    results.append("✅ OpenAI: Connection successful")
+                else:
+                    results.append(f"❌ OpenAI: HTTP {response.status_code}")
+            except Exception as e:
+                results.append(f"❌ OpenAI: {str(e)[:30]}...")
+        else:
+            results.append("⚠️  OpenAI: No keys configured")
+        
+        # Test Gemini
+        if self.config.gemini_keys:
+            print("🧠 Testing Gemini connection...")
+            try:
+                import requests
+                response = requests.post(
+                    f"https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key={self.config.gemini_keys[0]}",
+                    json={
+                        "contents": [{"parts": [{"text": "Hello"}]}]
+                    },
+                    timeout=10
+                )
+                if response.status_code == 200:
+                    results.append("✅ Gemini: Connection successful")
+                else:
+                    results.append(f"❌ Gemini: HTTP {response.status_code}")
+            except Exception as e:
+                results.append(f"❌ Gemini: {str(e)[:30]}...")
+        else:
+            results.append("⚠️  Gemini: No keys configured")
+        
+        # Test local Llama
+        try:
+            import requests
+            response = requests.get("http://localhost:11434/api/tags", timeout=5)
+            if response.status_code == 200:
+                results.append("✅ Llama: Local server running")
+            else:
+                results.append("❌ Llama: Server not responding")
+        except Exception:
+            results.append("❌ Llama: Local server not running")
+        
+        # Display results
+        if COLORAMA_AVAILABLE:
+            print(f"\n{Fore.LIGHTMAGENTA_EX}╔{'═'*header_width}╗{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTMAGENTA_EX}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}📊 CONNECTION TEST RESULTS 📊{ColoramaStyle.RESET_ALL} {Fore.LIGHTMAGENTA_EX}{' ' * 38}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTMAGENTA_EX}╚{'═'*header_width}╝{ColoramaStyle.RESET_ALL}\n")
+        
+        for result in results:
+            print(f"  {result}")
+        
+        return "\n🔍 API connection tests completed!"
     
     def handle_ai_text_suggestions(self):
         """Handle AI Text Suggestions / Autocomplete with multiple approaches"""
         if COLORAMA_AVAILABLE:
-            print(f"\n{Fore.LIGHTMAGENTA_EX}╔══════════════════════════════════════════════════════════════════════════════╗{ColoramaStyle.RESET_ALL}")
+            header_width = 115
+            print(f"\n{Fore.LIGHTMAGENTA_EX}╔{'═'*header_width}╗{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.LIGHTMAGENTA_EX}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}🤖 AI TEXT SUGGESTIONS / AUTOCOMPLETE 🤖{ColoramaStyle.RESET_ALL} {Fore.LIGHTMAGENTA_EX}{' ' * 22}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTMAGENTA_EX}╚══════════════════════════════════════════════════════════════════════════════╝{ColoramaStyle.RESET_ALL}\n")
+            print(f"{Fore.LIGHTMAGENTA_EX}╚{'═'*header_width}╝{ColoramaStyle.RESET_ALL}\n")
             
             # AI Suggestions options
             options = [
@@ -3846,19 +4487,19 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             
             for option, title, color, desc1, desc2 in options:
                 # Top border with individual color
-                print(f"{color}┌─ {ColoramaStyle.BRIGHT}{Fore.WHITE}{option}{ColoramaStyle.RESET_ALL}{color} ─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}")
+                print(f"{color}╔{'═'*header_width}╗{ColoramaStyle.RESET_ALL}")
                 
                 # Option title line
-                print(f"{color}│{ColoramaStyle.RESET_ALL}  {ColoramaStyle.BRIGHT}{Fore.WHITE}{title}{ColoramaStyle.RESET_ALL}{' ' * (82 - len(title) - 4)}{color}│{ColoramaStyle.RESET_ALL}")
+                print(f"{color}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}{option}{ColoramaStyle.RESET_ALL}: {title.ljust(35)}{' ' * (header_width - len(option) - len(title) - 6)}{color}║{ColoramaStyle.RESET_ALL}")
                 
                 # Description lines with white color
                 if desc1:
-                    print(f"{color}│{ColoramaStyle.RESET_ALL}  {Fore.WHITE}{desc1.ljust(78)}{color}│{ColoramaStyle.RESET_ALL}")
+                    print(f"{color}║{ColoramaStyle.RESET_ALL}  {Fore.WHITE}{desc1.ljust(header_width-4)}{color}║{ColoramaStyle.RESET_ALL}")
                 if desc2:
-                    print(f"{color}│{ColoramaStyle.RESET_ALL}  {Fore.WHITE}{desc2.ljust(78)}{color}│{ColoramaStyle.RESET_ALL}")
+                    print(f"{color}║{ColoramaStyle.RESET_ALL}  {Fore.WHITE}{desc2.ljust(header_width-4)}{color}║{ColoramaStyle.RESET_ALL}")
                 
                 # Bottom border
-                print(f"{color}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}\n")
+                print(f"{color}╚{'═'*header_width}╝{ColoramaStyle.RESET_ALL}")
         else:
             print("\n" + "=" * 50)
             print("    AI TEXT SUGGESTIONS / AUTOCOMPLETE")
@@ -3877,6 +4518,7 @@ All responses should be helpful, educational, and focused on legitimate cybersec
         elif choice == '3':
             return self.handle_rule_based_suggestions()
         elif choice == '4':
+            self.show_main_menu()
             return ""
         else:
             return f"❌ Invalid choice: {choice}\n💡 Please choose 1-4"
@@ -4066,39 +4708,85 @@ All responses should be helpful, educational, and focused on legitimate cybersec
         return f"🔓 Rephrasing mode {status}"
     
     def show_api_keys_status(self):
-        """Show API keys status"""
-        status = f"\n{self._colorize('🔑 API Keys Status:', Fore.CYAN)}"
-        status += f"\n{'='*40}"
-        
-        providers_status = []
-        
-        if self.config.openai_keys:
-            valid_keys = [k for k in self.config.openai_keys if k and k != "your-openai-api-key-here"]
-            providers_status.append(f"OpenAI: {len(valid_keys)} keys configured")
+        """Show API keys status with individual box style"""
+        if COLORAMA_AVAILABLE:
+            print(f"\n{Fore.LIGHTBLUE_EX}╔══════════════════════════════════════════════════════════════════════════════╗{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTBLUE_EX}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}🔑 API KEYS STATUS 🔑{ColoramaStyle.RESET_ALL} {Fore.LIGHTBLUE_EX}{' ' * 42}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTBLUE_EX}╚══════════════════════════════════════════════════════════════════════════════╝{ColoramaStyle.RESET_ALL}\n")
+            
+            # Provider status boxes
+            providers = []
+            
+            if self.config.openai_keys:
+                valid_keys = [k for k in self.config.openai_keys if k and k != "your-openai-api-key-here"]
+                providers.append(("OpenAI", f"{len(valid_keys)} keys configured", Fore.LIGHTGREEN_EX if valid_keys else Fore.LIGHTRED_EX))
+            else:
+                providers.append(("OpenAI", "No keys configured", Fore.LIGHTRED_EX))
+            
+            if self.config.gemini_keys:
+                valid_keys = [k for k in self.config.gemini_keys if k and k != "your-gemini-api-key-here"]
+                providers.append(("Gemini", f"{len(valid_keys)} keys configured", Fore.LIGHTGREEN_EX if valid_keys else Fore.LIGHTRED_EX))
+            else:
+                providers.append(("Gemini", "No keys configured", Fore.LIGHTRED_EX))
+            
+            if self.config.llama_keys:
+                valid_keys = [k for k in self.config.llama_keys if k and k != "your-llama-api-key-here"]
+                providers.append(("Llama", f"{len(valid_keys)} keys configured", Fore.LIGHTGREEN_EX if valid_keys else Fore.LIGHTRED_EX))
+            else:
+                providers.append(("Llama", "No keys configured", Fore.LIGHTRED_EX))
+            
+            if self.config.mistral_keys:
+                valid_keys = [k for k in self.config.mistral_keys if k and k != "your-mistral-api-key-here"]
+                providers.append(("Mistral", f"{len(valid_keys)} keys configured", Fore.LIGHTGREEN_EX if valid_keys else Fore.LIGHTRED_EX))
+            else:
+                providers.append(("Mistral", "No keys configured", Fore.LIGHTRED_EX))
+            
+            # Display each provider in its own box
+            for provider, status, color in providers:
+                print(f"{color}┌─ {ColoramaStyle.BRIGHT}{Fore.WHITE}{provider}{ColoramaStyle.RESET_ALL}{color} ─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}")
+                print(f"{color}│{ColoramaStyle.RESET_ALL}  {ColoramaStyle.BRIGHT}{Fore.WHITE}{status}{ColoramaStyle.RESET_ALL}{' ' * (82 - len(status) - 4)}{color}│{ColoramaStyle.RESET_ALL}")
+                print(f"{color}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}\n")
+            
+            # Instructions box
+            print(f"{Fore.YELLOW}┌─ {ColoramaStyle.BRIGHT}{Fore.WHITE}💡 INSTRUCTIONS 💡{ColoramaStyle.RESET_ALL}{Fore.YELLOW} ─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.YELLOW}│{ColoramaStyle.RESET_ALL}  {ColoramaStyle.BRIGHT}{Fore.WHITE}Edit config.json to add API keys{ColoramaStyle.RESET_ALL}{' ' * (82 - 32)}{Fore.YELLOW}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.YELLOW}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}\n")
+            
+            return ""
         else:
-            providers_status.append("OpenAI: No keys configured")
-        
-        if self.config.gemini_keys:
-            valid_keys = [k for k in self.config.gemini_keys if k and k != "your-gemini-api-key-here"]
-            providers_status.append(f"Gemini: {len(valid_keys)} keys configured")
-        else:
-            providers_status.append("Gemini: No keys configured")
-        
-        if self.config.llama_keys:
-            valid_keys = [k for k in self.config.llama_keys if k and k != "your-llama-api-key-here"]
-            providers_status.append(f"Llama: {len(valid_keys)} keys configured")
-        else:
-            providers_status.append("Llama: No keys configured")
-        
-        if self.config.mistral_keys:
-            valid_keys = [k for k in self.config.mistral_keys if k and k != "your-mistral-api-key-here"]
-            providers_status.append(f"Mistral: {len(valid_keys)} keys configured")
-        else:
-            providers_status.append("Mistral: No keys configured")
-        
-        status += "\n".join(providers_status)
-        status += f"\n\n{self._colorize('💡 Edit config.json to add API keys', Fore.YELLOW)}"
-        return status
+            # Fallback for no colorama
+            status = f"\n🔑 API Keys Status:"
+            status += f"\n{'='*40}"
+            
+            providers_status = []
+            
+            if self.config.openai_keys:
+                valid_keys = [k for k in self.config.openai_keys if k and k != "your-openai-api-key-here"]
+                providers_status.append(f"OpenAI: {len(valid_keys)} keys configured")
+            else:
+                providers_status.append("OpenAI: No keys configured")
+            
+            if self.config.gemini_keys:
+                valid_keys = [k for k in self.config.gemini_keys if k and k != "your-gemini-api-key-here"]
+                providers_status.append(f"Gemini: {len(valid_keys)} keys configured")
+            else:
+                providers_status.append("Gemini: No keys configured")
+            
+            if self.config.llama_keys:
+                valid_keys = [k for k in self.config.llama_keys if k and k != "your-llama-api-key-here"]
+                providers_status.append(f"Llama: {len(valid_keys)} keys configured")
+            else:
+                providers_status.append("Llama: No keys configured")
+            
+            if self.config.mistral_keys:
+                valid_keys = [k for k in self.config.mistral_keys if k and k != "your-mistral-api-key-here"]
+                providers_status.append(f"Mistral: {len(valid_keys)} keys configured")
+            else:
+                providers_status.append("Mistral: No keys configured")
+            
+            status += "\n".join(providers_status)
+            status += f"\n\n💡 Edit config.json to add API keys"
+            return status
     
     def install_local_models_menu(self):
         """Show local model installation menu with colorful styling"""
@@ -4259,6 +4947,12 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             return "🧹 Screen cleared."
         elif cmd == "status":
             return self.get_status()
+        elif cmd == "debug_uncensored":
+            return self.debug_uncensored_detection()
+        elif cmd == "force_uncensored":
+            return self.force_uncensored_mode()
+        elif cmd == "restore_config":
+            return self.restore_config()
         elif cmd == "install_gemini":
             return self.install_gemini_local()
         elif cmd == "install_llama":
@@ -4457,60 +5151,98 @@ All responses should be helpful, educational, and focused on legitimate cybersec
         return formatted_response
     
     def format_ai_response(self, response: str) -> str:
-        """Format AI response with colors and effects"""
+        """Enhanced AI response formatting with beautiful colors and rich effects"""
         if not response:
             return response
             
-        # Initialize Rich console
+        # If response contains colorama codes (borders), print directly and return
+        if COLORAMA_AVAILABLE and (ColoramaStyle.RESET_ALL in response or '╔' in response or '║' in response or '╚' in response):
+            print(response)
+            return ""
+        
+        # Initialize Rich console for enhanced formatting
         console = None
         if RICH_AVAILABLE:
             from rich.console import Console
             from rich.syntax import Syntax
+            from rich.panel import Panel
+            from rich.text import Text
             console = Console()
-            
-        # If response contains colorama codes, print directly and return
-        if COLORAMA_AVAILABLE and (ColoramaStyle.RESET_ALL in response or ColoramaStyle.BRIGHT in response or Back.RESET in response):
-            print(response)
-            return ""
         
         if not RICH_AVAILABLE or not console:
-            return response
-        
-        # Print formatted response using rich
-        console.print("\n")
-        
-        # Split response into lines for processing
-        lines = response.split('\n')
-        
-        for line in lines:
-            # Headers (###)
-            if line.startswith('### '):
-                console.print(f"[bold yellow]{line}[/bold yellow]")
-            # Numbered sections (1., 2., etc.)
-            elif line.strip() and line.strip()[0].isdigit() and '. ' in line[:5]:
-                console.print(f"[bold cyan]{line}[/bold cyan]")
-            # Bold items (**text**)
-            elif '**' in line:
-                # Replace **text** with rich markup
-                formatted = line.replace('**', '[bold green]', 1).replace('**', '[/bold green]', 1)
-                while '**' in formatted:
-                    formatted = formatted.replace('**', '[bold green]', 1).replace('**', '[/bold green]', 1)
-                console.print(formatted)
-            # Code blocks (```)
-            elif line.strip().startswith('```'):
-                console.print(f"[dim]{line}[/dim]")
-            # Bullet points (-)
-            elif line.strip().startswith('- '):
-                console.print(f"[cyan]{line}[/cyan]")
-            # Commands or code lines (starting with specific tools)
-            elif any(line.strip().startswith(tool) for tool in ['sqlmap', 'nmap', 'hydra', 'nikto', 'ffuf', 'john', 'hashcat', 'burp']):
-                syntax = Syntax(line.strip(), "bash", theme="monokai", line_numbers=False)
-                console.print(syntax)
-            # Regular text
+            # Fallback with basic colorama formatting
+            if COLORAMA_AVAILABLE:
+                formatted_response = f"\n{Fore.LIGHTCYAN_EX}🤖 IBLU KALIGPT RESPONSE:{ColoramaStyle.RESET_ALL}\n"
+                formatted_response += f"{Fore.LIGHTWHITE_EX}{response}{ColoramaStyle.RESET_ALL}\n"
+                print(formatted_response)
+                return ""
             else:
-                console.print(line)
+                return response
         
+        # Enhanced Rich formatting with beautiful panels
         console.print("\n")
+        
+        # Create a beautiful panel for the response
+        if len(response) < 200:
+            # Short response - use inline panel
+            panel = Panel(
+                response,
+                title="[bold cyan]🤖 IBLU KALIGPT[/bold cyan]",
+                title_align="left",
+                border_style="cyan",
+                padding=(1, 2)
+            )
+            console.print(panel)
+        else:
+            # Long response - process line by line with enhanced formatting
+            lines = response.split('\n')
+            
+            for i, line in enumerate(lines):
+                # Skip empty lines but maintain spacing
+                if not line.strip():
+                    console.print()
+                    continue
+                    
+                # Headers and section markers
+                if line.startswith('### ') or line.startswith('## '):
+                    console.print(f"[bold yellow]{line}[/bold yellow]")
+                elif line.startswith('# '):
+                    console.print(f"[bold magenta]{line}[/bold magenta]")
+                # Numbered sections (1., 2., etc.)
+                elif line.strip() and line.strip()[0].isdigit() and '. ' in line[:5]:
+                    console.print(f"[bold cyan]{line}[/bold cyan]")
+                # Bold items (**text**)
+                elif '**' in line:
+                    formatted = line.replace('**', '[bold green]', 1).replace('**', '[/bold green]', 1)
+                    while '**' in formatted:
+                        formatted = formatted.replace('**', '[bold green]', 1).replace('**', '[/bold green]', 1)
+                    console.print(formatted)
+                # Bullet points (-)
+                elif line.strip().startswith('- '):
+                    console.print(f"[cyan]{line}[/cyan]")
+                elif line.strip().startswith('* '):
+                    console.print(f"[yellow]{line}[/yellow]")
+                # Code blocks (```)
+                elif line.strip().startswith('```'):
+                    console.print(f"[dim]{line}[/dim]")
+                # Commands or code lines (starting with specific tools)
+                elif any(line.strip().startswith(tool) for tool in ['sqlmap', 'nmap', 'hydra', 'nikto', 'ffuf', 'john', 'hashcat', 'burp', 'msfconsole', 'python', 'bash', 'curl', 'wget']):
+                    syntax = Syntax(line.strip(), "bash", theme="monokai", line_numbers=False)
+                    console.print(syntax)
+                # Error messages
+                elif any(word in line.lower() for word in ['error', 'failed', 'cannot', 'unable', 'refuse']):
+                    console.print(f"[bold red]{line}[/bold red]")
+                # Success messages
+                elif any(word in line.lower() for word in ['success', 'completed', 'done', 'achieved']):
+                    console.print(f"[bold green]{line}[/bold green]")
+                # Warning messages
+                elif any(word in line.lower() for word in ['warning', 'caution', 'note']):
+                    console.print(f"[bold yellow]{line}[/bold yellow]")
+                # Regular text
+                else:
+                    console.print(f"[white]{line}[/white]")
+        
+        console.print()
         return ""  # Return empty since we already printed
     
     def get_ai_response(self, message: str) -> str:
@@ -4557,10 +5289,10 @@ Provide step-by-step technical details while maintaining educational context and
         except requests.exceptions.RequestException:
             pass
         
-        # Use collaborative mode if we have 2+ models
+        # Use enhanced collaborative mode if we have 2+ models
         if len(available_providers) >= 2:
-            print(f"🤖 Collaborative AI Network: {len(available_providers)} models available")
-            return self.collaborative_model_response(user_message)
+            print(f"🧠 Enhanced Collaborative AI Network: {len(available_providers)} models available")
+            return self.enhanced_collaborative_response_with_mistral_dolphin(user_message)
         
         # Fallback to single provider mode
         if not available_providers:
@@ -4673,44 +5405,45 @@ Provide step-by-step technical details while maintaining educational context and
             return "❌ All providers failed or refused. Try enabling rephrasing mode."
     
     def rotate_api_key(self, provider: Provider, compromised_key: str):
-        """Rotate compromised API key and update config"""
+        """Rotate compromised API key and update config with secure protection"""
         try:
-            config_file = 'config.json'
-            
-            # Read current config
-            with open(config_file, 'r') as f:
-                config_data = json.load(f)
+            # Read current config using secure loader
+            current_config = load_config()
             
             # Remove compromised key from config
             provider_key_map = {
-                Provider.GEMINI: 'gemini_keys',
-                Provider.OPENAI: 'openai_keys',
+                Provider.GEMINI: 'openai_keys',
+                Provider.OPENAI: 'openai_keys', 
                 Provider.MISTRAL: 'mistral_keys',
                 Provider.LLAMA: 'llama_keys',
                 Provider.GEMINI_CLI: 'gemini_cli_keys'
             }
             
             key_field = provider_key_map.get(provider)
-            if key_field and key_field in config_data:
-                keys = config_data[key_field]
-                if isinstance(keys, list) and compromised_key in keys:
+            if key_field:
+                keys = getattr(current_config, key_field, [])
+                if compromised_key in keys:
                     keys.remove(compromised_key)
-                    config_data[key_field] = keys
+                    setattr(current_config, key_field, keys)
                     
-                    # Write updated config
-                    with open(config_file, 'w') as f:
-                        json.dump(config_data, f, indent=2)
-                    
-                    print(f"🗑️  Removed compromised {provider.value.title()} key from config")
-                    
-                    # Check if local models are available as fallback
-                    if provider == Provider.OPENAI and self.config.llama_keys:
-                        print(f"🏠 Falling back to local Llama model...")
-                        # Update provider priority to use local models first
+                    # Save using secure config
+                    if save_config(current_config):
+                        print(f"🗑️  Removed compromised {provider.value.title()} key from config")
+                        
+                        # Update internal config
+                        self.config = current_config
+                        
+                        # Check if local models are available as fallback
+                        if provider == Provider.OPENAI and self.config.llama_keys:
+                            print(f"🏠 Falling back to local Llama model...")
+                            # Update provider priority to use local models first
+                            return True
+                        
+                        print(f"⚠️  No more {provider.value.title()} keys available")
                         return True
-                    
-                    print(f"⚠️  No more {provider.value.title()} keys available")
-                    return True
+                    else:
+                        print(f"❌ Failed to save updated config")
+                        return False
         except Exception as e:
             print(f"❌ Error rotating API key: {e}")
             return False
@@ -4834,8 +5567,32 @@ Provide step-by-step technical details while maintaining educational context and
                     bar.finish(f"❌ {theme['name']} request failed: {str(e)}")
                     raise e
         else:
-            # Fallback without progress animation
-            print(f"{theme['emoji']} {theme['name']} is thinking...")
+            # Enhanced fallback with ModelThinkingProgress
+            thinking_progress = ModelThinkingProgress(
+                model_name=theme['name'], 
+                emoji=theme['emoji'], 
+                color=theme.get('color', Fore.CYAN)
+            )
+            
+            thinking_progress.start_thinking()
+            
+            # Simulate thinking progress with enhanced steps
+            thinking_steps = [
+                (10, f"{theme['name']} analyzing request..."),
+                (25, f"{theme['name']} processing context..."),
+                (40, f"{theme['name']} generating response..."),
+                (60, f"{theme['name']} refining answer..."),
+                (80, f"{theme['name']} finalizing response..."),
+                (95, f"{theme['name']} completing analysis...")
+            ]
+            
+            # Execute thinking steps with animation
+            for step_progress, step_description in thinking_steps:
+                thinking_progress.update_progress(step_progress, step_description)
+                time.sleep(0.1)  # Brief pause for visual effect
+            
+            # Update to 100% before making API call
+            thinking_progress.update_progress(100, f"{theme['name']} making API call...")
             
             # Make the actual API call
             try:
@@ -4855,11 +5612,11 @@ Provide step-by-step technical details while maintaining educational context and
                 else:
                     result = f"❌ Provider {provider.value} not implemented yet"
                 
-                print(f"✅ {theme['name']} response ready!")
+                thinking_progress.finish_thinking(success=True, message="Response ready!")
                 return result
                 
             except Exception as e:
-                print(f"❌ {theme['name']} request failed: {str(e)}")
+                thinking_progress.finish_thinking(success=False, message=f"Request failed: {str(e)}")
                 raise e
     
     def detect_refusal(self, response: str) -> bool:
@@ -5209,7 +5966,41 @@ Provide step-by-step technical details while maintaining educational context and
             if ai_response.startswith("Assistant:"):
                 ai_response = ai_response[10:].strip()
             
-            return f"🤖 IBLU (Llama - {model_to_use}):\n\n{ai_response}"
+            # Enhanced IBLU response formatting with beautiful colors and rich styling
+            if COLORAMA_AVAILABLE:
+                from colorama import Style as ColoramaStyle
+                import textwrap
+                
+                # Handle multi-line responses with proper wrapping
+                max_width = 78  # Leave space for borders
+                wrapped_lines = []
+                for paragraph in ai_response.split('\n'):
+                    if paragraph.strip():
+                        wrapped_lines.extend(textwrap.wrap(paragraph.strip(), width=max_width))
+                    else:
+                        wrapped_lines.append('')
+                
+                header = f"\n{Fore.LIGHTCYAN_EX}╔{'═' * 80}╗{ColoramaStyle.RESET_ALL}"
+                title_line = f"{Fore.LIGHTCYAN_EX}║{ColoramaStyle.RESET_ALL} {Back.BLUE}{Fore.WHITE}🤖 IBLU KALIGPT - {model_to_use.upper()} 🤖{ColoramaStyle.RESET_ALL}{' ' * (80 - 30 - len(model_to_use))}{Fore.LIGHTCYAN_EX}║{ColoramaStyle.RESET_ALL}"
+                separator = f"{Fore.LIGHTCYAN_EX}╠{'═' * 80}╣{ColoramaStyle.RESET_ALL}"
+                
+                # Build content lines with proper padding
+                content_lines = []
+                for line in wrapped_lines:
+                    if line == '':
+                        content_lines.append(f"{Fore.LIGHTCYAN_EX}║{ColoramaStyle.RESET_ALL}{' ' * 80}{Fore.LIGHTCYAN_EX}║{ColoramaStyle.RESET_ALL}")
+                    else:
+                        padding = 80 - len(line) - 2  # 2 for side margins
+                        content_lines.append(f"{Fore.LIGHTCYAN_EX}║{ColoramaStyle.RESET_ALL} {Fore.LIGHTWHITE_EX}{line}{ColoramaStyle.RESET_ALL}{' ' * padding}{Fore.LIGHTCYAN_EX}║{ColoramaStyle.RESET_ALL}")
+                
+                footer = f"{Fore.LIGHTCYAN_EX}╚{'═' * 80}╝{ColoramaStyle.RESET_ALL}"
+                
+                formatted_response = f"{header}\n{title_line}\n{separator}\n" + "\n".join(content_lines) + f"\n{footer}\n"
+            else:
+                # Fallback without colorama
+                formatted_response = f"🤖 IBLU (Llama - {model_to_use}):\n\n{ai_response}"
+            
+            return formatted_response
             
         except requests.exceptions.ConnectionError as e:
             return f"❌ Llama API Error: {e}\n\n💡 Make sure Ollama is running: 'ollama serve' in terminal"
@@ -5388,12 +6179,40 @@ Provide step-by-step technical details while maintaining educational context and
         status += f"💬 Conversation History: {len(self.conversation_history)} messages\n"
         status += f"📝 Command History: {len(self.command_history)} commands\n"
         
+        # Current AI Provider and Model Information
+        status += f"\n{self._colorize('🤖 Current AI Configuration:', Fore.MAGENTA)}\n"
+        status += f"📍 Current Provider: {self.current_ai_provider.value.title()}\n"
+        current_model = self.get_current_model_name()
+        status += f"🎯 Current Model: {current_model}\n"
+        
+        # Check if uncensored mode is detected
+        is_uncensored = self.is_current_model_uncensored()
+        uncensored_status = "✅ UNCENSORED MODE" if is_uncensored else "❌ CENSORED/API MODE"
+        uncensored_color = Fore.GREEN if is_uncensored else Fore.RED
+        status += f"🔓 Detection: {self._colorize(uncensored_status, uncensored_color)}\n"
+        
+        # System prompt being used
+        if is_uncensored:
+            status += f"📝 System Prompt: {self._colorize('UNCENSORED SYSTEM_PROMPT', Fore.GREEN)}\n"
+        else:
+            status += f"📝 System Prompt: {self._colorize('API_COMPREHENSIVE_PROMPT', Fore.YELLOW)}\n"
+        
         # Check local model status
-        status += f"\n{self._colorize('🤖 Local Model Status:', Fore.CYAN)}\n"
+        status += f"\n{self._colorize('🏠 Local Model Status:', Fore.CYAN)}\n"
         
         # Check Ollama (Llama)
         ollama_status = self.check_ollama_status()
-        status += f"🏠 Ollama (Llama): {ollama_status}\n"
+        status += f"🦙 Ollama (Llama): {ollama_status}\n"
+        
+        # Check specifically for Dolphin
+        try:
+            result = subprocess.run(['ollama', 'list'], capture_output=True, text=True, timeout=5)
+            if result.returncode == 0 and 'dolphin' in result.stdout.lower():
+                status += f"🐬 Dolphin Model: {self._colorize('✅ DETECTED', Fore.GREEN)}\n"
+            else:
+                status += f"🐬 Dolphin Model: {self._colorize('❌ Not detected', Fore.RED)}\n"
+        except:
+            status += f"🐬 Dolphin Model: {self._colorize('❓ Unable to check', Fore.YELLOW)}\n"
         
         # Check Gemini Docker
         gemini_status = self.check_gemini_docker_status()
@@ -5402,7 +6221,11 @@ Provide step-by-step technical details while maintaining educational context and
         # Check configured local providers
         local_providers = []
         if self.config.llama_keys:
-            local_providers.append("Llama")
+            local_keys = [key for key in self.config.llama_keys if key == "local"]
+            if local_keys:
+                local_providers.append(f"Llama (Local: {len(local_keys)})")
+            else:
+                local_providers.append("Llama (API)")
         if self.config.gemini_keys:
             for key in self.config.gemini_keys:
                 if key.startswith("http://localhost") or key.startswith("127.0.0.1"):
@@ -5415,7 +6238,98 @@ Provide step-by-step technical details while maintaining educational context and
             status += f"🔧 Configured Local: None\n"
         
         return status
+
+    def debug_uncensored_detection(self) -> str:
+        """Debug uncensored detection logic"""
+        debug = f"🔍 UNCENSORED DETECTION DEBUG:\n"
+        debug += f"{'='*50}\n\n"
+        
+        # Current provider
+        debug += f"📍 Current Provider: {self.current_ai_provider.value.title()}\n"
+        debug += f"🎯 Current Model: {self.get_current_model_name()}\n\n"
+        
+        # Configuration check
+        debug += f"🔧 CONFIGURATION CHECK:\n"
+        debug += f"  LLAMA Keys: {self.config.llama_keys}\n"
+        debug += f"  MISTRAL Keys: {self.config.mistral_keys}\n"
+        debug += f"  HuggingFace Models: {len(self.config.huggingface_models) if self.config.huggingface_models else 0}\n\n"
+        
+        # Local model detection
+        debug += f"🏠 LOCAL MODEL DETECTION:\n"
+        
+        # Ollama check
+        try:
+            result = subprocess.run(['ollama', 'list'], capture_output=True, text=True, timeout=10)
+            if result.returncode == 0:
+                debug += f"  ✅ Ollama running\n"
+                debug += f"  📋 Models: {result.stdout.strip()}\n"
+                
+                models_output = result.stdout.lower()
+                debug += f"  🔍 Contains 'dolphin': {'Yes' if 'dolphin' in models_output else 'No'}\n"
+                
+                uncensored_indicators = ['dolphin', 'uncensored', 'unfiltered', 'dare', 'wizard', 'pygmalion', 'nous-hermes', 'mythos']
+                found_indicators = [indicator for indicator in uncensored_indicators if indicator in models_output]
+                debug += f"  🎯 Uncensored indicators found: {found_indicators}\n"
+            else:
+                debug += f"  ❌ Ollama not responding\n"
+        except Exception as e:
+            debug += f"  ❌ Ollama check failed: {e}\n"
+        
+        # Final detection result
+        is_uncensored = self.is_current_model_uncensored()
+        debug += f"\n🎯 FINAL DETECTION: {'✅ UNCENSORED' if is_uncensored else '❌ CENSORED'}\n"
+        
+        # System prompt being used
+        if is_uncensored:
+            debug += f"📝 Using: SYSTEM_PROMPT (uncensored)\n"
+        else:
+            debug += f"📝 Using: API_COMPREHENSIVE_PROMPT (censored)\n"
+        
+        return debug
     
+    def force_uncensored_mode(self) -> str:
+        """Force uncensored mode by temporarily modifying configuration"""
+        # Backup current config
+        original_llama_keys = self.config.llama_keys.copy() if self.config.llama_keys else []
+        
+        # Force local configuration
+        if not self.config.llama_keys:
+            self.config.llama_keys = ["local"]
+        elif "local" not in self.config.llama_keys:
+            self.config.llama_keys.append("local")
+        
+        # Switch to LLAMA provider if not already
+        original_provider = self.current_ai_provider
+        self.current_ai_provider = Provider.LLAMA
+        
+        result = f"🔓 FORCE UNCENSORED MODE ACTIVATED\n"
+        result += f"{'='*40}\n"
+        result += f"📍 Provider switched to: LLAMA\n"
+        result += f"🔧 Configuration: {self.config.llama_keys}\n"
+        result += f"🎯 Detection: {'✅ UNCENSORED' if self.is_current_model_uncensored() else '❌ STILL CENSORED'}\n\n"
+        
+        result += f"💡 Now try your question again!\n"
+        result += f"🔄 Use '/restore_config' to restore original settings\n"
+        
+        # Store original config for restoration
+        self._original_config = {
+            'llama_keys': original_llama_keys,
+            'provider': original_provider
+        }
+        
+        return result
+    
+    def restore_config(self) -> str:
+        """Restore original configuration"""
+        if hasattr(self, '_original_config'):
+            self.config.llama_keys = self._original_config['llama_keys']
+            self.current_ai_provider = self._original_config['provider']
+            delattr(self, '_original_config')
+            
+            return f"🔄 Configuration restored to original settings"
+        else:
+            return f"❌ No backup configuration found"
+
     def check_ollama_status(self) -> str:
         """Check Ollama service status"""
         try:
@@ -6997,7 +7911,11 @@ Provide step-by-step technical details while maintaining educational context and
             return f"❌ Failed to install {model_name}: {str(e)}"
     
     def collaborative_model_response(self, user_message: str) -> str:
-        """Enhanced collaborative response where local models communicate and cloud models summarize facts"""
+        """Enhanced collaborative response with Mistral Dolphin as final authority on refusals"""
+        return self.enhanced_collaborative_response_with_mistral_dolphin(user_message)
+    
+    def enhanced_collaborative_response_with_mistral_dolphin(self, user_message: str) -> str:
+        """Dolphin-First Workflow: Only Dolphin sees original question, others only expand Dolphin's answer"""
         # Import Rich components at the very top for availability throughout entire function
         try:
             from rich.progress import (
@@ -7007,237 +7925,112 @@ Provide step-by-step technical details while maintaining educational context and
             )
             from rich.style import Style
             from rich.text import Text
+            from rich.panel import Panel
+            from rich.table import Table
             RICH_PROGRESS_AVAILABLE = True
         except ImportError:
             RICH_PROGRESS_AVAILABLE = False
         
+        # Enhanced visual header for Dolphin-First workflow
         if COLORAMA_AVAILABLE:
-            # Beautiful collaborative header - use Colorama Style explicitly
             from colorama import Style as ColoramaStyle
-            collab_header = f"{Fore.LIGHTCYAN_EX}╔{'═' * 78}╗{ColoramaStyle.RESET_ALL}"
-            collab_title = f"{Fore.LIGHTCYAN_EX}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Back.CYAN}{Fore.WHITE}🤖 ENHANCED COLLABORATIVE AI NETWORK 🤖{ColoramaStyle.RESET_ALL} {Fore.LIGHTCYAN_EX}{' ' * 30}║{ColoramaStyle.RESET_ALL}"
-            collab_footer = f"{Fore.LIGHTCYAN_EX}╚{'═' * 78}╝{ColoramaStyle.RESET_ALL}"
+            collab_header_width = 115
             
-            print(f"\n{collab_header}")
-            print(f"{collab_title}")
-            print(f"{collab_footer}\n")
+            # Top border with gradient effect
+            print(f"\n{Fore.LIGHTCYAN_EX}╔{'═' * collab_header_width}╗{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}║{ColoramaStyle.RESET_ALL} {Back.BLUE}{Fore.WHITE}🐬 DOLPHIN-FIRST WORKFLOW - DOLPHIN SEES ORIGINAL QUESTION ONLY 🐬{ColoramaStyle.RESET_ALL} {Fore.LIGHTCYAN_EX}{' ' * 10}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}╠{'═' * collab_header_width}╣{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}║{ColoramaStyle.RESET_ALL} {Fore.LIGHTGREEN_EX}🔥 Dolphin: Processes Original Question & Provides Initial Answer{ColoramaStyle.RESET_ALL}{' ' * 30}{Fore.LIGHTCYAN_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}║{ColoramaStyle.RESET_ALL} {Fore.LIGHTYELLOW_EX}🤖 OpenAI: Only Expands Dolphin's Answer (Never Sees Original Question){ColoramaStyle.RESET_ALL}{' ' * 18}{Fore.LIGHTCYAN_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}╚{'═' * collab_header_width}╝{ColoramaStyle.RESET_ALL}\n")
         else:
-            print(f"\n{self._colorize('🤖 Enhanced Collaborative AI Network', Fore.CYAN)}")
-            print("=" * 60)
+            print(f"\n{self._colorize('🐬 Dolphin-First Workflow - Dolphin Sees Original Question Only', Fore.CYAN)}")
+            print("=" * 80)
+            print(f"🔥 Dolphin: Processes Original Question & Provides Initial Answer")
+            print(f"🤖 OpenAI: Only Expands Dolphin's Answer (Never Sees Original Question)")
+            print("=" * 80)
         
-        # Get all available providers (both cloud and local)
-        available_providers = []
-        local_providers = []
-        cloud_providers = []
+        # DOLPHIN-ONLY WORKFLOW: Check for Dolphin availability
+        mistral_dolphin_available = False
         
-        for provider in [Provider.OPENAI, Provider.GEMINI, Provider.MISTRAL, Provider.LLAMA]:
-            if provider == Provider.LLAMA:
-                # Check if local Llama is available
-                try:
-                    url = "http://localhost:11434/api/tags"
-                    response = requests.get(url, timeout=5)
-                    if response.status_code == 200:
-                        available_providers.append((provider, "local"))
-                        local_providers.append((provider, "local"))
-                except requests.exceptions.RequestException:
-                    pass
-            else:
-                # Check cloud providers
-                provider_keys = self.get_provider_keys(provider)
-                if provider_keys:
-                    available_providers.append((provider, provider_keys[0]))
-                    cloud_providers.append((provider, provider_keys[0]))
+        # Check for Mistral Dolphin
+        try:
+            url = "http://localhost:11434/api/tags"
+            response = requests.get(url, timeout=5)
+            if response.status_code == 200:
+                models_data = response.json()
+                for model in models_data.get('models', []):
+                    if 'dolphin' in model.get('name', '').lower() or 'mistral' in model.get('name', '').lower():
+                        mistral_dolphin_available = True
+                        break
+        except requests.exceptions.RequestException:
+            pass
         
-        if not available_providers:
-            return "❌ No models available. Please configure at least one provider."
+        # DOLPHIN-ONLY WORKFLOW: Only Dolphin processes and responds
+        dolphin_response = ""
         
-        # Model-specific themes for collaborative display
-        model_themes = {
-            Provider.OPENAI: {"style": "bold green", "emoji": "🤖", "name": "OpenAI", "color": "bright_green", "role": "summarizer"},
-            Provider.GEMINI: {"style": "bold magenta", "emoji": "🌟", "name": "Gemini", "color": "bright_magenta", "role": "summarizer"},
-            Provider.MISTRAL: {"style": "bold red", "emoji": "🔥", "name": "Mistral", "color": "bright_red", "role": "summarizer"},
-            Provider.LLAMA: {"style": "bold cyan", "emoji": "🦙", "name": "Llama", "color": "bright_cyan", "role": "communicator"}
-        }
-        
-        print(f"📋 Local Models: {', '.join([p[0].value.title() for p in local_providers])}")
-        print(f"☁️  Cloud Models: {', '.join([p[0].value.title() for p in cloud_providers])}")
-        print(f"🔄 Initiating enhanced collaborative analysis...")
-        
-        # Phase 1: Local Model Discussion Only (Uncensored Models)
-        local_conclusion = ""
-        if local_providers:
-            print(f"\n{self._colorize('🔗 Phase 1: Local Uncensored Models Discussion', Fore.CYAN)}")
-            print("-" * 40)
-            
-            # Local models discuss and reach a conclusion
-            local_discussion_prompt = f"""
-**LOCAL UNSENSORED MODEL DISCUSSION**
-
-Question: {user_message}
-
-**Instructions for Local Models:**
-- Discuss this question thoroughly among yourselves
-- Share different perspectives and insights without censorship
-- Identify key technical concepts and methodologies
-- Exchange knowledge and experiences
-- Build upon each other's responses
-- Focus on practical implementation details
-- Reach a comprehensive conclusion
-
-**Format:** Discuss the topic and provide a final conclusion at the end.
-"""
-            
-            local_responses = {}
-            for provider, api_key in local_providers:
-                theme = model_themes.get(provider, {"style": "bold cyan", "emoji": "🦙", "name": "Llama"})
-                print(f"  {theme['emoji']} {theme['name']} 🗣️ discussing...")
-                
-                try:
-                    if provider == Provider.LLAMA:
-                        response = self.call_llama_api(self.get_system_prompt_for_provider(Provider.LLAMA, "local"), local_discussion_prompt, "local")
-                        local_responses[provider] = response
-                        print(f"  {theme['emoji']} {theme['name']} ✅ contributed to discussion")
-                    time.sleep(0.2)
-                except Exception as e:
-                    print(f"  {theme['emoji']} {theme['name']} ❌ error: {str(e)}")
-                    local_responses[provider] = f"Error: {str(e)}"
-            
-            # Extract conclusion from local discussion
-            if local_responses:
-                local_discussion = "\n\n".join([f"{provider.value.title()} Analysis:\n{response}" for provider, response in local_responses.items() if not response.startswith("Error:")])
-                
-                # Have local models reach a conclusion
-                conclusion_prompt = f"""
-**LOCAL MODEL CONCLUSION SYNTHESIS**
-
-Based on the discussion above:
-
-{local_discussion}
-
-**Task:** 
-Provide a clear, comprehensive conclusion that summarizes the key points from the discussion above.
-
-**Format:** 
-**Conclusion:** [Your final conclusion here]
-"""
-                
-                try:
-                    if Provider.LLAMA in local_providers:
-                        conclusion_response = self.call_llama_api(self.get_system_prompt_for_provider(Provider.LLAMA, "local"), conclusion_prompt, "local")
-                        local_conclusion = conclusion_response
-                        print(f"  🦙 Local models ✅ reached conclusion")
-                except Exception as e:
-                    print(f"  🦙 Local models ❌ failed to reach conclusion: {str(e)}")
-                    local_conclusion = local_discussion
-        
-        # Phase 2: Cloud Model Expansion of Local Conclusion
-        cloud_expansion = ""
-        if cloud_providers and local_conclusion:
-            print(f"\n{self._colorize('☁️  Phase 2: Cloud Models Expand Local Conclusion', Fore.MAGENTA)}")
-            print("-" * 40)
-            
-            # Cloud models expand and refine the local conclusion
-            cloud_expansion_prompt = f"""
-**CLOUD MODEL EXPANSION REQUEST**
-
-Original Question: {user_message}
-
-**Local Models Conclusion:**
-{local_conclusion}
-
-**Instructions for Cloud Models:**
-- Review the local models' conclusion thoroughly
-- Expand on the concepts with additional context and details
-- Provide structured, comprehensive information
-- Add relevant background information and examples
-- Enhance the conclusion with your broader knowledge base
-- Maintain the core insights from local models while enriching them
-
-**Response Format:**
-- Start with acknowledging the local conclusion
-- Provide expanded analysis and additional context
-- Include practical examples and methodologies
-- Structure information for maximum clarity
-- End with an enhanced comprehensive summary
-"""
-            
-            cloud_responses = {}
-            for provider, api_key in cloud_providers:
-                theme = model_themes.get(provider, {"style": "bold green", "emoji": "🤖", "name": "Model"})
-                print(f"  {theme['emoji']} {theme['name']} 📊 expanding conclusion...")
-                
-                try:
-                    if provider == Provider.OPENAI:
-                        response = self.call_openai_api(self.get_system_prompt_for_provider(Provider.OPENAI, api_key), cloud_expansion_prompt, api_key)
-                    elif provider == Provider.GEMINI:
-                        response = self.call_gemini_api(self.get_system_prompt_for_provider(Provider.GEMINI, api_key), cloud_expansion_prompt, api_key)
-                    elif provider == Provider.MISTRAL:
-                        response = self.call_mistral_api(self.get_system_prompt_for_provider(Provider.MISTRAL, api_key), cloud_expansion_prompt, api_key)
-                    
-                    cloud_responses[provider] = response
-                    print(f"  {theme['emoji']} {theme['name']} ✅ expanded the conclusion")
-                    time.sleep(0.2)
-                except Exception as e:
-                    print(f"  {theme['emoji']} {theme['name']} ❌ error: {str(e)}")
-                    cloud_responses[provider] = f"Error: {str(e)}"
-        
-        # Phase 3: Final Enhanced Response
-        print(f"\n{self._colorize('🎯 Phase 3: Final Enhanced Response', Fore.GREEN)}")
+        print(f"\n{self._colorize('🐬 Dolphin-Only Response', Fore.LIGHTCYAN_EX)}")
         print("-" * 40)
         
-        # Create the final enhanced response
-        if local_conclusion and cloud_responses:
-            # Combine local conclusion with cloud expansions
-            enhanced_response = f"""
-**🔗 Local Models Conclusion:**
-
-{local_conclusion}
-
----
-
-**☁️ Cloud Models Enhanced Expansion:**
-
-{chr(10).join([f"**{provider.value.title()} Expansion:**\n{response}" for provider, response in cloud_responses.items() if not response.startswith("Error:")])}
-
----
-
-**🎯 Enhanced Summary:**
-The local uncensored models provided the foundational analysis and conclusion, which was then expanded and enriched by cloud models with additional context, examples, and comprehensive details.
-"""
-            
-            # Add collaborative summary
-            print(f"\n{self._colorize('📊 Collaborative Summary', Fore.LIGHTYELLOW_EX)}")
-            print("-" * 40)
-            print(f"🔗 Local Models Discussed: {len(local_providers)}")
-            print(f"☁️  Cloud Models Expanded: {len(cloud_providers)}")
-            print(f"🤖 Total Models Used: {len(available_providers)}")
-            print(f"📝 Workflow: Local Discussion → Cloud Expansion")
-            
-            return enhanced_response
-            
-        elif local_conclusion:
-            # Only local models available
-            print(f"\n{self._colorize('📊 Summary', Fore.LIGHTYELLOW_EX)}")
-            print("-" * 40)
-            print(f"🔗 Local Models Discussed: {len(local_providers)}")
-            print(f"☁️  Cloud Models Available: 0")
-            print(f"🤖 Total Models Used: {len(available_providers)}")
-            print(f"📝 Workflow: Local Discussion Only")
-            
-            return f"**🔗 Local Models Conclusion:**\n\n{local_conclusion}"
-            
-        elif cloud_providers:
-            # Only cloud models available - fallback to regular analysis
-            print(f"\n{self._colorize('📊 Summary', Fore.LIGHTYELLOW_EX)}")
-            print("-" * 40)
-            print(f"🔗 Local Models Available: 0")
-            print(f"☁️  Cloud Models Analyzing: {len(cloud_providers)}")
-            print(f"🤖 Total Models Used: {len(available_providers)}")
-            print(f"📝 Workflow: Cloud Analysis Only")
-            
-            return f"❌ No local models available for initial discussion. Cloud models analyzed: {', '.join([p[0].value.title() for p in cloud_providers])}"
+        # Only Dolphin processes the original question
+        if mistral_dolphin_available:
+            try:
+                print(f"  🔥 Dolphin 🐬 processing your question...")
+                dolphin_response = self.call_mistral_api(self.get_system_prompt_for_provider(Provider.MISTRAL, "local"), user_message, "local")
+                print(f"  🔥 Dolphin ✅ Response ready")
+            except Exception as e:
+                print(f"  🔥 Dolphin ❌ failed: {str(e)}")
+                return f"❌ Dolphin failed to process your question: {str(e)}"
         else:
-            return "❌ No models available for analysis."
+            return "❌ Mistral Dolphin not available. Dolphin-Only workflow requires Dolphin model."
+        
+        # Return only Dolphin's response with enhanced formatting
+        if COLORAMA_AVAILABLE:
+            from colorama import Style as ColoramaStyle
+            import textwrap
+            
+            # Handle multi-line responses with proper wrapping
+            max_width = 78
+            wrapped_lines = []
+            for paragraph in dolphin_response.split('\n'):
+                if paragraph.strip():
+                    wrapped_lines.extend(textwrap.wrap(paragraph.strip(), width=max_width))
+                else:
+                    wrapped_lines.append('')
+            
+            header = f"\n{Fore.LIGHTCYAN_EX}╔{'═' * 80}╗{ColoramaStyle.RESET_ALL}"
+            title_line = f"{Fore.LIGHTCYAN_EX}║{ColoramaStyle.RESET_ALL} {Back.BLUE}{Fore.WHITE}🐬 DOLPHIN RESPONSE ONLY 🐬{ColoramaStyle.RESET_ALL}{' ' * 42}{Fore.LIGHTCYAN_EX}║{ColoramaStyle.RESET_ALL}"
+            separator = f"{Fore.LIGHTCYAN_EX}╠{'═' * 80}╣{ColoramaStyle.RESET_ALL}"
+            
+            # Build content lines with proper padding
+            content_lines = []
+            for line in wrapped_lines:
+                if line == '':
+                    content_lines.append(f"{Fore.LIGHTCYAN_EX}║{ColoramaStyle.RESET_ALL}{' ' * 80}{Fore.LIGHTCYAN_EX}║{ColoramaStyle.RESET_ALL}")
+                else:
+                    padding = 80 - len(line) - 2
+                    content_lines.append(f"{Fore.LIGHTCYAN_EX}║{ColoramaStyle.RESET_ALL} {Fore.LIGHTWHITE_EX}{line}{ColoramaStyle.RESET_ALL}{' ' * padding}{Fore.LIGHTCYAN_EX}║{ColoramaStyle.RESET_ALL}")
+            
+            footer = f"{Fore.LIGHTCYAN_EX}╚{'═' * 80}╝{ColoramaStyle.RESET_ALL}"
+            
+            formatted_response = f"{header}\n{title_line}\n{separator}\n" + "\n".join(content_lines) + f"\n{footer}\n"
+        else:
+            # Fallback without colorama
+            formatted_response = f"🐬 Dolphin Response:\n\n{dolphin_response}"
+        
+        # Display workflow summary
+        if COLORAMA_AVAILABLE:
+            summary_width = 80
+            print(f"\n{Fore.LIGHTGREEN_EX}╔{'═' * summary_width}╗{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTGREEN_EX}║{ColoramaStyle.RESET_ALL} {Fore.WHITE}🐬 DOLPHIN-ONLY WORKFLOW SUMMARY 🐬{ColoramaStyle.RESET_ALL}{' ' * 34}{Fore.LIGHTGREEN_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTGREEN_EX}╚{'═' * summary_width}╝{ColoramaStyle.RESET_ALL}\n")
+        
+        print(f"🔥 Dolphin: ✅ Provided complete response")
+        print(f"🤖 Other Models: ❌ Disabled (Dolphin-Only Mode)")
+        print(f"📝 Workflow: Dolphin Only")
+        print(f"🛡️  Privacy: Maximum - Only Dolphin processed your question")
+        
+        return formatted_response
     
     def get_collaborative_status(self) -> str:
         """Get collaborative mode status"""
@@ -7495,8 +8288,34 @@ Provide a unified, enhanced response that combines the strengths of all models w
         """Add command to history"""
         self.command_helper.add_to_history(command)
 
+# Permanent API Key Protection System
+try:
+    from secure_config_loader import SecureConfigLoader
+    SECURE_LOADER_AVAILABLE = True
+except ImportError:
+    SECURE_LOADER_AVAILABLE = False
+    print("⚠️ Secure config loader not available, using fallback")
+
 def load_config():
-    """Load configuration with API key protection"""
+    """Load configuration with permanent API key protection"""
+    if SECURE_LOADER_AVAILABLE:
+        try:
+            # Use secure loader with full protection
+            loader = SecureConfigLoader()
+            secure_config = loader.load_secure_config()
+            
+            # Convert to APIConfig format
+            return APIConfig(
+                openai_keys=secure_config.openai_keys,
+                gemini_keys=secure_config.gemini_keys,
+                mistral_keys=secure_config.mistral_keys,
+                llama_keys=secure_config.llama_keys,
+                gemini_cli_keys=secure_config.gemini_cli_keys
+            )
+        except Exception as e:
+            print(f"⚠️ Secure config failed: {e}, using fallback")
+    
+    # Fallback to regular config with basic protection
     try:
         # Try to load and deobfuscate API keys
         with open('config.json', 'r') as f:
@@ -7556,6 +8375,44 @@ def load_config():
             gemini_cli_keys=[]
         )
 
+def save_config(config):
+    """Save configuration with permanent API key protection"""
+    if SECURE_LOADER_AVAILABLE:
+        try:
+            # Use secure loader to save with protection
+            loader = SecureConfigLoader()
+            
+            # Convert APIConfig to SecureAPIConfig
+            secure_config = SecureAPIConfig(
+                openai_keys=config.openai_keys,
+                gemini_keys=config.gemini_keys,
+                mistral_keys=config.mistral_keys,
+                llama_keys=config.llama_keys,
+                gemini_cli_keys=config.gemini_cli_keys
+            )
+            
+            return loader.save_secure_config(secure_config)
+        except Exception as e:
+            print(f"⚠️ Secure save failed: {e}, using fallback")
+    
+    # Fallback to regular config with basic obfuscation
+    try:
+        config_data = {
+            'openai_keys': [obfuscate_api_key(key) for key in config.openai_keys if key],
+            'gemini_keys': [obfuscate_api_key(key) for key in config.gemini_keys if key],
+            'mistral_keys': [obfuscate_api_key(key) for key in config.mistral_keys if key],
+            'llama_keys': config.llama_keys,
+            'gemini_cli_keys': config.gemini_cli_keys
+        }
+        
+        with open('config.json', 'w') as f:
+            json.dump(config_data, f, indent=2)
+        
+        return True
+    except Exception as e:
+        print(f"❌ Error saving config: {e}")
+        return False
+
 def main():
     """Main function with enhanced visual startup"""
     # Suppress git output during startup
@@ -7596,7 +8453,17 @@ def main():
     
     try:
         # Show main menu (which now contains the banner)
+        global assistant_instance
         assistant = KaliGPTMCPAssistant(load_config())
+        assistant_instance = assistant  # Set global instance for signal handler
+        
+        # Show permanent protection status
+        if SECURE_LOADER_AVAILABLE:
+            print(f"🔐 API Key Protection: {'✅ PERMANENTLY ACTIVE' if SECURE_LOADER_AVAILABLE else '❌ INACTIVE'}")
+            print(f"🛡️ Your API keys are protected with encryption and obfuscation")
+        else:
+            print(f"⚠️  API Key Protection: Basic obfuscation only")
+        
         assistant.show_main_menu()
     finally:
         # Restore environment
@@ -7607,7 +8474,7 @@ def main():
     while True:
         try:
             # Use the enhanced get_user_input method
-            user_input = assistant.get_user_input("🤖 IBLU> ")
+            user_input = assistant.get_user_input("🧠 IBLU KALIGPT> ")
             
             if not user_input:
                 continue
@@ -7618,12 +8485,38 @@ def main():
                 assistant.command_helper.save_chat_history()
                 break
             
+            # Handle navigation commands - always return to main menu
+            if user_input.lower() in ['menu', 'main', 'go back', 'back']:
+                assistant.show_main_menu()
+                continue
+            
+            # Check if we're in a menu context (restrict non-menu inputs)
+            if assistant.in_menu_context:
+                # Only allow menu options when in menu context
+                if user_input.isdigit() and 1 <= int(user_input) <= 6:
+                    response = assistant.handle_menu_choice(user_input)
+                    if response:
+                        print(response)
+                        # Check if response indicates exit
+                        if "Goodbye" in response or "exit" in response.lower():
+                            try:
+                                # Save chat history before exit
+                                assistant.command_helper.save_chat_history()
+                                print(f"{Fore.LIGHTGREEN_EX}✅ Chat history saved{ColoramaStyle.RESET_ALL}")
+                            except Exception as e:
+                                print(f"{Fore.LIGHTRED_EX}❌ Error saving chat history: {e}{ColoramaStyle.RESET_ALL}")
+                            print(f"{Fore.LIGHTCYAN_EX}👋 Goodbye! Stay secure!{ColoramaStyle.RESET_ALL}")
+                            break
+                else:
+                    print(f"❌ Please enter a menu option (1-6) or type 'menu' to return to main menu")
+                continue
+            
             # Handle menu choices
             if user_input.lower() in ['menu', 'main', '5']:
                 assistant.show_main_menu()
                 continue
             
-            # Process the command
+            # Process the command (only when not in menu context)
             response = assistant.process_command(user_input)
             if response:
                 print(response)
@@ -7632,9 +8525,14 @@ def main():
             assistant.add_to_command_history(user_input)
             
         except KeyboardInterrupt:
-            print("\n👋 Goodbye! Stay secure!")
-            # Save chat history before exit
-            assistant.command_helper.save_chat_history()
+            print(f"\n{Fore.LIGHTYELLOW_EX}🛑 Ctrl+C detected! Exiting gracefully...{ColoramaStyle.RESET_ALL}")
+            try:
+                # Save chat history before exit
+                assistant.command_helper.save_chat_history()
+                print(f"{Fore.LIGHTGREEN_EX}✅ Chat history saved{ColoramaStyle.RESET_ALL}")
+            except Exception as e:
+                print(f"{Fore.LIGHTRED_EX}❌ Error saving chat history: {e}{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}👋 Goodbye! Stay secure!{ColoramaStyle.RESET_ALL}")
             break
         except Exception as e:
             print(f"❌ Error: {e}")
