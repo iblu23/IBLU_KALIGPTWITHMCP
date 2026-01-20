@@ -2579,6 +2579,19 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             print(f"{tools_footer}\n")
             
             # Tool categories with enhanced formatting
+            color_map = {
+                "Fore.CYAN": Fore.CYAN,
+                "Fore.LIGHTBLUE_EX": Fore.LIGHTBLUE_EX,
+                "Fore.GREEN": Fore.GREEN,
+                "Fore.RED": Fore.RED,
+                "Fore.WHITE": Fore.WHITE,
+                "Fore.LIGHTMAGENTA_EX": Fore.LIGHTMAGENTA_EX,
+                "Fore.LIGHTYELLOW_EX": Fore.LIGHTYELLOW_EX,
+                "Fore.LIGHTGREEN_EX": Fore.LIGHTGREEN_EX,
+                "Fore.LIGHTCYAN_EX": Fore.LIGHTCYAN_EX,
+                "Fore.MAGENTA": Fore.MAGENTA
+            }
+            
             tool_categories = [
                 ("🔍 RECONNAISSANCE", "Fore.CYAN", "nmap, masscan, dnsenum, recon-ng, enum4linux, amass, subfinder"),
                 ("🕵️  OSINT & INTELLIGENCE", "Fore.LIGHTBLUE_EX", "theharvester, maltego, spiderfoot, shodan, recon-ng, social-searcher"),
@@ -2595,10 +2608,13 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                 ("⚙️  UTILITY TOOLS", "Fore.LIGHTGREEN_EX", "tmux, proxychains, chisel, sshuttle, ngrok, netcat, hping3")
             ]
             
-            for category, color, tools in tool_categories:
+            for category, color_key, tools in tool_categories:
                 # Category header box
                 print(f"{Fore.LIGHTYELLOW_EX}┌─ {ColoramaStyle.BRIGHT}{Fore.WHITE}{category}{ColoramaStyle.RESET_ALL}{Fore.LIGHTYELLOW_EX} ─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}")
-                print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}  {color}{ColoramaStyle.BRIGHT}{tools.ljust(65)}{ColoramaStyle.RESET_ALL}{' ' * (w - 67)}{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}")
+                
+                # Apply color to tools text
+                color_code = color_map.get(color_key, Fore.WHITE)
+                print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}  {color_code}{ColoramaStyle.BRIGHT}{tools.ljust(65)}{ColoramaStyle.RESET_ALL}{' ' * (w - 67)}{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}")
                 print(f"{Fore.LIGHTYELLOW_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}\n")
         else:
             print("\n" + "=" * 70)
