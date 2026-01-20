@@ -7,6 +7,7 @@ prompt_toolkit>=3.0.47           # ⌨️ Rich CLI input and menus
 rich>=13.7.0                     # 🎨 Rich terminal formatting and tables
 alive-progress>=3.3.0            # ⚡ Beautiful progress bars and animations
 textual>=7.3.0                   # 🖼️ Advanced TUI framework with visual effects
+streamlit>=1.28.0                # 🚀 Web app framework for chat interface
 
 # Built-in modules (no installation needed):
 # - asyncio, pathlib, dataclasses, time, enum, sys, os, json, subprocess
