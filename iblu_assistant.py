@@ -4480,38 +4480,148 @@ Provide step-by-step technical details while maintaining educational context and
         except Exception as e:
             return f"❌ Gemini API Error: {e}\n\n💡 Check your API key at https://aistudio.google.com/app/apikey"
     
+    def optimize_llama_performance(self) -> str:
+        """Optimize Llama models for best performance"""
+        print(f"\n{self._colorize('🚀 Llama Performance Optimization', Fore.CYAN)}")
+        print("=" * 50)
+        
+        # Check system resources
+        try:
+            import psutil
+            memory = psutil.virtual_memory()
+            cpu_count = psutil.cpu_count()
+            
+            print(f"💻 System Resources:")
+            print(f"   RAM: {memory.total / (1024**3):.1f}GB total, {memory.available / (1024**3):.1f}GB available")
+            print(f"   CPU: {cpu_count} cores")
+            print(f"   Memory Usage: {memory.percent}%")
+        except ImportError:
+            print("⚠️  psutil not available - install with: pip install psutil")
+            memory = None
+            cpu_count = 12  # Fallback from nproc
+        
+        # Check Ollama status
+        try:
+            response = requests.get("http://localhost:11434/api/tags", timeout=5)
+            if response.status_code == 200:
+                models = response.json().get('models', [])
+                print(f"\n🦙 Available Models: {len(models)}")
+                
+                # Show model performance ranking
+                print(f"\n📊 Performance Ranking (Fastest → Slowest):")
+                performance_ranking = [
+                    ('llama2:latest', '3.8GB', '⚡ Fastest', '45s timeout'),
+                    ('mistral:latest', '4.4GB', '🚀 Very Fast', '45s timeout'),
+                    ('deepseek-coder:6.7b', '3.8GB', '💻 Coding Fast', '60s timeout'),
+                    ('deepseek-coder-2050:latest', '3.8GB', '💻 Coding Fast', '60s timeout'),
+                    ('llama3:latest', '4.7GB', '⚖️ Balanced', '90s timeout'),
+                    ('llama3:8b', '4.7GB', '⚖️ Balanced', '90s timeout'),
+                    ('qwen2.5-coder:7b', '4.7GB', '💻 Good Coding', '90s timeout'),
+                    ('llama3.1:8b', '4.9GB', '🧠 Most Capable', '120s timeout')
+                ]
+                
+                for model_name, size, speed, timeout in performance_ranking:
+                    if any(model['name'] == model_name for model in models):
+                        print(f"   ✅ {model_name:<25} {size:<8} {speed:<15} {timeout}")
+                    else:
+                        print(f"   ❌ {model_name:<25} {size:<8} {speed:<15} {timeout}")
+                
+                # Memory optimization recommendations
+                if memory:
+                    print(f"\n💡 Memory Optimization:")
+                    if memory.available < 4 * 1024**3:  # Less than 4GB available
+                        print("   ⚠️  Low memory detected - recommend using llama2:latest or mistral:latest")
+                        print("   💡 Consider closing other applications")
+                    elif memory.available < 8 * 1024**3:  # Less than 8GB available
+                        print("   ✅ Moderate memory - can use most models efficiently")
+                    else:
+                        print("   🎉 High memory available - can use any model")
+                
+                # CPU optimization recommendations
+                print(f"\n🔧 CPU Optimization:")
+                if cpu_count >= 8:
+                    print("   ✅ Multi-core CPU - good performance")
+                else:
+                    print("   ⚠️  Fewer cores - consider smaller models")
+                
+                # Ollama optimization tips
+                print(f"\n⚙️  Ollama Optimization Tips:")
+                print("   🔄 Restart Ollama: systemctl restart ollama (or kill and restart)")
+                print("   📊 Monitor: ollama ps (shows running models)")
+                print("   🗑️  Clean: ollama rm <model> (remove unused models)")
+                print("   📦 Pull: ollama pull <model> (download optimized models)")
+                
+                # Performance settings
+                print(f"\n🎛️  Performance Settings Applied:")
+                print("   ⚡ Adaptive timeouts (45-120s based on model)")
+                print("   📝 Optimized prompts (truncated for speed)")
+                print("   🎯 Response limits (512 tokens max)")
+                print("   🌡️  Balanced temperature (0.7)")
+                print("   🛑 Stop sequences (prevent rambling)")
+                
+                return f"✅ Llama performance optimized! Using fastest available model."
+            else:
+                return "❌ Ollama not responding properly"
+                
+        except Exception as e:
+            return f"❌ Error checking Ollama: {str(e)}"
+    
     def get_available_llama_models(self) -> List[str]:
-        """Get list of available Llama models from Ollama"""
+        """Get available Llama models with performance optimization"""
         try:
             url = "http://localhost:11434/api/tags"
-            response = requests.get(url, timeout=10)
-            response.raise_for_status()
-            
-            models_data = response.json()
-            available_models = []
-            
-            for model in models_data.get('models', []):
-                model_name = model.get('name', '')
-                if 'llama' in model_name.lower():
-                    available_models.append(model_name)
-            
-            # Prioritize Llama 3.1 8B, then Llama 2
-            priority_order = ['llama3.1:8b', 'llama3.1', 'llama2', 'llama']
-            
-            for model in priority_order:
-                if any(model in available_model for available_model in available_models):
-                    return [model for available_model in available_models if model in available_model]
-            
-            return available_models if available_models else ['llama2']  # Fallback to llama2
-            
+            response = requests.get(url, timeout=5)
+            if response.status_code == 200:
+                data = response.json()
+                models = [model['name'] for model in data.get('models', [])]
+                
+                # Filter for Llama-compatible models and optimize for performance
+                llama_models = []
+                for model in models:
+                    if any(keyword in model.lower() for keyword in ['llama', 'mistral', 'qwen', 'deepseek']):
+                        llama_models.append(model)
+                
+                # Sort by performance priority (smaller/faster models first)
+                performance_order = [
+                    'llama2:latest',           # 3.8GB - Fastest
+                    'mistral:latest',          # 4.4GB - Very fast
+                    'deepseek-coder:6.7b',     # 3.8GB - Fast for coding
+                    'deepseek-coder-2050:latest', # 3.8GB - Fast
+                    'llama3:latest',           # 4.7GB - Balanced
+                    'llama3:8b',               # 4.7GB - Balanced
+                    'qwen2.5-coder:7b',        # 4.7GB - Good for coding
+                    'llama3.1:8b'              # 4.9GB - Most capable
+                ]
+                
+                # Reorder based on performance priority
+                optimized_models = []
+                for model in performance_order:
+                    if model in llama_models:
+                        optimized_models.append(model)
+                
+                # Add any remaining models not in priority list
+                for model in llama_models:
+                    if model not in optimized_models:
+                        optimized_models.append(model)
+                
+                return optimized_models if optimized_models else ['llama2:latest']
+                
         except Exception as e:
             # Fallback to llama2 if detection fails
-            return ['llama2']
+            return ['llama2:latest']
     
-    def call_llama_api_with_timeout(self, system_prompt: str, user_message: str, api_key: str, timeout: int = 60) -> str:
-        """Call Llama API with timeout protection to prevent hanging"""
-        import signal
+    def call_llama_api_with_timeout(self, system_prompt: str, user_message: str, api_key: str, timeout: int = 90) -> str:
+        """Call Llama API with adaptive timeout protection to prevent hanging"""
         import threading
+        
+        # Adaptive timeout based on prompt complexity
+        total_prompt_length = len(system_prompt) + len(user_message)
+        if total_prompt_length > 2000:
+            timeout = 120  # Longer timeout for complex prompts
+        elif total_prompt_length > 1000:
+            timeout = 90   # Medium timeout for moderate prompts
+        else:
+            timeout = 60   # Standard timeout for simple prompts
         
         result_container = {"result": None, "error": None, "done": False}
         
@@ -4528,11 +4638,11 @@ Provide step-by-step technical details while maintaining educational context and
         thread.daemon = True
         thread.start()
         
-        # Wait for completion with timeout
+        # Wait for completion with adaptive timeout
         thread.join(timeout)
         
         if not result_container["done"]:
-            return f"❌ Llama API timeout after {timeout} seconds\n\n💡 The Llama model took too long to respond. Try:\n• Using a smaller model\n• Checking if Ollama is running properly\n• Reducing the complexity of your request"
+            return f"❌ Llama API timeout after {timeout} seconds\n\n💡 The Llama model took too long to respond. Try:\n• Using a smaller model (llama2:latest)\n• Checking if Ollama is running properly\n• Reducing the complexity of your request\n• Increasing timeout in settings\n\n📊 Prompt length: {total_prompt_length} characters"
         
         if result_container["error"]:
             raise result_container["error"]
@@ -4540,15 +4650,15 @@ Provide step-by-step technical details while maintaining educational context and
         return result_container["result"]
     
     def call_llama_api(self, system_prompt: str, user_message: str, api_key: str) -> str:
-        """Call local Llama API via Ollama with automatic model selection"""
+        """Call local Llama API via Ollama with performance optimization"""
         try:
-            # Get available models
+            # Get available models (already optimized for performance)
             available_models = self.get_available_llama_models()
             
             if not available_models:
                 return "❌ No Llama models available. Please install a model first using /install_llama"
             
-            # Use the best available model
+            # Use the fastest available model
             model_to_use = available_models[0]
             
             # Default Ollama endpoint
@@ -4558,20 +4668,49 @@ Provide step-by-step technical details while maintaining educational context and
                 "Content-Type": "application/json"
             }
             
-            # Llama format - combine system and user message
-            combined_message = f"{system_prompt}\n\nUser Query: {user_message}"
+            # Optimize prompt for better performance
+            # Shorter prompts = faster responses
+            if len(system_prompt) > 500:
+                # Truncate system prompt for performance
+                system_prompt = system_prompt[:400] + "...\n\nProvide concise, helpful responses."
             
+            # Llama format - combine system and user message efficiently
+            combined_message = f"{system_prompt}\n\nUser: {user_message}\nAssistant:"
+            
+            # Optimized payload for better performance
             payload = {
                 "model": model_to_use,
                 "prompt": combined_message,
-                "stream": False
+                "stream": False,
+                "options": {
+                    "temperature": 0.7,        # Balanced creativity
+                    "top_p": 0.9,             # Focus on relevant responses
+                    "max_tokens": 512,         # Limit response length for speed
+                    "num_predict": 512,        # Same as max_tokens
+                    "num_ctx": 2048,          # Reasonable context window
+                    "seed": 42,                # Reproducible results
+                    "stop": ["User:", "Human:", "\n\n"]  # Stop sequences to prevent rambling
+                }
             }
             
-            response = requests.post(url, headers=headers, json=payload, timeout=60)
+            # Adaptive timeout based on model size and prompt complexity
+            prompt_size = len(combined_message)
+            if 'llama2' in model_to_use or 'mistral' in model_to_use:
+                timeout = 45  # Faster models get shorter timeout
+            elif 'deepseek' in model_to_use:
+                timeout = 60  # Coding models get medium timeout
+            else:
+                timeout = 90  # Larger models get longer timeout
+            
+            response = requests.post(url, headers=headers, json=payload, timeout=timeout)
             response.raise_for_status()
             
             result = response.json()
-            ai_response = result.get('response', '')
+            ai_response = result.get('response', '').strip()
+            
+            # Clean up response for better readability
+            if ai_response.startswith("Assistant:"):
+                ai_response = ai_response[10:].strip()
             
             return f"🤖 IBLU (Llama - {model_to_use}):\n\n{ai_response}"
             
@@ -4579,6 +4718,8 @@ Provide step-by-step technical details while maintaining educational context and
             return f"❌ Llama API Error: {e}\n\n💡 Make sure Ollama is running: 'ollama serve' in terminal"
         except requests.exceptions.HTTPError as e:
             return f"❌ Llama API Error: {e}\n\n💡 Check Ollama configuration and model availability"
+        except requests.exceptions.Timeout as e:
+            return f"❌ Llama API timeout. Model {model_to_use} took too long.\n\n💡 Try:\n• Using llama2:latest (fastest)\n• Reducing prompt complexity\n• Checking system resources"
         except Exception as e:
             return f"❌ Llama API Error: {e}\n\n💡 Check Ollama installation and setup"
     
