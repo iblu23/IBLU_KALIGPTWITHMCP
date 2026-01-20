@@ -9560,7 +9560,7 @@ def main():
         
         progress = create_hybrid_progress(
             total=6,
-            description="🚀 Initializing Hybrid IBLU KALIGPT...",
+            description="🚀 Initializing TrueColor Hybrid IBLU KALIGPT...",
             theme=HybridProgressTheme.CYBERPUNK_FUSION,
             use_textual=True,
             use_rich=True,

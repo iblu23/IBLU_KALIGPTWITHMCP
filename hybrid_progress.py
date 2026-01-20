@@ -95,72 +95,142 @@ except ImportError:
     COLORAMA_AVAILABLE = False
 
 class HybridProgressTheme(Enum):
-    """Hybrid themes combining Rich and Textual visual effects"""
+    """Hybrid themes combining Rich and Textual visual effects with TrueColor"""
     
     CYBERPUNK_FUSION = {
         'name': 'Cyberpunk Fusion',
-        'rich_bar_color': 'bright_cyan',
-        'rich_text_color': 'white',
+        'rich_bar_color': '#00FFFF',  # Cyan truecolor
+        'rich_text_color': '#FFFFFF',  # White truecolor
         'rich_spinner': 'dots',
         'textual_style': 'bold cyan',
         'textual_background': 'on black',
         'description': '🔮 Cyberpunk Rich+Textual Fusion',
-        'particle_effect': 'digital_rain'
+        'particle_effect': 'digital_rain',
+        'truecolor': True,
+        'gradient_colors': ['#00FFFF', '#00CCCC', '#009999', '#006666'],  # Cyan gradient
+        'glow_color': '#00FFFF',
+        'pulse_color': '#00FFFF'
     }
     
     NEON_MATRIX = {
         'name': 'Neon Matrix',
-        'rich_bar_color': 'bright_green',
-        'rich_text_color': 'white',
+        'rich_bar_color': '#00FF00',  # Bright green truecolor
+        'rich_text_color': '#FFFFFF',  # White truecolor
         'rich_spinner': 'dots2',
         'textual_style': 'bold green',
         'textual_background': 'on black',
         'description': '💚 Neon Matrix Rich+Textual',
-        'particle_effect': 'matrix_drops'
+        'particle_effect': 'matrix_drops',
+        'truecolor': True,
+        'gradient_colors': ['#00FF00', '#00DD00', '#00BB00', '#009900'],  # Green gradient
+        'glow_color': '#00FF00',
+        'pulse_color': '#00FF00'
     }
     
     FIRE_PLASMA = {
         'name': 'Fire Plasma',
-        'rich_bar_color': 'bright_yellow',
-        'rich_text_color': 'white',
+        'rich_bar_color': '#FF4500',  # Orange red truecolor
+        'rich_text_color': '#FFFFFF',  # White truecolor
         'rich_spinner': 'line',
         'textual_style': 'bold yellow',
         'textual_background': 'on black',
         'description': '🔥 Fire Plasma Rich+Textual',
-        'particle_effect': 'flames'
+        'particle_effect': 'flames',
+        'truecolor': True,
+        'gradient_colors': ['#FF4500', '#FF6347', '#FF7F50', '#FFA500'],  # Fire gradient
+        'glow_color': '#FF4500',
+        'pulse_color': '#FF6347'
     }
     
     OCEAN_WAVE = {
         'name': 'Ocean Wave',
-        'rich_bar_color': 'bright_blue',
-        'rich_text_color': 'white',
+        'rich_bar_color': '#1E90FF',  # Dodger blue truecolor
+        'rich_text_color': '#FFFFFF',  # White truecolor
         'rich_spinner': 'dots8',
         'textual_style': 'bold blue',
         'textual_background': 'on black',
         'description': '🌊 Ocean Wave Rich+Textual',
-        'particle_effect': 'waves'
+        'particle_effect': 'waves',
+        'truecolor': True,
+        'gradient_colors': ['#1E90FF', '#4169E1', '#0000CD', '#00008B'],  # Ocean gradient
+        'glow_color': '#1E90FF',
+        'pulse_color': '#4169E1'
     }
     
     GALAXY_NEBULA = {
         'name': 'Galaxy Nebula',
-        'rich_bar_color': 'bright_magenta',
-        'rich_text_color': 'white',
+        'rich_bar_color': '#FF00FF',  # Magenta truecolor
+        'rich_text_color': '#FFFFFF',  # White truecolor
         'rich_spinner': 'moon',
         'textual_style': 'bold magenta',
         'textual_background': 'on black',
         'description': '🌌 Galaxy Nebula Rich+Textual',
-        'particle_effect': 'stars'
+        'particle_effect': 'stars',
+        'truecolor': True,
+        'gradient_colors': ['#FF00FF', '#DA70D6', '#BA55D3', '#9370DB'],  # Purple gradient
+        'glow_color': '#FF00FF',
+        'pulse_color': '#DA70D6'
     }
     
     RAINBOW_PRISM = {
         'name': 'Rainbow Prism',
-        'rich_bar_color': 'cyan',
-        'rich_text_color': 'white',
+        'rich_bar_color': '#FF1493',  # Deep pink truecolor
+        'rich_text_color': '#FFFFFF',  # White truecolor
         'rich_spinner': 'bouncingBar',
         'textual_style': 'bold rainbow',
         'textual_background': 'on black',
         'description': '🌈 Rainbow Prism Rich+Textual',
-        'particle_effect': 'prisms'
+        'particle_effect': 'prisms',
+        'truecolor': True,
+        'gradient_colors': ['#FF0000', '#FF7F00', '#FFFF00', '#00FF00', '#0000FF', '#4B0082', '#9400D3'],  # Full rainbow
+        'glow_color': '#FF1493',
+        'pulse_color': '#FF69B4'
+    }
+    
+    # Additional truecolor themes
+    ELECTRIC_PURPLE = {
+        'name': 'Electric Purple',
+        'rich_bar_color': '#9400D3',  # Electric purple truecolor
+        'rich_text_color': '#E6E6FA',  # Lavender truecolor
+        'rich_spinner': 'dots',
+        'textual_style': 'bold purple',
+        'textual_background': 'on black',
+        'description': '⚡ Electric Purple TrueColor',
+        'particle_effect': 'lightning',
+        'truecolor': True,
+        'gradient_colors': ['#9400D3', '#8B008B', '#800080', '#6A0DAD'],  # Purple gradient
+        'glow_color': '#9400D3',
+        'pulse_color': '#8B008B'
+    }
+    
+    GOLDEN_SUNSET = {
+        'name': 'Golden Sunset',
+        'rich_bar_color': '#FFD700',  # Gold truecolor
+        'rich_text_color': '#FFF8DC',  # Cornsilk truecolor
+        'rich_spinner': 'line',
+        'textual_style': 'bold yellow',
+        'textual_background': 'on black',
+        'description': '🌅 Golden Sunset TrueColor',
+        'particle_effect': 'sunrays',
+        'truecolor': True,
+        'gradient_colors': ['#FFD700', '#FFA500', '#FF8C00', '#FF6347'],  # Sunset gradient
+        'glow_color': '#FFD700',
+        'pulse_color': '#FFA500'
+    }
+    
+    EMERALD_FOREST = {
+        'name': 'Emerald Forest',
+        'rich_bar_color': '#50C878',  # Emerald truecolor
+        'rich_text_color': '#F0FFF0',  # Honeydew truecolor
+        'rich_spinner': 'dots2',
+        'textual_style': 'bold green',
+        'textual_background': 'on black',
+        'description': '🌲 Emerald Forest TrueColor',
+        'particle_effect': 'leaves',
+        'truecolor': True,
+        'gradient_colors': ['#50C878', '#3CB371', '#2E8B57', '#228B22'],  # Forest gradient
+        'glow_color': '#50C878',
+        'pulse_color': '#3CB371'
     }
 
 @dataclass
@@ -194,58 +264,72 @@ class HybridRichProgressBar:
         self.particle_chars = ['✨', '⭐', '💫', '🌟', '✦', '✧', '⚡', '🔥', '💥', '🎆']
         
     def create_rich_progress(self):
-        """Create enhanced Rich progress bar component"""
+        """Create enhanced Rich progress bar component with truecolor"""
         if not RICH_AVAILABLE or not self.config.use_rich:
             return None
             
         theme = self.config.theme.value
         
-        # Enhanced spinner with more animation
+        # Enhanced spinner with truecolor support
         spinner = SpinnerColumn(
             spinner_name=theme['rich_spinner'],
-            style=f"bold {theme['rich_text_color']}",
+            style=Style(color=theme['rich_text_color'], bold=True),
             speed=1.5 if self.config.animated else 1.0
         ) if self.config.show_spinner else None
         
-        # Enhanced text with glow effect
-        text_style = f"bold {theme['rich_text_color']}"
-        if self.config.glow_effect:
-            text_style += " underline"
+        # Enhanced text with truecolor glow effect
+        text_style = Style(color=theme['rich_text_color'], bold=True)
+        if self.config.glow_effect and theme.get('truecolor', False):
+            text_style = Style(color=theme['rich_text_color'], bold=True, underline=True)
         
         text = TextColumn(
-            f"[{text_style}]{self.config.description}[/{text_style}]",
-            style=Style(color=theme['rich_text_color'], bold=True)
+            self.config.description,
+            style=text_style
         )
         
-        # Enhanced bar with glow and pulse effects
-        bar_style = Style(color=theme['rich_bar_color'], bold=True)
-        if self.config.glow_effect:
-            bar_style = Style(color=theme['rich_bar_color'], bold=True, blink=True)
+        # Enhanced bar with truecolor and gradient effects
+        bar_color = theme['rich_bar_color']
+        if theme.get('truecolor', False) and self.config.glow_effect:
+            # Create gradient effect for truecolor themes
+            bar_style = Style(color=bar_color, bold=True)
+            complete_style = Style(color=theme.get('glow_color', bar_color), bold=True, blink=self.config.pulse_animation)
+            finished_style = Style(color=theme.get('pulse_color', bar_color), bold=True, reverse=True)
+            pulse_style = Style(color=bar_color, dim=True, italic=True)
+        else:
+            # Fallback to standard colors
+            bar_style = Style(color=bar_color, bold=True)
+            complete_style = Style(color=bar_color, bold=True, blink=self.config.pulse_animation)
+            finished_style = Style(color=bar_color, bold=True, reverse=True)
+            pulse_style = Style(color=bar_color, dim=True, italic=True)
         
         bar = BarColumn(
             bar_width=self.config.bar_width,  # Bigger bars
             style=bar_style,
-            complete_style=Style(color=theme['rich_bar_color'], bold=True, blink=self.config.pulse_animation),
-            finished_style=Style(color=theme['rich_bar_color'], bold=True, reverse=True),
-            pulse_style=Style(color=theme['rich_bar_color'], dim=True, italic=True)
+            complete_style=complete_style,
+            finished_style=finished_style,
+            pulse_style=pulse_style
         )
         
-        # Enhanced percentage with better formatting
+        # Enhanced percentage with truecolor
+        percentage_style = Style(color=theme['rich_text_color'], bold=True)
+        if theme.get('truecolor', False):
+            percentage_style = Style(color=theme['rich_text_color'], bold=True)
+        
         percentage = TextColumn(
             "[progress.percentage]{task.percentage:>6.1f}%",
-            style=Style(color=theme['rich_text_color'], bold=True)
+            style=percentage_style
         ) if self.config.show_percentage else None
         
-        # Enhanced time tracking
+        # Enhanced time tracking with truecolor
         time_columns = []
         if self.config.show_time:
             time_columns.append(TimeElapsedColumn())
         
         if self.config.show_time_left:
-            # Custom time remaining column
+            # Custom time remaining column with truecolor
             class TimeRemainingColumn(TextColumn):
                 def __init__(self):
-                    super().__init__("", style="cyan")  # Provide required text_format
+                    super().__init__("", style=Style(color=theme.get('glow_color', 'cyan'), bold=True))
                 
                 def render(self, task):
                     if task.completed > 0 and task.total > 0:
@@ -255,10 +339,13 @@ class HybridRichProgressBar:
                             remaining = (task.total - task.completed) / rate if rate > 0 else 0
                             minutes, seconds = divmod(int(remaining), 60)
                             if minutes > 0:
-                                return Text(f"ETA: {minutes:02d}:{seconds:02d}", style="cyan")
+                                eta_color = theme.get('glow_color', 'cyan')
+                                return Text(f"ETA: {minutes:02d}:{seconds:02d}", style=Style(color=eta_color, bold=True))
                             else:
-                                return Text(f"ETA: {seconds:02d}s", style="cyan")
-                    return Text("ETA: --:--", style="dim cyan")
+                                eta_color = theme.get('glow_color', 'cyan')
+                                return Text(f"ETA: {seconds:02d}s", style=Style(color=eta_color, bold=True))
+                    eta_color = theme.get('glow_color', 'cyan')
+                    return Text("ETA: --:--", style=Style(color=eta_color, dim=True))
             
             time_columns.append(TimeRemainingColumn())
         
@@ -272,28 +359,51 @@ class HybridRichProgressBar:
             columns.append(percentage)
         columns.extend(time_columns)
         
-        # Add particle effects column
+        # Add enhanced particle effects column with truecolor
         if self.config.particle_effects:
             class ParticleColumn(TextColumn):
                 def __init__(self):
-                    super().__init__("", style="bright_yellow")  # Provide required text_format
+                    super().__init__("", style=Style(color=theme.get('glow_color', 'bright_yellow'), bold=True))
                 
                 def render(self, task):
                     import random
-                    particle = random.choice(['✨', '⭐', '💫', '🌟'])
-                    progress_pct = task.completed / task.total if task.total > 0 else 0
-                    if progress_pct > 0.8:
-                        return Text(particle, style="bright_yellow")
-                    elif progress_pct > 0.5:
-                        return Text(particle, style="bright_cyan")
-                    elif progress_pct > 0.2:
-                        return Text(particle, style="bright_blue")
+                    # Enhanced particle set for truecolor themes
+                    if theme.get('truecolor', False):
+                        particles = ['✨', '⭐', '💫', '🌟', '✦', '✧', '⚡', '🔥', '💥', '🎆', '🌈', '💎', '🔮']
                     else:
-                        return Text(particle, style="dim white")
+                        particles = ['✨', '⭐', '💫', '🌟']
+                    
+                    particle = random.choice(particles)
+                    progress_pct = task.completed / task.total if task.total > 0 else 0
+                    
+                    # Truecolor particle effects
+                    if theme.get('truecolor', False):
+                        gradient_colors = theme.get('gradient_colors', [theme['rich_bar_color']])
+                        color_index = int(progress_pct * (len(gradient_colors) - 1))
+                        particle_color = gradient_colors[min(color_index, len(gradient_colors) - 1)]
+                        
+                        if progress_pct > 0.8:
+                            return Text(particle, style=Style(color=theme.get('glow_color', particle_color), bold=True))
+                        elif progress_pct > 0.5:
+                            return Text(particle, style=Style(color=particle_color, bold=True))
+                        elif progress_pct > 0.2:
+                            return Text(particle, style=Style(color=particle_color, bold=True))
+                        else:
+                            return Text(particle, style=Style(color=particle_color, dim=True))
+                    else:
+                        # Fallback particle effects
+                        if progress_pct > 0.8:
+                            return Text(particle, style="bright_yellow")
+                        elif progress_pct > 0.5:
+                            return Text(particle, style="bright_cyan")
+                        elif progress_pct > 0.2:
+                            return Text(particle, style="bright_blue")
+                        else:
+                            return Text(particle, style="dim white")
             
             columns.append(ParticleColumn())
         
-        # Create enhanced progress object
+        # Create enhanced progress object with truecolor support
         progress = Progress(
             *columns,
             console=self.console,
@@ -445,22 +555,48 @@ class HybridTextualProgressBar(Widget):
                 pass
     
     def update_particles(self) -> None:
-        """Update particle effects"""
+        """Update particle effects with truecolor"""
         if self.config.particle_effects:
             try:
                 particles = self.query_one("#particles", Static)
-                particle = self.particle_chars[self.current_particle % len(self.particle_chars)]
+                theme = self.config.theme.value
                 
-                # Change particle color based on progress
-                progress_pct = self.current_progress / self.config.total if self.config.total > 0 else 0
-                if progress_pct > 0.8:
-                    particle_style = f"bright_yellow {particle}"
-                elif progress_pct > 0.5:
-                    particle_style = f"bright_cyan {particle}"
-                elif progress_pct > 0.2:
-                    particle_style = f"bright_blue {particle}"
+                # Enhanced particle set for truecolor themes
+                if theme.get('truecolor', False):
+                    particle_chars = ['✨', '⭐', '💫', '🌟', '✦', '✧', '⚡', '🔥', '💥', '🎆', '🌈', '💎', '🔮']
                 else:
-                    particle_style = f"dim white {particle}"
+                    particle_chars = self.particle_chars
+                
+                particle = particle_chars[self.current_particle % len(particle_chars)]
+                
+                # Truecolor particle effects with gradient
+                progress_pct = self.current_progress / self.config.total if self.config.total > 0 else 0
+                
+                if theme.get('truecolor', False):
+                    gradient_colors = theme.get('gradient_colors', [theme['rich_bar_color']])
+                    color_index = int(progress_pct * (len(gradient_colors) - 1))
+                    particle_color = gradient_colors[min(color_index, len(gradient_colors) - 1)]
+                    
+                    # Apply truecolor styling
+                    if progress_pct > 0.8:
+                        glow_color = theme.get('glow_color', particle_color)
+                        particle_style = f"bold {glow_color}"
+                    elif progress_pct > 0.5:
+                        particle_style = f"bold {particle_color}"
+                    elif progress_pct > 0.2:
+                        particle_style = f"bold {particle_color}"
+                    else:
+                        particle_style = f"dim {particle_color}"
+                else:
+                    # Fallback particle effects
+                    if progress_pct > 0.8:
+                        particle_style = f"bright_yellow {particle}"
+                    elif progress_pct > 0.5:
+                        particle_style = f"bright_cyan {particle}"
+                    elif progress_pct > 0.2:
+                        particle_style = f"bright_blue {particle}"
+                    else:
+                        particle_style = f"dim white {particle}"
                 
                 particles.update(particle_style)
                 self.current_particle += 1
