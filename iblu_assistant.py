@@ -2394,7 +2394,7 @@ All responses should be helpful, educational, and focused on legitimate cybersec
         if COLORAMA_AVAILABLE:
             # Security tools overview
             tools_header = f"{Fore.LIGHTYELLOW_EX}┌─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}"
-            tools_title = f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Back.YELLOW}{Fore.WHITE}🔥 Security Tools Available 🔥{ColoramaStyle.RESET_ALL} {Fore.LIGHTYELLOW_EX}{' ' * 39}│{ColoramaStyle.RESET_ALL}"
+            tools_title = f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Back.YELLOW}{Fore.WHITE}⚔️  CHOOSE YOUR DESTINY ⚔️{ColoramaStyle.RESET_ALL} {Fore.LIGHTYELLOW_EX}{' ' * 40}│{ColoramaStyle.RESET_ALL}"
             tools_footer = f"{Fore.LIGHTYELLOW_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}"
             
             print(f"\n{tools_header}")
@@ -2416,7 +2416,7 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}   {Fore.LIGHTGREEN_EX}⚙️  Utilities:{ColoramaStyle.RESET_ALL} tmux, proxychains, chisel, sshuttle")
             print(f"{Fore.LIGHTYELLOW_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}\n")
         else:
-            print("\n🔥 Security Tools Available (90+ Tools):")
+            print("\n⚔️  CHOOSE YOUR DESTINY (90+ Tools):")
             print("  • 🔍 Reconnaissance: nmap, masscan, dnsenum, recon-ng")
             print("  • 🕵️  OSINT: theharvester, amass, spiderfoot, maltego, shodan")
             print("  • 🌐 Web Testing: nikto, sqlmap, burpsuite, gobuster, httpx")
