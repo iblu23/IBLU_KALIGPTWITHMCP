@@ -6415,11 +6415,11 @@ Provide step-by-step technical details while maintaining educational context.
         # Adaptive timeout based on prompt complexity
         total_prompt_length = len(system_prompt) + len(user_message)
         if total_prompt_length > 2000:
-            timeout = 120  # Longer timeout for complex prompts
+            timeout = 180  # Increased from 120 for complex prompts
         elif total_prompt_length > 1000:
-            timeout = 90   # Medium timeout for moderate prompts
+            timeout = 150  # Increased from 90 for moderate prompts
         else:
-            timeout = 60   # Standard timeout for simple prompts
+            timeout = 120  # Increased from 60 for simple prompts
         
         result_container = {"result": None, "error": None, "done": False}
         
@@ -6490,9 +6490,9 @@ Provide step-by-step technical details while maintaining educational context.
                 "options": {
                     "temperature": 0.7,        # Balanced creativity
                     "top_p": 0.9,             # Focus on relevant responses
-                    "max_tokens": 512,         # Limit response length for speed
-                    "num_predict": 512,        # Same as max_tokens
-                    "num_ctx": 2048,          # Reasonable context window
+                    "max_tokens": 2048,        # Increased from 512 for longer responses
+                    "num_predict": 2048,       # Increased from 512 for longer responses
+                    "num_ctx": 4096,          # Increased context window
                     "seed": 42,                # Reproducible results
                     "stop": ["User:", "Human:", "\n\n"]  # Stop sequences to prevent rambling
                 }
@@ -6501,11 +6501,13 @@ Provide step-by-step technical details while maintaining educational context.
             # Adaptive timeout based on model size and prompt complexity
             prompt_size = len(combined_message)
             if 'llama2' in model_to_use or 'mistral' in model_to_use:
-                timeout = 45  # Faster models get shorter timeout
+                timeout = 90  # Increased from 45 for longer responses
             elif 'deepseek' in model_to_use:
-                timeout = 60  # Coding models get medium timeout
+                timeout = 120  # Increased from 60 for longer responses
+            elif 'dolphin' in model_to_use:
+                timeout = 120  # Longer timeout for Dolphin model
             else:
-                timeout = 90  # Larger models get longer timeout
+                timeout = 150  # Increased from 90 for longer responses
             
             response = requests.post(url, headers=headers, json=payload, timeout=timeout)
             response.raise_for_status()
