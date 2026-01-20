@@ -2564,45 +2564,71 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             time.sleep(0.5)
                 
         if COLORAMA_AVAILABLE:
-            # Security tools overview - Full Screen (144 chars)
+            # Security tools overview - Main Menu Style
             w = 144
+            
+            # Header section
             tools_header = f"{Fore.LIGHTYELLOW_EX}┌{'═'*w}┐{ColoramaStyle.RESET_ALL}"
             tools_title = f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Back.YELLOW}{Fore.WHITE}⚔️  CHOOSE YOUR DESTINY ⚔️{ColoramaStyle.RESET_ALL} {Fore.LIGHTYELLOW_EX}{' ' * (w-25)}│{ColoramaStyle.RESET_ALL}"
+            tools_subheader = f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.YELLOW}🔥 90+ PROFESSIONAL SECURITY TOOLS 🔥{ColoramaStyle.RESET_ALL} {Fore.LIGHTYELLOW_EX}{' ' * (w-35)}│{ColoramaStyle.RESET_ALL}"
             tools_footer = f"{Fore.LIGHTYELLOW_EX}└{'═'*w}┘{ColoramaStyle.RESET_ALL}"
             
             print(f"\n{tools_header}")
             print(f"{tools_title}")
-            print(f"{tools_footer}")
+            print(f"{tools_subheader}")
+            print(f"{tools_footer}\n")
             
-            print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}   {Fore.CYAN}🔍 Reconnaissance:{ColoramaStyle.RESET_ALL} nmap, masscan, dnsenum, recon-ng{' ' * (w-55)}│{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}   {Fore.LIGHTBLUE_EX}🕵️  OSINT:{ColoramaStyle.RESET_ALL} theharvester, amass, spiderfoot, maltego, shodan{' ' * (w-60)}│{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}   {Fore.CYAN}🌐 Web Testing:{ColoramaStyle.RESET_ALL} nikto, sqlmap, burpsuite, gobuster, httpx{' ' * (w-56)}│{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}   {Fore.GREEN}🎯 Web Advanced:{ColoramaStyle.RESET_ALL} whatweb, xsstrike, commix, arjun{' ' * (w-50)}│{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}   {Fore.CYAN}🔐 Password Cracking:{ColoramaStyle.RESET_ALL} john, hashcat, hydra, medusa{' ' * (w-55)}│{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}   {Fore.CYAN}📡 Network Analysis:{ColoramaStyle.RESET_ALL} wireshark, tcpdump, aircrack-ng{' ' * (w-52)}│{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}   {Fore.LIGHTCYAN_EX}📶 Wireless:{ColoramaStyle.RESET_ALL} reaver, pixiewps, bettercap, airgeddon{' ' * (w-53)}│{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}   {Fore.MAGENTA}🛡️  Vuln Management:{ColoramaStyle.RESET_ALL} nuclei, faraday, vulners{' ' * (w-45)}│{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}   {Fore.RED}💣 Exploitation:{ColoramaStyle.RESET_ALL} metasploit, beef, empire, crackmapexec{' ' * (w-57)}│{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}   {Fore.WHITE}🎯 Post-Exploitation:{ColoramaStyle.RESET_ALL} bloodhound, responder, impacket{' ' * (w-53)}│{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}   {Fore.LIGHTMAGENTA_EX}🔬 Forensics:{ColoramaStyle.RESET_ALL} autopsy, volatility, plaso, bulk-extractor{' ' * (w-65)}│{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}   {Fore.LIGHTYELLOW_EX}🎭 Social Engineering:{ColoramaStyle.RESET_ALL} setoolkit, kingphisher, evilginx2{' ' * (w-56)}│{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}   {Fore.LIGHTGREEN_EX}⚙️  Utilities:{ColoramaStyle.RESET_ALL} tmux, proxychains, chisel, sshuttle{' ' * (w-53)}│{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTYELLOW_EX}└{'═'*w}┘{ColoramaStyle.RESET_ALL}\n")
+            # Tool categories with enhanced formatting
+            tool_categories = [
+                ("🔍 RECONNAISSANCE", "Fore.CYAN", "nmap, masscan, dnsenum, recon-ng, enum4linux, amass, subfinder"),
+                ("🕵️  OSINT & INTELLIGENCE", "Fore.LIGHTBLUE_EX", "theharvester, maltego, spiderfoot, shodan, recon-ng, social-searcher"),
+                ("🌐 WEB APPLICATION TESTING", "Fore.CYAN", "nikto, sqlmap, burpsuite, gobuster, httpx, dirb, ffuf, wfuzz"),
+                ("🎯 ADVANCED WEB TOOLS", "Fore.GREEN", "whatweb, xsstrike, commix, arjun, nuclei, jaeles, dalfox"),
+                ("🔐 PASSWORD ATTACKS", "Fore.CYAN", "john, hashcat, hydra, medusa, crunch, hash-identifier, cewl"),
+                ("📡 NETWORK ANALYSIS", "Fore.CYAN", "wireshark, tcpdump, aircrack-ng, netcat, nmap, masscan, zmap"),
+                ("📶 WIRELESS SECURITY", "Fore.LIGHTCYAN_EX", "reaver, pixiewps, bettercap, airgeddon, wifite, aircrack-ng, kismet"),
+                ("🛡️  VULNERABILITY MGMT", "Fore.MAGENTA", "nuclei, faraday, vulners, openvas, nessus, tenable, cve-search"),
+                ("💣 EXPLOITATION FRAMEWORKS", "Fore.RED", "metasploit, beef, empire, cobaltstrike, crackmapexec, impacket"),
+                ("🎯 POST-EXPLOITATION", "Fore.WHITE", "bloodhound, responder, impacket, mimikatz, powerview, rubeus"),
+                ("🔬 DIGITAL FORENSICS", "Fore.LIGHTMAGENTA_EX", "autopsy, volatility, plaso, bulk-extractor, sleuthkit, foremost"),
+                ("🎭 SOCIAL ENGINEERING", "Fore.LIGHTYELLOW_EX", "setoolkit, kingphisher, evilginx2, gophish, modlishka, socialfish"),
+                ("⚙️  UTILITY TOOLS", "Fore.LIGHTGREEN_EX", "tmux, proxychains, chisel, sshuttle, ngrok, netcat, hping3")
+            ]
+            
+            for category, color, tools in tool_categories:
+                # Category header box
+                print(f"{Fore.LIGHTYELLOW_EX}┌─ {ColoramaStyle.BRIGHT}{Fore.WHITE}{category}{ColoramaStyle.RESET_ALL}{Fore.LIGHTYELLOW_EX} ─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}")
+                print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}  {color}{ColoramaStyle.BRIGHT}{tools.ljust(65)}{ColoramaStyle.RESET_ALL}{' ' * (w - 67)}{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}")
+                print(f"{Fore.LIGHTYELLOW_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}\n")
         else:
-            print("\n⚔️  CHOOSE YOUR DESTINY (90+ Tools):")
-            print("  • 🔍 Reconnaissance: nmap, masscan, dnsenum, recon-ng")
-            print("  • 🕵️  OSINT: theharvester, amass, spiderfoot, maltego, shodan")
-            print("  • 🌐 Web Testing: nikto, sqlmap, burpsuite, gobuster, httpx")
-            print("  • 🎯 Web Advanced: whatweb, xsstrike, commix, arjun")
-            print("  • 🔐 Password Cracking: john, hashcat, hydra, medusa")
-            print("  • 📡 Network Analysis: wireshark, tcpdump, aircrack-ng")
-            print("  • 📶 Wireless: reaver, pixiewps, bettercap, airgeddon")
-            print("  • 🛡️  Vuln Management: nuclei, faraday, vulners")
-            print("  • 💣 Exploitation: metasploit, beef, empire, crackmapexec")
-            print("  • 🎯 Post-Exploitation: bloodhound, responder, impacket")
-            print("  • 🔬 Forensics: autopsy, volatility, plaso, bulk-extractor")
-            print("  • 🎭 Social Engineering: setoolkit, kingphisher, evilginx2")
-            print("  • ⚙️  Utilities: tmux, proxychains, chisel, sshuttle\n")
+            print("\n" + "=" * 70)
+            print("    ⚔️  CHOOSE YOUR DESTINY ⚔️")
+            print("    🔥 90+ PROFESSIONAL SECURITY TOOLS 🔥")
+            print("=" * 70 + "\n")
+            
+            # Enhanced tool categories for fallback
+            tool_categories_fallback = [
+                ("🔍 RECONNAISSANCE", "nmap, masscan, dnsenum, recon-ng, enum4linux, amass, subfinder"),
+                ("🕵️  OSINT & INTELLIGENCE", "theharvester, maltego, spiderfoot, shodan, recon-ng, social-searcher"),
+                ("🌐 WEB APPLICATION TESTING", "nikto, sqlmap, burpsuite, gobuster, httpx, dirb, ffuf, wfuzz"),
+                ("🎯 ADVANCED WEB TOOLS", "whatweb, xsstrike, commix, arjun, nuclei, jaeles, dalfox"),
+                ("🔐 PASSWORD ATTACKS", "john, hashcat, hydra, medusa, crunch, hash-identifier, cewl"),
+                ("📡 NETWORK ANALYSIS", "wireshark, tcpdump, aircrack-ng, netcat, nmap, masscan, zmap"),
+                ("📶 WIRELESS SECURITY", "reaver, pixiewps, bettercap, airgeddon, wifite, aircrack-ng, kismet"),
+                ("🛡️  VULNERABILITY MGMT", "nuclei, faraday, vulners, openvas, nessus, tenable, cve-search"),
+                ("💣 EXPLOITATION FRAMEWORKS", "metasploit, beef, empire, cobaltstrike, crackmapexec, impacket"),
+                ("🎯 POST-EXPLOITATION", "bloodhound, responder, impacket, mimikatz, powerview, rubeus"),
+                ("🔬 DIGITAL FORENSICS", "autopsy, volatility, plaso, bulk-extractor, sleuthkit, foremost"),
+                ("🎭 SOCIAL ENGINEERING", "setoolkit, kingphisher, evilginx2, gophish, modlishka, socialfish"),
+                ("⚙️  UTILITY TOOLS", "tmux, proxychains, chisel, sshuttle, ngrok, netcat, hping3")
+            ]
+            
+            for category, tools in tool_categories_fallback:
+                print(f"\n┌─ {category} ──────────────────────────────────────────")
+                print(f"│ {tools}")
+                print("└──────────────────────────────────────────────────")
+            
+            print()
         
         # Menu options header
         if COLORAMA_AVAILABLE:
