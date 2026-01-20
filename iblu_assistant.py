@@ -10,6 +10,7 @@ import json
 import os
 import sys
 import time
+import math
 import random
 import subprocess
 import threading
@@ -2350,8 +2351,17 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             banner_content.append("██║  ██║ ██║  ██║ ╚██████╗ ██║  ██╗       ██║    ██║  ██║ ███████╗    ╚███╔███╔╝ ╚██████╔╝ ██║  ██║ ███████╗ ██████╔╝\n", style="bold yellow")
             banner_content.append("╚═╝  ╚═╝ ╚═╝  ╚═╝  ╚═════╝ ╚═╝  ╚═╝       ╚═╝    ╚═╝  ╚═╝ ╚══════╝     ╚══╝╚══╝   ╚═════╝  ╚═╝  ╚═╝ ╚══════╝ ╚═════╝\n\n", style="bold yellow")
             
-            # Display the main banner - Full Screen (144 chars)
-            console.print(Panel(banner_content, border_style="red", padding=(1, 7), expand=True))
+            # Display the main banner - Full Screen (144 chars) with wave effect
+            banner_lines = banner_content.plain.splitlines()
+            banner_text = Text("", justify="left")
+            with Live(Panel(banner_text, border_style="red", padding=(1, 7), expand=True), console=console, refresh_per_second=60) as live:
+                for t in range(100):
+                    banner_text.plain = ""
+                    for i, line in enumerate(banner_lines):
+                        offset = int(5 * math.sin(t / 5 + i))
+                        banner_text.append(" " * max(0, offset) + line + "\n", style="bold yellow")
+                    live.refresh()
+                    time.sleep(0.05)
             
             # Display HACK THE WORLD text panel - Full Screen with typing effect
             # Pac-Man art lines for side-by-side display (2 left, 2 right)
@@ -2373,15 +2383,18 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             for line in pacman_lines:
                 combined_art += f"  {line}  {line}          {line}  {line}\n"
             
-            world_text = Text("", justify="center")
+            world_lines = combined_art.splitlines()
+            world_text = Text("", justify="left")
             with Live(Panel(world_text, border_style="magenta", padding=(1, 7), expand=True), 
                       console=console, refresh_per_second=60) as live:
-                for ch in combined_art:
-                    world_text.append(ch, style="bold yellow")
-                    time.sleep(0.002)
-                
-                world_text.append("\n🔥🔥🔥 HACK THE WORLD 🔥🔥🔥", style="bold magenta")
-                live.refresh()
+                for t in range(100):
+                    world_text.plain = ""
+                    for i, line in enumerate(world_lines):
+                        offset = int(5 * math.sin(t / 5 + i))
+                        world_text.append(" " * max(0, offset) + line + "\n", style="bold yellow")
+                    world_text.append("\n🔥🔥🔥 HACK THE WORLD 🔥🔥🔥", style="bold magenta")
+                    live.refresh()
+                    time.sleep(0.05)
             
         else:
             # Fallback banner without Rich - Screen Wide (144 chars)
@@ -2413,32 +2426,24 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                 pad("")
             ]
             
-            # Print initial banner lines normally
-            for line in banner_lines:
-                print(line)
-            
-            # Add 4 pacman art (2 left, 2 right) with typing effect (moved left)
-            for line in pacman_lines:
-                combined_line = f"  {line}  {line}          {line}  {line}"
-                padded_line = pad(combined_line)
-                for ch in padded_line:
-                    print(ch, end="", flush=True)
-                    time.sleep(0.002)
-                print()
-                
-            # Print final banner lines with typing effect for the slogan
+            pacman_block = [f"  {line}  {line}          {line}  {line}" for line in pacman_lines]
             final_lines = [
                 pad(""),
                 pad("🔥🔥🔥 HACK THE WORLD 🔥🔥🔥".center(w)),
                 pad(""),
                 "╚" + "═"*w + "╝"
             ]
-            
-            for line in final_lines:
-                for ch in line:
-                    print(ch, end="", flush=True)
-                    time.sleep(0.002)
-                print()
+
+            for t in range(100):
+                os.system("clear")
+                for line in banner_lines:
+                    print(line)
+                for i, line in enumerate(pacman_block):
+                    offset = int(5 * math.sin(t / 5 + i))
+                    print(pad((" " * max(0, offset)) + line))
+                for line in final_lines:
+                    print(line)
+                time.sleep(0.05)
         
                 
         if COLORAMA_AVAILABLE:
