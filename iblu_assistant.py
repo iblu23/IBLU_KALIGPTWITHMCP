@@ -32,9 +32,14 @@ try:
 except ImportError:
     COLORAMA_AVAILABLE = False
 
-# Optional prompt_toolkit for rich input
+# Enhanced prompt_toolkit for rich input with auto-completion
 try:
     from prompt_toolkit import prompt
+    from prompt_toolkit.history import FileHistory
+    from prompt_toolkit.completion import WordCompleter
+    from prompt_toolkit.styles import Style
+    from prompt_toolkit.key_binding import KeyBindings
+    from prompt_toolkit.styles import merge_styles
     PROMPT_TOOLKIT_AVAILABLE = True
 except ImportError:
     PROMPT_TOOLKIT_AVAILABLE = False
@@ -2318,6 +2323,119 @@ All responses should be helpful, educational, and focused on legitimate cybersec
         self.command_helper = IBLUCommandHelper()
         # Share conversation history with command helper
         self.command_helper.conversation_history = self.conversation_history
+        
+        # Initialize prompt_toolkit components
+        self._init_prompt_toolkit()
+    
+    def _init_prompt_toolkit(self):
+        """Initialize prompt_toolkit with auto-completion and history"""
+        if PROMPT_TOOLKIT_AVAILABLE:
+            # Create command completer with security commands
+            self.commands = WordCompleter([
+                # Basic commands
+                'help', 'exit', 'quit', 'clear', 'status', 'info',
+                
+                # Security scanning
+                'scan', 'nmap', 'portscan', 'vulnerability', 'enum', 'recon',
+                
+                # Hacking tools
+                'hack', 'exploit', 'payload', 'shell', 'reverse', 'bind',
+                
+                # Network tools
+                'network', 'ping', 'traceroute', 'dns', 'whois', 'netstat',
+                
+                # Web security
+                'web', 'sqlmap', 'dirb', 'nikto', 'burp', 'xss', 'sqli',
+                
+                # Password tools
+                'hash', 'crack', 'john', 'hashcat', 'hydra', 'wordlist',
+                
+                # Forensics
+                'forensics', 'volatility', 'autopsy', 'strings', 'binwalk',
+                
+                # Reporting
+                'report', 'export', 'save', 'load', 'backup', 'restore',
+                
+                # AI/ML
+                'ai', 'ml', 'model', 'train', 'classify', 'predict',
+                
+                # System tools
+                'system', 'process', 'service', 'log', 'monitor', 'performance',
+                
+                # IBLU specific
+                'iblu', 'kaligpt', 'mcp', 'update', 'config', 'tools'
+            ], ignore_case=True)
+            
+            # Create history file
+            history_path = Path(__file__).parent / 'iblu_chat_history.txt'
+            self.history = FileHistory(str(history_path))
+            
+            # Create styled prompt (simplified for compatibility)
+            try:
+                from prompt_toolkit.styles import style_from_dict
+                self.prompt_style = style_from_dict({
+                    'prompt': '#00aa00 bold',
+                    'completion-menu': 'bg:#008800 #ffffff',
+                    'completion-menu.completion.current': 'bg:#ffffff #000000',
+                    'scrollbar.background': 'bg:#88aaaa',
+                    'scrollbar.button': 'bg:#4444ff',
+                })
+            except ImportError:
+                # Fallback for older prompt_toolkit versions
+                self.prompt_style = None
+            
+            # Key bindings
+            self.key_bindings = KeyBindings()
+            
+            @self.key_bindings.add('c-c')
+            def _(event):
+                """Handle Ctrl+C gracefully"""
+                event.app.exit()
+                
+            self.prompt_toolkit_enabled = True
+        else:
+            self.prompt_toolkit_enabled = False
+            print("⚠️  prompt_toolkit not available - using basic input")
+    
+    def get_user_input(self, prompt_text: str = "IBLU> ") -> str:
+        """Get user input with enhanced prompt_toolkit or fallback"""
+        if self.prompt_toolkit_enabled:
+            try:
+                prompt_kwargs = {
+                    'completer': self.commands,
+                    'history': self.history,
+                    'complete_while_typing': True,
+                }
+                
+                # Add style if available
+                if self.prompt_style:
+                    prompt_kwargs['style'] = self.prompt_style
+                
+                # Add key bindings if available
+                if hasattr(self, 'key_bindings'):
+                    prompt_kwargs['key_bindings'] = self.key_bindings
+                
+                return prompt(prompt_text, **prompt_kwargs)
+                
+            except KeyboardInterrupt:
+                print("\n👋 Interrupted")
+                return "exit"
+            except EOFError:
+                print("\n👋 EOF received")
+                return "exit"
+            except Exception as e:
+                print(f"⚠️  Prompt error: {e}")
+                return input(prompt_text)
+        else:
+            # Fallback to basic input
+            try:
+                return input(prompt_text)
+            except KeyboardInterrupt:
+                print("\n👋 Interrupted")
+                return "exit"
+            except EOFError:
+                print("\n👋 EOF received")
+                return "exit"
     
     def show_main_menu(self):
         """Display the main menu with enhanced visual formatting and animations"""
@@ -2430,37 +2548,6 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                 live.refresh()
                 time.sleep(0.5)
             
-            # Add IBLU AI ASSISTANT text with delayed glitch effect for Rich console
-            time.sleep(0.8)  # Delay after main banner
-            
-            # IBLU AI ASSISTANT glitch text for Rich mode
-            iblu_text = "☠☠☠ WITH IBLU AI ASSISTANT ☠☠☠"
-            
-            # Create IBLU text with glitch effect
-            iblu_banner_text = Text("", justify="center")
-            with Live(Panel(iblu_banner_text, border_style=random.choice(border_styles), padding=(1, 7), expand=True), 
-                      console=console, refresh_per_second=120) as iblu_live:
-                
-                # Glitch effect for IBLU text
-                for glitch_iter in range(40):
-                    iblu_banner_text.plain = ""
-                    
-                    # Apply glitch effect
-                    if random.random() < 0.3:  # 30% chance to glitch
-                        glitched_iblu = clean_glitch(iblu_text, 0.4)
-                    else:
-                        glitched_iblu = iblu_text
-                    
-                    iblu_banner_text.append(glitched_iblu + "\n", "bold bright_red")
-                    iblu_live.refresh()
-                    time.sleep(0.03)
-                
-                # Final perfect IBLU text
-                iblu_banner_text.plain = ""
-                iblu_banner_text.append(iblu_text + "\n", "bold bright_red")
-                iblu_live.refresh()
-                time.sleep(0.5)
-            
         else:
             # Fallback banner without Rich - Screen Wide (144 chars)
             w = 144
@@ -2512,63 +2599,12 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             for line in banner_lines:
                 print(line)
             
-            # Add IBLU AI ASSISTANT text with delayed glitch effect
-            time.sleep(0.8)  # Delay after main banner
+            if COLORAMA_AVAILABLE:
+                # Security tools overview - Single Panel Style
+                w = 144
             
-            # IBLU AI ASSISTANT glitch text for fallback mode
-            iblu_text = "☠☠☠ WITH IBLU AI ASSISTANT ☠☠☠"
-            w = 144
-            centered_iblu = iblu_text.center(w)
-            
-            print(f"\n{Fore.LIGHTRED_EX}╔" + "═"*w + f"╗{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}" + " "*w + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            
-            # Glitch effect for IBLU text
-            for glitch_iter in range(40):
-                os.system("clear")
-                # Reprint static banner first
-                for line in banner_lines:
-                    print(line)
-                print()  # Space between banner and IBLU text
-                
-                print(f"{Fore.LIGHTRED_EX}╔" + "═"*w + f"╗{ColoramaStyle.RESET_ALL}")
-                print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}" + " "*w + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-                
-                # Glitch the IBLU text
-                if random.random() < 0.3:  # 30% chance to glitch
-                    glitch_chars = list(centered_iblu)
-                    num_glitches = random.randint(1, min(8, len(glitch_chars)//4))
-                    for _ in range(num_glitches):
-                        if len(glitch_chars) > 0:
-                            i = random.randint(0, len(glitch_chars)-1)
-                            glitch_chars[i] = random.choice("@#$%&*░▒▓█▓▒░█")
-                    glitched_text = "".join(glitch_chars)
-                else:
-                    glitched_text = centered_iblu
-                
-                print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.RED}{Back.BLACK}{glitched_text}{ColoramaStyle.RESET_ALL} {Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-                print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}" + " "*w + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-                print(f"{Fore.LIGHTRED_EX}╚" + "═"*w + f"╝{ColoramaStyle.RESET_ALL}")
-                time.sleep(0.03)
-            
-            # Final static IBLU text
-            os.system("clear")
-            for line in banner_lines:
-                print(line)
-            print()
-            print(f"{Fore.LIGHTRED_EX}╔" + "═"*w + f"╗{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}" + " "*w + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.RED}{Back.BLACK}{centered_iblu}{ColoramaStyle.RESET_ALL} {Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}" + " "*w + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}╚" + "═"*w + f"╝{ColoramaStyle.RESET_ALL}")
-            time.sleep(0.5)
-                
-        if COLORAMA_AVAILABLE:
-            # Security tools overview - Single Panel Style
-            w = 144
-            
-            # Tool categories with enhanced formatting - Single Panel
-            color_map = {
+                # Tool categories with enhanced formatting - Single Panel
+                color_map = {
                 "Fore.CYAN": Fore.CYAN,
                 "Fore.LIGHTBLUE_EX": Fore.LIGHTBLUE_EX,
                 "Fore.GREEN": Fore.GREEN,
@@ -2581,7 +2617,7 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                 "Fore.MAGENTA": Fore.MAGENTA
             }
             
-            tool_categories = [
+                tool_categories = [
                 ("🔍 RECONNAISSANCE", "Fore.CYAN", "nmap, masscan, dnsenum, recon-ng, enum4linux, amass, subfinder"),
                 ("🕵️  OSINT & INTELLIGENCE", "Fore.LIGHTBLUE_EX", "theharvester, maltego, spiderfoot, shodan, recon-ng, social-searcher"),
                 ("🌐 WEB APPLICATION TESTING", "Fore.CYAN", "nikto, sqlmap, burpsuite, gobuster, httpx, dirb, ffuf, wfuzz"),
@@ -2596,48 +2632,48 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                 ("🎭 SOCIAL ENGINEERING", "Fore.LIGHTYELLOW_EX", "setoolkit, kingphisher, evilginx2, gophish, modlishka, socialfish"),
                 ("⚙️  UTILITY TOOLS", "Fore.LIGHTGREEN_EX", "tmux, proxychains, chisel, sshuttle, ngrok, netcat, hping3")
             ]
+                
+                # Single continuous panel
+                print(f"\n{Fore.LIGHTYELLOW_EX}┌{'═'*w}┐{ColoramaStyle.RESET_ALL}")
+                print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Back.YELLOW}{Fore.WHITE}⚔️  CHOOSE YOUR DESTINY ⚔️{ColoramaStyle.RESET_ALL} {Fore.LIGHTYELLOW_EX}{' ' * (w-25)}│{ColoramaStyle.RESET_ALL}")
+                print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.YELLOW}🔥 90+ PROFESSIONAL SECURITY TOOLS 🔥{ColoramaStyle.RESET_ALL} {Fore.LIGHTYELLOW_EX}{' ' * (w-35)}│{ColoramaStyle.RESET_ALL}")
+                print(f"{Fore.LIGHTYELLOW_EX}├{'═'*w}┤{ColoramaStyle.RESET_ALL}")
+                
+                # Display all categories in one panel without borders between them
+                for category, color_key, tools in tool_categories:
+                    color_code = color_map.get(color_key, Fore.WHITE)
+                    print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL} {color_code}{ColoramaStyle.BRIGHT}{category}{ColoramaStyle.RESET_ALL}: {tools.ljust(65)}{' ' * (w - len(category) - len(tools) - 3)}{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}")
+                
+                print(f"{Fore.LIGHTYELLOW_EX}└{'═'*w}┘{ColoramaStyle.RESET_ALL}\n")
+            else:
+                print("\n" + "=" * 70)
+                print("    ⚔️  CHOOSE YOUR DESTINY ⚔️")
+                print("    🔥 90+ PROFESSIONAL SECURITY TOOLS 🔥")
+                print("=" * 70 + "\n")
             
-            # Single continuous panel
-            print(f"\n{Fore.LIGHTYELLOW_EX}┌{'═'*w}┐{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Back.YELLOW}{Fore.WHITE}⚔️  CHOOSE YOUR DESTINY ⚔️{ColoramaStyle.RESET_ALL} {Fore.LIGHTYELLOW_EX}{' ' * (w-25)}│{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.YELLOW}🔥 90+ PROFESSIONAL SECURITY TOOLS 🔥{ColoramaStyle.RESET_ALL} {Fore.LIGHTYELLOW_EX}{' ' * (w-35)}│{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTYELLOW_EX}├{'═'*w}┤{ColoramaStyle.RESET_ALL}")
-            
-            # Display all categories in one panel without borders between them
-            for category, color_key, tools in tool_categories:
-                color_code = color_map.get(color_key, Fore.WHITE)
-                print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL} {color_code}{ColoramaStyle.BRIGHT}{category}{ColoramaStyle.RESET_ALL}: {tools.ljust(65)}{' ' * (w - len(category) - len(tools) - 3)}{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}")
-            
-            print(f"{Fore.LIGHTYELLOW_EX}└{'═'*w}┘{ColoramaStyle.RESET_ALL}\n")
-        else:
-            print("\n" + "=" * 70)
-            print("    ⚔️  CHOOSE YOUR DESTINY ⚔️")
-            print("    🔥 90+ PROFESSIONAL SECURITY TOOLS 🔥")
-            print("=" * 70 + "\n")
-            
-            # Enhanced tool categories for fallback
-            tool_categories_fallback = [
-                ("🔍 RECONNAISSANCE", "nmap, masscan, dnsenum, recon-ng, enum4linux, amass, subfinder"),
-                ("🕵️  OSINT & INTELLIGENCE", "theharvester, maltego, spiderfoot, shodan, recon-ng, social-searcher"),
-                ("🌐 WEB APPLICATION TESTING", "nikto, sqlmap, burpsuite, gobuster, httpx, dirb, ffuf, wfuzz"),
-                ("🎯 ADVANCED WEB TOOLS", "whatweb, xsstrike, commix, arjun, nuclei, jaeles, dalfox"),
-                ("🔐 PASSWORD ATTACKS", "john, hashcat, hydra, medusa, crunch, hash-identifier, cewl"),
-                ("📡 NETWORK ANALYSIS", "wireshark, tcpdump, aircrack-ng, netcat, nmap, masscan, zmap"),
-                ("📶 WIRELESS SECURITY", "reaver, pixiewps, bettercap, airgeddon, wifite, aircrack-ng, kismet"),
-                ("🛡️  VULNERABILITY MGMT", "nuclei, faraday, vulners, openvas, nessus, tenable, cve-search"),
-                ("💣 EXPLOITATION FRAMEWORKS", "metasploit, beef, empire, cobaltstrike, crackmapexec, impacket"),
-                ("🎯 POST-EXPLOITATION", "bloodhound, responder, impacket, mimikatz, powerview, rubeus"),
-                ("🔬 DIGITAL FORENSICS", "autopsy, volatility, plaso, bulk-extractor, sleuthkit, foremost"),
-                ("🎭 SOCIAL ENGINEERING", "setoolkit, kingphisher, evilginx2, gophish, modlishka, socialfish"),
-                ("⚙️  UTILITY TOOLS", "tmux, proxychains, chisel, sshuttle, ngrok, netcat, hping3")
-            ]
-            
-            for category, tools in tool_categories_fallback:
-                print(f"\n┌─ {category} ──────────────────────────────────────────")
-                print(f"│ {tools}")
-                print("└──────────────────────────────────────────────────")
-            
-            print()
+                # Enhanced tool categories for fallback
+                tool_categories_fallback = [
+                    ("🔍 RECONNAISSANCE", "nmap, masscan, dnsenum, recon-ng, enum4linux, amass, subfinder"),
+                    ("🕵️  OSINT & INTELLIGENCE", "theharvester, maltego, spiderfoot, shodan, recon-ng, social-searcher"),
+                    ("🌐 WEB APPLICATION TESTING", "nikto, sqlmap, burpsuite, gobuster, httpx, dirb, ffuf, wfuzz"),
+                    ("🎯 ADVANCED WEB TOOLS", "whatweb, xsstrike, commix, arjun, nuclei, jaeles, dalfox"),
+                    ("🔐 PASSWORD ATTACKS", "john, hashcat, hydra, medusa, crunch, hash-identifier, cewl"),
+                    ("📡 NETWORK ANALYSIS", "wireshark, tcpdump, aircrack-ng, netcat, nmap, masscan, zmap"),
+                    ("📶 WIRELESS SECURITY", "reaver, pixiewps, bettercap, airgeddon, wifite, aircrack-ng, kismet"),
+                    ("🛡️  VULNERABILITY MGMT", "nuclei, faraday, vulners, openvas, nessus, tenable, cve-search"),
+                    ("💣 EXPLOITATION FRAMEWORKS", "metasploit, beef, empire, cobaltstrike, crackmapexec, impacket"),
+                    ("🎯 POST-EXPLOITATION", "bloodhound, responder, impacket, mimikatz, powerview, rubeus"),
+                    ("🔬 DIGITAL FORENSICS", "autopsy, volatility, plaso, bulk-extractor, sleuthkit, foremost"),
+                    ("🎭 SOCIAL ENGINEERING", "setoolkit, kingphisher, evilginx2, gophish, modlishka, socialfish"),
+                    ("⚙️  UTILITY TOOLS", "tmux, proxychains, chisel, sshuttle, ngrok, netcat, hping3")
+                ]
+                
+                for category, tools in tool_categories_fallback:
+                    print(f"\n┌─ {category} ──────────────────────────────────────────")
+                    print(f"│ {tools}")
+                    print("└──────────────────────────────────────────────────")
+                
+                print()
         
         # Menu options in single panel
         if COLORAMA_AVAILABLE:
@@ -7600,13 +7636,11 @@ def main():
         os.environ.clear()
         os.environ.update(original_env)
     
-    # Main loop
+    # Main loop with enhanced prompt_toolkit integration
     while True:
         try:
-            if PROMPT_TOOLKIT_AVAILABLE:
-                user_input = prompt("🤖 IBLU> ").strip()
-            else:
-                user_input = input("🤖 IBLU> ").strip()
+            # Use the enhanced get_user_input method
+            user_input = assistant.get_user_input("🤖 IBLU> ")
             
             if not user_input:
                 continue
