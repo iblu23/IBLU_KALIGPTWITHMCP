@@ -2691,200 +2691,20 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                 print("\n👋 EOF received")
                 return "exit"
     
-    def show_main_menu(self):
-        """Display the main menu with enhanced visual design"""
-        self.in_menu_context = True  # Set menu context when showing menu
+    def show_complete_visual_menu(self):
+        """Display all 34 options in visual style matching current main menu"""
         
-        # Define glitch function for both Rich and fallback paths
-        def glitch(text):
-            if not text or len(text) == 0:
-                return text
-            chars = list(text)
-            for _ in range(10):
-                if len(chars) > 0:
-                    i = random.randint(0, len(chars)-1)
-                    chars[i] = random.choice("@#$%&*")
-            return "".join(chars)
-        
-        # Animated entrance effect
-        if ALIVE_PROGRESS_AVAILABLE:
-            import time
-            from alive_progress import alive_bar
-            
-            print("\n🔥 Loading IBLU KALIGPT Interface... 🔥\n")
-            
-            with alive_bar(3, title='🚀 Interface Loading', spinner='dots_waves', bar='smooth') as bar:
-                time.sleep(0.3)
-                bar()
-                time.sleep(0.2)
-                bar()
-                time.sleep(0.3)
-                bar()
-            
-            print("✨ Interface Ready! ✨\n")
-            time.sleep(0.3)
-        
-        if RICH_AVAILABLE:
-            console = Console(width=78)
-            
-            # Clean main banner with glitch effect only
-            def clean_glitch(text, intensity=0.15):
-                if not text or len(text) == 0:
-                    return text
-                chars = list(text)
-                # Random glitch intensity
-                num_glitches = random.randint(1, min(10, len(chars)//3))
-                for _ in range(num_glitches):
-                    if len(chars) > 0:
-                        i = random.randint(0, len(chars)-1)
-                        # Clean glitch characters only
-                        glitch_chars = ["@#$%&*", "░▒▓█", "▓▒░█"][random.randint(0, 2)]
-                        chars[i] = random.choice(glitch_chars)
-                return "".join(chars)
-            
-            # Static banner - HACK THE on top, WORLD below (original style)
-            w = 78
-            # HACK THE section - red/orange
-            print(f"{Fore.LIGHTRED_EX}╔" + "═"*w + f"╗{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}" + " "*w + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.LIGHTYELLOW_EX}{Back.BLACK}██╗  ██╗ █████╗  ██████╗██╗  ██╗    ████████╗██╗  ██╗███████╗{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.LIGHTYELLOW_EX}{Back.BLACK}██║  ██║██╔══██╗██╔════╝██║ ██╔╝    ╚██╔══╝██║  ██║██╔════╝{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.LIGHTYELLOW_EX}{Back.BLACK}███████║███████║██║     █████╔╝        ██║   ███████║█████╗{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.LIGHTYELLOW_EX}{Back.BLACK}██╔══██║██╔══██║██║     ██╔═██╗        ██║   ██╔══██║██╔══╝{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.LIGHTYELLOW_EX}{Back.BLACK}██║  ██║██║  ██║╚██████╗██║  ██╗       ██║   ██║  ██║███████╗{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.LIGHTYELLOW_EX}{Back.BLACK}╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝       ╚═╝   ╚═╝  ╚═╝╚══════╝{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}" + " "*w + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            # WORLD section (blue, positioned below HACK THE)
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.BLUE}{Back.BLACK}{' '*20}██╗    ██╗ ██████╗ ██████╗ ██╗     ██████╗{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.BLUE}{Back.BLACK}{' '*20}██║    ██║██╔═══██╗██╔══██╗██║     ██╔══██╗{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.BLUE}{Back.BLACK}{' '*20}██║ █╗ ██║██║   ██║██████╔╝██║     ██║  ██║{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.BLUE}{Back.BLACK}{' '*20}██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.BLUE}{Back.BLACK}{' '*20}╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.BLUE}{Back.BLACK}{' '*20} ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}" + " "*w + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            # Tagline section - purple/magenta
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}{' '*21}{Fore.MAGENTA}{Back.BLACK}┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓{ColoramaStyle.RESET_ALL}{' '*22}{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}{' '*21}{Fore.MAGENTA}{Back.BLACK}┃  🔥🔥🔥    WITH IBLU    🔥🔥🔥  ┃{ColoramaStyle.RESET_ALL}{' '*22}{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}{' '*21}{Fore.MAGENTA}{Back.BLACK}┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛{ColoramaStyle.RESET_ALL}{' '*22}{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}" + " "*w + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}╚" + "═"*w + f"╝{ColoramaStyle.RESET_ALL}")
-            
-        else:
-            # Fallback banner without Rich - Static display, HACK THE on top, WORLD below
-            w = 78
-            pad = lambda s: "║" + s.ljust(w) + "║"
-            
-            # Display static banner - HACK THE section (red/orange)
-            print(f"{Fore.LIGHTRED_EX}╔" + "═"*w + f"╗{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}" + " "*w + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.LIGHTYELLOW_EX}{Back.BLACK}██╗  ██╗ █████╗  ██████╗██╗  ██╗    ████████╗██╗  ██╗███████╗{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.LIGHTYELLOW_EX}{Back.BLACK}██║  ██║██╔══██╗██╔════╝██║ ██╔╝    ╚██╔══╝██║  ██║██╔════╝{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.LIGHTYELLOW_EX}{Back.BLACK}███████║███████║██║     █████╔╝        ██║   ███████║█████╗{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.LIGHTYELLOW_EX}{Back.BLACK}██╔══██║██╔══██║██║     ██╔═██╗        ██║   ██╔══██║██╔══╝{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.LIGHTYELLOW_EX}{Back.BLACK}██║  ██║██║  ██║╚██████╗██║  ██╗       ██║   ██║  ██║███████╗{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.LIGHTYELLOW_EX}{Back.BLACK}╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝       ╚═╝   ╚═╝  ╚═╝╚══════╝{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}" + " "*w + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            # WORLD section (blue, positioned below HACK THE)
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.BLUE}{Back.BLACK}{' '*20}██╗    ██╗ ██████╗ ██████╗ ██╗     ██████╗{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.BLUE}{Back.BLACK}{' '*20}██║    ██║██╔═══██╗██╔══██╗██║     ██╔══██╗{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.BLUE}{Back.BLACK}{' '*20}██║ █╗ ██║██║   ██║██████╔╝██║     ██║  ██║{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.BLUE}{Back.BLACK}{' '*20}██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.BLUE}{Back.BLACK}{' '*20}╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.BLUE}{Back.BLACK}{' '*20} ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}" + " "*w + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            # Tagline section - purple/magenta
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}{' '*21}{Fore.MAGENTA}{Back.BLACK}┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓{ColoramaStyle.RESET_ALL}{' '*22}{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}{' '*21}{Fore.MAGENTA}{Back.BLACK}┃  🔥🔥🔥    WITH IBLU    🔥🔥🔥  ┃{ColoramaStyle.RESET_ALL}{' '*22}{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}{' '*21}{Fore.MAGENTA}{Back.BLACK}┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛{ColoramaStyle.RESET_ALL}{' '*22}{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}" + " "*w + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}╚" + "═"*w + f"╝{ColoramaStyle.RESET_ALL}")
-            
-            if COLORAMA_AVAILABLE:
-                # Security tools overview - Single Panel Style
-                w = 78
-            
-                # Tool categories with enhanced formatting - Single Panel
-                color_map = {
-                "Fore.CYAN": Fore.CYAN,
-                "Fore.LIGHTBLUE_EX": Fore.LIGHTBLUE_EX,
-                "Fore.GREEN": Fore.GREEN,
-                "Fore.RED": Fore.RED,
-                "Fore.WHITE": Fore.WHITE,
-                "Fore.LIGHTMAGENTA_EX": Fore.LIGHTMAGENTA_EX,
-                "Fore.LIGHTYELLOW_EX": Fore.LIGHTYELLOW_EX,
-                "Fore.LIGHTGREEN_EX": Fore.LIGHTGREEN_EX,
-                "Fore.LIGHTCYAN_EX": Fore.LIGHTCYAN_EX,
-                "Fore.MAGENTA": Fore.MAGENTA
-            }
-            
-                tool_categories = [
-                ("🔍 RECONNAISSANCE", "Fore.CYAN", "nmap, masscan, dnsenum, recon-ng, enum4linux, amass, subfinder"),
-                ("🕵️  OSINT & INTELLIGENCE", "Fore.LIGHTBLUE_EX", "theharvester, maltego, spiderfoot, shodan, recon-ng, social-searcher"),
-                ("🌐 WEB APPLICATION TESTING", "Fore.CYAN", "nikto, sqlmap, burpsuite, gobuster, httpx, dirb, ffuf, wfuzz"),
-                ("🎯 ADVANCED WEB TOOLS", "Fore.GREEN", "whatweb, xsstrike, commix, arjun, nuclei, jaeles, dalfox"),
-                ("🔐 PASSWORD ATTACKS", "Fore.CYAN", "john, hashcat, hydra, medusa, crunch, hash-identifier, cewl"),
-                ("📡 NETWORK ANALYSIS", "Fore.CYAN", "wireshark, tcpdump, aircrack-ng, netcat, nmap, masscan, zmap"),
-                ("📶 WIRELESS SECURITY", "Fore.LIGHTCYAN_EX", "reaver, pixiewps, bettercap, airgeddon, wifite, aircrack-ng, kismet"),
-                ("🛡️  VULNERABILITY MGMT", "Fore.MAGENTA", "nuclei, faraday, vulners, openvas, nessus, tenable, cve-search"),
-                ("💣 EXPLOITATION FRAMEWORKS", "Fore.RED", "metasploit, beef, empire, cobaltstrike, crackmapexec, impacket"),
-                ("🎯 POST-EXPLOITATION", "Fore.WHITE", "bloodhound, responder, impacket, mimikatz, powerview, rubeus"),
-                ("🔬 DIGITAL FORENSICS", "Fore.LIGHTMAGENTA_EX", "autopsy, volatility, plaso, bulk-extractor, sleuthkit, foremost"),
-                ("🎭 SOCIAL ENGINEERING", "Fore.LIGHTYELLOW_EX", "setoolkit, kingphisher, evilginx2, gophish, modlishka, socialfish"),
-                ("⚙️  UTILITY TOOLS", "Fore.LIGHTGREEN_EX", "tmux, proxychains, chisel, sshuttle, ngrok, netcat, hping3")
-            ]
-                
-                # Single continuous panel
-                print(f"\n{Fore.LIGHTYELLOW_EX}┌{'═'*w}┐{ColoramaStyle.RESET_ALL}")
-                print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Back.YELLOW}{Fore.WHITE}⚔️  CHOOSE YOUR DESTINY ⚔️{ColoramaStyle.RESET_ALL} {Fore.LIGHTYELLOW_EX}{' ' * (w-25)}│{ColoramaStyle.RESET_ALL}")
-                print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.YELLOW}🔥 90+ PROFESSIONAL SECURITY TOOLS 🔥{ColoramaStyle.RESET_ALL} {Fore.LIGHTYELLOW_EX}{' ' * (w-35)}│{ColoramaStyle.RESET_ALL}")
-                print(f"{Fore.LIGHTYELLOW_EX}├{'═'*w}┤{ColoramaStyle.RESET_ALL}")
-                
-                # Display all categories in one panel without borders between them
-                for category, color_key, tools in tool_categories:
-                    color_code = color_map.get(color_key, Fore.WHITE)
-                    print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL} {color_code}{ColoramaStyle.BRIGHT}{category}{ColoramaStyle.RESET_ALL}: {tools.ljust(65)}{' ' * (w - len(category) - len(tools) - 3)}{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}")
-                
-                print(f"{Fore.LIGHTYELLOW_EX}└{'═'*w}┘{ColoramaStyle.RESET_ALL}\n")
-            else:
-                print("\n" + "=" * 70)
-                print("    ⚔️  CHOOSE YOUR DESTINY ⚔️")
-                print("    🔥 90+ PROFESSIONAL SECURITY TOOLS 🔥")
-                print("=" * 70 + "\n")
-            
-                # Enhanced tool categories for fallback
-                tool_categories_fallback = [
-                    ("🔍 RECONNAISSANCE", "nmap, masscan, dnsenum, recon-ng, enum4linux, amass, subfinder"),
-                    ("🕵️  OSINT & INTELLIGENCE", "theharvester, maltego, spiderfoot, shodan, recon-ng, social-searcher"),
-                    ("🌐 WEB APPLICATION TESTING", "nikto, sqlmap, burpsuite, gobuster, httpx, dirb, ffuf, wfuzz"),
-                    ("🎯 ADVANCED WEB TOOLS", "whatweb, xsstrike, commix, arjun, nuclei, jaeles, dalfox"),
-                    ("🔐 PASSWORD ATTACKS", "john, hashcat, hydra, medusa, crunch, hash-identifier, cewl"),
-                    ("📡 NETWORK ANALYSIS", "wireshark, tcpdump, aircrack-ng, netcat, nmap, masscan, zmap"),
-                    ("📶 WIRELESS SECURITY", "reaver, pixiewps, bettercap, airgeddon, wifite, aircrack-ng, kismet"),
-                    ("🛡️  VULNERABILITY MGMT", "nuclei, faraday, vulners, openvas, nessus, tenable, cve-search"),
-                    ("💣 EXPLOITATION FRAMEWORKS", "metasploit, beef, empire, cobaltstrike, crackmapexec, impacket"),
-                    ("🎯 POST-EXPLOITATION", "bloodhound, responder, impacket, mimikatz, powerview, rubeus"),
-                    ("🔬 DIGITAL FORENSICS", "autopsy, volatility, plaso, bulk-extractor, sleuthkit, foremost"),
-                    ("🎭 SOCIAL ENGINEERING", "setoolkit, kingphisher, evilginx2, gophish, modlishka, socialfish"),
-                    ("⚙️  UTILITY TOOLS", "tmux, proxychains, chisel, sshuttle, ngrok, netcat, hping3")
-                ]
-                
-                for category, tools in tool_categories_fallback:
-                    print(f"\n┌─ {category} ──────────────────────────────────────────")
-                    print(f"│ {tools}")
-                    print("└──────────────────────────────────────────────────")
-                
-                print()
-        
-        # Menu options in wide panel style matching header
         if COLORAMA_AVAILABLE:
-            # Main menu header
             header_width = 115
+            
+            # Main header
             print(f"\n{Fore.LIGHTCYAN_EX}╔{'═'*header_width}╗{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}🧠 MAIN MENU 🧠{ColoramaStyle.RESET_ALL}{' ' * (header_width - 15)}{Fore.LIGHTCYAN_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}🧠 COMPLETE MENU OPTIONS (1-34) 🧠{ColoramaStyle.RESET_ALL}{' ' * (header_width - 35)}{Fore.LIGHTCYAN_EX}║{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.LIGHTCYAN_EX}╚{'═'*header_width}╝{ColoramaStyle.RESET_ALL}\n")
             
-            # Individual menu option panels - full width like header with enhanced visual styling
+            # All 34 options in visual style
             options = [
+                # MAIN MENU (1-6)
                 ("[1] 🧠 IBLU KALIGPT", "Multi-AI Assistant", Fore.GREEN, 
                  "• Auto-rephrasing on refusal", "• Multi-AI querying", "🤖"),
                 ("[2] 🎮 HACKING TOYS", "Installation & Management", Fore.BLUE, 
@@ -2894,20 +2714,86 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                 ("[4] 🤖 AI TEXT SUGGESTIONS", "Autocomplete & Text Generation", Fore.MAGENTA,
                  "• OpenAI GPT suggestions", "• Local models & rule-based", "✨"),
                 ("[5] 📋 LIST MODELS", "Show available AI models", Fore.YELLOW, "", "", "🔍"),
-                ("[6] 📚 COMPLETE OPTIONS", "View all 34 menu options", Fore.LIGHTGREEN_EX,
-                 "• Complete list of all options", "• No directory navigation needed", "📋"),
-                ("[7] 🚪 EXIT", "Leave the program", Fore.RED, "", "", "👋")
+                ("[6] 🚪 EXIT", "Leave the program", Fore.RED, "", "", "👋"),
+                
+                # HACKING TOOLS SUBMENU (7-12)
+                ("[7] 📦 Install ALL tools", "Batch installation of 90+ tools", Fore.LIGHTCYAN_EX,
+                 "• Quick install all security tools", "• One-click setup", "⚡"),
+                ("[8] 🔧 Install ONE-BY-ONE", "Choose specific tools", Fore.LIGHTCYAN_EX,
+                 "• Browse numbered list with descriptions", "• Organized by category", "🎯"),
+                ("[9] 📋 LIST available tools", "View all installed tools", Fore.LIGHTCYAN_EX,
+                 "• Show tools organized by category", "• Display tool descriptions", "📋"),
+                ("[10] 🗑️ DELETE tools", "Remove tools from database", Fore.LIGHTCYAN_EX,
+                 "• Delete individual tools or all at once", "• Free up disk space", "🗑️"),
+                ("[11] 🦙 DELETE local AI models", "Remove local AI models", Fore.LIGHTCYAN_EX,
+                 "• Delete Llama, Mistral, or HuggingFace models", "• Free up disk space", "🦙"),
+                ("[12] 🔙 Back to MAIN MENU", "Return to main interface", Fore.LIGHTCYAN_EX,
+                 "• Return to top level menu", "", "🔙"),
+                
+                # CONFIGURATION SUBMENU (13-19)
+                ("[13] 🤖 Install Local AI Models", "Download and setup local models", Fore.LIGHTGREEN_EX,
+                 "• LLaMA models, Mistral, BLOOM", "• Local inference", "🤖"),
+                ("[14] 🔑 Setup API Keys", "Configure API keys", Fore.LIGHTGREEN_EX,
+                 "• OpenAI API, Gemini API", "• Custom providers, Key encryption", "🔑"),
+                ("[15] ⚙️ Configure AI Providers", "Select and configure providers", Fore.LIGHTGREEN_EX,
+                 "• Provider selection, Default settings", "• Fallback options", "⚙️"),
+                ("[16] 🔍 Test API Connections", "Verify API connectivity", Fore.LIGHTGREEN_EX,
+                 "• Connection testing, Latency checks", "• API validation", "🔍"),
+                ("[17] 🔄 Reload API Keys", "Refresh API keys", Fore.LIGHTGREEN_EX,
+                 "• Key reload, Environment sync", "• Manual entry", "🔄"),
+                ("[18] 🗑️ Delete AI Models", "Remove unused AI models", Fore.LIGHTGREEN_EX,
+                 "• Model cleanup, Storage management", "• Selective removal", "🗑️"),
+                ("[19] 🔙 Back to MAIN MENU", "Return to main interface", Fore.LIGHTGREEN_EX,
+                 "• Return to top level menu", "", "🔙"),
+                
+                # API RELOAD SUBMENU (20-24)
+                ("[20] 📊 Check API Keys Status", "View current API configuration", Fore.LIGHTMAGENTA_EX,
+                 "• Status display, Key validation", "• Provider status", "📊"),
+                ("[21] 🔄 Reload from Environment", "Load API keys from environment", Fore.LIGHTMAGENTA_EX,
+                 "• Environment loading", "• Automatic detection", "🔄"),
+                ("[22] ✏️ Manual Key Entry", "Enter API keys manually", Fore.LIGHTMAGENTA_EX,
+                 "• Manual input, Key validation", "• Secure storage", "✏️"),
+                ("[23] 🔗 Test API Connections", "Test all configured endpoints", Fore.LIGHTMAGENTA_EX,
+                 "• Connectivity testing", "• Response validation", "🔗"),
+                ("[24] 🔙 Back to CONFIGURATION", "Return to configuration menu", Fore.LIGHTMAGENTA_EX,
+                 "• Return to configuration options", "", "🔙"),
+                
+                # AI SUGGESTIONS SUBMENU (25-28)
+                ("[25] 🧠 OpenAI GPT Suggestions", "Context-aware suggestions", Fore.LIGHTYELLOW_EX,
+                 "• GPT-3.5/4, Context awareness", "• Intelligent completion", "🧠"),
+                ("[26] 🏠 Local Model Suggestions", "Offline suggestions", Fore.LIGHTYELLOW_EX,
+                 "• Hugging Face, Privacy-focused", "• Offline processing", "🏠"),
+                ("[27] ⚡ Rule-based Suggestions", "Fast pattern-based autocomplete", Fore.LIGHTYELLOW_EX,
+                 "• Pattern matching, Dictionary lookup", "• Fast response", "⚡"),
+                ("[28] 🔙 Back to MAIN MENU", "Return to main interface", Fore.LIGHTYELLOW_EX,
+                 "• Return to top level menu", "", "🔙"),
+                
+                # MODEL DELETION SUBMENU (29-30)
+                ("[29] 🦙 Delete LLaMA Models", "Remove LLaMA family models", Fore.LIGHTRED_EX,
+                 "• LLaMA 2/3, Storage cleanup", "• Configuration reset", "🦙"),
+                ("[30] 🔙 Back to MAIN MENU", "Return to main interface", Fore.LIGHTRED_EX,
+                 "• Return to top level menu", "", "🔙"),
+                
+                # TOOL MANAGEMENT SUBMENU (31-34)
+                ("[31] 📋 LIST Tools (All Categories)", "Show all tools with categories", Fore.WHITE,
+                 "• Tool catalog, Categories", "• Status checking", "📋"),
+                ("[32] 🗑️ DELETE Tools from Database", "Remove tools from database", Fore.WHITE,
+                 "• Database cleanup, Selective removal", "• Tool management", "🗑️"),
+                ("[33] 🦙 DELETE Local LLaMA Models", "Remove local Llama models", Fore.WHITE,
+                 "• Model deletion, Space cleanup", "", "🦙"),
+                ("[34] 🔙 Back to MAIN MENU", "Return to main menu", Fore.WHITE,
+                 "• Return to top level menu", "", "🔙")
             ]
             
             for i, (option, title, color, desc1, desc2, icon) in enumerate(options):
-                # Enhanced top border with gradient effect and icon
+                # Enhanced top border
                 print(f"{color}╔{'═'*header_width}╗{ColoramaStyle.RESET_ALL}")
                 
-                # Enhanced option title line with icon and better spacing
+                # Option title line with icon
                 title_spacing = header_width - len(option) - len(title) - len(icon) - 8
                 print(f"{color}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Back.BLACK}{color}{icon} {Fore.WHITE}{option}{ColoramaStyle.RESET_ALL}: {ColoramaStyle.BRIGHT}{Fore.WHITE}{title}{ColoramaStyle.RESET_ALL}{' ' * title_spacing}{color}║{ColoramaStyle.RESET_ALL}")
                 
-                # Enhanced description lines with better formatting and bullets
+                # Description lines
                 if desc1:
                     desc_spacing = header_width - len(desc1) - 6
                     print(f"{color}║{ColoramaStyle.RESET_ALL} {Fore.LIGHTWHITE_EX}▸{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.LIGHTBLUE_EX}{desc1}{ColoramaStyle.RESET_ALL}{' ' * desc_spacing}{color}║{ColoramaStyle.RESET_ALL}")
@@ -2915,11 +2801,114 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                     desc_spacing = header_width - len(desc2) - 6
                     print(f"{color}║{ColoramaStyle.RESET_ALL} {Fore.LIGHTWHITE_EX}▸{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.LIGHTBLUE_EX}{desc2}{ColoramaStyle.RESET_ALL}{' ' * desc_spacing}{color}║{ColoramaStyle.RESET_ALL}")
                 
-                # Enhanced bottom border with shadow effect
+                # Bottom border
                 print(f"{color}╚{'═'*header_width}╝{ColoramaStyle.RESET_ALL}")
             
-            # Footer with instructions
+            # Footer
             footer_width = 75
+            print(f"{Fore.LIGHTGREEN_EX}┌{'─'*footer_width}┐{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}💡 Type a number (1-34) to navigate directly{ColoramaStyle.RESET_ALL}{' ' * (footer_width - 40)}{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.YELLOW}🛑 Use 'menu' to return to previous menu{ColoramaStyle.RESET_ALL}{' ' * (footer_width - 38)}{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.CYAN}🔙 Use 'exit'/'quit' to leave program{ColoramaStyle.RESET_ALL}{' ' * (footer_width - 39)}{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTGREEN_EX}└{'─'*footer_width}┘{ColoramaStyle.RESET_ALL}\n")
+        
+        else:
+            # Fallback for systems without colorama
+            print("\n🧠 COMPLETE MENU OPTIONS (1-34)")
+            print("=" * 80)
+            
+            print("📁 MAIN MENU (1-6)")
+            print("[1] 🧠 IBLU KALIGPT: Multi-AI Assistant")
+            print("    • Auto-rephrasing on refusal")
+            print("    • Multi-AI querying")
+            print("[2] 🎮 HACKING TOYS: Installation & Management")
+            print("    • Install, list, and delete security tools")
+            print("[3] ⚙️  CONFIGURATION: Settings")
+            print("    • API keys, rephrasing mode")
+            print("[4] 🤖 AI TEXT SUGGESTIONS: Autocomplete & Text Generation")
+            print("    • OpenAI GPT suggestions")
+            print("    • Local models & rule-based")
+            print("[5] 📋 LIST MODELS: Show available AI models")
+            print("[6] 🚪 EXIT: Leave the program")
+            
+            print("\n📁 HACKING TOOLS SUBMENU (7-12)")
+            print("[7] 📦 Install ALL tools: Batch installation of 90+ tools")
+            print("[8] 🔧 Install ONE-BY-ONE: Choose specific tools")
+            print("[9] 📋 LIST available tools: View all installed tools")
+            print("[10] 🗑️ DELETE tools: Remove tools from database")
+            print("[11] 🦙 DELETE local AI models: Remove local AI models")
+            print("[12] 🔙 Back to MAIN MENU: Return to main interface")
+            
+            print("\n📁 CONFIGURATION SUBMENU (13-19)")
+            print("[13] 🤖 Install Local AI Models: Download and setup local models")
+            print("[14] 🔑 Setup API Keys: Configure API keys")
+            print("[15] ⚙️ Configure AI Providers: Select and configure providers")
+            print("[16] 🔍 Test API Connections: Verify API connectivity")
+            print("[17] 🔄 Reload API Keys: Refresh API keys")
+            print("[18] 🗑️ Delete AI Models: Remove unused AI models")
+            print("[19] 🔙 Back to MAIN MENU: Return to main interface")
+            
+            print("\n📁 API RELOAD SUBMENU (20-24)")
+            print("[20] 📊 Check API Keys Status: View current API configuration")
+            print("[21] 🔄 Reload from Environment: Load API keys from environment")
+            print("[22] ✏️ Manual Key Entry: Enter API keys manually")
+            print("[23] 🔗 Test API Connections: Test all configured endpoints")
+            print("[24] 🔙 Back to CONFIGURATION: Return to configuration menu")
+            
+            print("\n📁 AI SUGGESTIONS SUBMENU (25-28)")
+            print("[25] 🧠 OpenAI GPT Suggestions: Context-aware suggestions")
+            print("[26] 🏠 Local Model Suggestions: Offline suggestions")
+            print("[27] ⚡ Rule-based Suggestions: Fast pattern-based autocomplete")
+            print("[28] 🔙 Back to MAIN MENU: Return to main interface")
+            
+            print("\n📁 MODEL DELETION SUBMENU (29-30)")
+            print("[29] 🦙 Delete LLaMA Models: Remove LLaMA family models")
+            print("[30] 🔙 Back to MAIN MENU: Return to main interface")
+            
+            print("\n📁 TOOL MANAGEMENT SUBMENU (31-34)")
+            print("[31] 📋 LIST Tools (All Categories): Show all tools with categories")
+            print("[32] 🗑️ DELETE Tools from Database: Remove tools from database")
+            print("[33] 🦙 DELETE Local LLaMA Models: Remove local Llama models")
+            print("[34] 🔙 Back to MAIN MENU: Return to main menu")
+            
+            print("\n" + "=" * 80)
+            print("💡 Type a number (1-34) to navigate directly")
+            print("🛑 Use 'menu' to return to previous menu")
+            print("🔙 Use 'exit'/'quit' to leave program\n")
+    
+    def show_main_menu(self):
+        """Display the main menu - now shows all 34 options"""
+        return self.show_complete_visual_menu()
+    
+    def handle_menu_choice(self, choice: str) -> str:
+        """Handle menu choice"""
+        choice = choice.strip()
+        
+        if choice in ['1', 'iblu', 'kali', 'kaligpt']:
+            self.in_menu_context = False  # Enter chat mode
+            return self.handle_iblu_kaligpt()
+        elif choice in ['2', 'toys', 'tools', 'install', 'hacking', 'manage']:
+            return self.handle_hacking_toys()
+        elif choice in ['3', 'config', 'settings']:
+            return self.handle_configuration()
+        elif choice in ['4', 'suggestions', 'autocomplete', 'ai', 'text']:
+            return self.handle_ai_text_suggestions()
+        elif choice in ['5', 'models', 'list']:
+            return self.list_available_models()
+        elif choice in ['6', 'options', 'complete', 'all', 'list']:
+            return self.show_complete_options_list()
+        elif choice in ['7', 'exit', 'quit']:
+            return f"{Fore.LIGHTCYAN_EX}🚪 Exiting IBLU KALIGPT...{ColoramaStyle.RESET_ALL}\n{Fore.LIGHTGREEN_EX}👋 Goodbye! Stay secure!{ColoramaStyle.RESET_ALL}"
+        else:
+            return f"❌ Invalid choice: {choice}\n💡 Please choose 1-7 or type 'menu'"
+    
+    def handle_hacking_toys(self):
+        """Handle Hacking Toys menu - install and manage tools"""
+        if COLORAMA_AVAILABLE:
+            header_width = 115
+            print(f"\n{Fore.CYAN}╔{'═'*header_width}╗{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.CYAN}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}🎮 HACKING TOYS - INSTALLATION & MANAGEMENT 🎮{ColoramaStyle.RESET_ALL} {Fore.CYAN}{' ' * 20}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.CYAN}╚{'═'*header_width}╝{ColoramaStyle.RESET_ALL}\n")
             print(f"{Fore.LIGHTGREEN_EX}┌{'─'*footer_width}┐{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}💡 Type a number (1-7) or start chatting!{ColoramaStyle.RESET_ALL}{' ' * (footer_width - 38)}{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.YELLOW}🛑 Use Ctrl+C or type 'exit'/'quit' to leave anytime{ColoramaStyle.RESET_ALL}{' ' * (footer_width - 52)}{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}")
