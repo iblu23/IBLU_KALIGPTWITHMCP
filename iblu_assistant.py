@@ -2321,6 +2321,18 @@ All responses should be helpful, educational, and focused on legitimate cybersec
     
     def show_main_menu(self):
         """Display the main menu with enhanced visual formatting and animations"""
+        
+        # Define glitch function for both Rich and fallback paths
+        def glitch(text):
+            if not text or len(text) == 0:
+                return text
+            chars = list(text)
+            for _ in range(10):
+                if len(chars) > 0:
+                    i = random.randint(0, len(chars)-1)
+                    chars[i] = random.choice("@#$%&*")
+            return "".join(chars)
+        
         # Animated entrance effect
         if ALIVE_PROGRESS_AVAILABLE:
             import time
@@ -2342,29 +2354,29 @@ All responses should be helpful, educational, and focused on legitimate cybersec
         if RICH_AVAILABLE:
             console = Console(width=144)
             
-            # Enhanced main banner with dynamic effects
-            def advanced_glitch(text, intensity=0.15):
+            # Clean main banner with glitch effect only
+            def clean_glitch(text, intensity=0.15):
                 if not text or len(text) == 0:
                     return text
                 chars = list(text)
                 # Random glitch intensity
-                num_glitches = random.randint(1, min(15, len(chars)//2))
+                num_glitches = random.randint(1, min(10, len(chars)//3))
                 for _ in range(num_glitches):
                     if len(chars) > 0:
                         i = random.randint(0, len(chars)-1)
-                        # Mix of glitch characters
-                        glitch_chars = ["@#$%&*", "░▒▓█", "⚡🔥💀", "▓▒░█"][random.randint(0, 3)]
+                        # Clean glitch characters only
+                        glitch_chars = ["@#$%&*", "░▒▓█", "▓▒░█"][random.randint(0, 2)]
                         chars[i] = random.choice(glitch_chars)
                 return "".join(chars)
             
-            # Enhanced color palette with gradients
-            enhanced_lines = [
-                ("🔥💀🔥 \033[91m\033[40m██╗  ██╗  █████╗   ██████╗ ██╗  ██╗    ████████╗ ██╗  ██╗ ███████╗    ██╗    ██╗  ██████╗  ██████╗  ██╗      ██████╗\033[0m 💀🔥💀", "bold bright_red"),
-                ("⚡🔥⚡ \033[93m\033[40m██║  ██║ ██╔══██╗ ██╔════╝ ██║ ██╔╝    ╚══██╔══╝ ██║  ██║ ██╔════╝    ██║    ██║ ██╔═══██╗ ██╔══██╗ ██║      ██╔══██╗\033[0m ⚡🔥⚡", "bold bright_yellow"),
-                ("💀⚡💀 \033[92m\033[40m███████║ ███████║ ██║      █████╔╝        ██║    ███████║ █████╗      ██║ █╗ ██║ ██║   ██║ ██████╔╝ ██║      ██║  ██║\033[0m 💀⚡💀", "bold bright_green"),
-                ("🔥💀🔥 \033[96m\033[40m██╔══██║ ██╔══██║ ██║      ██╔═██╗        ██║    ██╔══██║ ██╔══╝      ██║███╗██║ ██║   ██║ ██╔══██╗ ██║      ██║  ██║\033[0m 🔥💀🔥", "bold bright_cyan"),
-                ("⚡🔥⚡ \033[95m\033[40m██║  ██║ ██║  ██║ ╚██████╗ ██║  ██╗       ██║    ██║  ██║ ███████╗    ╚███╔███╔╝ ╚██████╔╝ ██║  ██║ ███████╗ ██████╔╝\033[0m ⚡🔥⚡", "bold bright_magenta"),
-                ("💀⚡💀 \033[97m\033[40m╚═╝  ╚═╝ ╚═╝  ╚═╝  ╚═════╝ ╚═╝  ╚═╝       ╚═╝    ╚═╝  ╚═╝ ╚══════╝     ╚══╝╚══╝   ╚═════╝  ╚═╝  ╚═╝ ╚══════╝ ╚═════╝\033[0m 💀⚡💀", "bold bright_white")
+            # Clean color palette without emojis
+            clean_lines = [
+                ("\033[91m\033[40m██╗  ██╗  █████╗   ██████╗ ██╗  ██╗    ████████╗ ██╗  ██╗ ███████╗    ██╗    ██╗  ██████╗  ██████╗  ██╗      ██████╗\033[0m", "bold bright_red"),
+                ("\033[93m\033[40m██║  ██║ ██╔══██╗ ██╔════╝ ██║ ██╔╝    ╚══██╔══╝ ██║  ██║ ██╔════╝    ██║    ██║ ██╔═══██╗ ██╔══██╗ ██║      ██╔══██╗\033[0m", "bold bright_yellow"),
+                ("\033[92m\033[40m███████║ ███████║ ██║      █████╔╝        ██║    ███████║ █████╗      ██║ █╗ ██║ ██║   ██║ ██████╔╝ ██║      ██║  ██║\033[0m", "bold bright_green"),
+                ("\033[96m\033[40m██╔══██║ ██╔══██║ ██║      ██╔═██╗        ██║    ██╔══██║ ██╔══╝      ██║███╗██║ ██║   ██║ ██╔══██╗ ██║      ██║  ██║\033[0m", "bold bright_cyan"),
+                ("\033[95m\033[40m██║  ██║ ██║  ██║ ╚██████╗ ██║  ██╗       ██║    ██║  ██║ ███████╗    ╚███╔███╔╝ ╚██████╔╝ ██║  ██║ ███████╗ ██████╔╝\033[0m", "bold bright_magenta"),
+                ("\033[97m\033[40m╚═╝  ╚═╝ ╚═╝  ╚═╝  ╚═════╝ ╚═╝  ╚═╝       ╚═╝    ╚═╝  ╚═╝ ╚══════╝     ╚══╝╚══╝   ╚═════╝  ╚═╝  ╚═╝ ╚══════╝ ╚═════╝\033[0m", "bold bright_white")
             ]
             
             # Dynamic border styles
@@ -2378,9 +2390,9 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                 for pulse in range(20):
                     banner_text.plain = ""
                     intensity = 0.05 + (pulse * 0.005)  # Increasing intensity
-                    for i, (line, style) in enumerate(enhanced_lines):
+                    for i, (line, style) in enumerate(clean_lines):
                         if random.random() < intensity:
-                            line = advanced_glitch(line, intensity)
+                            line = clean_glitch(line, intensity)
                         banner_text.append(line + "\n", style=style)
                     live.refresh()
                     time.sleep(0.03)
@@ -2392,10 +2404,10 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                     if chaos % 10 == 0:
                         live.update(Panel(banner_text, border_style=random.choice(border_styles), padding=(1, 7), expand=True))
                     
-                    for i, (line, style) in enumerate(enhanced_lines):
+                    for i, (line, style) in enumerate(clean_lines):
                         # Higher glitch chance during chaos
                         if random.random() < 0.25:
-                            line = advanced_glitch(line, 0.3)
+                            line = clean_glitch(line, 0.3)
                         banner_text.append(line + "\n", style=style)
                     live.refresh()
                     time.sleep(0.02)
@@ -2404,136 +2416,17 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                 for stable in range(20):
                     banner_text.plain = ""
                     fade_intensity = 0.2 - (stable * 0.01)  # Decreasing glitch
-                    for i, (line, style) in enumerate(enhanced_lines):
+                    for i, (line, style) in enumerate(clean_lines):
                         if random.random() < max(0, fade_intensity):
-                            line = advanced_glitch(line, fade_intensity)
+                            line = clean_glitch(line, fade_intensity)
                         banner_text.append(line + "\n", style=style)
                     live.refresh()
                     time.sleep(0.04)
                 
                 # Final perfect banner
                 banner_text.plain = ""
-                for line, style in enhanced_lines:
+                for line, style in clean_lines:
                     banner_text.append(line + "\n", style=style)
-                live.refresh()
-                time.sleep(0.5)
-            
-            # HACK MY LIFE x5 sequential animation
-            hack_text = Text("", justify="center")
-            with Live(Panel(hack_text, border_style="magenta", padding=(1, 7), expand=True), 
-                      console=console, refresh_per_second=60) as live:
-                phrases = []
-                
-                # Create 5 phrases appearing one by one
-                for phrase_num in range(5):
-                    # HACK appears for this phrase
-                    for i in range(8):
-                        current_phrase = "🔥🔥🔥 " + "HACK"[:i//2+1] + " 🔥🔥🔥"
-                        display_text = "  ".join(phrases + [current_phrase])
-                        hack_text.plain = display_text
-                        live.refresh()
-                        time.sleep(0.02)
-                    
-                    # MY appears for this phrase
-                    for i in range(4):
-                        current_phrase = "🔥🔥🔥 HACK " + "MY"[:i//2+1] + " 🔥🔥🔥"
-                        display_text = "  ".join(phrases + [current_phrase])
-                        hack_text.plain = display_text
-                        live.refresh()
-                        time.sleep(0.02)
-                    
-                    # LIFE appears for this phrase
-                    for i in range(8):
-                        current_phrase = "🔥🔥🔥 HACK MY " + "LIFE"[:i//2+1] + " 🔥🔥🔥"
-                        display_text = "  ".join(phrases + [current_phrase])
-                        
-                        # Add random skull emojis within the panel
-                        skull_positions = []
-                        for _ in range(5):  # Spawn 5 skulls
-                            x_pos = random.randint(0, 130)  # Random position within panel width
-                            y_pos = random.randint(0, 7)   # Random position within panel height
-                            skull_positions.append((x_pos, y_pos))
-                        
-                        # Create display with skulls
-                        lines = ["" * 144 for _ in range(8)]  # 8 lines of 144 chars each
-                        
-                        # Add the main text centered
-                        text_line = 3  # Center vertically
-                        text_start = (144 - len(display_text)) // 2
-                        if text_start >= 0 and text_start + len(display_text) <= 144:
-                            lines[text_line] = lines[text_line][:text_start] + display_text + lines[text_line][text_start + len(display_text):]
-                        
-                        # Add skulls at random positions
-                        for x, y in skull_positions:
-                            if y < 8 and x + 2 <= 144:  # Ensure skull fits
-                                line_content = lines[y]
-                                # Replace characters with skull emoji
-                                if x < len(line_content):
-                                    lines[y] = line_content[:x] + "💀" + line_content[x+1:]
-                        
-                        hack_text.plain = "\n".join(lines)
-                        live.refresh()
-                        time.sleep(0.02)
-                    
-                    # Add completed phrase to list
-                    completed_phrase = "🔥🔥🔥 HACK MY LIFE 🔥🔥🔥"
-                    phrases.append(completed_phrase)
-                    
-                    # Show all completed phrases so far
-                    display_text = "  ".join(phrases)
-                    hack_text.plain = display_text
-                    live.refresh()
-                    time.sleep(0.1)
-                
-                # All 11 phrases visible - now glitch them all together
-                time.sleep(0.2)
-                all_phrases = phrases.copy()  # 10 phrases + we'll add the 11th
-                
-                # Add the 11th phrase (original)
-                all_phrases.append("🔥🔥🔥 HACK MY LIFE 🔥🔥🔥")
-                
-                # Glitch all 11 phrases together with skulls
-                for _ in range(30):
-                    glitched_phrases = []
-                    for phrase in all_phrases:
-                        if random.random() < 0.4:  # 40% chance to glitch each phrase
-                            glitched = glitch(phrase)
-                            glitched_phrases.append(glitched)
-                        else:
-                            glitched_phrases.append(phrase)
-                    
-                    display_text = "  ".join(glitched_phrases)
-                    
-                    # Add random skull emojis during glitch
-                    skull_positions = []
-                    for _ in range(random.randint(5, 15)):  # Random number of skulls
-                        x_pos = random.randint(0, 130)
-                        y_pos = random.randint(0, 7)
-                        skull_positions.append((x_pos, y_pos))
-                    
-                    # Create display with skulls
-                    lines = ["" * 144 for _ in range(8)]
-                    
-                    # Add the main text centered
-                    text_line = 3
-                    text_start = (144 - len(display_text)) // 2
-                    if text_start >= 0 and text_start + len(display_text) <= 144:
-                        lines[text_line] = lines[text_line][:text_start] + display_text + lines[text_line][text_start + len(display_text):]
-                    
-                    # Add skulls at random positions
-                    for x, y in skull_positions:
-                        if y < 8 and x + 2 <= 144:
-                            line_content = lines[y]
-                            if x < len(line_content):
-                                lines[y] = line_content[:x] + "💀" + line_content[x+1:]
-                    
-                    hack_text.plain = "\n".join(lines)
-                    live.refresh()
-                    time.sleep(0.02)
-                
-                # Final stable display of all 11 phrases
-                final_display = "  ".join(all_phrases)
-                hack_text.plain = final_display
                 live.refresh()
                 time.sleep(0.5)
             
@@ -2543,16 +2436,6 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             pad = lambda s: "║" + s.ljust(w) + "║"
             
             # Display the main banner with glitch effect (fallback)
-            def glitch(text):
-                if not text or len(text) == 0:
-                    return text
-                chars = list(text)
-                for _ in range(10):
-                    if len(chars) > 0:
-                        i = random.randint(0, len(chars)-1)
-                        chars[i] = random.choice("@#$%&*")
-                return "".join(chars)
-            
             banner_lines = [
                 f"{Fore.LIGHTRED_EX}╔" + "═"*w + f"╗{ColoramaStyle.RESET_ALL}",
                 f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}" + " "*w + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}",
@@ -2598,127 +2481,7 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             for line in banner_lines:
                 print(line)
             
-            # HACK MY LIFE x5 sequential animation (fallback)
-            time.sleep(0.5)
-            phrases = []
-            
-            # Create 5 phrases appearing one by one
-            for phrase_num in range(5):
-                # HACK appears for this phrase
-                for i in range(8):
-                    os.system("clear")
-                    current_phrase = "🔥🔥🔥 " + "HACK"[:i//2+1] + " 🔥🔥🔥"
-                    display_text = "  ".join(phrases + [current_phrase])
                     
-                    print(f"{Fore.LIGHTMAGENTA_EX}╔" + "═"*w + f"╗{ColoramaStyle.RESET_ALL}")
-                    print(f"{Fore.LIGHTMAGENTA_EX}║{ColoramaStyle.RESET_ALL}" + f"{display_text.center(w)}" + f"{Fore.LIGHTMAGENTA_EX}║{ColoramaStyle.RESET_ALL}")
-                    print(f"{Fore.LIGHTMAGENTA_EX}╚" + "═"*w + f"╝{ColoramaStyle.RESET_ALL}")
-                    time.sleep(0.02)
-                
-                # MY appears for this phrase
-                for i in range(4):
-                    os.system("clear")
-                    current_phrase = "🔥🔥🔥 HACK " + "MY"[:i//2+1] + " 🔥🔥🔥"
-                    display_text = "  ".join(phrases + [current_phrase])
-                    
-                    print(f"{Fore.LIGHTMAGENTA_EX}╔" + "═"*w + f"╗{ColoramaStyle.RESET_ALL}")
-                    print(f"{Fore.LIGHTMAGENTA_EX}║{ColoramaStyle.RESET_ALL}" + f"{display_text.center(w)}" + f"{Fore.LIGHTMAGENTA_EX}║{ColoramaStyle.RESET_ALL}")
-                    print(f"{Fore.LIGHTMAGENTA_EX}╚" + "═"*w + f"╝{ColoramaStyle.RESET_ALL}")
-                    time.sleep(0.02)
-                
-                # LIFE appears for this phrase
-                for i in range(8):
-                    os.system("clear")
-                    current_phrase = "🔥🔥🔥 HACK MY " + "LIFE"[:i//2+1] + " 🔥🔥🔥"
-                    display_text = "  ".join(phrases + [current_phrase])
-                    
-                    # Create panel content with skulls
-                    panel_content = [" " * w for _ in range(8)]  # 8 lines of panel content
-                    
-                    # Add main text centered
-                    text_line = 3  # Center vertically
-                    text_start = (w - len(display_text)) // 2
-                    if text_start >= 0 and text_start + len(display_text) <= w:
-                        panel_content[text_line] = panel_content[text_line][:text_start] + display_text + panel_content[text_line][text_start + len(display_text):]
-                    
-                    # Add random skulls
-                    for _ in range(5):  # Spawn 5 skulls
-                        x_pos = random.randint(0, w - 2)
-                        y_pos = random.randint(0, 7)
-                        if x_pos < len(panel_content[y_pos]):
-                            line_content = panel_content[y_pos]
-                            panel_content[y_pos] = line_content[:x_pos] + "💀" + line_content[x_pos+1:]
-                    
-                    print(f"{Fore.LIGHTMAGENTA_EX}╔" + "═"*w + f"╗{ColoramaStyle.RESET_ALL}")
-                    for line in panel_content:
-                        print(f"{Fore.LIGHTMAGENTA_EX}║{ColoramaStyle.RESET_ALL}" + line + f"{Fore.LIGHTMAGENTA_EX}║{ColoramaStyle.RESET_ALL}")
-                    print(f"{Fore.LIGHTMAGENTA_EX}╚" + "═"*w + f"╝{ColoramaStyle.RESET_ALL}")
-                    time.sleep(0.02)
-                
-                # Add completed phrase to list
-                completed_phrase = "🔥🔥🔥 HACK MY LIFE 🔥🔥🔥"
-                phrases.append(completed_phrase)
-                
-                # Show all completed phrases so far
-                os.system("clear")
-                display_text = "  ".join(phrases)
-                print(f"{Fore.LIGHTMAGENTA_EX}╔" + "═"*w + f"╗{ColoramaStyle.RESET_ALL}")
-                print(f"{Fore.LIGHTMAGENTA_EX}║{ColoramaStyle.RESET_ALL}" + f"{display_text.center(w)}" + f"{Fore.LIGHTMAGENTA_EX}║{ColoramaStyle.RESET_ALL}")
-                print(f"{Fore.LIGHTMAGENTA_EX}╚" + "═"*w + f"╝{ColoramaStyle.RESET_ALL}")
-                time.sleep(0.1)
-            
-            # All 11 phrases visible - now glitch them all together
-            time.sleep(0.2)
-            all_phrases = phrases.copy()  # 10 phrases + we'll add the 11th
-            
-            # Add the 11th phrase (original)
-            all_phrases.append("🔥🔥🔥 HACK MY LIFE 🔥🔥🔥")
-            
-            # Glitch all 11 phrases together with skulls
-            for _ in range(30):
-                os.system("clear")
-                print(f"{Fore.LIGHTMAGENTA_EX}╔" + "═"*w + f"╗{ColoramaStyle.RESET_ALL}")
-                
-                glitched_phrases = []
-                for phrase in all_phrases:
-                    if random.random() < 0.4:  # 40% chance to glitch each phrase
-                        glitched = glitch(phrase)
-                        glitched_phrases.append(glitched)
-                    else:
-                        glitched_phrases.append(phrase)
-                
-                display_text = "  ".join(glitched_phrases)
-                
-                # Create panel content with skulls
-                panel_content = [" " * w for _ in range(8)]
-                
-                # Add main text centered
-                text_line = 3
-                text_start = (w - len(display_text)) // 2
-                if text_start >= 0 and text_start + len(display_text) <= w:
-                    panel_content[text_line] = panel_content[text_line][:text_start] + display_text + panel_content[text_line][text_start + len(display_text):]
-                
-                # Add random skulls during glitch
-                for _ in range(random.randint(5, 15)):  # Random number of skulls
-                    x_pos = random.randint(0, w - 2)
-                    y_pos = random.randint(0, 7)
-                    if x_pos < len(panel_content[y_pos]):
-                        line_content = panel_content[y_pos]
-                        panel_content[y_pos] = line_content[:x_pos] + "💀" + line_content[x_pos+1:]
-                
-                for line in panel_content:
-                    print(f"{Fore.LIGHTMAGENTA_EX}║{ColoramaStyle.RESET_ALL}" + line + f"{Fore.LIGHTMAGENTA_EX}║{ColoramaStyle.RESET_ALL}")
-                print(f"{Fore.LIGHTMAGENTA_EX}╚" + "═"*w + f"╝{ColoramaStyle.RESET_ALL}")
-                time.sleep(0.02)
-            
-            # Final stable display of all 11 phrases
-            os.system("clear")
-            display_text = "  ".join(all_phrases)
-            print(f"{Fore.LIGHTMAGENTA_EX}╔" + "═"*w + f"╗{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTMAGENTA_EX}║{ColoramaStyle.RESET_ALL}" + f"{display_text.center(w)}" + f"{Fore.LIGHTMAGENTA_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTMAGENTA_EX}╚" + "═"*w + f"╝{ColoramaStyle.RESET_ALL}")
-            time.sleep(0.5)
-        
                 
         if COLORAMA_AVAILABLE:
             # Security tools overview - Full Screen (144 chars)
