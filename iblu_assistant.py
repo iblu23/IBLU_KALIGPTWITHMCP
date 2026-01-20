@@ -2391,6 +2391,35 @@ All responses should be helpful, educational, and focused on legitimate cybersec
         for line in banner_lines:
             print(line)
         
+        # Add pentagram design
+        if COLORAMA_AVAILABLE:
+            pentagram_lines = [
+                f"{Fore.RED}╔{'═'*78}╗",
+                f"{Fore.RED}║{' '*36}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}★{Fore.RED}{' '*41}║",
+                f"{Fore.RED}║{' '*35}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}███{Fore.RED}{' '*40}║",
+                f"{Fore.RED}║{' '*34}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}█████{Fore.RED}{' '*39}║",
+                f"{Fore.RED}║{' '*24}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}██████{Fore.RED}{' '*7}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}█████████{Fore.RED}{' '*6}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}██████{Fore.RED}{' '*24}║",
+                f"{Fore.RED}║{' '*25}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}█████{Fore.RED}{' '*6}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}███████████{Fore.RED}{' '*6}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}█████{Fore.RED}{' '*25}║",
+                f"{Fore.RED}║{' '*26}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}████{Fore.RED}{' '*5}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}█████████████{Fore.RED}{' '*5}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}████{Fore.RED}{' '*26}║",
+                f"{Fore.RED}║{' '*27}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}███{Fore.RED}{' '*4}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}███████████████{Fore.RED}{' '*4}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}███{Fore.RED}{' '*27}║",
+                f"{Fore.RED}║{' '*28}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}██{Fore.RED}{' '*3}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}█████████████████{Fore.RED}{' '*3}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}██{Fore.RED}{' '*28}║",
+                f"{Fore.RED}║{' '*29}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}█{Fore.RED}{' '*2}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}███████████████████{Fore.RED}{' '*2}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}█{Fore.RED}{' '*29}║",
+                f"{Fore.RED}║{' '*31}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}█████████████████████{Fore.RED}{' '*26}║",
+                f"{Fore.RED}║{' '*33}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}█████████████████{Fore.RED}{' '*28}║",
+                f"{Fore.RED}║{' '*35}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}█████████████{Fore.RED}{' '*30}║",
+                f"{Fore.RED}║{' '*37}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}█████████{Fore.RED}{' '*32}║",
+                f"{Fore.RED}║{' '*39}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}█████{Fore.RED}{' '*34}║",
+                f"{Fore.RED}║{' '*40}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}███{Fore.RED}{' '*35}║",
+                f"{Fore.RED}║{' '*78}║",
+                f"{Fore.RED}║{' '*19}{ColoramaStyle.BRIGHT}{Fore.CYAN}⚔️  CHOOSE YOUR DESTINY  ⚔️{Fore.RED}{' '*19}║",
+                f"{Fore.RED}║{' '*78}║",
+                f"{Fore.RED}╚{'═'*78}╝"
+            ]
+            
+            print()
+            for line in pentagram_lines:
+                print(line)
+        
         if COLORAMA_AVAILABLE:
             # Security tools overview
             tools_header = f"{Fore.LIGHTYELLOW_EX}┌─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}"
