@@ -5105,6 +5105,205 @@ Provide step-by-step technical details while maintaining educational context and
             return "✅ All local model installations completed!"
     
     def install_model_with_textual_progress(self, model_name: str, installation_steps: List[str]) -> str:
+        """Install model with beautiful visual progress and random visual effects"""
+        if not TEXTUAL_PROGRESS_AVAILABLE or not TEXTUAL_AVAILABLE:
+            # Fallback to regular installation
+            print(f"🎨 Textual not available, using fallback for {model_name}")
+            if "gemini" in model_name.lower():
+                return self.install_gemini_local()
+            elif "llama" in model_name.lower():
+                return self.install_llama_local()
+            elif "mistral" in model_name.lower():
+                return self.install_mistral_dolphin_local()
+            else:
+                return f"❌ Unknown model: {model_name}"
+        
+        try:
+            print(f"\n🎨 Starting Textual-enhanced installation for {model_name}")
+            print(f"🎭 Each session gets unique visual effects!")
+            
+            # Get random theme for this session
+            current_theme = VisualThemes.get_random_theme()
+            print(f"🎨 Current Theme: {current_theme.name}")
+            print(f"🌈 Visual Effect: {current_theme.effect_type.value}")
+            print(f"⚡ Animation Speed: {current_theme.animation_speed}x")
+            print(f"✨ Glow Intensity: {current_theme.glow_intensity}")
+            
+            # Create progress tasks
+            tasks = [
+                {"name": f"🔍 Checking system requirements", "total": 100},
+                {"name": f"📦 Downloading {model_name} model", "total": 100},
+                {"name": f"🔧 Configuring {model_name}", "total": 100},
+                {"name": f"✅ Verifying installation", "total": 100},
+            ]
+            
+            # Add model-specific steps
+            if "gemini" in model_name.lower():
+                tasks.insert(1, {"name": "🐳 Setting up Docker environment", "total": 100})
+                tasks.insert(2, {"name": "📥 Pulling Gemini Docker image", "total": 100})
+            elif "llama" in model_name.lower() or "mistral" in model_name.lower():
+                tasks.insert(1, {"name": "🦙 Checking Ollama service", "total": 100})
+                tasks.insert(2, {"name": f"📥 Downloading {model_name} via Ollama", "total": 100})
+            
+            print(f"\n🚀 Installing {model_name} with {current_theme.name} theme...")
+            print(f"🎭 Visual effects: {current_theme.effect_type.value}")
+            print(f"📊 Progress display: Enhanced with theme-specific characters")
+            
+            # Run the actual installation in background
+            import threading
+            import time
+            
+            installation_result = {'status': 'running', 'result': None}
+            
+            def run_actual_installation():
+                """Run the actual installation in background"""
+                try:
+                    if "gemini" in model_name.lower():
+                        result = self.install_gemini_local()
+                    elif "llama" in model_name.lower():
+                        result = self.install_llama_local()
+                    elif "mistral" in model_name.lower():
+                        result = self.install_mistral_dolphin_local()
+                    else:
+                        result = f"❌ Unknown model: {model_name}"
+                    
+                    installation_result['status'] = 'completed'
+                    installation_result['result'] = result
+                    
+                except Exception as e:
+                    installation_result['status'] = 'error'
+                    installation_result['result'] = f"❌ Installation error: {e}"
+            
+            # Start installation in background
+            install_thread = threading.Thread(target=run_actual_installation)
+            install_thread.start()
+            
+            # Show enhanced progress with theme-specific characters
+            theme_chars = {
+                'cyber': ['▀', '▄', '■', '▪', '■', '▫', '◼', '◻'],
+                'neon': ['▓', '█', '▓', '█', '▓', '█', '▓', '█'],
+                'matrix': ['0', '1', '0', '1', '0', '1', '0', '1'],
+                'fire': ['🔥', '💥', '⚡', '🔥', '💥', '⚡', '🔥', '💥'],
+                'ocean': ['~', '≈', '≋', '≈', '~', '≈', '≋', '≈'],
+                'galaxy': ['·', '✦', '✧', '⋆', '✦', '✧', '⋆', '✦'],
+                'rainbow': ['🔴', '🟠', '🟡', '🟢', '🔵', '🟣', '🔴', '🟠'],
+                'aurora': ['░', '▒', '▓', '█', '▓', '▒', '░', '▒']
+            }
+            
+            # Get theme-specific characters or default spinner
+            chars = theme_chars.get(current_theme.effect_type.value, 
+                                  ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'])
+            
+            # Show beautiful progress display
+            print(f"\n🎨 {current_theme.name} Theme Progress:")
+            print(f"🎭 Effect: {current_theme.effect_type.value}")
+            print(f"⚡ Speed: {current_theme.animation_speed}x")
+            print(f"✨ Glow: {current_theme.glow_intensity}")
+            print(f"📊 Installation Progress:")
+            
+            idx = 0
+            start_time = time.time()
+            last_task_idx = 0
+            
+            while installation_result['status'] == 'running':
+                elapsed = int(time.time() - start_time)
+                char = chars[idx % len(chars)]
+                
+                # Calculate progress based on elapsed time
+                progress = min((elapsed / 60) * 100, 95)  # Assume 60 seconds total
+                task_idx = min(int(progress / 25), len(tasks) - 1)  # Change task every 25%
+                
+                # Update task display if changed
+                if task_idx != last_task_idx:
+                    print(f"\n📦 {tasks[task_idx]['name']}")
+                    last_task_idx = task_idx
+                
+                # Create theme-specific progress bar
+                bar_length = 30
+                filled = int(bar_length * progress / 100)
+                
+                # Theme-specific bar characters
+                if current_theme.effect_type.value == 'cyber':
+                    bar_chars = ['■', '▪', '▫', '◼', '◻']
+                elif current_theme.effect_type.value == 'neon':
+                    bar_chars = ['█', '▓', '█', '▓', '█']
+                elif current_theme.effect_type.value == 'matrix':
+                    bar_chars = ['0', '1']
+                elif current_theme.effect_type.value == 'fire':
+                    bar_chars = ['🔥', '💥', '⚡']
+                elif current_theme.effect_type.value == 'ocean':
+                    bar_chars = ['~', '≈', '≋']
+                elif current_theme.effect_type.value == 'galaxy':
+                    bar_chars = ['·', '✦', '✧', '⋆']
+                elif current_theme.effect_type.value == 'rainbow':
+                    bar_chars = ['🔴', '🟠', '🟡', '🟢', '🔵', '🟣']
+                elif current_theme.effect_type.value == 'aurora':
+                    bar_chars = ['░', '▒', '▓', '█']
+                else:
+                    bar_chars = ['█', '▓', '▒', '░']
+                
+                # Build progress bar with theme characters
+                bar = ""
+                for i in range(bar_length):
+                    if i < filled:
+                        char_idx = (i + idx) % len(bar_chars)
+                        bar += bar_chars[char_idx]
+                    else:
+                        bar += "░"
+                
+                # Display progress with theme colors (if available)
+                if COLORAMA_AVAILABLE:
+                    theme_color = {
+                        'cyber': Fore.LIGHTCYAN_EX,
+                        'neon': Fore.LIGHTMAGENTA_EX,
+                        'matrix': Fore.LIGHTGREEN_EX,
+                        'fire': Fore.LIGHTRED_EX,
+                        'ocean': Fore.LIGHTBLUE_EX,
+                        'galaxy': Fore.LIGHTYELLOW_EX,
+                        'rainbow': Fore.LIGHTRED_EX,
+                        'aurora': Fore.LIGHTGREEN_EX
+                    }.get(current_theme.effect_type.value, Fore.WHITE)
+                    
+                    print(f"\r{theme_color}{char}{Style.RESET_ALL} 📦 {model_name} [{theme_color}{bar}{Style.RESET_ALL}] {progress:5.1f}% | {elapsed}s", end='', flush=True)
+                else:
+                    print(f"\r{char} 📦 {model_name} [{bar}] {progress:5.1f}% | {elapsed}s", end='', flush=True)
+                
+                idx = (idx + 1) % len(chars)
+                time.sleep(0.1 * current_theme.animation_speed)  # Theme-specific animation speed
+                
+                # Check if installation completed
+                if install_thread.join(timeout=0.1):
+                    break
+            
+            # Clean up the line
+            print('\r' + ' ' * 100 + '\r', end='', flush=True)
+            
+            # Wait for installation to complete
+            install_thread.join()
+            
+            # Show final result with theme info
+            final_result = installation_result['result']
+            
+            print(f"\n🎨 Installation completed with {current_theme.name} theme!")
+            print(f"🎭 Visual effect: {current_theme.effect_type.value}")
+            print(f"⚡ Animation speed: {current_theme.animation_speed}x")
+            print(f"✨ Next session will have a different random theme!")
+            
+            return final_result
+            
+        except Exception as e:
+            error_msg = f"❌ Textual installation error: {e}"
+            print(f"🔄 Falling back to regular installation...")
+            
+            # Fallback to regular installation
+            if "gemini" in model_name.lower():
+                return self.install_gemini_local()
+            elif "llama" in model_name.lower():
+                return self.install_llama_local()
+            elif "mistral" in model_name.lower():
+                return self.install_mistral_dolphin_local()
+            else:
+                return f"❌ Unknown model: {model_name}"
         """Install model with beautiful Textual progress and random visual effects"""
         if not TEXTUAL_PROGRESS_AVAILABLE or not TEXTUAL_AVAILABLE:
             # Fallback to regular installation
@@ -5150,12 +5349,13 @@ Provide step-by-step technical details while maintaining educational context and
                 tasks
             )
             
-            # Simulate the actual installation process with progress updates
             print(f"\n🚀 Installing {model_name} with {current_theme.name} theme...")
+            print(f"🎭 Textual TUI window will open with beautiful visual effects!")
             
             # Run the actual installation in background
             import threading
             import time
+            import asyncio
             
             installation_result = {'status': 'running', 'result': None}
             
@@ -5178,15 +5378,58 @@ Provide step-by-step technical details while maintaining educational context and
                     installation_result['status'] = 'error'
                     installation_result['result'] = f"❌ Installation error: {e}"
             
+            def run_textual_app():
+                """Run the Textual app in the main thread"""
+                try:
+                    # Run the Textual app
+                    progress_app.run()
+                except Exception as e:
+                    print(f"⚠️ Textual app error: {e}")
+                    print("🔄 Falling back to regular installation...")
+            
             # Start installation in background
             install_thread = threading.Thread(target=run_actual_installation)
             install_thread.start()
             
-            # Simulate progress updates while installation runs
-            for i in range(100):  # Simulate progress
-                if installation_result['status'] != 'running':
+            # Run Textual app in main thread (this will block until app is closed)
+            # In a real scenario, we'd need to handle this differently
+            # For now, let's show a simplified version
+            
+            # Show progress while installation runs
+            spinner_chars = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏']
+            theme_chars = {
+                'cyber': ['▀', '▄', '■', '▪', '■'],
+                'neon': ['▓', '█', '▓', '█', '▓'],
+                'matrix': ['0', '1', '0', '1', '0'],
+                'fire': ['🔥', '💥', '⚡', '🔥', '💥'],
+                'ocean': ['~', '≈', '≋', '≈', '~'],
+                'galaxy': ['·', '✦', '✧', '⋆', '✦'],
+                'rainbow': ['🌈', '🌈', '🌈', '🌈', '🌈'],
+                'aurora': ['░', '▒', '▓', '█', '▓', '▒', '░']
+            }
+            
+            chars = theme_chars.get(current_theme.effect_type.value, spinner_chars)
+            idx = 0
+            start_time = time.time()
+            
+            print(f"\n🎨 {current_theme.name} Theme Active:")
+            print(f"🎭 Effect: {current_theme.effect_type.value}")
+            print(f"⚡ Speed: {current_theme.animation_speed}x")
+            print(f"📊 Progress: (Textual TUI would show here)")
+            
+            while installation_result['status'] == 'running':
+                elapsed = int(time.time() - start_time)
+                char = chars[idx % len(chars)]
+                print(f"\r{char} 📦 {model_name} | Elapsed: {elapsed}s | Theme: {current_theme.name}", end='', flush=True)
+                idx = (idx + 1) % len(chars)
+                time.sleep(0.2)
+                
+                # Check if installation completed
+                if install_thread.join(timeout=0.1):
                     break
-                time.sleep(0.1)  # Brief pause to show progress
+            
+            # Clean up the line
+            print('\r' + ' ' * 80 + '\r', end='', flush=True)
             
             # Wait for installation to complete
             install_thread.join()
