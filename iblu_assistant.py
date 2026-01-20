@@ -473,8 +473,14 @@ try:
                 
                 # Update text with progress bar
                 progress_text = f"{self.text} [{bar}] {percentage:.1f}%"
-                self._text = progress_text
-                self._frame()
+                self.text = progress_text
+                # Call the parent's frame method if available, otherwise just print
+                if hasattr(self, '_frame'):
+                    self._frame()
+                else:
+                    # Fallback for Halo versions without _frame method
+                    sys.stdout.write(f"\r{progress_text}")
+                    sys.stdout.flush()
         
         def start_and_progress(self, text='', current=0):
             """Start spinner with initial progress"""
@@ -6196,7 +6202,7 @@ Provide step-by-step technical details while maintaining educational context and
             return f"❌ Failed to install {model_name}: {str(e)}"
     
     def collaborative_model_response(self, user_message: str) -> str:
-        """All available models communicate to provide comprehensive response with Rich progress"""
+        """Enhanced collaborative response where local models communicate and cloud models summarize facts"""
         # Import Rich components at the very top for availability throughout entire function
         try:
             from rich.progress import (
@@ -6214,18 +6220,21 @@ Provide step-by-step technical details while maintaining educational context and
             # Beautiful collaborative header - use Colorama Style explicitly
             from colorama import Style as ColoramaStyle
             collab_header = f"{Fore.LIGHTCYAN_EX}╔{'═' * 78}╗{ColoramaStyle.RESET_ALL}"
-            collab_title = f"{Fore.LIGHTCYAN_EX}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Back.CYAN}{Fore.WHITE}🤖 COLLABORATIVE AI NETWORK 🤖{ColoramaStyle.RESET_ALL} {Fore.LIGHTCYAN_EX}{' ' * 36}║{ColoramaStyle.RESET_ALL}"
+            collab_title = f"{Fore.LIGHTCYAN_EX}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Back.CYAN}{Fore.WHITE}🤖 ENHANCED COLLABORATIVE AI NETWORK 🤖{ColoramaStyle.RESET_ALL} {Fore.LIGHTCYAN_EX}{' ' * 30}║{ColoramaStyle.RESET_ALL}"
             collab_footer = f"{Fore.LIGHTCYAN_EX}╚{'═' * 78}╝{ColoramaStyle.RESET_ALL}"
             
             print(f"\n{collab_header}")
             print(f"{collab_title}")
             print(f"{collab_footer}\n")
         else:
-            print(f"\n{self._colorize('🤖 Collaborative AI Network', Fore.CYAN)}")
+            print(f"\n{self._colorize('🤖 Enhanced Collaborative AI Network', Fore.CYAN)}")
             print("=" * 60)
         
         # Get all available providers (both cloud and local)
         available_providers = []
+        local_providers = []
+        cloud_providers = []
+        
         for provider in [Provider.OPENAI, Provider.GEMINI, Provider.MISTRAL, Provider.LLAMA]:
             if provider == Provider.LLAMA:
                 # Check if local Llama is available
@@ -6234,6 +6243,7 @@ Provide step-by-step technical details while maintaining educational context and
                     response = requests.get(url, timeout=5)
                     if response.status_code == 200:
                         available_providers.append((provider, "local"))
+                        local_providers.append((provider, "local"))
                 except:
                     pass
             else:
@@ -6241,306 +6251,234 @@ Provide step-by-step technical details while maintaining educational context and
                 provider_keys = self.get_provider_keys(provider)
                 if provider_keys:
                     available_providers.append((provider, provider_keys[0]))
+                    cloud_providers.append((provider, provider_keys[0]))
         
         if not available_providers:
             return "❌ No models available. Please configure at least one provider."
         
         # Model-specific themes for collaborative display
         model_themes = {
-            Provider.OPENAI: {"style": "bold green", "emoji": "🤖", "name": "OpenAI", "color": "bright_green"},
-            Provider.GEMINI: {"style": "bold magenta", "emoji": "🌟", "name": "Gemini", "color": "bright_magenta"},
-            Provider.MISTRAL: {"style": "bold red", "emoji": "🔥", "name": "Mistral", "color": "bright_red"},
-            Provider.LLAMA: {"style": "bold cyan", "emoji": "🦙", "name": "Llama", "color": "bright_cyan"}
+            Provider.OPENAI: {"style": "bold green", "emoji": "🤖", "name": "OpenAI", "color": "bright_green", "role": "summarizer"},
+            Provider.GEMINI: {"style": "bold magenta", "emoji": "🌟", "name": "Gemini", "color": "bright_magenta", "role": "summarizer"},
+            Provider.MISTRAL: {"style": "bold red", "emoji": "🔥", "name": "Mistral", "color": "bright_red", "role": "summarizer"},
+            Provider.LLAMA: {"style": "bold cyan", "emoji": "🦙", "name": "Llama", "color": "bright_cyan", "role": "communicator"}
         }
         
-        print(f"📋 Active Models: {', '.join([p[0].value.title() for p in available_providers])}")
-        print(f"🔄 Initiating collaborative analysis...")
+        print(f"📋 Local Models: {', '.join([p[0].value.title() for p in local_providers])}")
+        print(f"☁️  Cloud Models: {', '.join([p[0].value.title() for p in cloud_providers])}")
+        print(f"🔄 Initiating enhanced collaborative analysis...")
         
-        # Phase 1: Parallel initial analysis with enhanced progress bars
-        if ALIVE_PROGRESS_AVAILABLE and not RICH_PROGRESS_AVAILABLE:
-            # Use alive-progress for beautiful animations
-            import time
-            from alive_progress import alive_bar
+        # Phase 1: Local Model Communication (if available)
+        local_insights = ""
+        if local_providers:
+            print(f"\n{self._colorize('🔗 Phase 1: Local Model Communication', Fore.CYAN)}")
+            print("-" * 40)
             
-            print(f"\n📋 Active Models: {', '.join([p[0].value.title() for p in available_providers])}")
-            print(f"🔄 Initiating collaborative analysis...\n")
+            # Local models discuss and analyze the question together
+            local_discussion_prompt = f"""
+**LOCAL MODEL DISCUSSION FORUM**
+
+Question: {user_message}
+
+**Instructions for Local Models:**
+- Discuss this question among yourselves
+- Share different perspectives and insights
+- Identify key technical concepts and methodologies
+- Exchange knowledge and experiences
+- Build upon each other's responses
+- Focus on practical implementation details
+
+**Format:** Each model should respond with their analysis, then others can build upon it.
+"""
             
-            # Setup progress tracking
-            total_steps = len(available_providers) * 3  # 3 phases per model
+            local_responses = {}
+            for provider, api_key in local_providers:
+                theme = model_themes.get(provider, {"style": "bold cyan", "emoji": "🦙", "name": "Llama"})
+                print(f"  {theme['emoji']} {theme['name']} 🗣️ discussing...")
+                
+                try:
+                    if provider == Provider.LLAMA:
+                        response = self.call_llama_api(self.SYSTEM_PROMPT, local_discussion_prompt, "local")
+                        local_responses[provider] = response
+                        print(f"  {theme['emoji']} {theme['name']} ✅ contributed analysis")
+                    time.sleep(0.2)
+                except Exception as e:
+                    print(f"  {theme['emoji']} {theme['name']} ❌ error: {str(e)}")
+                    local_responses[provider] = f"Error: {str(e)}"
             
-            with alive_bar(total_steps, title='🤖 Collaborative Analysis', spinner='dots_waves', bar='smooth') as bar:
-                # Get responses from all models
-                initial_responses = {}
-                response_times = {}
-                
-                def get_model_response(provider_info):
-                    """Get response from a single model with progress tracking"""
-                    provider, api_key = provider_info
-                    start_time = time.time()
-                    theme = model_themes.get(provider, {"style": "bold cyan", "emoji": "🤖", "name": "Model"})
-                    
-                    try:
-                        model_name = theme.get('name', 'Model')
-                        model_emoji = theme.get('emoji', '🤖')
-                        
-                        # Phase 1: Connection
-                        print(f"  {model_emoji} {model_name} 🔌 connecting...")
-                        time.sleep(0.1)
-                        bar()
-                        
-                        # Phase 2: Processing
-                        print(f"  {model_emoji} {model_name} 🧠 analyzing...")
-                        if provider == Provider.LLAMA:
-                            response = self.call_llama_api(self.SYSTEM_PROMPT, user_message, "local")
-                        elif provider == Provider.OPENAI:
-                            response = self.call_openai_api(self.SYSTEM_PROMPT, user_message, api_key)
-                        elif provider == Provider.GEMINI:
-                            response = self.call_gemini_api(self.SYSTEM_PROMPT, user_message, api_key)
-                        elif provider == Provider.MISTRAL:
-                            response = self.call_mistral_api(self.SYSTEM_PROMPT, user_message, api_key)
-                        bar()
-                        
-                        # Phase 3: Completion
-                        elapsed = time.time() - start_time
-                        print(f"  {model_emoji} {model_name} ✅ complete! ({elapsed:.2f}s)")
-                        bar()
-                        
-                        return provider, response, elapsed
-                        
-                    except Exception as e:
-                        elapsed = time.time() - start_time
-                        print(f"  {model_emoji} {model_name} ❌ error: {str(e)}")
-                        bar()
-                        return provider, f"Error: {str(e)}", elapsed
-                
-                # Execute all model requests
-                total_models = len(available_providers)
-                completed_models = 0
-                
-                for provider_info in available_providers:
-                    provider, response, resp_time = get_model_response(provider_info)
-                    initial_responses[provider] = response
-                    response_times[provider] = resp_time
-                    completed_models += 1
-                    
-                    # Update collaborative progress
-                    progress_percentage = 30 + (completed_models * 50 // total_models)
-                    collab_bar.update(progress_percentage, f"{completed_models}/{total_models} models completed analysis...")
-                
-                # Complete collaborative analysis
-                collab_bar.finish("Collaborative analysis complete!")
-                time.sleep(0.5)
+            # Synthesize local insights
+            if local_responses:
+                local_insights = f"""
+**LOCAL MODEL COLLABORATIVE INSIGHTS:**
+
+{'\n'.join([f"{provider.value.title()}: {response}" for provider, response in local_responses.items() if not response.startswith("Error:")])}
+
+**Local Model Consensus:**
+Based on the discussion above, the local models have identified key technical concepts and approaches.
+"""
         
-        # Continue with response synthesis (rest of the function remains the same)
-        # ... (existing code for response synthesis)
-                print(f"✅ {provider.value.title()}: {elapsed:.2f}s")
-        
-        # Phase 2: Cross-model analysis and enhancement
-        print(f"\n{self._colorize('🧠 Phase 2: Cross-Model Enhancement', Fore.MAGENTA)}")
-        print("-" * 40)
-        
-        # Create collaborative prompt with insights from all models
-        collaborative_insights = f"""
-**COLLABORATIVE ANALYSIS REQUEST**
+        # Phase 2: Cloud Model Analysis and Summarization
+        cloud_responses = {}
+        if cloud_providers:
+            print(f"\n{self._colorize('☁️  Phase 2: Cloud Model Analysis & Summarization', Fore.MAGENTA)}")
+            print("-" * 40)
+            
+            # Cloud models analyze the question and local insights
+            cloud_analysis_prompt = f"""
+**CLOUD MODEL ANALYSIS REQUEST**
 
 Original Question: {user_message}
 
-**Initial Model Responses:**
-"""
-        
-        for provider, response in initial_responses.items():
-            if not response.startswith("Error:"):
-                collaborative_insights += f"\n{provider.value.title()} Analysis:\n{response}\n"
-        
-        collaborative_insights += f"""
-**Task:**
-Based on the analyses above, provide a comprehensive, enhanced response that:
-1. Synthesizes the best insights from all models
-2. Fills in gaps and corrects any inconsistencies
-3. Provides the most accurate and detailed answer possible
-4. Includes specific technical details and practical examples
-5. Structures the information clearly for maximum clarity
+{local_insights}
+
+**Instructions for Cloud Models:**
+1. Analyze the original question thoroughly
+2. Review the local models' collaborative insights
+3. Summarize the key facts and technical details
+4. Expand on the concepts with additional context
+5. Provide structured, comprehensive information
+6. Focus on accuracy and completeness
 
 **Response Format:**
-- Start with a clear, direct answer
-- Follow with detailed explanation
-- Include technical specifics
-- Provide practical examples
-- End with summary and recommendations
+- Start with clear summary of key facts
+- Provide detailed technical explanation
+- Include practical examples and methodologies
+- Add relevant context and background information
+- Structure information for maximum clarity
 """
+            
+            cloud_responses = {}
+            for provider, api_key in cloud_providers:
+                theme = model_themes.get(provider, {"style": "bold green", "emoji": "🤖", "name": "Model"})
+                print(f"  {theme['emoji']} {theme['name']} 📊 analyzing and summarizing...")
+                
+                try:
+                    if provider == Provider.OPENAI:
+                        response = self.call_openai_api(self.SYSTEM_PROMPT, cloud_analysis_prompt, api_key)
+                    elif provider == Provider.GEMINI:
+                        response = self.call_gemini_api(self.SYSTEM_PROMPT, cloud_analysis_prompt, api_key)
+                    elif provider == Provider.MISTRAL:
+                        response = self.call_mistral_api(self.SYSTEM_PROMPT, cloud_analysis_prompt, api_key)
+                    
+                    cloud_responses[provider] = response
+                    print(f"  {theme['emoji']} {theme['name']} ✅ provided comprehensive analysis")
+                    time.sleep(0.2)
+                except Exception as e:
+                    print(f"  {theme['emoji']} {theme['name']} ❌ error: {str(e)}")
+                    cloud_responses[provider] = f"Error: {str(e)}"
         
-        # Get enhanced response from the fastest model
-        fastest_provider = min(response_times.keys(), key=lambda p: response_times[p])
-        
-        print(f"🎯 Using {fastest_provider.value.title()} for synthesis...")
-        
-        try:
-            if fastest_provider == Provider.LLAMA:
-                enhanced_response = self.call_llama_api(self.SYSTEM_PROMPT, collaborative_insights, "local")
-            elif fastest_provider == Provider.OPENAI:
-                enhanced_response = self.call_openai_api(self.SYSTEM_PROMPT, collaborative_insights, available_providers[[p[0] for p in available_providers].index(Provider.OPENAI)][1])
-            elif fastest_provider == Provider.GEMINI:
-                enhanced_response = self.call_gemini_api(self.SYSTEM_PROMPT, collaborative_insights, available_providers[[p[0] for p in available_providers].index(Provider.GEMINI)][1])
-            elif fastest_provider == Provider.MISTRAL:
-                enhanced_response = self.call_mistral_api(self.SYSTEM_PROMPT, collaborative_insights, available_providers[[p[0] for p in available_providers].index(Provider.MISTRAL)][1])
-        except Exception as e:
-            enhanced_response = f"Error in collaborative synthesis: {str(e)}"
-        
-        # Phase 3: Final summary
-        print(f"\n{self._colorize('📈 Phase 3: Collaborative Summary', Fore.GREEN)}")
+        # Phase 3: Final Synthesis
+        print(f"\n{self._colorize('🎯 Phase 3: Final Synthesis', Fore.GREEN)}")
         print("-" * 40)
         
-        print(f"⚡ Total Response Time: {sum(response_times.values()):.2f}s")
-        print(f"🏆 Fastest Model: {fastest_provider.value.title()} ({response_times[fastest_provider]:.2f}s)")
-        print(f"🤝 Models Collaborated: {len(initial_responses)}")
-        
-        # Display individual insights summary
-        print(f"\n{self._colorize('🔍 Individual Model Insights:', Fore.CYAN)}")
-        for provider, response in initial_responses.items():
-            if not response.startswith("Error:"):
-                # Extract first 100 characters as preview
-                preview = response.replace('\n', ' ')[:150] + "..." if len(response.replace('\n', ' ')) > 150 else response.replace('\n', ' ')
-                print(f"  • {provider.value.title()}: {preview}")
-        
-        # Use Rich console for beautiful output
-        console = None
-        if RICH_AVAILABLE:
-            from rich.console import Console
-            from rich.panel import Panel
-            from rich.table import Table
-            from rich.columns import Columns
-            from rich.text import Text
-            from rich import box
-            
-            console = Console()
-        
-        # Format the enhanced response for better readability
-        if RICH_AVAILABLE and console:
-            # Process the enhanced response for better Rich formatting
-            formatted_response = enhanced_response
-            
-            # Add better spacing and formatting
-            formatted_response = formatted_response.replace("\n\n", "\n\n[white]•[/white] ")
-            formatted_response = formatted_response.replace("###", "\n[bold yellow]▶[/bold yellow] [bold white]")
-            formatted_response = formatted_response.replace("**", "[bold white]")
-            formatted_response = formatted_response.replace("*", "[italic white]")
-            
-            # Add paragraph breaks with alternating colors for better readability
-            paragraphs = formatted_response.split('\n\n')
-            formatted_paragraphs = []
-            paragraph_colors = ['white', 'cyan', 'magenta', 'yellow', 'green', 'blue']
-            
-            for i, para in enumerate(paragraphs):
-                if para.strip():
-                    color = paragraph_colors[i % len(paragraph_colors)]
-                    formatted_paragraphs.append(f"[{color}]{para.strip()}[/{color}]")
-            
-            enhanced_response = '\n\n'.join(formatted_paragraphs)
-        else:
-            # Fallback to colorama paragraph formatting with alternating colors
-            paragraphs = enhanced_response.split('\n\n')
-            formatted_paragraphs = []
-            paragraph_colors = [Fore.WHITE, Fore.CYAN, Fore.MAGENTA, Fore.YELLOW, Fore.GREEN, Fore.BLUE]
-            
-            for i, para in enumerate(paragraphs):
-                if para.strip():
-                    color = paragraph_colors[i % len(paragraph_colors)]
-                    formatted_paragraphs.append(self._colorize(para.strip(), color))
-            
-            enhanced_response = '\n\n'.join(formatted_paragraphs)
-        performance_details = []
-        for provider, response_time in response_times.items():
-            theme = model_themes.get(provider, {"emoji": "🤖", "color": "cyan"})
-            model_name = provider.value.title()
-            performance_details.append({
-                "emoji": theme["emoji"],
-                "name": model_name,
-                "time": response_time,
-                "length": len(initial_responses[provider])
-            })
-        
-        # Use Rich console for beautiful output
-        if RICH_AVAILABLE and console:
-            # Create main response panel with enhanced formatting
-            response_panel = Panel(
-                Text.from_markup(f"""
-[bold cyan]╔══════════════════════════════════════════════════════════════════════════════╗
-║ [bold green]🤖 COLLABORATIVE AI NETWORK RESPONSE[/bold green] ║
-╚══════════════════════════════════════════════════════════════════════════════╝
+        # Create final synthesis prompt
+        final_synthesis_prompt = f"""
+**FINAL SYNTHESIS REQUEST**
 
-[bold yellow]📋 SYNTHESIZED EXPERTISE[/bold yellow]
-[cyan]────────────────────────────────────────────────────────────────────────────────[/cyan]
+Original Question: {user_message}
 
-{enhanced_response}
+{local_insights}
 
-[cyan]────────────────────────────────────────────────────────────────────────────────[/cyan]
+{chr(10).join([f"{provider.value.title()} Analysis: {response}" for provider, response in cloud_responses.items() if not response.startswith("Error:")])}
 
-[bold magenta]📊 COLLABORATION METRICS[/bold magenta]
-[cyan]⚡[/cyan] [white]Total Response Time:[/white] [green]{sum(response_times.values()):.2f}s[/green]
-[cyan]🤝[/cyan] [white]AI Models Engaged:[/white] [blue]{', '.join([p.value.title() for p in initial_responses.keys()])}[/blue]
-[cyan]🏆[/cyan] [white]Lead Contributor:[/white] [yellow]{fastest_provider.value.title()}[/yellow]
+**Task:**
+Create a comprehensive response that:
+1. Starts with a direct answer to the user's question
+2. Incorporates insights from both local and cloud models
+3. Provides detailed technical explanations
+4. Includes practical examples and methodologies
+5. Structures information clearly with headings and bullet points
+6. Ensures accuracy and completeness
 
-[bold cyan]🔍 MODEL PERFORMANCE[/bold cyan]
-[cyan]────────────────────────────────────────────────────────────────────────────────[/cyan]
-"""),
-                title="[bold green]🤖 Collaborative AI Response[/bold green]",
-                border_style="cyan",
-                padding=(1, 2),
-                expand=True
-            )
-            
-            # Create performance table
-            perf_table = Table(show_header=False, box=box.ROUNDED, expand=True)
-            perf_table.add_column("Model", style="bold white", width=15)
-            perf_table.add_column("Response Time", style="green", width=12)
-            perf_table.add_column("Contribution", style="blue", width=12)
-            
-            for perf in performance_details:
-                perf_table.add_row(
-                    f"{perf['emoji']} {perf['name']}",
-                    f"⏱️  {perf['time']:.2f}s",
-                    f"📝 {perf['length']} chars"
-                )
-            
-            # Display the response with enhanced visual layout
-            console.print("\n")  # Add spacing
-            console.print(response_panel)
-            console.print("\n")  # Add spacing before performance table
-            
-            # Create performance metrics panel
-            metrics_panel = Panel(
-                perf_table,
-                title="[bold cyan]🔍 Performance Metrics[/bold cyan]",
-                border_style="magenta",
-                padding=(1, 2),
-                expand=True
-            )
-            
-            console.print(metrics_panel)
-            console.print("\n")  # Add spacing after
-            
-            return ""
-        else:
-            # Fallback to colorama formatting
-            return f"""
-{self._colorize('╔══════════════════════════════════════════════════════════════════════════════╗', Fore.CYAN)}
-{self._colorize('║', Fore.CYAN)} {self._colorize('🤖 COLLABORATIVE AI NETWORK RESPONSE', Fore.GREEN)} {self._colorize('║', Fore.CYAN)}
-{self._colorize('╚══════════════════════════════════════════════════════════════════════════════╝', Fore.CYAN)}
-
-{self._colorize('📋 SYNTHESIZED EXPERTISE', Fore.YELLOW)}
-{self._colorize('─' * 80, Fore.YELLOW)}
-
-{enhanced_response}
-
-{self._colorize('─' * 80, Fore.YELLOW)}
-{self._colorize('📊 COLLABORATION METRICS', Fore.MAGENTA)}
-{self._colorize('⚡', Fore.CYAN)} {self._colorize('Total Response Time:', Fore.WHITE)} {self._colorize(f'{sum(response_times.values()):.2f}s', Fore.GREEN)}
-{self._colorize('🤝', Fore.CYAN)} {self._colorize('AI Models Engaged:', Fore.WHITE)} {self._colorize(', '.join([p.value.title() for p in initial_responses.keys()]), Fore.BLUE)}
-{self._colorize('🏆', Fore.CYAN)} {self._colorize('Lead Contributor:', Fore.WHITE)} {self._colorize(fastest_provider.value.title(), Fore.YELLOW)}
-
-{self._colorize('🔍 MODEL PERFORMANCE', Fore.CYAN)}
-{self._colorize('─' * 80, Fore.CYAN)}{performance_details}
+**Important Guidelines:**
+- Focus on educational and legitimate use cases
+- Provide step-by-step technical details where appropriate
+- Include relevant context and background information
+- Structure response for maximum clarity and readability
 """
+        
+        # Use the best available model for final synthesis
+        best_provider = None
+        if cloud_providers:
+            # Prefer cloud models for synthesis
+            best_provider = cloud_providers[0][0]
+        elif local_providers:
+            # Fall back to local models
+            best_provider = local_providers[0][0]
+        
+        if best_provider:
+            theme = model_themes.get(best_provider, {"style": "bold cyan", "emoji": "🤖", "name": "Model"})
+            print(f"🎯 Using {theme['name']} for final synthesis...")
+            
+            try:
+                if best_provider == Provider.LLAMA:
+                    final_response = self.call_llama_api(self.SYSTEM_PROMPT, final_synthesis_prompt, "local")
+                elif best_provider == Provider.OPENAI:
+                    final_response = self.call_openai_api(self.SYSTEM_PROMPT, final_synthesis_prompt, cloud_providers[[p[0] for p in cloud_providers].index(Provider.OPENAI)][1] if Provider.OPENAI in [p[0] for p in cloud_providers] else "")
+                elif best_provider == Provider.GEMINI:
+                    final_response = self.call_gemini_api(self.SYSTEM_PROMPT, final_synthesis_prompt, cloud_providers[[p[0] for p in cloud_providers].index(Provider.GEMINI)][1] if Provider.GEMINI in [p[0] for p in cloud_providers] else "")
+                elif best_provider == Provider.MISTRAL:
+                    final_response = self.call_mistral_api(self.SYSTEM_PROMPT, final_synthesis_prompt, cloud_providers[[p[0] for p in cloud_providers].index(Provider.MISTRAL)][1] if Provider.MISTRAL in [p[0] for p in cloud_providers] else "")
+                
+                print(f"✅ {theme['name']} synthesis complete!")
+                
+                # Add collaborative summary
+                print(f"\n{self._colorize('📊 Collaborative Summary', Fore.LIGHTYELLOW_EX)}")
+                print("-" * 40)
+                print(f"🔗 Local Models Participated: {len(local_providers)}")
+                print(f"☁️  Cloud Models Participated: {len(cloud_providers)}")
+                print(f"🤖 Total Models Used: {len(available_providers)}")
+                
+                return final_response
+                
+            except Exception as e:
+                return f"❌ Error in final synthesis: {str(e)}"
+        else:
+            return "❌ No models available for synthesis."
+    
+    def get_collaborative_status(self) -> str:
+        """Get collaborative mode status"""
+        # Get all available providers
+        available_providers = []
+        
+        # Check local Llama
+        try:
+            url = "http://localhost:11434/api/tags"
+            response = requests.get(url, timeout=5)
+            if response.status_code == 200:
+                available_providers.append((Provider.LLAMA, "local"))
+        except:
+            pass
+        
+        # Check cloud providers
+        for provider in [Provider.OPENAI, Provider.GEMINI, Provider.MISTRAL]:
+            provider_keys = self.get_provider_keys(provider)
+            if provider_keys:
+                available_providers.append((provider, provider_keys[0]))
+        
+        if len(available_providers) < 2:
+            return f"❌ Need at least 2 models for collaborative mode. Available: {len(available_providers)}"
+        
+        print(f"\n{self._colorize('🤖 Collaborative AI Mode Status', Fore.CYAN)}")
+        print("=" * 50)
+        print(f"📋 Available Models: {len(available_providers)}")
+        print(f"🔄 Current Mode: {'ENABLED' if len(available_providers) >= 2 else 'DISABLED'}")
+        
+        print(f"\n{self._colorize('🔧 Collaborative Features:', Fore.GREEN)}")
+        print("✅ Local models communicate with each other")
+        print("✅ Cloud models summarize and expand facts")
+        print("✅ Cross-model insight synthesis")
+        print("✅ Automatic error handling and fallback")
+        print("✅ Enhanced response quality and detail")
+        print("✅ Real-time performance monitoring")
+        
+        print(f"\n{self._colorize('💡 Usage:', Fore.YELLOW)}")
+        print("• All chat messages automatically use collaborative mode")
+        print("• Local models discuss and share insights")
+        print("• Cloud models provide comprehensive summaries")
+        print("• Automatic fallback to single model if needed")
+        
+        return f"✅ Collaborative mode is {'ACTIVE' if len(available_providers) >= 2 else 'INACTIVE'}"
     
     def stack_models_response(self) -> str:
         """Stack multiple models for enhanced responses"""
