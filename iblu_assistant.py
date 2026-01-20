@@ -2510,55 +2510,31 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             console.print(Panel(banner_content, border_style="red", padding=(1, 7), expand=True))
             
         else:
-            # Fallback banner without Rich - Screen Wide (115 chars)
+            # Fallback banner without Rich - Static display, HACK THE on top, WORLD below
             w = 115
             pad = lambda s: "║" + s.ljust(w) + "║"
             
-            # Display the main banner with glitch effect (fallback)
-            banner_lines = [
-                f"{Fore.LIGHTRED_EX}╔" + "═"*w + f"╗{ColoramaStyle.RESET_ALL}",
-                f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}" + " "*w + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}",
-                f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.RED}{Back.BLACK}  ██╗  ██╗  █████╗   ██████╗ ██╗  ██╗    ████████╗ ██╗  ██╗ ███████╗    ██╗    ██╗  ██████╗  ██████╗  ██╗      ██████╗{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}",
-                f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.RED}{Back.BLACK}  ██║  ██║ ██╔══██╗ ██╔════╝ ██║ ██╔╝    ╚══██╔══╝ ██║  ██║ ██╔════╝    ██║    ██║ ██╔═══██╗ ██╔══██╗ ██║      ██╔══██╗{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}",
-                f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.RED}{Back.BLACK}  ███████║ ███████║ ██║      █████╔╝        ██║    ███████║ █████╗      ██║ █╗ ██║ ██║   ██║ ██████╔╝ ██║      ██║  ██║{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}",
-                f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.RED}{Back.BLACK}  ██╔══██║ ██╔══██║ ██║      ██╔═██╗        ██║    ██╔══██║ ██╔══╝      ██║███╗██║ ██║   ██║ ██╔══██╗ ██║      ██║  ██║{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}",
-                f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.RED}{Back.BLACK}  ██║  ██║ ██║  ██║ ╚██████╗ ██║  ██╗       ██║    ██║  ██║ ███████╗    ╚███╔███╔╝ ╚██████╔╝ ██║  ██║ ███████╗ ██████╔╝{ColoramaStyle.RESET_ALL} " + f"{Fore.BLUE}║{ColoramaStyle.RESET_ALL}",
-                f"{Fore.BLUE}║{ColoramaStyle.RESET_ALL} {Fore.BLUE}{Back.BLACK}  ╚═╝  ╚═╝ ╚═╝  ╚═╝  ╚═════╝ ╚═╝  ╚═╝       ╚═╝    ╚═╝  ╚═╝ ╚══════╝     ╚══╝╚══╝   ╚═════╝  ╚═╝  ╚═╝ ╚══════╝ ╚═════╝{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}",
-                f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}" + " "*w + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}",
-                f"{Fore.LIGHTRED_EX}╚" + "═"*w + f"╝{ColoramaStyle.RESET_ALL}"
-            ]
-
-            # Store original content lines for glitching (orange/red for HACK THE, blue for WORLD)
-            content_lines = [
-                "\033[31m\033[40m  ██╗  ██╗  █████╗   ██████╗ ██╗  ██╗    ████████╗ ██╗  ██╗ ███████╗    ██╗    ██╗  ██████╗  ██████╗  ██╗      ██████╗",
-                "\033[31m\033[40m  ██║  ██║ ██╔══██╗ ██╔════╝ ██║ ██╔╝    ╚══██╔══╝ ██║  ██║ ██╔════╝    ██║    ██║ ██╔═══██╗ ██╔══██╗ ██║      ██╔══██╗",
-                "\033[31m\033[40m  ███████║ ███████║ ██║      █████╔╝        ██║    ███████║ █████╗      ██║ █╗ ██║ ██║   ██║ ██████╔╝ ██║      ██║  ██║",
-                "\033[31m\033[40m  ██╔══██║ ██╔══██║ ██║      ██╔═██╗        ██║    ██╔══██║ ██╔══╝      ██║███╗██║ ██║   ██║ ██╔══██╗ ██║      ██║  ██║",
-                "\033[31m\033[40m  ██║  ██║ ██║  ██║ ╚██████╗ ██║  ██╗       ██║    ██║  ██║ ███████╗    ╚███╔███╔╝ ╚██████╔╝ ██║  ██║ ███████╗ ██████╔╝",
-                "\033[34m\033[40m  ╚═╝  ╚═╝ ╚═╝  ╚═╝  ╚═════╝ ╚═╝  ╚═╝       ╚═╝    ╚═╝  ╚═╝ ╚══════╝     ╚══╝╚══╝   ╚═════╝  ╚═╝  ╚═╝ ╚══════╝ ╚═════╝"
-            ]
-            
-            colors = [Fore.RED, Fore.LIGHTRED_EX, Fore.RED, Fore.LIGHTRED_EX, Fore.RED, Fore.BLUE]
-            
-            for t in range(100):
-                os.system("clear")
-                # Print borders
-                print(f"{Fore.LIGHTRED_EX}╔" + "═"*w + f"╗{ColoramaStyle.RESET_ALL}")
-                print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}" + " "*w + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-                
-                # Print content with colors and potential glitches
-                for i, content in enumerate(content_lines):
-                    if random.random() < 0.1:  # 10% chance to glitch
-                        content = glitch(content)
-                    print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {colors[i]}{content.ljust(w)}{ColoramaStyle.RESET_ALL} {Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-                
-                print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}" + " "*w + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-                print(f"{Fore.LIGHTRED_EX}╚" + "═"*w + f"╝{ColoramaStyle.RESET_ALL}")
-                time.sleep(0.05)
-            
-            # Print final static banner
-            for line in banner_lines:
-                print(line)
+            # Display static banner - HACK THE section (red/orange)
+            print(f"{Fore.LIGHTRED_EX}╔" + "═"*w + f"╗{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}" + " "*w + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.RED}{Back.BLACK}  ██╗  ██╗  █████╗   ██████╗ ██╗  ██╗    ████████╗ ██╗  ██╗ ███████╗    ██╗    ██╗  ██████╗  ██████╗  ██╗      ██████╗{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.RED}{Back.BLACK}  ██║  ██║ ██╔══██╗ ██╔════╝ ██║ ██╔╝    ╚══██╔══╝ ██║  ██║ ██╔════╝    ██║    ██║ ██╔═══██╗ ██╔══██╗ ██║      ██╔══██╗{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.RED}{Back.BLACK}  ███████║ ███████║ ██║      █████╔╝        ██║    ███████║ █████╗      ██║ █╗ ██║ ██║   ██║ ██████╔╝ ██║      ██║  ██║{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.RED}{Back.BLACK}  ██╔══██║ ██╔══██║ ██║      ██╔═██╗        ██║    ██╔══██║ ██╔══╝      ██║███╗██║ ██║   ██║ ██╔══██╗ ██║      ██║  ██║{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.RED}{Back.BLACK}  ██║  ██║ ██║  ██║ ╚██████╗ ██║  ██╗       ██║    ██║  ██║ ███████╗    ╚███╔███╔╝ ╚██████╔╝ ██║  ██║ ███████╗ ██████╔╝{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.RED}{Back.BLACK}  ╚═╝  ╚═╝ ╚═╝  ╚═╝  ╚═════╝ ╚═╝  ╚═╝       ╚═╝    ╚═╝  ╚═╝ ╚══════╝     ╚══╝╚══╝   ╚═════╝  ╚═╝  ╚═╝ ╚══════╝ ╚═════╝{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}" + " "*w + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+            # Spacing
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}" + " "*w + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+            # WORLD section (blue, positioned below HACK THE)
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}                    {Fore.BLUE}{Back.BLACK}██╗    ██╗  ██████╗  ██████╗ ██╗     ██████╗{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}                    {Fore.BLUE}{Back.BLACK}██║    ██║ ██╔═══██╗ ██╔══██╗ ██║     ██╔══██╗{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}                    {Fore.BLUE}{Back.BLACK}██║ █╗ ██║ ██║   ██║ ██████╔╝ ██║     ██║  ██║{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}                    {Fore.BLUE}{Back.BLACK}██║███╗██║ ██║   ██║ ██╔══██╗ ██║     ██║  ██║{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}                    {Fore.BLUE}{Back.BLACK}╚███╔███╔╝ ╚██████╔╝ ██║  ██║ ███████╗ ██████╔╝{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}                    {Fore.BLUE}{Back.BLACK} ╚══╝╚══╝  ╚═════╝  ╚═╝  ╚═╝ ╚══════╝ ╚═════╝{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}" + " "*w + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}╚" + "═"*w + f"╝{ColoramaStyle.RESET_ALL}")
             
             if COLORAMA_AVAILABLE:
                 # Security tools overview - Single Panel Style
