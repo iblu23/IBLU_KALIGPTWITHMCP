@@ -2368,10 +2368,10 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                 "⠀⠀⠀⠀⠀⠀⠉⠉⠉⠉⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀"
             ]
             
-            # Build the combined art: 2 pacmans on left, 2 on right
+            # Build the combined art: 2 pacmans on left, 2 on right (moved left)
             combined_art = ""
             for line in pacman_lines:
-                combined_art += f"{line}  {line}          {line}  {line}\n"
+                combined_art += f"  {line}  {line}          {line}  {line}\n"
             
             world_text = Text("", justify="center")
             with Live(Panel(world_text, border_style="magenta", padding=(1, 7), expand=True), 
@@ -2417,9 +2417,9 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             for line in banner_lines:
                 print(line)
             
-            # Add 4 pacman art (2 left, 2 right) with typing effect
+            # Add 4 pacman art (2 left, 2 right) with typing effect (moved left)
             for line in pacman_lines:
-                combined_line = f"{line}  {line}          {line}  {line}"
+                combined_line = f"  {line}  {line}          {line}  {line}"
                 padded_line = pad(combined_line)
                 for ch in padded_line:
                     print(ch, end="", flush=True)
