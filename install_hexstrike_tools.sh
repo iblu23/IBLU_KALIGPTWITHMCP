@@ -2,10 +2,10 @@
 
 # 🔥 HexStrike Tools Installation Script 🔥
 # 🚀 Professional Security Tools Auto-Installer 🚀
-# 🛡️ 150+ Security Tools for Penetration Testing 🛡️
+# 🛡️ 200+ Security Tools for Penetration Testing 🛡️
 
-echo "🔥 HexStrike Professional Security Tools Installer"
-echo "=================================================="
+echo "🔥 HexStrike Professional Security Tools Installer v2.0"
+echo "========================================================"
 
 # Check if running as root
 if [ "$EUID" -ne 0 ]; then
@@ -19,19 +19,37 @@ apt update
 
 # Install basic dependencies
 echo "🔧 Installing basic dependencies..."
-apt install -y git python3 python3-pip curl wget unzip
+apt install -y git python3 python3-pip curl wget unzip build-essential libssl-dev libffi-dev python3-dev
 
 # Install Python security tools
 echo "🐍 Installing Python security tools..."
-pip3 install requests beautifulsoup4 scapy paramiko cryptography
+pip3 install requests beautifulsoup4 scapy paramiko cryptography pycryptodome
 
 # Core reconnaissance tools
 echo "🔍 Installing reconnaissance tools..."
 apt install -y nmap masscan zmap recon-ng dnsenum dnsrecon fierce
 
+# OSINT & Advanced Reconnaissance
+echo "🕵️ Installing OSINT & advanced reconnaissance tools..."
+apt install -y theharvester amass spiderfoot shodan
+pip3 install shodan
+
+# Install Maltego (Community Edition)
+echo "🔗 Installing Maltego..."
+wget -q https://maltego-downloads.s3.us-east-2.amazonaws.com/linux/Maltego.v4.6.0.deb -O /tmp/maltego.deb 2>/dev/null || echo "⚠️  Maltego download skipped (manual install recommended)"
+dpkg -i /tmp/maltego.deb 2>/dev/null || apt install -f -y
+
 # Web application testing tools
 echo "🌐 Installing web application tools..."
-apt install -y nikto dirb gobuster ffuf wfuzz sqlmap burpsuite wpscan
+apt install -y nikto dirb gobuster ffuf wfuzz sqlmap burpsuite wpscan whatweb
+
+# Advanced web testing tools
+echo "🌐 Installing advanced web testing tools..."
+pip3 install httpx-toolkit xsstrike commix arjun
+
+# Install HTTPx (Go-based)
+echo "🚀 Installing HTTPx..."
+go install -v github.com/projectdiscovery/httpx/cmd/httpx@latest 2>/dev/null || echo "⚠️  HTTPx requires Go (install Go first)"
 
 # Password cracking tools
 echo "🔐 Installing password cracking tools..."
@@ -41,33 +59,70 @@ apt install -y john hashcat hydra medusa crunch
 echo "📡 Installing network analysis tools..."
 apt install -y wireshark tcpdump nmapsi4 ettercap aircrack-ng
 
-# Vulnerability scanning tools
-echo "🛡️ Installing vulnerability scanners..."
-apt install -y openvas nuclei nessus-installer
+# Wireless & RF (Advanced Attacks)
+echo "📶 Installing wireless & RF tools..."
+apt install -y aircrack-ng kismet wifite reaver pixiewps bettercap airgeddon
 
-# Forensics tools
-echo "🔬 Installing forensics tools..."
-apt install -y autopsy sleuthkit volatility
+# Vulnerability scanning & management tools
+echo "🛡️ Installing vulnerability scanners & management..."
+apt install -y openvas nuclei nessus-installer
+pip3 install faraday-client vulners
+
+# Install Nuclei templates
+echo "📋 Installing Nuclei templates..."
+nuclei -update-templates 2>/dev/null || echo "⚠️  Run 'nuclei -update-templates' after installation"
+
+# Forensics & Incident Response tools
+echo "🔬 Installing forensics & incident response tools..."
+apt install -y autopsy sleuthkit volatility plaso bulk-extractor foremost guymager
 
 # Exploitation frameworks
 echo "💣 Installing exploitation frameworks..."
-apt install -y metasploit-framework
+apt install -y metasploit-framework exploitdb
 
-# Post-exploitation tools
-echo "🎯 Installing post-exploitation tools..."
-apt install -y mimikatz pth-toolkit
+# Advanced exploitation tools
+echo "💥 Installing advanced exploitation tools..."
+apt install -y beef-xss
+pip3 install crackmapexec
+
+# Install Empire (PowerShell C2)
+echo "👑 Installing Empire..."
+cd /opt
+git clone --recursive https://github.com/BC-SECURITY/Empire.git 2>/dev/null || echo "⚠️  Empire already exists"
+cd Empire 2>/dev/null && ./setup/install.sh 2>/dev/null || echo "⚠️  Empire setup skipped"
+
+# Post-exploitation & lateral movement tools
+echo "🎯 Installing post-exploitation & lateral movement tools..."
+apt install -y mimikatz responder impacket-scripts bloodhound
+
+# Install SharpHound
+echo "🩸 Installing SharpHound..."
+mkdir -p /opt/sharphound
+wget -q https://github.com/BloodHoundAD/BloodHound/releases/latest/download/SharpHound.exe -O /opt/sharphound/SharpHound.exe 2>/dev/null || echo "⚠️  SharpHound download skipped"
 
 # Social engineering tools
 echo "🎭 Installing social engineering tools..."
 apt install -y setoolkit social-engineer-toolkit
 
-# Wireless tools
-echo "📶 Installing wireless tools..."
-apt install -y aircrack-ng kismet wifite
+# Advanced social engineering tools
+echo "🎣 Installing advanced social engineering tools..."
+cd /opt
+git clone https://github.com/rsmusllp/king-phisher.git 2>/dev/null || echo "⚠️  King Phisher already exists"
+git clone https://github.com/kgretzky/evilginx2.git 2>/dev/null || echo "⚠️  Evilginx2 already exists"
+git clone https://github.com/gophish/gophish.git 2>/dev/null || echo "⚠️  Gophish already exists"
 
-# Install additional tools
-echo "🔧 Installing additional tools..."
-apt install -y netcat ncat socat hping3 netdiscover
+# Utilities & Infrastructure
+echo "⚙️ Installing utilities & infrastructure tools..."
+apt install -y netcat ncat socat hping3 netdiscover tmux proxychains4
+
+# Install Chisel (TCP tunneling)
+echo "🚇 Installing Chisel..."
+wget -q https://github.com/jpillora/chisel/releases/latest/download/chisel_linux_amd64.gz -O /tmp/chisel.gz 2>/dev/null || echo "⚠️  Chisel download skipped"
+gunzip /tmp/chisel.gz 2>/dev/null && mv /tmp/chisel /usr/local/bin/chisel && chmod +x /usr/local/bin/chisel
+
+# Install SSHuttle
+echo "🔐 Installing SSHuttle..."
+apt install -y sshuttle
 
 # Create HexStrike tools directory
 mkdir -p /opt/hexstrike
@@ -228,12 +283,14 @@ systemctl enable hexstrike-mcp
 
 echo ""
 echo "✅ HexStrike Tools Installation Complete!"
-echo "🔥 150+ Security Tools Ready!"
+echo "🔥 200+ Security Tools Ready!"
 echo ""
 echo "📁 Installation directories:"
 echo "  • /opt/hexstrike/ - Main tools directory"
 echo "  • /opt/hexstrike/results/ - Scan results"
 echo "  • /opt/hexstrike/wordlists/ - Wordlists"
+echo "  • /opt/sharphound/ - SharpHound collector"
+echo "  • /opt/Empire/ - Empire C2 framework"
 echo "  • /etc/hexstrike.conf - Configuration file"
 echo ""
 echo "🚀 Usage:"
@@ -242,8 +299,27 @@ echo "  • hexstrike web <target> - Web scan"
 echo "  • hexstrike brute <target> - Brute force"
 echo "  • hexstrike status - Show status"
 echo ""
+echo "🆕 New Tool Categories:"
+echo "  • OSINT: theHarvester, Amass, SpiderFoot, Maltego, Shodan"
+echo "  • Web Advanced: WhatWeb, HTTPx, XSStrike, Commix, Arjun"
+echo "  • Vuln Mgmt: Faraday, Vulners, Nuclei Templates"
+echo "  • Exploitation: SearchSploit, BeEF, Empire, CrackMapExec"
+echo "  • Post-Exploit: BloodHound, Responder, Impacket, SharpHound"
+echo "  • Forensics: Plaso, Bulk Extractor, Foremost, Guymager"
+echo "  • Wireless: Reaver, PixieWPS, Bettercap, Airgeddon"
+echo "  • Social Eng: King Phisher, Evilginx2, Gophish"
+echo "  • Utilities: tmux, Proxychains, Chisel, SSHuttle"
+echo ""
 echo "🔗 MCP Server:"
 echo "  • systemctl start hexstrike-mcp - Start MCP server"
 echo "  • systemctl status hexstrike-mcp - Check status"
+echo ""
+echo "💡 Quick Start Examples:"
+echo "  • theharvester -d example.com -b all"
+echo "  • amass enum -d example.com"
+echo "  • httpx -l targets.txt -tech-detect"
+echo "  • nuclei -u https://example.com -t /root/nuclei-templates/"
+echo "  • crackmapexec smb 192.168.1.0/24"
+echo "  • bloodhound --collect All"
 echo ""
 echo "🛡️ Happy Hacking! (Ethically Only!)"

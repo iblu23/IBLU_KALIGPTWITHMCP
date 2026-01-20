@@ -1392,7 +1392,7 @@ class APIConfig:
 class IBLUCommandHelper:
     """
     🔥 Enhanced IBLU Command Helper with HexStrike Integration 🔥
-    🚀 50+ Security Tools Command System with Suggestions 🚀
+    🚀 90+ Security Tools Command System with Suggestions 🚀
     📋 Complete command completion and suggestion system 📋
     """
     
@@ -1422,6 +1422,13 @@ class IBLUCommandHelper:
             "fierce": {"name": "Fierce", "desc": "DNS reconnaissance tool", "category": "recon"},
             "recon-ng": {"name": "Recon-ng", "desc": "Web reconnaissance framework", "category": "recon"},
             
+            # OSINT & Advanced Reconnaissance
+            "theharvester": {"name": "theHarvester", "desc": "Emails, subdomains, hosts via public sources", "category": "osint"},
+            "amass": {"name": "Amass", "desc": "Advanced DNS enumeration & attack surface mapping", "category": "osint"},
+            "spiderfoot": {"name": "SpiderFoot", "desc": "Automated OSINT framework for reports", "category": "osint"},
+            "maltego": {"name": "Maltego", "desc": "Visual relationship mapping (people, infra, domains)", "category": "osint"},
+            "shodan": {"name": "Shodan CLI", "desc": "Internet-exposed services intelligence", "category": "osint"},
+            
             # Web Application Testing
             "nikto": {"name": "Nikto", "desc": "Web server scanner", "category": "web"},
             "dirb": {"name": "Dirb", "desc": "Web content scanner", "category": "web"},
@@ -1431,6 +1438,11 @@ class IBLUCommandHelper:
             "sqlmap": {"name": "SQLMap", "desc": "SQL injection testing tool", "category": "web"},
             "burpsuite": {"name": "Burp Suite", "desc": "Web application security testing", "category": "web"},
             "wpscan": {"name": "WPScan", "desc": "WordPress security scanner", "category": "web"},
+            "whatweb": {"name": "WhatWeb", "desc": "Web technology fingerprinting", "category": "web"},
+            "httpx": {"name": "HTTPx", "desc": "Fast HTTP probing & tech detection", "category": "web"},
+            "xsstrike": {"name": "XSStrike", "desc": "Advanced XSS detection & exploitation", "category": "web"},
+            "commix": {"name": "Commix", "desc": "Command injection testing", "category": "web"},
+            "arjun": {"name": "Arjun", "desc": "HTTP parameter discovery", "category": "web"},
             
             # Password Cracking
             "john": {"name": "John the Ripper", "desc": "Password cracker", "category": "auth"},
@@ -1447,35 +1459,62 @@ class IBLUCommandHelper:
             "kismet": {"name": "Kismet", "desc": "Wireless network detector", "category": "network"},
             "wifite": {"name": "Wifite", "desc": "Wireless attack tool", "category": "network"},
             
-            # Vulnerability Scanning
+            # Wireless & RF (Advanced Attacks)
+            "reaver": {"name": "Reaver", "desc": "WPS attacks", "category": "wireless"},
+            "pixiewps": {"name": "PixieWPS", "desc": "Offline WPS brute forcing", "category": "wireless"},
+            "bettercap": {"name": "Bettercap", "desc": "Modern MITM framework", "category": "wireless"},
+            "airgeddon": {"name": "Airgeddon", "desc": "All-in-one Wi-Fi attack automation", "category": "wireless"},
+            
+            # Vulnerability Scanning & Management
             "openvas": {"name": "OpenVAS", "desc": "Vulnerability scanner", "category": "vuln"},
-            "nuclei": {"name": "Nuclei", "desc": "Vulnerability scanner", "category": "vuln"},
+            "nuclei": {"name": "Nuclei", "desc": "Vulnerability scanner with YAML templates", "category": "vuln"},
             "nessus": {"name": "Nessus", "desc": "Vulnerability scanner", "category": "vuln"},
+            "faraday": {"name": "Faraday", "desc": "Vulnerability management & collaboration", "category": "vuln"},
+            "vulners": {"name": "Vulners Scanner", "desc": "CVE-focused vulnerability scanning", "category": "vuln"},
             
             # Exploitation
             "metasploit": {"name": "Metasploit Framework", "desc": "Penetration testing framework", "category": "exploit"},
             "msfconsole": {"name": "MSFConsole", "desc": "Metasploit console", "category": "exploit"},
             "msfvenom": {"name": "MSFvenom", "desc": "Payload generator", "category": "exploit"},
+            "searchsploit": {"name": "Searchsploit", "desc": "Offline Exploit-DB access", "category": "exploit"},
+            "beef": {"name": "BeEF", "desc": "Browser exploitation framework", "category": "exploit"},
+            "empire": {"name": "Empire", "desc": "Post-exploitation & C2 (PowerShell focus)", "category": "exploit"},
+            "crackmapexec": {"name": "CrackMapExec", "desc": "Active Directory exploitation Swiss-army knife", "category": "exploit"},
             
-            # Post-Exploitation
+            # Post-Exploitation & Lateral Movement
             "mimikatz": {"name": "Mimikatz", "desc": "Windows credential extractor", "category": "post"},
             "pth-toolkit": {"name": "PTH Toolkit", "desc": "Pass-the-hash toolkit", "category": "post"},
+            "bloodhound": {"name": "BloodHound", "desc": "Active Directory attack path mapping", "category": "post"},
+            "responder": {"name": "Responder", "desc": "LLMNR/NBT-NS poisoning", "category": "post"},
+            "impacket": {"name": "Impacket", "desc": "Network protocol exploitation scripts", "category": "post"},
+            "sharphound": {"name": "SharpHound", "desc": "BloodHound data collector", "category": "post"},
             
-            # Forensics
+            # Forensics & Incident Response
             "autopsy": {"name": "Autopsy", "desc": "Digital forensics platform", "category": "forensics"},
             "sleuthkit": {"name": "Sleuth Kit", "desc": "Forensics tool kit", "category": "forensics"},
             "volatility": {"name": "Volatility", "desc": "Memory forensics framework", "category": "forensics"},
+            "plaso": {"name": "Plaso (log2timeline)", "desc": "Timeline creation", "category": "forensics"},
+            "bulk-extractor": {"name": "Bulk Extractor", "desc": "Extracts artifacts from disk images", "category": "forensics"},
+            "foremost": {"name": "Foremost", "desc": "File carving", "category": "forensics"},
+            "guymager": {"name": "Guymager", "desc": "Disk imaging tool", "category": "forensics"},
             
             # Social Engineering
             "setoolkit": {"name": "Social Engineer Toolkit", "desc": "Social engineering framework", "category": "social"},
             "phishing": {"name": "Phishing Kit", "desc": "Phishing campaign tools", "category": "social"},
+            "kingphisher": {"name": "King Phisher", "desc": "Phishing campaign framework", "category": "social"},
+            "evilginx2": {"name": "Evilginx2", "desc": "MFA bypass demonstrations", "category": "social"},
+            "gophish": {"name": "Gophish", "desc": "Phishing framework for labs", "category": "social"},
             
-            # Utilities
+            # Utilities & Infrastructure
             "netcat": {"name": "Netcat", "desc": "Network utility", "category": "util"},
             "ncat": {"name": "Ncat", "desc": "Netcat alternative", "category": "util"},
             "socat": {"name": "Socat", "desc": "Multipurpose relay", "category": "util"},
             "hping3": {"name": "Hping3", "desc": "Network scanner", "category": "util"},
-            "netdiscover": {"name": "Netdiscover", "desc": "ARP-based scanner", "category": "util"}
+            "netdiscover": {"name": "Netdiscover", "desc": "ARP-based scanner", "category": "util"},
+            "tmux": {"name": "tmux", "desc": "Session management", "category": "util"},
+            "proxychains": {"name": "Proxychains", "desc": "Route tools through proxies", "category": "util"},
+            "chisel": {"name": "Chisel", "desc": "TCP tunneling over HTTP", "category": "util"},
+            "sshuttle": {"name": "SSHuttle", "desc": "VPN-like pivoting over SSH", "category": "util"}
         }
     
     def setup_readline(self):
@@ -1725,7 +1764,7 @@ class IBLUCommandHelper:
   stack_models      - Stack multiple models for enhanced responses
   model_chat        - Enable models to communicate with each other
 
-{self._colorize('�️ HEXSTRIKE TOOLS (50+ available):', Fore.RED)}
+{self._colorize('🛡️ HEXSTRIKE TOOLS (90+ available):', Fore.RED)}
   /nmap            - Network discovery and security auditing
   /metasploit      - Penetration testing framework
   /burpsuite       - Web application security testing
@@ -1736,12 +1775,13 @@ class IBLUCommandHelper:
   /hashcat         - Advanced password recovery
   /wireshark       - Network protocol analyzer
   /aircrack-ng     - Wireless security suite
-  /autopsy         - Digital forensics platform
-  /volatility      - Memory forensics framework
-  /setoolkit       - Social engineering framework
-  [50+ more tools - use Tab completion to explore]
+  /theharvester    - OSINT email & subdomain gathering
+  /amass           - Advanced DNS enumeration
+  /bloodhound      - AD attack path mapping
+  /crackmapexec    - AD exploitation toolkit
+  [90+ more tools - use Tab completion to explore]
 
-{self._colorize('�💡 USAGE TIPS:', Fore.YELLOW)}
+{self._colorize('💡 USAGE TIPS:', Fore.YELLOW)}
   • Type '/' and press Tab to see all commands
   • Use Tab completion for tool names
   • Chat history persists between sessions
@@ -1763,15 +1803,17 @@ class IBLUCommandHelper:
         
         category_colors = {
             'recon': Fore.BLUE,
+            'osint': Fore.LIGHTBLUE_EX,
             'web': Fore.GREEN,
             'auth': Fore.YELLOW,
             'network': Fore.CYAN,
+            'wireless': Fore.LIGHTCYAN_EX,
             'vuln': Fore.MAGENTA,
             'exploit': Fore.RED,
             'post': Fore.WHITE,
-            'forensics': Fore.BLUE,
-            'social': Fore.YELLOW,
-            'util': Fore.GREEN
+            'forensics': Fore.LIGHTMAGENTA_EX,
+            'social': Fore.LIGHTYELLOW_EX,
+            'util': Fore.LIGHTGREEN_EX
         }
         
         # Display tools by category
@@ -1814,47 +1856,6 @@ class IBLUCommandHelper:
             return f"🔧 Selected tool: {selected_tool}\n💡 Use /{selected_tool} to run this tool"
         else:
             return "❌ Invalid choice. Please try again."
-    
-    def show_hexstrike_commands(self):
-        """Show HexStrike command overview"""
-        print(f"\n{self._colorize('🔥 HEXSTRIKE PROFESSIONAL SECURITY TOOLS 🔥', Fore.RED)}")
-        print("=" * 60)
-        
-        print(f"\n{Fore.BLUE}🔍 RECONNAISSANCE TOOLS:{ColoramaStyle.RESET_ALL}")
-        recon_tools = [t for t, info in self.hexstrike_tools.items() if info['category'] == 'recon']
-        for tool in sorted(recon_tools[:5]):
-            print(f"  /{tool} - {self.hexstrike_tools[tool]['name']}")
-        print(f"  ... (+{len(recon_tools)-5} more)")
-        
-        print(f"\n{Fore.GREEN}🌐 WEB APPLICATION TESTING:{ColoramaStyle.RESET_ALL}")
-        web_tools = [t for t, info in self.hexstrike_tools.items() if info['category'] == 'web']
-        for tool in sorted(web_tools[:5]):
-            print(f"  /{tool} - {self.hexstrike_tools[tool]['name']}")
-        print(f"  ... (+{len(web_tools)-5} more)")
-        
-        print(f"\n{Fore.YELLOW}🔐 PASSWORD CRACKING:{ColoramaStyle.RESET_ALL}")
-        auth_tools = [t for t, info in self.hexstrike_tools.items() if info['category'] == 'auth']
-        for tool in sorted(auth_tools):
-            print(f"  /{tool} - {self.hexstrike_tools[tool]['name']}")
-        
-        print(f"\n{Fore.CYAN}📡 NETWORK ANALYSIS:{ColoramaStyle.RESET_ALL}")
-        network_tools = [t for t, info in self.hexstrike_tools.items() if info['category'] == 'network']
-        for tool in sorted(network_tools[:5]):
-            print(f"  /{tool} - {self.hexstrike_tools[tool]['name']}")
-        print(f"  ... (+{len(network_tools)-5} more)")
-        
-        print(f"\n{Fore.RED}💣 EXPLOITATION FRAMEWORKS:{ColoramaStyle.RESET_ALL}")
-        exploit_tools = [t for t, info in self.hexstrike_tools.items() if info['category'] == 'exploit']
-        for tool in sorted(exploit_tools):
-            print(f"  /{tool} - {self.hexstrike_tools[tool]['name']}")
-        
-        print(f"\n{Fore.MAGENTA}🔧 QUICK COMMANDS:{ColoramaStyle.RESET_ALL}")
-        print("  /install <tool>    - Install a specific tool")
-        print("  /scan <target>     - Quick nmap scan")
-        print("  /pentest <target> - Automated pentest")
-        print("  /mcp_status        - Check HexStrike MCP server")
-        
-        print(f"\n{Fore.GREEN}💡 Type '/' and Tab to explore all {len(self.hexstrike_tools)} tools!{ColoramaStyle.RESET_ALL}")
     
     def delete_specific_tool(self, tool_mapping: Dict[int, str]) -> str:
         """Delete a specific HexStrike tool"""
@@ -2463,8 +2464,8 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             print(f"{Fore.CYAN}╚══════════════════════════════════════════════════════════════════════════════╝{ColoramaStyle.RESET_ALL}\n")
             
             print(f"{Fore.LIGHTCYAN_EX}┌─ {ColoramaStyle.BRIGHT}{Fore.WHITE}[1] ⚡ INSTALL ALL{ColoramaStyle.RESET_ALL}{Fore.LIGHTCYAN_EX} ─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}  {ColoramaStyle.BRIGHT}{Fore.WHITE}Quick install 50+ tools{ColoramaStyle.RESET_ALL}{' ' * (35)}{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}  {Fore.CYAN}• Time: 15-30 minutes • Requires: sudo{ColoramaStyle.RESET_ALL}{' ' * (22)}{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}  {ColoramaStyle.BRIGHT}{Fore.WHITE}Quick install 90+ tools{ColoramaStyle.RESET_ALL}{' ' * (35)}{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}  {Fore.CYAN}• Time: 20-40 minutes • Requires: sudo{ColoramaStyle.RESET_ALL}{' ' * (22)}{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}\n")
             
             print(f"{Fore.LIGHTCYAN_EX}┌─ {ColoramaStyle.BRIGHT}{Fore.WHITE}[2] 🎯 INSTALL ONE-BY-ONE{ColoramaStyle.RESET_ALL}{Fore.LIGHTCYAN_EX} ─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}")
@@ -2498,7 +2499,7 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             print("\n" + "=" * 70)
             print("    HACKING TOYS - INSTALLATION & MANAGEMENT")
             print("=" * 70 + "\n")
-            print("[1] Install ALL tools at once (50+ tools)")
+            print("[1] Install ALL tools at once (90+ tools)")
             print("[2] Install ONE-BY-ONE (choose by number)")
             print("[3] LIST TOOLS (view installed tools)")
             print("[4] DELETE TOOLS (remove tools)")
@@ -2640,6 +2641,7 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}   {Fore.CYAN}•{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}/install_llama{ColoramaStyle.RESET_ALL} - Install local Llama models              {Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}   {Fore.CYAN}•{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}/install_mistral{ColoramaStyle.RESET_ALL} - Install local Mistral Dolphin model        {Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}   {Fore.CYAN}•{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}/hf_install{ColoramaStyle.RESET_ALL} - Install Hugging Face models               {Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}   {Fore.CYAN}•{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}/install_models{ColoramaStyle.RESET_ALL} - Install all local models               {Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}")
             
             return "❌ No models available"
@@ -2906,10 +2908,10 @@ All responses should be helpful, educational, and focused on legitimate cybersec
     
     def install_all_tools(self):
         """Install all tools at once"""
-        print(f"\n{self._colorize('� INSTALL ALL HACKING TOYS', Fore.YELLOW)}")
+        print(f"\n{self._colorize('🔥 INSTALL ALL HACKING TOYS', Fore.YELLOW)}")
         print(self._colorize('=' * 70, Fore.CYAN))
-        print(f"\n{self._colorize('⚠️  This will install 50+ security tools', Fore.RED)}")
-        print(f"{self._colorize('⏱️  Estimated time: 15-30 minutes', Fore.YELLOW)}")
+        print(f"\n{self._colorize('⚠️  This will install 90+ security tools', Fore.RED)}")
+        print(f"{self._colorize('⏱️  Estimated time: 20-40 minutes', Fore.YELLOW)}")
         print(f"{self._colorize('🔑 Requires: sudo privileges', Fore.YELLOW)}\n")
         
         confirm = input(f"{self._colorize('Continue? (yes/no):', Fore.YELLOW)} ").strip().lower()
@@ -3107,9 +3109,9 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             print(f"{install_title}")
             print(f"{install_footer}\n")
             
-            print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}   {Fore.CYAN}🔧 Installing 50+ security tools for comprehensive testing{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}   {Fore.CYAN}🔧 Installing 90+ security tools for comprehensive testing{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}   {Fore.CYAN}⚡ Complete penetration testing toolkit setup{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}   {Fore.CYAN}🔧 This may take 15-30 minutes depending on your system{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}   {Fore.CYAN}🔧 This may take 20-40 minutes depending on your system{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.LIGHTYELLOW_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}\n")
         else:
             print(f"\n{self._colorize('📦 Installing ALL HexStrike Tools...', Fore.YELLOW)}")
