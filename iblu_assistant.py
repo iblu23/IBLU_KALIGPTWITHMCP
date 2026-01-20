@@ -5331,24 +5331,173 @@ All responses should be helpful, educational, and focused on legitimate cybersec
         return options
 
     def show_complete_options_list(self):
-        """Display all options in a comprehensive list"""
-        options = self.get_all_options()
+        """Display all options in unified 1-34 numbering format"""
         
-        print(f"\n{self._colorize('🧠 IBLU KALIGPT - COMPLETE OPTIONS LIST', Fore.LIGHTCYAN_EX)}")
+        unified_options = """
+📁 MAIN MENU (1–6)
+
+1. 🧠 IBLU KALIGPT: Multi-AI Assistant
+   📝 Interactive chat with multiple AI providers
+   🏷️  Aliases: 1, iblu, kali, kaligpt
+   ⭐ Features: Auto-rephrasing on refusal, Multi-AI querying
+
+2. 🎮 HACKING TOOLS: Installation & Management
+   📝 Install, list, and delete security tools
+   🏷️  Aliases: 2, toys, tools, install, hacking, manage
+   ⭐ Features: 90+ security tools, Batch installation, Tool management
+
+3. ⚙️ CONFIGURATION: Settings
+   📝 API keys, rephrasing mode
+   🏷️  Aliases: 3, config, settings
+   ⭐ Features: API key management, Provider configuration
+
+4. 🤖 AI TEXT SUGGESTIONS: Autocomplete & Text Generation
+   📝 OpenAI GPT suggestions, Local models & rule-based
+   🏷️  Aliases: 4, suggestions, autocomplete, ai, text
+   ⭐ Features: OpenAI GPT, Local models, Rule-based
+
+5. 📋 LIST MODELS: Show available AI models
+   📝 Display all available AI models
+   🏷️  Aliases: 5, models, list
+   ⭐ Features: Model listing, Status checking
+
+6. 🚪 EXIT: Leave the program
+   📝 Exit IBLU KALIGPT
+   🏷️  Aliases: 6, exit, quit
+   ⭐ Features: Clean exit, Save state
+
+📁 HACKING TOOLS SUBMENU (7–12)
+
+7. 📦 Install ALL tools at once
+   📝 Install 90+ security tools in batch
+   ⭐ Features: Batch installation, All categories, One-click setup
+
+8. 🔧 Install tools ONE-BY-ONE
+   📝 Choose and install tools individually
+   ⭐ Features: Selective installation, Tool descriptions, Custom setup
+
+9. 📋 LIST available tools
+   📝 View all available tools with categories
+   ⭐ Features: Tool catalog, Categories, Installation status
+
+10. 🗑️ DELETE tools
+    📝 Remove tools from database
+    ⭐ Features: Tool removal, Database cleanup, Selective deletion
+
+11. 🦙 DELETE local AI models
+    📝 Remove local AI models
+    ⭐ Features: Model deletion, Space cleanup, Cache clearing
+
+12. 🔙 Back to MAIN MENU
+    📝 Return to main interface
+    ⭐ Features: Menu navigation, Return to top
+
+📁 CONFIGURATION SUBMENU (13–19)
+
+13. 🤖 Install Local AI Models
+    📝 Download and setup local AI models
+    ⭐ Features: LLaMA models, Mistral, BLOOM, Local inference
+
+14. 🔑 Setup API Keys
+    📝 Configure OpenAI, Gemini, and custom API keys
+    ⭐ Features: OpenAI API, Gemini API, Custom providers, Key encryption
+
+15. ⚙️ Configure AI Providers
+    📝 Select and configure AI providers
+    ⭐ Features: Provider selection, Default settings, Fallback options
+
+16. 🔍 Test API Connections
+    📝 Verify API connectivity and response times
+    ⭐ Features: Connection testing, Latency checks, API validation
+
+17. 🔄 Reload API Keys
+    📝 Refresh API keys from environment or manual entry
+    ⭐ Features: Key reload, Environment sync, Manual entry
+
+18. 🗑️ Delete AI Models
+    📝 Remove unused AI models
+    ⭐ Features: Model cleanup, Storage management, Selective removal
+
+19. 🔙 Back to MAIN MENU
+    📝 Return to main interface
+    ⭐ Features: Menu navigation
+
+📁 API RELOAD SUBMENU (20–24)
+
+20. 📊 Check API Keys Status
+    📝 View current API key configuration
+    ⭐ Features: Status display, Key validation, Provider status
+
+21. 🔄 Reload API Keys from Environment
+    📝 Load API keys from environment variables
+    ⭐ Features: Environment loading, Automatic detection, Variable parsing
+
+22. ✏️ Manual API Key Entry
+    📝 Enter API keys manually
+    ⭐ Features: Manual input, Key validation, Secure storage
+
+23. 🔗 Test API Connections
+    📝 Test all configured API endpoints
+    ⭐ Features: Connectivity testing, Response validation, Performance checks
+
+24. 🔙 Back to CONFIGURATION MENU
+    📝 Return to configuration options
+    ⭐ Features: Menu navigation
+
+📁 AI SUGGESTIONS SUBMENU (25–28)
+
+25. 🧠 OpenAI GPT Suggestions
+    📝 Context-aware suggestions using OpenAI models
+    ⭐ Features: GPT-3.5/4, Context awareness, Intelligent completion
+
+26. 🏠 Local Model Suggestions
+    📝 Offline suggestions using local models
+    ⭐ Features: Hugging Face, Privacy-focused, Offline processing
+
+27. ⚡ Rule-based Suggestions
+    📝 Fast pattern-based autocomplete
+    ⭐ Features: Pattern matching, Dictionary lookup, Fast response
+
+28. 🔙 Back to MAIN MENU
+    📝 Return to main interface
+    ⭐ Features: Menu navigation
+
+📁 MODEL DELETION SUBMENU (29–30)
+
+29. 🦙 Delete LLaMA Models
+    📝 Remove LLaMA family models
+    ⭐ Features: LLaMA 2/3, Storage cleanup, Configuration reset
+
+30. 🔙 Back to MAIN MENU
+    📝 Return to main interface
+    ⭐ Features: Menu navigation
+
+📁 TOOL MANAGEMENT SUBMENU (31–34)
+
+31. 📋 LIST Tools (All Categories)
+    📝 Show all available tools with categories
+    ⭐ Features: Tool catalog, Categories, Status checking
+
+32. 🗑️ DELETE Tools from Database
+    📝 Remove tools from database
+    ⭐ Features: Database cleanup, Selective removal, Tool management
+
+33. 🦙 DELETE Local LLaMA Models
+    📝 Remove local Llama models
+    ⭐ Features: Model deletion, Space cleanup
+
+34. 🔙 Back to MAIN MENU
+    📝 Return to main menu
+    ⭐ Features: Menu navigation
+"""
+        
+        print(f"\n{self._colorize('🧠 IBLU KALIGPT - UNIFIED OPTIONS LIST (1-34)', Fore.LIGHTCYAN_EX)}")
         print("=" * 80)
-        
-        for menu_name, menu_options in options.items():
-            print(f"\n{self._colorize(f'📁 {menu_name.replace('_', ' ').title()}', Fore.YELLOW)}")
-            print("-" * 60)
-            
-            for key, option in menu_options.items():
-                print(f"  {key}. {option['name']}")
-                print(f"     📝 {option['description']}")
-                if 'aliases' in option:
-                    print(f"     🏷️  Aliases: {', '.join(option['aliases'])}")
-                if 'features' in option:
-                    print(f"     ⭐ Features: {', '.join(option['features'])}")
-                print()
+        print(unified_options)
+        print("=" * 80)
+        print(f"{self._colorize('📊 Total Options: 34', Fore.YELLOW)}")
+        print(f"{self._colorize('🎯 Quick Access: Type any number 1-34 to navigate directly', Fore.GREEN)}")
+        print(f"{self._colorize('🔙 Navigation: Use menu to return to main menu', Fore.CYAN)}")
         
         input(f"\n{self._colorize('Press Enter to continue...', Fore.YELLOW)}")
         return self.show_main_menu()
