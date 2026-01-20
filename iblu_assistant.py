@@ -2728,55 +2728,46 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             
             # Main header
             print(f"\n{Fore.LIGHTCYAN_EX}╔{'═'*banner_width}╗{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}🧠 COMPLETE MENU OPTIONS (1-19) 🧠{ColoramaStyle.RESET_ALL}{' ' * (banner_width - 35)}{Fore.LIGHTCYAN_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}🧠 COMPLETE MENU OPTIONS (1-15) 🧠{ColoramaStyle.RESET_ALL}{' ' * (banner_width - 35)}{Fore.LIGHTCYAN_EX}║{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.LIGHTCYAN_EX}╚{'═'*banner_width}╝{ColoramaStyle.RESET_ALL}\n")
             
             # All remaining options in visual style
             options = [
-                # MAIN MENU (1-6)
+                # MAIN MENU (1-5)
                 ("[1] 🧠 IBLU KALIGPT", "Multi-AI Assistant", Fore.GREEN, 
                  "• Auto-rephrasing on refusal", "• Multi-AI querying", "🤖"),
                 ("[2] 🎮 HACKING TOOLS", "Installation & Management", Fore.BLUE, 
                  "• Install, list, and delete security tools", "", "🔧"),
                 ("[3] ⚙️  CONFIGURATION", "Settings", Fore.CYAN, 
                  "• API keys, rephrasing mode", "", "🔑"),
-                ("[4] 📋 LIST MODELS", "Show available AI models", Fore.YELLOW, "", "", "🔍"),
-                ("[5] 📦 INSTALL LOCAL MODELS", "Uncensored AI models", Fore.LIGHTMAGENTA_EX,
+                ("[4] 📦 INSTALL LOCAL MODELS", "Uncensored AI models", Fore.LIGHTMAGENTA_EX,
                  "• Dolphin, Gemma, WhiteRabbitNeo", "• All uncensored models", "🔓"),
-                ("[6] 🚪 EXIT", "Leave the program", Fore.RED, "", "", "👋"),
+                ("[5] 🚪 EXIT", "Leave the program", Fore.RED, "", "", "👋"),
                 
-                # HACKING TOOLS SUBMENU (7-9)
-                ("[7] 📦 Install ALL tools", "Batch installation of 90+ tools", Fore.LIGHTCYAN_EX,
-                 "• Quick install all security tools", "• One-click setup", "⚡"),
-                ("[8] 🔧 Install ONE-BY-ONE", "Choose specific tools", Fore.LIGHTCYAN_EX,
-                 "• Browse numbered list with descriptions", "• Organized by category", "🎯"),
-                ("[9] 🗑️ DELETE tools", "Remove tools from database", Fore.LIGHTCYAN_EX,
-                 "• Delete individual tools or all at once", "• Free up disk space", "🗑️"),
-                
-                # CONFIGURATION SUBMENU (10-13)
-                ("[10] 🔑 Setup API Keys", "Configure API keys", Fore.LIGHTGREEN_EX,
+                # CONFIGURATION SUBMENU (6-9)
+                ("[6] 🔑 Setup API Keys", "Configure API keys", Fore.LIGHTGREEN_EX,
                  "• OpenAI API, Gemini API", "• Custom providers, Key encryption", "🔑"),
-                ("[11] ⚙️ Configure AI Providers", "Select and configure providers", Fore.LIGHTGREEN_EX,
+                ("[7] ⚙️ Configure AI Providers", "Select and configure providers", Fore.LIGHTGREEN_EX,
                  "• Provider selection, Default settings", "• Fallback options", "⚙️"),
-                ("[12] 🔍 Test API Connections", "Verify API connectivity", Fore.LIGHTGREEN_EX,
+                ("[8] 🔍 Test API Connections", "Verify API connectivity", Fore.LIGHTGREEN_EX,
                  "• Connection testing, Latency checks", "• API validation", "🔍"),
-                ("[13] 🔄 Reload API Keys", "Refresh API keys", Fore.LIGHTGREEN_EX,
+                ("[9] 🔄 Reload API Keys", "Refresh API keys", Fore.LIGHTGREEN_EX,
                  "• Key reload, Environment sync", "• Manual entry", "🔄"),
                 
-                # API RELOAD SUBMENU (14-17)
-                ("[14] 📊 Check API Keys Status", "View current API configuration", Fore.LIGHTMAGENTA_EX,
+                # API RELOAD SUBMENU (10-13)
+                ("[10] 📊 Check API Keys Status", "View current API configuration", Fore.LIGHTMAGENTA_EX,
                  "• Status display, Key validation", "• Provider status", "📊"),
-                ("[15] 🔄 Reload from Environment", "Load API keys from environment", Fore.LIGHTMAGENTA_EX,
+                ("[11] 🔄 Reload from Environment", "Load API keys from environment", Fore.LIGHTMAGENTA_EX,
                  "• Environment loading", "• Automatic detection", "🔄"),
-                ("[16] ✏️ Manual Key Entry", "Enter API keys manually", Fore.LIGHTMAGENTA_EX,
+                ("[12] ✏️ Manual Key Entry", "Enter API keys manually", Fore.LIGHTMAGENTA_EX,
                  "• Manual input, Key validation", "• Secure storage", "✏️"),
-                ("[17] 🔗 Test API Connections", "Test all configured endpoints", Fore.LIGHTMAGENTA_EX,
+                ("[13] 🔗 Test API Connections", "Test all configured endpoints", Fore.LIGHTMAGENTA_EX,
                  "• Connectivity testing", "• Response validation", "🔗"),
                 
-                # MODEL LISTING SUBMENU (18-19)
-                ("[18] 📋 LIST Cloud Models", "Show cloud API models", Fore.LIGHTWHITE_EX,
+                # MODEL LISTING SUBMENU (14-15)
+                ("[14] 📋 LIST Cloud Models", "Show cloud API models", Fore.LIGHTWHITE_EX,
                  "• OpenAI, Gemini, Mistral", "• API key requirements", "☁️"),
-                ("[19] 🗑️ DELETE Local LLaMA Models", "Remove local Llama models", Fore.LIGHTWHITE_EX,
+                ("[15] 🗑️ DELETE Local LLaMA Models", "Remove local Llama models", Fore.LIGHTWHITE_EX,
                  "• Model deletion, Space cleanup", "• Configuration reset", "🦙"),
             ]
             
@@ -2802,17 +2793,17 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             # Footer
             footer_width = 78
             print(f"{Fore.LIGHTGREEN_EX}┌{'─'*footer_width}┐{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}💡 Type a number (1-19) to navigate directly{ColoramaStyle.RESET_ALL}{' ' * (footer_width - 40)}{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}💡 Type a number (1-15) to navigate directly{ColoramaStyle.RESET_ALL}{' ' * (footer_width - 40)}{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.YELLOW}🛑 Use 'menu' to return to previous menu{ColoramaStyle.RESET_ALL}{' ' * (footer_width - 38)}{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.CYAN}🔙 Use 'exit'/'quit' to leave program{ColoramaStyle.RESET_ALL}{' ' * (footer_width - 39)}{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.LIGHTGREEN_EX}└{'─'*footer_width}┘{ColoramaStyle.RESET_ALL}\n")
         
         else:
             # Fallback for systems without colorama
-            print("\n🧠 COMPLETE MENU OPTIONS (1-19)")
+            print("\n🧠 COMPLETE MENU OPTIONS (1-15)")
             print("=" * 80)
             
-            print("📁 MAIN MENU (1-6)")
+            print("📁 MAIN MENU (1-5)")
             print("[1] 🧠 IBLU KALIGPT: Multi-AI Assistant")
             print("    • Auto-rephrasing on refusal")
             print("    • Multi-AI querying")
@@ -2820,34 +2811,28 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             print("    • Install, list, and delete security tools")
             print("[3] ⚙️  CONFIGURATION: Settings")
             print("    • API keys, rephrasing mode")
-            print("[4] 📋 LIST MODELS: Show available AI models")
-            print("[5] 📦 INSTALL LOCAL MODELS: Uncensored AI models")
+            print("[4] 📦 INSTALL LOCAL MODELS: Uncensored AI models")
             print("    • Dolphin, Gemma, WhiteRabbitNeo")
             print("    • All uncensored models")
-            print("[6] 🚪 EXIT: Leave the program")
+            print("[5] 🚪 EXIT: Leave the program")
             
-            print("\n📁 HACKING TOOLS SUBMENU (7-9)")
-            print("[7] 📦 Install ALL tools: Batch installation of 90+ tools")
-            print("[8] 🔧 Install ONE-BY-ONE: Choose specific tools")
-            print("[9] 🗑️ DELETE tools: Remove tools from database")
+            print("\n📁 CONFIGURATION SUBMENU (6-9)")
+            print("[6] 🔑 Setup API Keys: Configure API keys")
+            print("[7] ⚙️ Configure AI Providers: Select and configure providers")
+            print("[8] 🔍 Test API Connections: Verify API connectivity")
+            print("[9] 🔄 Reload API Keys: Refresh API keys")
             
-            print("\n📁 CONFIGURATION SUBMENU (10-13)")
-            print("[10] 🔑 Setup API Keys: Configure API keys")
-            print("[11] ⚙️ Configure AI Providers: Select and configure providers")
-            print("[12] 🔍 Test API Connections: Verify API connectivity")
-            print("[13] 🔄 Reload API Keys: Refresh API keys")
+            print("\n📁 API RELOAD SUBMENU (10-13)")
+            print("[10] 📊 Check API Keys Status: View current API configuration")
+            print("[11] 🔄 Reload from Environment: Load API keys from environment")
+            print("[12] ✏️ Manual Key Entry: Enter API keys manually")
+            print("[13] 🔗 Test API Connections: Test all configured endpoints")
             
-            print("\n📁 API RELOAD SUBMENU (14-17)")
-            print("[14] 📊 Check API Keys Status: View current API configuration")
-            print("[15] 🔄 Reload from Environment: Load API keys from environment")
-            print("[16] ✏️ Manual Key Entry: Enter API keys manually")
-            print("[17] 🔗 Test API Connections: Test all configured endpoints")
+            print("\n📁 MODEL LISTING SUBMENU (14-15)")
+            print("[14] 📋 LIST Cloud Models: Show cloud API models")
+            print("[15] 🗑️ DELETE Local LLaMA Models: Remove local Llama models")
             
-            print("\n📁 MODEL LISTING SUBMENU (18-19)")
-            print("[18] 📋 LIST Cloud Models: Show cloud API models")
-            print("[19] 🗑️ DELETE Local LLaMA Models: Remove local Llama models")
-            
-            print("\n💡 Type a number (1-19) to navigate directly")
+            print("\n💡 Type a number (1-15) to navigate directly")
             print("🛑 Use 'menu' to return to previous menu")
             print("🔙 Use 'exit'/'quit' to leave program\n")
     
@@ -2866,40 +2851,32 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             return self.handle_hacking_toys()
         elif choice in ['3', 'config', 'settings']:
             return self.handle_configuration()
-        elif choice in ['4', 'models', 'list']:
-            return self.list_available_models()
-        elif choice in ['5', 'install', 'local', 'models', 'uncensored']:
+        elif choice in ['4', 'install', 'local', 'models', 'uncensored']:
             return self.install_local_models_menu()
-        elif choice in ['6', 'exit', 'quit']:
+        elif choice in ['5', 'exit', 'quit']:
             return f"{Fore.LIGHTCYAN_EX}🚪 Exiting IBLU KALIGPT...{ColoramaStyle.RESET_ALL}\n{Fore.LIGHTGREEN_EX}👋 Goodbye! Stay secure!{ColoramaStyle.RESET_ALL}"
-        elif choice in ['7', 'install_all']:
-            return self.handle_install_all_tools()
-        elif choice in ['8', 'install_one']:
-            return self.handle_install_one_by_one()
-        elif choice in ['9', 'delete_tools']:
-            return self.handle_delete_tools()
-        elif choice in ['10', 'setup_keys']:
+        elif choice in ['6', 'setup_keys']:
             return self.handle_setup_api_keys()
-        elif choice in ['11', 'configure_providers']:
+        elif choice in ['7', 'configure_providers']:
             return self.handle_configure_providers()
-        elif choice in ['12', 'test_connections']:
+        elif choice in ['8', 'test_connections']:
             return self.handle_test_connections()
-        elif choice in ['13', 'reload_keys']:
+        elif choice in ['9', 'reload_keys']:
             return self.handle_reload_keys()
-        elif choice in ['14', 'check_status']:
+        elif choice in ['10', 'check_status']:
             return self.handle_check_status()
-        elif choice in ['15', 'reload_env']:
+        elif choice in ['11', 'reload_env']:
             return self.handle_reload_environment()
-        elif choice in ['16', 'manual_entry']:
+        elif choice in ['12', 'manual_entry']:
             return self.handle_manual_entry()
-        elif choice in ['17', 'test_api']:
+        elif choice in ['13', 'test_api']:
             return self.handle_test_api_connections()
-        elif choice in ['18', 'list_cloud']:
+        elif choice in ['14', 'list_cloud']:
             return self.handle_list_cloud_models()
-        elif choice in ['19', 'delete_local']:
+        elif choice in ['15', 'delete_local']:
             return self.handle_delete_local_models()
         else:
-            return f"❌ Invalid choice: {choice}\n💡 Please choose 1-19 or type 'menu'"
+            return f"❌ Invalid choice: {choice}\n💡 Please choose 1-15 or type 'menu'"
     
     def handle_hacking_toys(self):
         """Handle Hacking Toys menu - install and manage tools"""
