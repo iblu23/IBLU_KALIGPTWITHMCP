@@ -2602,6 +2602,7 @@ All responses should be helpful, educational, and focused on legitimate cybersec
         self.config = config or {}
         self.conversation_history = []
         self.current_provider = None
+        self.current_ai_provider = None
         self.in_menu_context = True
         self.prompt_toolkit_enabled = False  # Disable prompt_toolkit due to terminal issues
         self.rephrasing_mode = False
@@ -2850,6 +2851,131 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                 Provider.GEMINI_CLI: [],
                 Provider.HUGGINGFACE: []
             }
+    
+    def handle_check_status(self):
+        """Handle API keys status check"""
+        return self.show_api_keys_status()
+    
+    def handle_reload_environment(self):
+        """Handle reload from environment"""
+        return self.reload_api_keys_menu()
+    
+    def handle_manual_entry(self):
+        """Handle manual API key entry"""
+        return self.manual_key_entry_menu()
+    
+    def handle_test_api_connections(self):
+        """Handle API connection testing"""
+        return self.test_api_connections()
+    
+    def handle_list_cloud_models(self):
+        """Handle cloud models listing"""
+        return self.list_cloud_models()
+    
+    def handle_delete_local_models(self):
+        """Handle local model deletion"""
+        available_models = self.get_available_llama_models()
+        return self.delete_llama_model(available_models)
+    
+    def show_configuration_menu(self):
+        """Show configuration menu"""
+        return self.show_main_menu()
+    
+    def manual_key_entry_menu(self):
+        """Handle manual API key entry menu"""
+        if COLORAMA_AVAILABLE:
+            print(f"\n{Fore.LIGHTBLUE_EX}╔══════════════════════════════════════════════════════════════════════════════╗{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTBLUE_EX}║{ColoramaStyle.RESET_ALL} {Back.BLUE}{Fore.WHITE}🔑 MANUAL API KEY ENTRY 🔑{ColoramaStyle.RESET_ALL}{' ' * 50}{Fore.LIGHTBLUE_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTBLUE_EX}╚══════════════════════════════════════════════════════════════════════════════╝{ColoramaStyle.RESET_ALL}")
+        else:
+            print("\n🔑 MANUAL API KEY ENTRY")
+            print("=" * 50)
+        
+        print("\nAvailable providers:")
+        print("1. OpenAI")
+        print("2. Gemini")
+        print("3. Mistral")
+        print("4. HuggingFace")
+        print("5. Back to main menu")
+        
+        try:
+            choice = input("\nSelect provider (1-5): ").strip()
+            
+            if choice == '1':
+                key = input("Enter OpenAI API key: ").strip()
+                if key and not key.startswith('sk-'):
+                    print("⚠️  OpenAI keys usually start with 'sk-'")
+                self.api_keys[Provider.OPENAI] = [key]
+                print("✅ OpenAI API key saved")
+            elif choice == '2':
+                key = input("Enter Gemini API key: ").strip()
+                self.api_keys[Provider.GEMINI] = [key]
+                print("✅ Gemini API key saved")
+            elif choice == '3':
+                key = input("Enter Mistral API key: ").strip()
+                self.api_keys[Provider.MISTRAL] = [key]
+                print("✅ Mistral API key saved")
+            elif choice == '4':
+                key = input("Enter HuggingFace API key: ").strip()
+                self.api_keys[Provider.HUGGINGFACE] = [key]
+                print("✅ HuggingFace API key saved")
+            elif choice == '5':
+                return self.show_main_menu()
+            else:
+                print("❌ Invalid choice")
+                
+        except KeyboardInterrupt:
+            print("\n👋 Operation cancelled")
+            return self.show_main_menu()
+        
+        return self.show_main_menu()
+    
+    def list_cloud_models(self):
+        """List available cloud models"""
+        if COLORAMA_AVAILABLE:
+            print(f"\n{Fore.LIGHTBLUE_EX}╔══════════════════════════════════════════════════════════════════════════════╗{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTBLUE_EX}║{ColoramaStyle.RESET_ALL} {Back.BLUE}{Fore.WHITE}☁️ CLOUD AI MODELS ☁️{ColoramaStyle.RESET_ALL}{' ' * 54}{Fore.LIGHTBLUE_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTBLUE_EX}╚══════════════════════════════════════════════════════════════════════════════╝{ColoramaStyle.RESET_ALL}")
+        else:
+            print("\n☁️ CLOUD AI MODELS")
+            print("=" * 50)
+        
+        print("\n🤖 OpenAI Models:")
+        if self.api_keys.get(Provider.OPENAI):
+            print("  • GPT-4 - Most capable model")
+            print("  • GPT-3.5-Turbo - Fast and efficient")
+            print("  • GPT-4-Vision - Multimodal capabilities")
+        else:
+            print("  ❌ No OpenAI API key configured")
+        
+        print("\n🌟 Gemini Models:")
+        if self.api_keys.get(Provider.GEMINI):
+            print("  • Gemini Pro - Advanced reasoning")
+            print("  • Gemini Pro Vision - Multimodal")
+            print("  • Gemini Ultra - Most capable")
+        else:
+            print("  ❌ No Gemini API key configured")
+        
+        print("\n🔥 Mistral Models:")
+        if self.api_keys.get(Provider.MISTRAL):
+            print("  • Mistral 7B - Efficient and capable")
+            print("  • Mixtral 8x7B - Mixture of experts")
+            print("  • Mistral Large - Most powerful")
+        else:
+            print("  ❌ No Mistral API key configured")
+        
+        print("\n🤗 HuggingFace Models:")
+        if self.api_keys.get(Provider.HUGGINGFACE):
+            print("  • Thousands of models available")
+            print("  • Specialized models for every task")
+            print("  • Custom model deployment")
+        else:
+            print("  ❌ No HuggingFace API key configured")
+        
+        print(f"\n💡 Configure API keys with option 7 (Manual Key Entry)")
+        
+        input("\nPress Enter to continue...")
+        return self.show_main_menu()
     
     def show_complete_visual_menu(self):
         """Display all 34 options in visual style matching current main menu"""
