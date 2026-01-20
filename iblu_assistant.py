@@ -2760,6 +2760,97 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                 print("\n👋 EOF received")
                 return "exit"
     
+    def load_api_keys(self):
+        """Load API keys from multiple sources with enhanced security"""
+        try:
+            # Initialize API keys dictionary
+            self.api_keys = {
+                Provider.OPENAI: [],
+                Provider.GEMINI: [],
+                Provider.MISTRAL: [],
+                Provider.GEMINI_CLI: [],
+                Provider.HUGGINGFACE: []
+            }
+            
+            # Load from config file
+            if hasattr(self, 'config') and self.config:
+                config_keys = self.config.get('api_keys', {})
+                for provider_name, keys in config_keys.items():
+                    try:
+                        provider = Provider(provider_name.upper())
+                        if isinstance(keys, list):
+                            self.api_keys[provider] = keys
+                        elif isinstance(keys, str):
+                            self.api_keys[provider] = [keys]
+                    except ValueError:
+                        continue
+            
+            # Load from environment variables
+            env_mappings = {
+                'OPENAI_API_KEY': Provider.OPENAI,
+                'GEMINI_API_KEY': Provider.GEMINI,
+                'MISTRAL_API_KEY': Provider.MISTRAL,
+                'HUGGINGFACE_API_KEY': Provider.HUGGINGFACE
+            }
+            
+            for env_var, provider in env_mappings.items():
+                env_value = os.getenv(env_var)
+                if env_value and env_value not in self.api_keys[provider]:
+                    self.api_keys[provider].append(env_value)
+            
+            # Load from secure loader if available
+            try:
+                if SECURE_LOADER_AVAILABLE:
+                    from secure_config_loader import SecureConfigLoader
+                    secure_loader = SecureConfigLoader()
+                    secure_keys = secure_loader.load_all_keys()
+                    
+                    for provider_name, keys in secure_keys.items():
+                        try:
+                            provider = Provider(provider_name.upper())
+                            if isinstance(keys, list):
+                                for key in keys:
+                                    if key and key not in self.api_keys[provider]:
+                                        self.api_keys[provider].append(key)
+                            elif isinstance(keys, str) and keys:
+                                if keys not in self.api_keys[provider]:
+                                    self.api_keys[provider].append(keys)
+                        except (ValueError, AttributeError):
+                            continue
+            except ImportError:
+                pass
+            
+            # Deobfuscate any obfuscated keys
+            for provider, keys in self.api_keys.items():
+                deobfuscated_keys = []
+                for key in keys:
+                    if key and not key.startswith('fake-'):
+                        try:
+                            deobfuscated = deobfuscate_api_key(key)
+                            if deobfuscated != key:  # Successfully deobfuscated
+                                deobfuscated_keys.append(deobfuscated)
+                            else:
+                                deobfuscated_keys.append(key)
+                        except:
+                            deobfuscated_keys.append(key)
+                self.api_keys[provider] = deobfuscated_keys
+            
+            # Remove fake/dummy keys
+            for provider in self.api_keys:
+                self.api_keys[provider] = [key for key in self.api_keys[provider] 
+                                        if key and not key.startswith('fake-')]
+            
+        except Exception as e:
+            print(f"⚠️  Error loading API keys: {e}")
+            # Initialize empty API keys on error
+            self.api_keys = {
+                Provider.OPENAI: [],
+                Provider.GEMINI: [],
+                Provider.MISTRAL: [],
+                Provider.GEMINI_CLI: [],
+                Provider.HUGGINGFACE: []
+            }
+    
     def show_complete_visual_menu(self):
         """Display all 34 options in visual style matching current main menu"""
         
