@@ -2430,6 +2430,37 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                 live.refresh()
                 time.sleep(0.5)
             
+            # Add IBLU AI ASSISTANT text with delayed glitch effect for Rich console
+            time.sleep(0.8)  # Delay after main banner
+            
+            # IBLU AI ASSISTANT glitch text for Rich mode
+            iblu_text = "☠☠☠ WITH IBLU AI ASSISTANT ☠☠☠"
+            
+            # Create IBLU text with glitch effect
+            iblu_banner_text = Text("", justify="center")
+            with Live(Panel(iblu_banner_text, border_style=random.choice(border_styles), padding=(1, 7), expand=True), 
+                      console=console, refresh_per_second=120) as iblu_live:
+                
+                # Glitch effect for IBLU text
+                for glitch_iter in range(40):
+                    iblu_banner_text.plain = ""
+                    
+                    # Apply glitch effect
+                    if random.random() < 0.3:  # 30% chance to glitch
+                        glitched_iblu = clean_glitch(iblu_text, 0.4)
+                    else:
+                        glitched_iblu = iblu_text
+                    
+                    iblu_banner_text.append(glitched_iblu + "\n", "bold bright_red")
+                    iblu_live.refresh()
+                    time.sleep(0.03)
+                
+                # Final perfect IBLU text
+                iblu_banner_text.plain = ""
+                iblu_banner_text.append(iblu_text + "\n", "bold bright_red")
+                iblu_live.refresh()
+                time.sleep(0.5)
+            
         else:
             # Fallback banner without Rich - Screen Wide (144 chars)
             w = 144
@@ -2481,7 +2512,56 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             for line in banner_lines:
                 print(line)
             
-                    
+            # Add IBLU AI ASSISTANT text with delayed glitch effect
+            time.sleep(0.8)  # Delay after main banner
+            
+            # IBLU AI ASSISTANT glitch text for fallback mode
+            iblu_text = "☠☠☠ WITH IBLU AI ASSISTANT ☠☠☠"
+            w = 144
+            centered_iblu = iblu_text.center(w)
+            
+            print(f"\n{Fore.LIGHTRED_EX}╔" + "═"*w + f"╗{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}" + " "*w + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+            
+            # Glitch effect for IBLU text
+            for glitch_iter in range(40):
+                os.system("clear")
+                # Reprint static banner first
+                for line in banner_lines:
+                    print(line)
+                print()  # Space between banner and IBLU text
+                
+                print(f"{Fore.LIGHTRED_EX}╔" + "═"*w + f"╗{ColoramaStyle.RESET_ALL}")
+                print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}" + " "*w + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+                
+                # Glitch the IBLU text
+                if random.random() < 0.3:  # 30% chance to glitch
+                    glitch_chars = list(centered_iblu)
+                    num_glitches = random.randint(1, min(8, len(glitch_chars)//4))
+                    for _ in range(num_glitches):
+                        if len(glitch_chars) > 0:
+                            i = random.randint(0, len(glitch_chars)-1)
+                            glitch_chars[i] = random.choice("@#$%&*░▒▓█▓▒░█")
+                    glitched_text = "".join(glitch_chars)
+                else:
+                    glitched_text = centered_iblu
+                
+                print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.RED}{Back.BLACK}{glitched_text}{ColoramaStyle.RESET_ALL} {Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+                print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}" + " "*w + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+                print(f"{Fore.LIGHTRED_EX}╚" + "═"*w + f"╝{ColoramaStyle.RESET_ALL}")
+                time.sleep(0.03)
+            
+            # Final static IBLU text
+            os.system("clear")
+            for line in banner_lines:
+                print(line)
+            print()
+            print(f"{Fore.LIGHTRED_EX}╔" + "═"*w + f"╗{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}" + " "*w + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.RED}{Back.BLACK}{centered_iblu}{ColoramaStyle.RESET_ALL} {Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}" + " "*w + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}╚" + "═"*w + f"╝{ColoramaStyle.RESET_ALL}")
+            time.sleep(0.5)
                 
         if COLORAMA_AVAILABLE:
             # Security tools overview - Full Screen (144 chars)
