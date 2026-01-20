@@ -4696,123 +4696,170 @@ Provide step-by-step technical details while maintaining educational context and
             return False
     
     def monitor_ollama_progress_with_progress(self, model_name: str, progress: InstallationProgress, start_progress: int, end_progress: int) -> bool:
-        """Monitor Ollama model download with colorful 3D progress bar and detailed percentage"""
+        """Monitor Ollama model download with simple progress display"""
         start_time = time.time()
         max_wait_time = 600  # 10 minutes
-        check_interval = 2
+        check_interval = 3
         
         download_result = {'found': False, 'success': False}
         download_complete = threading.Event()
         
-        # Enhanced colorful spinners with different themes
-        colorful_spinners = [
-            ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'],  # Classic
-            ['🌟', '⭐', '✨', '💫', '🌠', '🌌', '☄️', '🪐', '🌙', '🌕'],  # Space theme
-            ['🔥', '💥', '⚡', '🌟', '✨', '💫', '🔥', '⚡', '💥', '🌈'],  # Energy theme
-            ['🚀', '🛸', '🌍', '🌎', '🌏', '🪐', '☄️', '🌌', '🌠', '⭐'],  # Space travel
-            ['💎', '💠', '🔷', '🔶', '🔸', '🔹', '🔺', '🔻', '💠', '💎'],  # Gem theme
-        ]
-        
-        download_actions = ['downloading', 'fetching', 'retrieving', 'pulling', 'grabbing', 'loading', 'streaming', 'transferring', 'acquiring', 'gathering']
-        glow_chars = ['█', '▓', '▒', '░', '▄', '▀', '■', '□', '▪', '▫', '◼', '◻']
-        
-        # Color cycling
-        spinner_colors = [Fore.LIGHTCYAN_EX, Fore.LIGHTMAGENTA_EX, Fore.LIGHTYELLOW_EX, Fore.LIGHTGREEN_EX, Fore.LIGHTBLUE_EX, Fore.LIGHTRED_EX]
+        # Simple spinner for clean display
+        spinner_chars = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏']
         
         def animate_download():
-            """Animate download process with colorful 3D effects and detailed percentage"""
+            """Simple download animation that doesn't interfere with Ollama output"""
             idx = 0
-            current_action_idx = 0
-            last_action_change = time.time()
-            glow_phase = 0
-            current_spinner_set = 0
-            current_color_idx = 0
+            last_status = ""
             
             while not download_complete.is_set():
-                # Change action word every 1 second
                 current_time = time.time()
-                if current_time - last_action_change > 1.0:
-                    current_action_idx = (current_action_idx + 1) % len(download_actions)
-                    last_action_change = current_time
+                elapsed = int(current_time - start_time)
                 
-                current_action = download_actions[current_action_idx]
+                # Simple status line that won't conflict
+                status = f"\r{spinner_chars[idx]} 📦 {model_name} | Elapsed: {elapsed}s"
                 
-                # Update progress based on time elapsed
-                elapsed = time.time() - start_time
-                time_progress = min((elapsed / max_wait_time) * 100, 95)
-                actual_progress = start_progress + (time_progress * (end_progress - start_progress) / 100)
+                # Only update if status changed to reduce flicker
+                if status != last_status:
+                    sys.stdout.write(status)
+                    sys.stdout.flush()
+                    last_status = status
                 
-                # Update glowy phase for 3D effect
-                glow_phase = (glow_phase + 1) % len(glow_chars)
+                idx = (idx + 1) % len(spinner_chars)
+                time.sleep(0.2)
+            
+            # Clean up the line
+            sys.stdout.write('\r' + ' ' * 80 + '\r')
+            sys.stdout.flush()
+        
+        def check_model_availability():
+            """Check if model is available"""
+            try:
+                url = "http://localhost:11434/api/tags"
+                response = requests.get(url, timeout=5)
                 
-                # Create colorful 3D progress bar
-                bar_width = 35
-                filled_length = int(bar_width * time_progress / 100)
-                bar = ""
+                if response.status_code == 200:
+                    models_data = response.json()
+                    for model in models_data.get('models', []):
+                        if model_name.replace(':8b', '').replace(':latest', '') in model.get('name', '').replace(':8b', '').replace(':latest', ''):
+                            download_result['found'] = True
+                            download_result['success'] = True
+                            download_complete.set()
+                            print(f"\n✅ {model_name} downloaded successfully!")
+                            return True
                 
-                for i in range(bar_width):
-                    if i < filled_length:
-                        # Use different characters for glowy effect
-                        char_idx = (i + glow_phase) % len(glow_chars)
-                        char = glow_chars[char_idx]
-                        
-                        # Add rainbow color effect
-                        color_idx = (i * len(spinner_colors)) // bar_width
-                        color = spinner_colors[color_idx]
-                        
-                        if COLORAMA_AVAILABLE:
-                            bar += f"{color}{Style.BRIGHT}{char}{Style.RESET_ALL}"
-                        else:
-                            bar += char
-                    else:
-                        bar += "░"
+                return False
                 
-                # Get colorful spinner
-                spinner_set = colorful_spinners[current_spinner_set]
-                spinner = spinner_set[idx]
-                spinner_color = spinner_colors[current_color_idx]
+            except Exception:
+                return False
+        
+        # Start animation in background
+        animation_thread = threading.Thread(target=animate_download)
+        animation_thread.daemon = True
+        animation_thread.start()
+        
+        # Monitor download progress
+        while time.time() - start_time < max_wait_time:
+            if check_model_availability():
+                download_complete.set()
+                animation_thread.join(timeout=1)
+                return True
+            
+            time.sleep(check_interval)
+        
+        # Timeout reached
+        download_complete.set()
+        animation_thread.join(timeout=1)
+        print(f"\n❌ Download timeout for {model_name}")
+        return False
+    
+    def install_mistral_dolphin_local(self) -> str:
+        """Install Mistral Dolphin model locally via Ollama"""
+        print(f"\n{self._colorize('🔧 Installing Mistral Dolphin Model Locally via Ollama', Fore.CYAN)}")
+        print("=" * 50)
+        
+        try:
+            # Check Ollama availability
+            ollama_check = subprocess.run(['which', 'ollama'], capture_output=True, text=True)
+            
+            if ollama_check.returncode != 0:
+                # Install Ollama
+                print("📦 Installing Ollama...")
+                install_methods = [
+                    "curl -fsSL https://ollama.ai/install.sh | sh",
+                    "wget -qO- https://ollama.ai/install.sh | sh"
+                ]
                 
-                # Calculate detailed percentage
-                if time_progress > 0:
-                    total_time = (elapsed * 100) / time_progress
-                    eta = total_time - elapsed
-                    if eta > 0:
-                        eta_str = f"ETA: {eta:.0f}s"
-                    else:
-                        eta_str = "ETA: --"
-                    
-                    speed = time_progress / elapsed if elapsed > 0 else 0
-                    speed_str = f"{speed:.1f}%/s"
-                else:
-                    eta_str = "ETA: --"
-                    speed_str = "--%/s"
+                install_success = False
+                for method in install_methods:
+                    install_cmd = subprocess.run(method, shell=True, capture_output=True, text=True, timeout=300)
+                    if install_cmd.returncode == 0:
+                        print("✅ Ollama installed successfully")
+                        install_success = True
+                        break
                 
-                detailed_percent = f"{time_progress:6.2f}% | {eta_str} | {speed_str}"
-                
-                # Add colorful effects
-                if COLORAMA_AVAILABLE:
-                    colorful_spinner = f"{spinner_color}{Style.BRIGHT}{spinner}{Style.RESET_ALL}"
-                    colorful_model = f"{Fore.LIGHTBLUE_EX}{Style.BRIGHT}{model_name}{Style.RESET_ALL}"
-                    colorful_action = f"{Fore.LIGHTMAGENTA_EX}{Style.BRIGHT}{current_action}{Style.RESET_ALL}"
-                    colorful_percent = f"{Fore.LIGHTYELLOW_EX}{Style.BRIGHT}{detailed_percent}{Style.RESET_ALL}"
-                else:
-                    colorful_spinner = spinner
-                    colorful_model = model_name
-                    colorful_action = current_action
-                    colorful_percent = detailed_percent
-                
-                # Build colorful progress line
-                progress_line = f"\r{colorful_spinner} 📦 {colorful_model} [{bar}] {colorful_percent} - {colorful_action}..."
-                
-                sys.stdout.write(progress_line)
+                if not install_success:
+                    return "❌ Failed to install Ollama. Please install manually: https://ollama.ai/"
+            
+            # Start Ollama service
+            self.show_loading_animation("Starting Ollama service...")
+            subprocess.run(['ollama', 'serve'], capture_output=True, text=True, timeout=10)
+            
+            # Wait a moment for service to start
+            time.sleep(3)
+            
+            # Install Mistral Dolphin model with simple progress
+            print(f"\n{'='*60}")
+            print("📥 Installing Mistral Dolphin model...")
+            print(f"{'='*60}")
+            
+            # Use simple progress that doesn't interfere with Ollama output
+            install_thread = threading.Thread(
+                target=lambda: subprocess.run(['ollama', 'pull', 'mistral'], 
+                                           capture_output=True, text=True, timeout=600)
+            )
+            install_thread.start()
+            
+            # Simple monitoring without conflicting progress bars
+            start_time = time.time()
+            spinner_chars = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏']
+            idx = 0
+            
+            while install_thread.is_alive():
+                elapsed = int(time.time() - start_time)
+                sys.stdout.write(f'\r{spinner_chars[idx]} 📦 mistral | Elapsed: {elapsed}s')
                 sys.stdout.flush()
+                idx = (idx + 1) % len(spinner_chars)
+                time.sleep(0.2)
+            
+            install_thread.join()
+            
+            # Clean up the line
+            sys.stdout.write('\r' + ' ' * 50 + '\r')
+            sys.stdout.flush()
+            
+            # Verify installation
+            verify_cmd = subprocess.run(['ollama', 'list'], capture_output=True, text=True)
+            
+            if 'mistral' in verify_cmd.stdout:
+                print(f"\n{self._colorize('✅ Mistral Dolphin installed successfully!', Fore.GREEN)}")
+                print(f"\n{self._colorize('🚀 Mistral Dolphin is ready to use!', Fore.GREEN)}")
+                print(f"\n{self._colorize('💡 Update config.json:', Fore.YELLOW)}")
+                print('"mistral_keys": ["local"]')
+                print(f"\n{self._colorize('🔗 Access via:', Fore.CYAN)}")
+                print("  • /mistral command")
+                print("  • Or set as default in config")
                 
-                # Update indices
-                idx = (idx + 1) % len(spinner_set)
+                return "✅ Mistral Dolphin model installed and ready!"
+            else:
+                return "⚠️  Installation completed but verification failed"
                 
-                # Change spinner color every few updates
-                if idx % 5 == 0:
-                    current_color_idx = (current_color_idx + 1) % len(spinner_colors)
+        except subprocess.TimeoutExpired:
+            return "❌ Installation timed out. Please check your internet connection."
+        except Exception as e:
+            return f"❌ Installation error: {e}"
+    
+    def install_all_local_models(self) -> str:
                 
                 # Change spinner set occasionally for variety
                 if idx % 50 == 0:
