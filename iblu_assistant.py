@@ -94,6 +94,21 @@ try:
 except ImportError:
     LOGURU_AVAILABLE = False
 
+try:
+    from halo import Halo
+    HALO_AVAILABLE = True
+    # Configure Halo spinners
+    HALO_SPINNERS = {
+        'loading': {'spinner': 'dots', 'text_color': 'cyan', 'color': 'cyan'},
+        'success': {'spinner': 'moon', 'text_color': 'green', 'color': 'green'},
+        'error': {'spinner': 'cross', 'text_color': 'red', 'color': 'red'},
+        'warning': {'spinner': 'line', 'text_color': 'yellow', 'color': 'yellow'},
+        'info': {'spinner': 'dots2', 'text_color': 'blue', 'color': 'blue'}
+    }
+except ImportError:
+    HALO_AVAILABLE = False
+    HALO_SPINNERS = {}
+
 # Optional transformers for Hugging Face integration
 try:
     from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
