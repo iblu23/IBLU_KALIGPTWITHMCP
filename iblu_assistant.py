@@ -25,7 +25,7 @@ import requests
 
 # Import colorama for terminal colors
 try:
-    from colorama import Fore, Style, Back, init
+    from colorama import Fore, Style as ColoramaStyle, Back, init
     init(autoreset=True)
     COLORAMA_AVAILABLE = True
 except ImportError:
@@ -189,7 +189,7 @@ class EnhancedRichProgress:
             # Apply color
             if i < filled_length:
                 color = getattr(Fore, theme['bar'].upper().replace('BRIGHT_', 'LIGHT_'), Fore.CYAN)
-                bar += f"{color}{Style.BRIGHT}{char}{Style.RESET_ALL}"
+                bar += f"{color}{ColoramaStyle.BRIGHT}{char}{ColoramaStyle.RESET_ALL}"
             else:
                 bar += char
         
@@ -894,7 +894,7 @@ class ConfigurationProgress:
                 color = colors[color_idx]
                 
                 if COLORAMA_AVAILABLE:
-                    bar += f"{color}{Style.BRIGHT}{char}{Style.RESET_ALL}"
+                    bar += f"{color}{ColoramaStyle.BRIGHT}{char}{ColoramaStyle.RESET_ALL}"
                 else:
                     bar += char
             else:
@@ -971,10 +971,10 @@ class ConfigurationProgress:
         
         # Add colorful effects
         if COLORAMA_AVAILABLE:
-            colorful_spinner = f"{spinner_color}{Style.BRIGHT}{spinner}{Style.RESET_ALL}"
-            colorful_prefix = f"{Fore.LIGHTWHITE_EX}{Style.BRIGHT}{prefix}{Style.RESET_ALL}"
-            colorful_action = f"{Fore.LIGHTMAGENTA_EX}{Style.BRIGHT}{current_action}{Style.RESET_ALL}"
-            colorful_percent = f"{Fore.LIGHTYELLOW_EX}{Style.BRIGHT}{detailed_percent}{Style.RESET_ALL}"
+            colorful_spinner = f"{spinner_color}{ColoramaStyle.BRIGHT}{spinner}{ColoramaStyle.RESET_ALL}"
+            colorful_prefix = f"{Fore.LIGHTWHITE_EX}{ColoramaStyle.BRIGHT}{prefix}{ColoramaStyle.RESET_ALL}"
+            colorful_action = f"{Fore.LIGHTMAGENTA_EX}{ColoramaStyle.BRIGHT}{current_action}{ColoramaStyle.RESET_ALL}"
+            colorful_percent = f"{Fore.LIGHTYELLOW_EX}{ColoramaStyle.BRIGHT}{detailed_percent}{ColoramaStyle.RESET_ALL}"
         else:
             colorful_spinner = spinner
             colorful_prefix = prefix
@@ -986,7 +986,7 @@ class ConfigurationProgress:
         
         if message:
             if COLORAMA_AVAILABLE:
-                progress_line += f" | {Fore.LIGHTBLUE_EX}{Style.BRIGHT}{message}{Style.RESET_ALL}"
+                progress_line += f" | {Fore.LIGHTBLUE_EX}{ColoramaStyle.BRIGHT}{message}{ColoramaStyle.RESET_ALL}"
             else:
                 progress_line += f" | {message}"
         
@@ -1002,10 +1002,10 @@ class ConfigurationProgress:
             # Create rainbow success message
             success_colors = [Fore.LIGHTGREEN_EX, Fore.LIGHTCYAN_EX, Fore.LIGHTBLUE_EX, Fore.LIGHTMAGENTA_EX]
             color_idx = int(elapsed) % len(success_colors)
-            success_msg = f"\n{success_colors[color_idx]}{Style.BRIGHT}✅ {message} (took {elapsed:.1f}s){Style.RESET_ALL}"
+            success_msg = f"\n{success_colors[color_idx]}{ColoramaStyle.BRIGHT}✅ {message} (took {elapsed:.1f}s){ColoramaStyle.RESET_ALL}"
             
             # Add celebration effect
-            celebration = f"{Fore.LIGHTYELLOW_EX}{Style.BRIGHT}🎉 Configuration completed successfully! 🎉{Style.RESET_ALL}"
+            celebration = f"{Fore.LIGHTYELLOW_EX}{ColoramaStyle.BRIGHT}🎉 Configuration completed successfully! 🎉{ColoramaStyle.RESET_ALL}"
             print(celebration)
         else:
             success_msg = f"\n✅ {message} (took {elapsed:.1f}s)"
@@ -1075,7 +1075,7 @@ class InstallationProgress:
                 color = self.spinner_colors[color_idx]
                 
                 if COLORAMA_AVAILABLE:
-                    bar += f"{color}{Style.BRIGHT}{char}{Style.RESET_ALL}"
+                    bar += f"{color}{ColoramaStyle.BRIGHT}{char}{ColoramaStyle.RESET_ALL}"
                 else:
                     bar += char
             else:
@@ -1147,10 +1147,10 @@ class InstallationProgress:
         
         # Add colorful effects
         if COLORAMA_AVAILABLE:
-            colorful_spinner = f"{spinner_color}{Style.BRIGHT}{spinner}{Style.RESET_ALL}"
-            colorful_prefix = f"{Fore.LIGHTWHITE_EX}{Style.BRIGHT}{self.prefix}{Style.RESET_ALL}"
-            colorful_action = f"{Fore.LIGHTMAGENTA_EX}{Style.BRIGHT}{current_action}{Style.RESET_ALL}"
-            colorful_percent = f"{Fore.LIGHTYELLOW_EX}{Style.BRIGHT}{detailed_percent}{Style.RESET_ALL}"
+            colorful_spinner = f"{spinner_color}{ColoramaStyle.BRIGHT}{spinner}{ColoramaStyle.RESET_ALL}"
+            colorful_prefix = f"{Fore.LIGHTWHITE_EX}{ColoramaStyle.BRIGHT}{self.prefix}{ColoramaStyle.RESET_ALL}"
+            colorful_action = f"{Fore.LIGHTMAGENTA_EX}{ColoramaStyle.BRIGHT}{current_action}{ColoramaStyle.RESET_ALL}"
+            colorful_percent = f"{Fore.LIGHTYELLOW_EX}{ColoramaStyle.BRIGHT}{detailed_percent}{ColoramaStyle.RESET_ALL}"
         else:
             colorful_spinner = spinner
             colorful_prefix = self.prefix
@@ -1162,7 +1162,7 @@ class InstallationProgress:
         
         if message:
             if COLORAMA_AVAILABLE:
-                progress_line += f" | {Fore.LIGHTBLUE_EX}{Style.BRIGHT}{message}{Style.RESET_ALL}"
+                progress_line += f" | {Fore.LIGHTBLUE_EX}{ColoramaStyle.BRIGHT}{message}{ColoramaStyle.RESET_ALL}"
             else:
                 progress_line += f" | {message}"
         
@@ -1178,10 +1178,10 @@ class InstallationProgress:
             # Create rainbow success message
             success_colors = [Fore.LIGHTGREEN_EX, Fore.LIGHTCYAN_EX, Fore.LIGHTBLUE_EX, Fore.LIGHTMAGENTA_EX]
             color_idx = int(elapsed) % len(success_colors)
-            success_msg = f"\n{success_colors[color_idx]}{Style.BRIGHT}✅ {message} (took {elapsed:.1f}s){Style.RESET_ALL}"
+            success_msg = f"\n{success_colors[color_idx]}{ColoramaStyle.BRIGHT}✅ {message} (took {elapsed:.1f}s){ColoramaStyle.RESET_ALL}"
             
             # Add celebration effect
-            celebration = f"{Fore.LIGHTYELLOW_EX}{Style.BRIGHT}🎉 Installation completed successfully! 🎉{Style.RESET_ALL}"
+            celebration = f"{Fore.LIGHTYELLOW_EX}{ColoramaStyle.BRIGHT}🎉 Installation completed successfully! 🎉{ColoramaStyle.RESET_ALL}"
             print(celebration)
         else:
             success_msg = f"\n✅ {message} (took {elapsed:.1f}s)"
@@ -1339,7 +1339,7 @@ class Spinner:
                 color = colors[color_idx]
                 
                 if COLORAMA_AVAILABLE:
-                    bar += f"{color}{Style.BRIGHT}{char}{Style.RESET_ALL}"
+                    bar += f"{color}{ColoramaStyle.BRIGHT}{char}{ColoramaStyle.RESET_ALL}"
                 else:
                     bar += char
             else:
@@ -1381,10 +1381,10 @@ class Spinner:
             
             # Build colorful thinking line
             if COLORAMA_AVAILABLE:
-                colorful_spinner = f"{color}{Style.BRIGHT}{spinner}{Style.RESET_ALL}"
-                colorful_prefix = f"{Fore.LIGHTWHITE_EX}{Style.BRIGHT}{prefix}{Style.RESET_ALL}"
-                colorful_action = f"{Fore.LIGHTCYAN_EX}{Style.BRIGHT}{current_action}{Style.RESET_ALL}"
-                colorful_progress = f"{Fore.LIGHTYELLOW_EX}{Style.BRIGHT}{self.thinking_progress:3d}%{Style.RESET_ALL}"
+                colorful_spinner = f"{color}{ColoramaStyle.BRIGHT}{spinner}{ColoramaStyle.RESET_ALL}"
+                colorful_prefix = f"{Fore.LIGHTWHITE_EX}{ColoramaStyle.BRIGHT}{prefix}{ColoramaStyle.RESET_ALL}"
+                colorful_action = f"{Fore.LIGHTCYAN_EX}{ColoramaStyle.BRIGHT}{current_action}{ColoramaStyle.RESET_ALL}"
+                colorful_progress = f"{Fore.LIGHTYELLOW_EX}{ColoramaStyle.BRIGHT}{self.thinking_progress:3d}%{ColoramaStyle.RESET_ALL}"
             else:
                 colorful_spinner = spinner
                 colorful_prefix = prefix
@@ -1689,7 +1689,7 @@ class IBLUCommandHelper:
     def _colorize(self, text: str, color: str = "") -> str:
         """Apply color to text if colorama is available"""
         if COLORAMA_AVAILABLE and color:
-            return f"{color}{text}{Style.RESET_ALL}"
+            return f"{color}{text}{ColoramaStyle.RESET_ALL}"
         return text
     
     def get_suggestions(self, query: str, max_suggestions: int = 5, context: str = "") -> List[str]:
@@ -1832,15 +1832,15 @@ class IBLUCommandHelper:
         
         for category, tools in sorted(categories.items()):
             color = category_colors.get(category, Fore.WHITE)
-            print(f"\n{color}📂 {category.upper()} TOOLS:{Style.RESET_ALL}")
+            print(f"\n{color}📂 {category.upper()} TOOLS:{ColoramaStyle.RESET_ALL}")
             for tool, name, desc in sorted(tools):
-                print(f"  {tool_index:2d}. {color}/{tool}{Style.RESET_ALL} - {name}")
+                print(f"  {tool_index:2d}. {color}/{tool}{ColoramaStyle.RESET_ALL} - {name}")
                 print(f"      {desc}")
                 tool_mapping[tool_index] = tool
                 tool_index += 1
         
-        print(f"\n{Fore.CYAN}📊 Total Tools: {len(self.hexstrike_tools)}{Style.RESET_ALL}")
-        print(f"{Fore.GREEN}💡 Use Tab completion after '/' to explore!{Style.RESET_ALL}")
+        print(f"\n{Fore.CYAN}📊 Total Tools: {len(self.hexstrike_tools)}{ColoramaStyle.RESET_ALL}")
+        print(f"{Fore.GREEN}💡 Use Tab completion after '/' to explore!{ColoramaStyle.RESET_ALL}")
         
         # Management options
         print(f"\n{self._colorize('🔧 TOOL MANAGEMENT OPTIONS:', Fore.MAGENTA)}")
@@ -1872,41 +1872,41 @@ class IBLUCommandHelper:
         print(f"\n{self._colorize('🔥 HEXSTRIKE PROFESSIONAL SECURITY TOOLS 🔥', Fore.RED)}")
         print("=" * 60)
         
-        print(f"\n{Fore.BLUE}🔍 RECONNAISSANCE TOOLS:{Style.RESET_ALL}")
+        print(f"\n{Fore.BLUE}🔍 RECONNAISSANCE TOOLS:{ColoramaStyle.RESET_ALL}")
         recon_tools = [t for t, info in self.hexstrike_tools.items() if info['category'] == 'recon']
         for tool in sorted(recon_tools[:5]):
             print(f"  /{tool} - {self.hexstrike_tools[tool]['name']}")
         print(f"  ... (+{len(recon_tools)-5} more)")
         
-        print(f"\n{Fore.GREEN}🌐 WEB APPLICATION TESTING:{Style.RESET_ALL}")
+        print(f"\n{Fore.GREEN}🌐 WEB APPLICATION TESTING:{ColoramaStyle.RESET_ALL}")
         web_tools = [t for t, info in self.hexstrike_tools.items() if info['category'] == 'web']
         for tool in sorted(web_tools[:5]):
             print(f"  /{tool} - {self.hexstrike_tools[tool]['name']}")
         print(f"  ... (+{len(web_tools)-5} more)")
         
-        print(f"\n{Fore.YELLOW}🔐 PASSWORD CRACKING:{Style.RESET_ALL}")
+        print(f"\n{Fore.YELLOW}🔐 PASSWORD CRACKING:{ColoramaStyle.RESET_ALL}")
         auth_tools = [t for t, info in self.hexstrike_tools.items() if info['category'] == 'auth']
         for tool in sorted(auth_tools):
             print(f"  /{tool} - {self.hexstrike_tools[tool]['name']}")
         
-        print(f"\n{Fore.CYAN}📡 NETWORK ANALYSIS:{Style.RESET_ALL}")
+        print(f"\n{Fore.CYAN}📡 NETWORK ANALYSIS:{ColoramaStyle.RESET_ALL}")
         network_tools = [t for t, info in self.hexstrike_tools.items() if info['category'] == 'network']
         for tool in sorted(network_tools[:5]):
             print(f"  /{tool} - {self.hexstrike_tools[tool]['name']}")
         print(f"  ... (+{len(network_tools)-5} more)")
         
-        print(f"\n{Fore.RED}💣 EXPLOITATION FRAMEWORKS:{Style.RESET_ALL}")
+        print(f"\n{Fore.RED}💣 EXPLOITATION FRAMEWORKS:{ColoramaStyle.RESET_ALL}")
         exploit_tools = [t for t, info in self.hexstrike_tools.items() if info['category'] == 'exploit']
         for tool in sorted(exploit_tools):
             print(f"  /{tool} - {self.hexstrike_tools[tool]['name']}")
         
-        print(f"\n{Fore.MAGENTA}🔧 QUICK COMMANDS:{Style.RESET_ALL}")
+        print(f"\n{Fore.MAGENTA}🔧 QUICK COMMANDS:{ColoramaStyle.RESET_ALL}")
         print("  /install <tool>    - Install a specific tool")
         print("  /scan <target>     - Quick nmap scan")
         print("  /pentest <target> - Automated pentest")
         print("  /mcp_status        - Check HexStrike MCP server")
         
-        print(f"\n{Fore.GREEN}💡 Type '/' and Tab to explore all {len(self.hexstrike_tools)} tools!{Style.RESET_ALL}")
+        print(f"\n{Fore.GREEN}💡 Type '/' and Tab to explore all {len(self.hexstrike_tools)} tools!{ColoramaStyle.RESET_ALL}")
     
     def delete_specific_tool(self, tool_mapping: Dict[int, str]) -> str:
         """Delete a specific HexStrike tool"""
@@ -1978,9 +1978,9 @@ class IBLUCommandHelper:
         
         if COLORAMA_AVAILABLE:
             # Beautiful deletion header
-            delete_header = f"{Fore.LIGHTRED_EX}╔{'═' * 78}╗{Style.RESET_ALL}"
-            delete_title = f"{Fore.LIGHTRED_EX}║{Style.RESET_ALL} {Style.BRIGHT}{Back.RED}{Fore.WHITE}🚨 DELETE ALL TOOLS - DANGER ZONE 🚨{Style.RESET_ALL} {Fore.LIGHTRED_EX}{' ' * 28}║{Style.RESET_ALL}"
-            delete_footer = f"{Fore.LIGHTRED_EX}╚{'═' * 78}╝{Style.RESET_ALL}"
+            delete_header = f"{Fore.LIGHTRED_EX}╔{'═' * 78}╗{ColoramaStyle.RESET_ALL}"
+            delete_title = f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Back.RED}{Fore.WHITE}🚨 DELETE ALL TOOLS - DANGER ZONE 🚨{ColoramaStyle.RESET_ALL} {Fore.LIGHTRED_EX}{' ' * 28}║{ColoramaStyle.RESET_ALL}"
+            delete_footer = f"{Fore.LIGHTRED_EX}╚{'═' * 78}╝{ColoramaStyle.RESET_ALL}"
             
             print(f"\n{delete_header}")
             print(f"{delete_title}")
@@ -2065,23 +2065,23 @@ class IBLUCommandHelper:
             
             # Show results
             if COLORAMA_AVAILABLE:
-                results_header = f"{Fore.LIGHTGREEN_EX}┌─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}"
-                results_title = f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL} {Style.BRIGHT}{Back.GREEN}{Fore.WHITE}📊 DELETION SUMMARY 📊{Style.RESET_ALL} {Fore.LIGHTGREEN_EX}{' ' * 43}│{Style.RESET_ALL}"
-                results_footer = f"{Fore.LIGHTGREEN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}"
+                results_header = f"{Fore.LIGHTGREEN_EX}┌─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}"
+                results_title = f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Back.GREEN}{Fore.WHITE}📊 DELETION SUMMARY 📊{ColoramaStyle.RESET_ALL} {Fore.LIGHTGREEN_EX}{' ' * 43}│{ColoramaStyle.RESET_ALL}"
+                results_footer = f"{Fore.LIGHTGREEN_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}"
                 
                 print(f"\n{results_header}")
                 print(f"{results_title}")
                 print(f"{results_footer}")
                 
-                print(f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}   {Fore.GREEN}✅{Style.RESET_ALL} Successfully deleted: {deleted_count} tools")
+                print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}   {Fore.GREEN}✅{ColoramaStyle.RESET_ALL} Successfully deleted: {deleted_count} tools")
                 if failed_deletions:
-                    print(f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}   {Fore.RED}❌{Style.RESET_ALL} Failed deletions: {len(failed_deletions)} tools")
+                    print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}   {Fore.RED}❌{ColoramaStyle.RESET_ALL} Failed deletions: {len(failed_deletions)} tools")
                     for tool, error in failed_deletions[:3]:  # Show first 3 errors
-                        print(f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}     {Fore.RED}•{Style.RESET_ALL} {tool}: {error}")
+                        print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}     {Fore.RED}•{ColoramaStyle.RESET_ALL} {tool}: {error}")
                     if len(failed_deletions) > 3:
-                        print(f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}     {Fore.RED}... and {len(failed_deletions) - 3} more")
+                        print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}     {Fore.RED}... and {len(failed_deletions) - 3} more")
                 
-                print(f"{Fore.LIGHTGREEN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}")
+                print(f"{Fore.LIGHTGREEN_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}")
             
             if failed_deletions:
                 return f"⚠️  Deletion completed with {len(failed_deletions)} failures"
@@ -2296,7 +2296,7 @@ All responses should be helpful, educational, and focused on legitimate cybersec
         if COLORAMA_AVAILABLE:
             # Display the ASCII art banner with perfect alignment
             border = f"{Fore.RED}╔{'═'*78}╗\n"
-            line1 = f"{Fore.RED}║ {Style.BRIGHT}{Fore.YELLOW}██╗  ██╗ █████╗  ██████╗██╗  ██╗    ████████╗██╗  ██╗███████╗ {Fore.RED}║\n"
+            line1 = f"{Fore.RED}║ {ColoramaStyle.BRIGHT}{Fore.YELLOW}██╗  ██╗ █████╗  ██████╗██╗  ██╗    ████████╗██╗  ██╗███████╗ {Fore.RED}║\n"
             line2 = f"{Fore.RED}║ {Fore.YELLOW}██║  ██║██╔══██╗██╔════╝██║ ██╔╝    ╚══██╔══╝██║  ██║██╔════╝ {Fore.RED}║\n"
             line3 = f"{Fore.RED}║ {Fore.YELLOW}███████║███████║██║     █████╔╝        ██║   ███████║█████╗   {Fore.RED}║\n"
             line4 = f"{Fore.RED}║ {Fore.YELLOW}██╔══██║██╔══██║██║     ██╔═██╗        ██║   ██╔══██║██╔══╝   {Fore.RED}║\n"
@@ -2308,7 +2308,7 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             line10 = f"{Fore.RED}║ {Fore.CYAN}{' '*20}██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║ {Fore.RED}║\n"
             line11 = f"{Fore.RED}║ {Fore.CYAN}{' '*20}╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝ {Fore.RED}║\n"
             line12 = f"{Fore.RED}║ {Fore.CYAN}{' '*20} ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝  {Fore.RED}║\n"
-            line13 = f"{Fore.RED}║ {Style.BRIGHT}{Fore.MAGENTA}{' '*17}🔥🔥🔥 HACK THE WORLD 🔥🔥🔥{Fore.RED}{' '*17}║\n"
+            line13 = f"{Fore.RED}║ {ColoramaStyle.BRIGHT}{Fore.MAGENTA}{' '*17}🔥🔥🔥 HACK THE WORLD 🔥🔥🔥{Fore.RED}{' '*17}║\n"
             banner = border + line1 + line2 + line3 + line4 + line5 + line6 + line7 + line8 + line9 + line10 + line11 + line12 + line13 + border
         else:
             # Display the ASCII art banner with perfect alignment (fallback)
@@ -2332,22 +2332,22 @@ All responses should be helpful, educational, and focused on legitimate cybersec
         
         if COLORAMA_AVAILABLE:
             # Security tools overview
-            tools_header = f"{Fore.LIGHTYELLOW_EX}┌─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}"
-            tools_title = f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL} {Style.BRIGHT}{Back.YELLOW}{Fore.WHITE}🔥 Security Tools Available 🔥{Style.RESET_ALL} {Fore.LIGHTYELLOW_EX}{' ' * 39}│{Style.RESET_ALL}"
-            tools_footer = f"{Fore.LIGHTYELLOW_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}"
+            tools_header = f"{Fore.LIGHTYELLOW_EX}┌─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}"
+            tools_title = f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Back.YELLOW}{Fore.WHITE}🔥 Security Tools Available 🔥{ColoramaStyle.RESET_ALL} {Fore.LIGHTYELLOW_EX}{' ' * 39}│{ColoramaStyle.RESET_ALL}"
+            tools_footer = f"{Fore.LIGHTYELLOW_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}"
             
             print(f"\n{tools_header}")
             print(f"{tools_title}")
             print(f"{tools_footer}")
             
-            print(f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}   {Fore.CYAN}🔍 Reconnaissance:{Style.RESET_ALL} nmap, masscan, dnsenum, recon-ng")
-            print(f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}   {Fore.CYAN}🌐 Web Testing:{Style.RESET_ALL} nikto, sqlmap, burpsuite, gobuster")
-            print(f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}   {Fore.CYAN}🔐 Password Cracking:{Style.RESET_ALL} john, hashcat, hydra, medusa")
-            print(f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}   {Fore.CYAN}📡 Network Analysis:{Style.RESET_ALL} wireshark, tcpdump, aircrack-ng")
-            print(f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}   {Fore.CYAN}💣 Exploitation:{Style.RESET_ALL} metasploit, msfconsole, msfvenom")
-            print(f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}   {Fore.CYAN}🔬 Forensics:{Style.RESET_ALL} autopsy, volatility, sleuthkit")
-            print(f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}   {Fore.CYAN}🎭 Social Engineering:{Style.RESET_ALL} setoolkit, phishing")
-            print(f"{Fore.LIGHTYELLOW_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
+            print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}   {Fore.CYAN}🔍 Reconnaissance:{ColoramaStyle.RESET_ALL} nmap, masscan, dnsenum, recon-ng")
+            print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}   {Fore.CYAN}🌐 Web Testing:{ColoramaStyle.RESET_ALL} nikto, sqlmap, burpsuite, gobuster")
+            print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}   {Fore.CYAN}🔐 Password Cracking:{ColoramaStyle.RESET_ALL} john, hashcat, hydra, medusa")
+            print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}   {Fore.CYAN}📡 Network Analysis:{ColoramaStyle.RESET_ALL} wireshark, tcpdump, aircrack-ng")
+            print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}   {Fore.CYAN}💣 Exploitation:{ColoramaStyle.RESET_ALL} metasploit, msfconsole, msfvenom")
+            print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}   {Fore.CYAN}🔬 Forensics:{ColoramaStyle.RESET_ALL} autopsy, volatility, sleuthkit")
+            print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}   {Fore.CYAN}🎭 Social Engineering:{ColoramaStyle.RESET_ALL} setoolkit, phishing")
+            print(f"{Fore.LIGHTYELLOW_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}\n")
         else:
             print("\n🔥 Security Tools Available:")
             print("  • 🔍 Reconnaissance: nmap, masscan, dnsenum, recon-ng")
@@ -2360,9 +2360,9 @@ All responses should be helpful, educational, and focused on legitimate cybersec
         
         # Menu options header
         if COLORAMA_AVAILABLE:
-            menu_header = f"{Fore.LIGHTCYAN_EX}┌─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}"
-            menu_title = f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL} {Style.BRIGHT}{Fore.WHITE}🧠 MAIN MENU 🧠{Style.RESET_ALL} {Fore.LIGHTCYAN_EX}{' ' * 51}│{Style.RESET_ALL}"
-            menu_footer = f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}"
+            menu_header = f"{Fore.LIGHTCYAN_EX}┌─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}"
+            menu_title = f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}🧠 MAIN MENU 🧠{ColoramaStyle.RESET_ALL} {Fore.LIGHTCYAN_EX}{' ' * 51}│{ColoramaStyle.RESET_ALL}"
+            menu_footer = f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}"
             
             print(f"\n{menu_header}")
             print(f"{menu_title}")
@@ -2378,18 +2378,18 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             ]
             
             for i, (option, title, color, desc1, desc2) in enumerate(options):
-                print(f"{Fore.LIGHTCYAN_EX}┌─ {Style.BRIGHT}{Fore.WHITE}{option}{Style.RESET_ALL}{Fore.LIGHTCYAN_EX} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
-                print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}  {Style.BRIGHT}{Fore.WHITE}{title}{Style.RESET_ALL}{' ' * (55 - len(title))}{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
+                print(f"{Fore.LIGHTCYAN_EX}┌─ {ColoramaStyle.BRIGHT}{Fore.WHITE}{option}{ColoramaStyle.RESET_ALL}{Fore.LIGHTCYAN_EX} ─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}")
+                print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}  {ColoramaStyle.BRIGHT}{Fore.WHITE}{title}{ColoramaStyle.RESET_ALL}{' ' * (55 - len(title))}{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
                 if desc1:
-                    print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}  {Fore.CYAN}{desc1}{Style.RESET_ALL}{' ' * (55 - len(desc1))}{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
+                    print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}  {Fore.CYAN}{desc1}{ColoramaStyle.RESET_ALL}{' ' * (55 - len(desc1))}{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
                 if desc2:
-                    print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}  {Fore.CYAN}{desc2}{Style.RESET_ALL}{' ' * (55 - len(desc2))}{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
-                print(f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
+                    print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}  {Fore.CYAN}{desc2}{ColoramaStyle.RESET_ALL}{' ' * (55 - len(desc2))}{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
+                print(f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}\n")
             
             # Footer with instructions
-            footer_border = f"{Fore.LIGHTGREEN_EX}┌─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}"
-            footer_text = f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL} {Style.BRIGHT}{Fore.WHITE}💡 Type a number (1-6) or start chatting!{Style.RESET_ALL} {Fore.LIGHTGREEN_EX}{' ' * 35}│{Style.RESET_ALL}"
-            footer_border2 = f"{Fore.LIGHTGREEN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}"
+            footer_border = f"{Fore.LIGHTGREEN_EX}┌─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}"
+            footer_text = f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}💡 Type a number (1-6) or start chatting!{ColoramaStyle.RESET_ALL} {Fore.LIGHTGREEN_EX}{' ' * 35}│{ColoramaStyle.RESET_ALL}"
+            footer_border2 = f"{Fore.LIGHTGREEN_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}"
             
             print(f"{footer_border}")
             print(f"{footer_text}")
@@ -2415,42 +2415,42 @@ All responses should be helpful, educational, and focused on legitimate cybersec
     def handle_hacking_toys(self):
         """Handle Hacking Toys menu - install and manage tools"""
         if COLORAMA_AVAILABLE:
-            print(f"\n{Fore.CYAN}╔══════════════════════════════════════════════════════════════════════════════╗{Style.RESET_ALL}")
-            print(f"{Fore.CYAN}║{Style.RESET_ALL} {Style.BRIGHT}{Fore.WHITE}🎮 HACKING TOYS - INSTALLATION & MANAGEMENT 🎮{Style.RESET_ALL} {Fore.CYAN}{' ' * 20}║{Style.RESET_ALL}")
-            print(f"{Fore.CYAN}╚══════════════════════════════════════════════════════════════════════════════╝{Style.RESET_ALL}\n")
+            print(f"\n{Fore.CYAN}╔══════════════════════════════════════════════════════════════════════════════╗{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.CYAN}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}🎮 HACKING TOYS - INSTALLATION & MANAGEMENT 🎮{ColoramaStyle.RESET_ALL} {Fore.CYAN}{' ' * 20}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.CYAN}╚══════════════════════════════════════════════════════════════════════════════╝{ColoramaStyle.RESET_ALL}\n")
             
-            print(f"{Fore.LIGHTCYAN_EX}┌─ {Style.BRIGHT}{Fore.WHITE}[1] ⚡ INSTALL ALL{Style.RESET_ALL}{Fore.LIGHTCYAN_EX} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}  {Style.BRIGHT}{Fore.WHITE}Quick install 50+ tools{Style.RESET_ALL}{' ' * (35)}{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}  {Fore.CYAN}• Time: 15-30 minutes • Requires: sudo{Style.RESET_ALL}{' ' * (22)}{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
+            print(f"{Fore.LIGHTCYAN_EX}┌─ {ColoramaStyle.BRIGHT}{Fore.WHITE}[1] ⚡ INSTALL ALL{ColoramaStyle.RESET_ALL}{Fore.LIGHTCYAN_EX} ─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}  {ColoramaStyle.BRIGHT}{Fore.WHITE}Quick install 50+ tools{ColoramaStyle.RESET_ALL}{' ' * (35)}{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}  {Fore.CYAN}• Time: 15-30 minutes • Requires: sudo{ColoramaStyle.RESET_ALL}{' ' * (22)}{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}\n")
             
-            print(f"{Fore.LIGHTCYAN_EX}┌─ {Style.BRIGHT}{Fore.WHITE}[2] 🎯 INSTALL ONE-BY-ONE{Style.RESET_ALL}{Fore.LIGHTCYAN_EX} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}  {Style.BRIGHT}{Fore.WHITE}Choose specific tools{Style.RESET_ALL}{' ' * (37)}{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}  {Fore.CYAN}• Browse numbered list with descriptions{Style.RESET_ALL}{' ' * (21)}{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}  {Fore.CYAN}• Organized by category (Recon, Web, Network, etc.){Style.RESET_ALL}{' ' * (8)}{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
+            print(f"{Fore.LIGHTCYAN_EX}┌─ {ColoramaStyle.BRIGHT}{Fore.WHITE}[2] 🎯 INSTALL ONE-BY-ONE{ColoramaStyle.RESET_ALL}{Fore.LIGHTCYAN_EX} ─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}  {ColoramaStyle.BRIGHT}{Fore.WHITE}Choose specific tools{ColoramaStyle.RESET_ALL}{' ' * (37)}{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}  {Fore.CYAN}• Browse numbered list with descriptions{ColoramaStyle.RESET_ALL}{' ' * (21)}{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}  {Fore.CYAN}• Organized by category (Recon, Web, Network, etc.){ColoramaStyle.RESET_ALL}{' ' * (8)}{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}\n")
             
-            print(f"{Fore.LIGHTCYAN_EX}┌─ {Style.BRIGHT}{Fore.WHITE}[3] 📋 LIST TOOLS{Style.RESET_ALL}{Fore.LIGHTCYAN_EX} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}  {Style.BRIGHT}{Fore.WHITE}View all installed hacking tools{Style.RESET_ALL}{' ' * (30)}{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}  {Fore.CYAN}• Show tools organized by category{Style.RESET_ALL}{' ' * (25)}{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}  {Fore.CYAN}• Display tool descriptions and usage{Style.RESET_ALL}{' ' * (19)}{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
+            print(f"{Fore.LIGHTCYAN_EX}┌─ {ColoramaStyle.BRIGHT}{Fore.WHITE}[3] 📋 LIST TOOLS{ColoramaStyle.RESET_ALL}{Fore.LIGHTCYAN_EX} ─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}  {ColoramaStyle.BRIGHT}{Fore.WHITE}View all installed hacking tools{ColoramaStyle.RESET_ALL}{' ' * (30)}{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}  {Fore.CYAN}• Show tools organized by category{ColoramaStyle.RESET_ALL}{' ' * (25)}{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}  {Fore.CYAN}• Display tool descriptions and usage{ColoramaStyle.RESET_ALL}{' ' * (19)}{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}\n")
             
-            print(f"{Fore.LIGHTCYAN_EX}┌─ {Style.BRIGHT}{Fore.WHITE}[4] 🗑️  DELETE TOOLS{Style.RESET_ALL}{Fore.LIGHTCYAN_EX} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}  {Style.BRIGHT}{Fore.WHITE}Remove hacking tools{Style.RESET_ALL}{' ' * (37)}{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}  {Fore.CYAN}• Delete individual tools or all at once{Style.RESET_ALL}{' ' * (19)}{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}  {Fore.CYAN}• Free up disk space by removing unused tools{Style.RESET_ALL}{' ' * (13)}{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
+            print(f"{Fore.LIGHTCYAN_EX}┌─ {ColoramaStyle.BRIGHT}{Fore.WHITE}[4] 🗑️  DELETE TOOLS{ColoramaStyle.RESET_ALL}{Fore.LIGHTCYAN_EX} ─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}  {ColoramaStyle.BRIGHT}{Fore.WHITE}Remove hacking tools{ColoramaStyle.RESET_ALL}{' ' * (37)}{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}  {Fore.CYAN}• Delete individual tools or all at once{ColoramaStyle.RESET_ALL}{' ' * (19)}{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}  {Fore.CYAN}• Free up disk space by removing unused tools{ColoramaStyle.RESET_ALL}{' ' * (13)}{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}\n")
             
-            print(f"{Fore.LIGHTCYAN_EX}┌─ {Style.BRIGHT}{Fore.WHITE}[5] 🗑️  DELETE MODELS{Style.RESET_ALL}{Fore.LIGHTCYAN_EX} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}  {Style.BRIGHT}{Fore.WHITE}Remove local AI models{Style.RESET_ALL}{' ' * (36)}{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}  {Fore.CYAN}• Delete Llama, Mistral, or HuggingFace models{Style.RESET_ALL}{' ' * (14)}{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}  {Fore.CYAN}• Free up disk space by removing unused models{Style.RESET_ALL}{' ' * (13)}{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
+            print(f"{Fore.LIGHTCYAN_EX}┌─ {ColoramaStyle.BRIGHT}{Fore.WHITE}[5] 🗑️  DELETE MODELS{ColoramaStyle.RESET_ALL}{Fore.LIGHTCYAN_EX} ─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}  {ColoramaStyle.BRIGHT}{Fore.WHITE}Remove local AI models{ColoramaStyle.RESET_ALL}{' ' * (36)}{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}  {Fore.CYAN}• Delete Llama, Mistral, or HuggingFace models{ColoramaStyle.RESET_ALL}{' ' * (14)}{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}  {Fore.CYAN}• Free up disk space by removing unused models{ColoramaStyle.RESET_ALL}{' ' * (13)}{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}\n")
             
-            print(f"{Fore.LIGHTCYAN_EX}┌─ {Style.BRIGHT}{Fore.WHITE}[6] 🔙 BACK{Style.RESET_ALL}{Fore.LIGHTCYAN_EX} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}  {Style.BRIGHT}{Fore.WHITE}Return to main menu{Style.RESET_ALL}{' ' * (39)}{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
+            print(f"{Fore.LIGHTCYAN_EX}┌─ {ColoramaStyle.BRIGHT}{Fore.WHITE}[6] 🔙 BACK{ColoramaStyle.RESET_ALL}{Fore.LIGHTCYAN_EX} ─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}  {ColoramaStyle.BRIGHT}{Fore.WHITE}Return to main menu{ColoramaStyle.RESET_ALL}{' ' * (39)}{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}\n")
         else:
             print("\n" + "=" * 70)
             print("    HACKING TOYS - INSTALLATION & MANAGEMENT")
@@ -2482,19 +2482,19 @@ All responses should be helpful, educational, and focused on legitimate cybersec
     def handle_delete_models(self):
         """Handle model deletion menu"""
         if COLORAMA_AVAILABLE:
-            print(f"\n{Fore.LIGHTMAGENTA_EX}╔══════════════════════════════════════════════════════════════════════════════╗{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTMAGENTA_EX}║{Style.RESET_ALL} {Style.BRIGHT}{Fore.WHITE}🗑️  DELETE MODELS - REMOVE LOCAL MODELS 🗑️{Style.RESET_ALL} {Fore.LIGHTMAGENTA_EX}{' ' * 20}║{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTMAGENTA_EX}╚══════════════════════════════════════════════════════════════════════════════╝{Style.RESET_ALL}\n")
+            print(f"\n{Fore.LIGHTMAGENTA_EX}╔══════════════════════════════════════════════════════════════════════════════╗{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTMAGENTA_EX}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}🗑️  DELETE MODELS - REMOVE LOCAL MODELS 🗑️{ColoramaStyle.RESET_ALL} {Fore.LIGHTMAGENTA_EX}{' ' * 20}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTMAGENTA_EX}╚══════════════════════════════════════════════════════════════════════════════╝{ColoramaStyle.RESET_ALL}\n")
             
-            print(f"{Fore.LIGHTMAGENTA_EX}┌─ {Style.BRIGHT}{Fore.WHITE}[1] 🗑️  DELETE LLAMA MODELS{Style.RESET_ALL}{Fore.LIGHTMAGENTA_EX} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}  {Style.BRIGHT}{Fore.WHITE}Remove local Llama models{Style.RESET_ALL}{' ' * (33)}{Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}  {Fore.CYAN}• Free up disk space by removing Llama models{Style.RESET_ALL}{' ' * (13)}{Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}  {Fore.CYAN}• Select specific models or delete all{Style.RESET_ALL}{' ' * (19)}{Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTMAGENTA_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
+            print(f"{Fore.LIGHTMAGENTA_EX}┌─ {ColoramaStyle.BRIGHT}{Fore.WHITE}[1] 🗑️  DELETE LLAMA MODELS{ColoramaStyle.RESET_ALL}{Fore.LIGHTMAGENTA_EX} ─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTMAGENTA_EX}│{ColoramaStyle.RESET_ALL}  {ColoramaStyle.BRIGHT}{Fore.WHITE}Remove local Llama models{ColoramaStyle.RESET_ALL}{' ' * (33)}{Fore.LIGHTMAGENTA_EX}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTMAGENTA_EX}│{ColoramaStyle.RESET_ALL}  {Fore.CYAN}• Free up disk space by removing Llama models{ColoramaStyle.RESET_ALL}{' ' * (13)}{Fore.LIGHTMAGENTA_EX}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTMAGENTA_EX}│{ColoramaStyle.RESET_ALL}  {Fore.CYAN}• Select specific models or delete all{ColoramaStyle.RESET_ALL}{' ' * (19)}{Fore.LIGHTMAGENTA_EX}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTMAGENTA_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}\n")
             
-            print(f"{Fore.LIGHTMAGENTA_EX}┌─ {Style.BRIGHT}{Fore.WHITE}[2] 🔙 BACK{Style.RESET_ALL}{Fore.LIGHTMAGENTA_EX} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}  {Style.BRIGHT}{Fore.WHITE}Return to main menu{Style.RESET_ALL}{' ' * (39)}{Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTMAGENTA_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
+            print(f"{Fore.LIGHTMAGENTA_EX}┌─ {ColoramaStyle.BRIGHT}{Fore.WHITE}[2] 🔙 BACK{ColoramaStyle.RESET_ALL}{Fore.LIGHTMAGENTA_EX} ─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTMAGENTA_EX}│{ColoramaStyle.RESET_ALL}  {ColoramaStyle.BRIGHT}{Fore.WHITE}Return to main menu{ColoramaStyle.RESET_ALL}{' ' * (39)}{Fore.LIGHTMAGENTA_EX}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTMAGENTA_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}\n")
         else:
             print("\n" + "=" * 70)
             print("    DELETE MODELS - REMOVE LOCAL MODELS")
@@ -2515,19 +2515,19 @@ All responses should be helpful, educational, and focused on legitimate cybersec
     def list_available_models(self) -> str:
         """List all available AI models (both cloud and local)"""
         # Enhanced overview section with gradient colors
-        overview_border = f"{Fore.LIGHTGREEN_EX}┌─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}"
-        overview_title = f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL} {Style.BRIGHT}{Back.GREEN}{Fore.WHITE}📊 MODEL STATUS OVERVIEW:{Style.RESET_ALL} {Fore.LIGHTGREEN_EX}{' ' * 44}│{Style.RESET_ALL}"
-        overview_border2 = f"{Fore.LIGHTGREEN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}"
+        overview_border = f"{Fore.LIGHTGREEN_EX}┌─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}"
+        overview_title = f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Back.GREEN}{Fore.WHITE}📊 MODEL STATUS OVERVIEW:{ColoramaStyle.RESET_ALL} {Fore.LIGHTGREEN_EX}{' ' * 44}│{ColoramaStyle.RESET_ALL}"
+        overview_border2 = f"{Fore.LIGHTGREEN_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}"
         
         print(f"\n{overview_border}")
         print(f"{overview_title}")
         print(f"{overview_border2}")
         
         # Add description for MODEL STATUS OVERVIEW
-        print(f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}   {Fore.CYAN}📈 Real-time status of all configured and available AI models{Style.RESET_ALL}")
-        print(f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}   {Fore.CYAN}🔍 Shows cloud API status and local model availability{Style.RESET_ALL}")
-        print(f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}   {Fore.CYAN}⚡ Includes model capabilities and download instructions{Style.RESET_ALL}")
-        print(f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}")
+        print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}   {Fore.CYAN}📈 Real-time status of all configured and available AI models{ColoramaStyle.RESET_ALL}")
+        print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}   {Fore.CYAN}🔍 Shows cloud API status and local model availability{ColoramaStyle.RESET_ALL}")
+        print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}   {Fore.CYAN}⚡ Includes model capabilities and download instructions{ColoramaStyle.RESET_ALL}")
+        print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}")
         
         # Check cloud providers
         cloud_models = []
@@ -2574,30 +2574,30 @@ All responses should be helpful, educational, and focused on legitimate cybersec
         total_models = len(cloud_models) + len(local_models) + (1 if local_mistral_available else 0) + len(hf_models_available)
         
         if total_models == 0:
-            no_models_border = f"{Fore.LIGHTRED_EX}┌─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}"
-            no_models_msg = f"{Fore.LIGHTRED_EX}│{Style.RESET_ALL} {Style.BRIGHT}{Back.RED}{Fore.WHITE}❌ NO MODELS CONFIGURED!{Style.RESET_ALL} {Fore.LIGHTRED_EX}{' ' * 43}│{Style.RESET_ALL}"
-            no_models_border2 = f"{Fore.LIGHTRED_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}"
+            no_models_border = f"{Fore.LIGHTRED_EX}┌─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}"
+            no_models_msg = f"{Fore.LIGHTRED_EX}│{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Back.RED}{Fore.WHITE}❌ NO MODELS CONFIGURED!{ColoramaStyle.RESET_ALL} {Fore.LIGHTRED_EX}{' ' * 43}│{ColoramaStyle.RESET_ALL}"
+            no_models_border2 = f"{Fore.LIGHTRED_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}"
             
             print(f"\n{no_models_border}")
             print(f"{no_models_msg}")
             print(f"{no_models_border2}")
             
-            tips_border = f"{Fore.LIGHTCYAN_EX}┌─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}"
-            tips_title = f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL} {Style.BRIGHT}{Back.CYAN}{Fore.WHITE}💡 GET STARTED:{Style.RESET_ALL} {Fore.LIGHTCYAN_EX}{' ' * 49}│{Style.RESET_ALL}"
-            tips_border2 = f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}"
+            tips_border = f"{Fore.LIGHTCYAN_EX}┌─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}"
+            tips_title = f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Back.CYAN}{Fore.WHITE}💡 GET STARTED:{ColoramaStyle.RESET_ALL} {Fore.LIGHTCYAN_EX}{' ' * 49}│{ColoramaStyle.RESET_ALL}"
+            tips_border2 = f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}"
             
             print(f"\n{tips_border}")
             print(f"{tips_title}")
             print(f"{tips_border2}")
-            print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}   {Fore.CYAN}•{Style.RESET_ALL} Configure API keys for cloud models                     {Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}   {Fore.CYAN}•{Style.RESET_ALL} Install local models for privacy-focused processing       {Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}                                                           {Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}   {Style.BRIGHT}{Fore.YELLOW}Commands:{Style.RESET_ALL}                                               {Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}   {Fore.CYAN}•{Style.RESET_ALL} {Style.BRIGHT}{Fore.WHITE}/config{Style.RESET_ALL} - Configure API keys                          {Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}   {Fore.CYAN}•{Style.RESET_ALL} {Style.BRIGHT}{Fore.WHITE}/install_llama{Style.RESET_ALL} - Install local Llama models              {Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}   {Fore.CYAN}•{Style.RESET_ALL} {Style.BRIGHT}{Fore.WHITE}/install_mistral{Style.RESET_ALL} - Install local Mistral Dolphin model        {Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}   {Fore.CYAN}•{Style.RESET_ALL} {Style.BRIGHT}{Fore.WHITE}/hf_install{Style.RESET_ALL} - Install Hugging Face models               {Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}   {Fore.CYAN}•{ColoramaStyle.RESET_ALL} Configure API keys for cloud models                     {Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}   {Fore.CYAN}•{ColoramaStyle.RESET_ALL} Install local models for privacy-focused processing       {Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}                                                           {Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}   {ColoramaStyle.BRIGHT}{Fore.YELLOW}Commands:{ColoramaStyle.RESET_ALL}                                               {Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}   {Fore.CYAN}•{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}/config{ColoramaStyle.RESET_ALL} - Configure API keys                          {Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}   {Fore.CYAN}•{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}/install_llama{ColoramaStyle.RESET_ALL} - Install local Llama models              {Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}   {Fore.CYAN}•{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}/install_mistral{ColoramaStyle.RESET_ALL} - Install local Mistral Dolphin model        {Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}   {Fore.CYAN}•{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}/hf_install{ColoramaStyle.RESET_ALL} - Install Hugging Face models               {Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}")
             
             return "❌ No models available"
         
@@ -2612,9 +2612,9 @@ All responses should be helpful, educational, and focused on legitimate cybersec
 
         # Enhanced cloud models section - simplified and clean
         if cloud_models:
-            cloud_border = f"{Fore.LIGHTBLUE_EX}┌─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}"
-            cloud_title = f"{Fore.LIGHTBLUE_EX}│{Style.RESET_ALL} {Style.BRIGHT}{Back.BLUE}{Fore.WHITE}☁️ CLOUD MODELS:{Style.RESET_ALL} {Fore.LIGHTBLUE_EX}{' ' * 51}│{Style.RESET_ALL}"
-            cloud_border2 = f"{Fore.LIGHTBLUE_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}"
+            cloud_border = f"{Fore.LIGHTBLUE_EX}┌─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}"
+            cloud_title = f"{Fore.LIGHTBLUE_EX}│{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Back.BLUE}{Fore.WHITE}☁️ CLOUD MODELS:{ColoramaStyle.RESET_ALL} {Fore.LIGHTBLUE_EX}{' ' * 51}│{ColoramaStyle.RESET_ALL}"
+            cloud_border2 = f"{Fore.LIGHTBLUE_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}"
             
             print(f"\n{cloud_border}")
             print(f"{cloud_title}")
@@ -2626,12 +2626,12 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                 status_color = Fore.LIGHTGREEN_EX if api_key else Fore.LIGHTRED_EX
                 description = model_descriptions.get(provider, "General purpose")
                 
-                print(f"{Fore.LIGHTBLUE_EX}│{Style.RESET_ALL}   {Fore.BLUE}•{Style.RESET_ALL} {Style.BRIGHT}{Fore.WHITE}{provider.value.title()}{Style.RESET_ALL} - {status_color}{status_icon} {status_text}{Style.RESET_ALL}")
-                print(f"{Fore.LIGHTBLUE_EX}│{Style.RESET_ALL}     {Fore.CYAN}{description}{Style.RESET_ALL}")
+                print(f"{Fore.LIGHTBLUE_EX}│{ColoramaStyle.RESET_ALL}   {Fore.BLUE}•{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}{provider.value.title()}{ColoramaStyle.RESET_ALL} - {status_color}{status_icon} {status_text}{ColoramaStyle.RESET_ALL}")
+                print(f"{Fore.LIGHTBLUE_EX}│{ColoramaStyle.RESET_ALL}     {Fore.CYAN}{description}{ColoramaStyle.RESET_ALL}")
                 if i < len(cloud_models):
-                    print(f"{Fore.LIGHTBLUE_EX}│{Style.RESET_ALL}")
+                    print(f"{Fore.LIGHTBLUE_EX}│{ColoramaStyle.RESET_ALL}")
             
-            print(f"{Fore.LIGHTBLUE_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTBLUE_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}")
         
         # Combined local models section with download instructions
         all_local_models = []
@@ -2653,9 +2653,9 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                 all_local_models.append(("HuggingFace", model_name, 0, "🤗 Custom Models"))
         
         if all_local_models:
-            local_border = f"{Fore.LIGHTGREEN_EX}┌─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}"
-            local_title = f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL} {Style.BRIGHT}{Back.GREEN}{Fore.WHITE}🏠 LOCAL MODELS:{Style.RESET_ALL} {Fore.LIGHTGREEN_EX}{' ' * 51}│{Style.RESET_ALL}"
-            local_border2 = f"{Fore.LIGHTGREEN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}"
+            local_border = f"{Fore.LIGHTGREEN_EX}┌─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}"
+            local_title = f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Back.GREEN}{Fore.WHITE}🏠 LOCAL MODELS:{ColoramaStyle.RESET_ALL} {Fore.LIGHTGREEN_EX}{' ' * 51}│{ColoramaStyle.RESET_ALL}"
+            local_border2 = f"{Fore.LIGHTGREEN_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}"
             
             print(f"\n{local_border}")
             print(f"{local_title}")
@@ -2663,46 +2663,46 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             
             for i, (provider_type, model_name, model_size, description) in enumerate(all_local_models, 1):
                 size_str = f"({model_size/1024:.1f}GB)" if model_size > 0 else ""
-                print(f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}   {Fore.GREEN}•{Style.RESET_ALL} {Style.BRIGHT}{Fore.WHITE}{model_name}{Style.RESET_ALL} {Fore.MAGENTA}{size_str}{Style.RESET_ALL}")
-                print(f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}     {Fore.CYAN}{description}{Style.RESET_ALL}")
+                print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}   {Fore.GREEN}•{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}{model_name}{ColoramaStyle.RESET_ALL} {Fore.MAGENTA}{size_str}{ColoramaStyle.RESET_ALL}")
+                print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}     {Fore.CYAN}{description}{ColoramaStyle.RESET_ALL}")
                 if i < len(all_local_models):
-                    print(f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}")
+                    print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}")
             
             # Add download instructions
-            print(f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}   {Style.BRIGHT}{Fore.YELLOW}📥 DOWNLOAD INSTRUCTIONS:{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}   {Fore.GREEN}•{Style.RESET_ALL} {Fore.WHITE}Llama:{Style.RESET_ALL} {Fore.CYAN}/install_llama{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}   {Fore.GREEN}•{Style.RESET_ALL} {Fore.WHITE}Mistral:{Style.RESET_ALL} {Fore.CYAN}/install_mistral{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}   {Fore.GREEN}•{Style.RESET_ALL} {Fore.WHITE}HuggingFace:{Style.RESET_ALL} {Fore.CYAN}/hf_install <model_name>{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}   {Fore.GREEN}•{Style.RESET_ALL} {Fore.WHITE}All models:{Style.RESET_ALL} {Fore.CYAN}/install_models{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}   {ColoramaStyle.BRIGHT}{Fore.YELLOW}📥 DOWNLOAD INSTRUCTIONS:{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}   {Fore.GREEN}•{ColoramaStyle.RESET_ALL} {Fore.WHITE}Llama:{ColoramaStyle.RESET_ALL} {Fore.CYAN}/install_llama{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}   {Fore.GREEN}•{ColoramaStyle.RESET_ALL} {Fore.WHITE}Mistral:{ColoramaStyle.RESET_ALL} {Fore.CYAN}/install_mistral{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}   {Fore.GREEN}•{ColoramaStyle.RESET_ALL} {Fore.WHITE}HuggingFace:{ColoramaStyle.RESET_ALL} {Fore.CYAN}/hf_install <model_name>{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}   {Fore.GREEN}•{ColoramaStyle.RESET_ALL} {Fore.WHITE}All models:{ColoramaStyle.RESET_ALL} {Fore.CYAN}/install_models{ColoramaStyle.RESET_ALL}")
             
-            print(f"{Fore.LIGHTGREEN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTGREEN_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}")
         else:
             # Show download instructions when no local models
-            local_border = f"{Fore.LIGHTYELLOW_EX}┌─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}"
-            local_title = f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL} {Style.BRIGHT}{Back.YELLOW}{Fore.WHITE}🏠 LOCAL MODELS:{Style.RESET_ALL} {Fore.LIGHTYELLOW_EX}{' ' * 51}│{Style.RESET_ALL}"
-            local_border2 = f"{Fore.LIGHTYELLOW_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}"
+            local_border = f"{Fore.LIGHTYELLOW_EX}┌─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}"
+            local_title = f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Back.YELLOW}{Fore.WHITE}🏠 LOCAL MODELS:{ColoramaStyle.RESET_ALL} {Fore.LIGHTYELLOW_EX}{' ' * 51}│{ColoramaStyle.RESET_ALL}"
+            local_border2 = f"{Fore.LIGHTYELLOW_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}"
             
             print(f"\n{local_border}")
             print(f"{local_title}")
             print(f"{local_border2}")
             
-            print(f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}   {Fore.YELLOW}❌ No local models installed{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}   {Style.BRIGHT}{Fore.YELLOW}📥 DOWNLOAD INSTRUCTIONS:{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}   {Fore.YELLOW}•{Style.RESET_ALL} {Fore.WHITE}Llama models:{Style.RESET_ALL} {Fore.CYAN}/install_llama{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}   {Fore.YELLOW}•{Style.RESET_ALL} {Fore.WHITE}Mistral Dolphin:{Style.RESET_ALL} {Fore.CYAN}/install_mistral{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}   {Fore.YELLOW}•{Style.RESET_ALL} {Fore.WHITE}HuggingFace models:{Style.RESET_ALL} {Fore.CYAN}/hf_install <model_name>{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}   {Fore.YELLOW}•{Style.RESET_ALL} {Fore.WHITE}Install all:{Style.RESET_ALL} {Fore.CYAN}/install_models{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}   {Fore.WHITE}💡 Local models provide privacy and offline access{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}   {Fore.YELLOW}❌ No local models installed{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}   {ColoramaStyle.BRIGHT}{Fore.YELLOW}📥 DOWNLOAD INSTRUCTIONS:{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}   {Fore.YELLOW}•{ColoramaStyle.RESET_ALL} {Fore.WHITE}Llama models:{ColoramaStyle.RESET_ALL} {Fore.CYAN}/install_llama{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}   {Fore.YELLOW}•{ColoramaStyle.RESET_ALL} {Fore.WHITE}Mistral Dolphin:{ColoramaStyle.RESET_ALL} {Fore.CYAN}/install_mistral{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}   {Fore.YELLOW}•{ColoramaStyle.RESET_ALL} {Fore.WHITE}HuggingFace models:{ColoramaStyle.RESET_ALL} {Fore.CYAN}/hf_install <model_name>{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}   {Fore.YELLOW}•{ColoramaStyle.RESET_ALL} {Fore.WHITE}Install all:{ColoramaStyle.RESET_ALL} {Fore.CYAN}/install_models{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}   {Fore.WHITE}💡 Local models provide privacy and offline access{ColoramaStyle.RESET_ALL}")
             
-            print(f"{Fore.LIGHTYELLOW_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTYELLOW_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}")
         
         # Enhanced capabilities section with vibrant colors
-        cap_border = f"{Fore.LIGHTYELLOW_EX}┌─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}"
-        cap_title = f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL} {Style.BRIGHT}{Back.YELLOW}{Fore.WHITE}🔧 MODEL CAPABILITIES:{Style.RESET_ALL} {Fore.LIGHTYELLOW_EX}{' ' * 47}│{Style.RESET_ALL}"
-        cap_border2 = f"{Fore.LIGHTYELLOW_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}"
+        cap_border = f"{Fore.LIGHTYELLOW_EX}┌─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}"
+        cap_title = f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Back.YELLOW}{Fore.WHITE}🔧 MODEL CAPABILITIES:{ColoramaStyle.RESET_ALL} {Fore.LIGHTYELLOW_EX}{' ' * 47}│{ColoramaStyle.RESET_ALL}"
+        cap_border2 = f"{Fore.LIGHTYELLOW_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}"
         
         print(f"\n{cap_border}")
         print(f"{cap_title}")
@@ -2721,49 +2721,49 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                 capability = capabilities.get(provider, "Unknown")
                 status = "✅" if (provider in [p[0] for p in cloud_models]) or (provider == Provider.LLAMA and local_models) or (provider == Provider.MISTRAL and local_mistral_available) or (provider == Provider.HUGGINGFACE and hf_models_available) else "❌"
                 provider_name = provider.value.title()
-                print(f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}   {Fore.YELLOW}•{Style.RESET_ALL} {Style.BRIGHT}{Fore.WHITE}{provider_name}{Style.RESET_ALL} - {Fore.CYAN}{capability}{Style.RESET_ALL} {Fore.LIGHTGREEN_EX}{status}{Style.RESET_ALL} {Fore.LIGHTYELLOW_EX}{' ' * (20 - len(provider_name) - len(capability))}│{Style.RESET_ALL}")
+                print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}   {Fore.YELLOW}•{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}{provider_name}{ColoramaStyle.RESET_ALL} - {Fore.CYAN}{capability}{ColoramaStyle.RESET_ALL} {Fore.LIGHTGREEN_EX}{status}{ColoramaStyle.RESET_ALL} {Fore.LIGHTYELLOW_EX}{' ' * (20 - len(provider_name) - len(capability))}│{ColoramaStyle.RESET_ALL}")
         
-        print(f"{Fore.LIGHTYELLOW_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}")
+        print(f"{Fore.LIGHTYELLOW_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}")
         
         # Enhanced collaborative status section with vibrant colors
-        collab_border = f"{Fore.LIGHTMAGENTA_EX}┌─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}"
-        collab_title = f"{Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL} {Style.BRIGHT}{Back.MAGENTA}{Fore.WHITE}🤝 COLLABORATIVE STATUS:{Style.RESET_ALL} {Fore.LIGHTMAGENTA_EX}{' ' * 46}│{Style.RESET_ALL}"
-        collab_border2 = f"{Fore.LIGHTMAGENTA_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}"
+        collab_border = f"{Fore.LIGHTMAGENTA_EX}┌─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}"
+        collab_title = f"{Fore.LIGHTMAGENTA_EX}│{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Back.MAGENTA}{Fore.WHITE}🤝 COLLABORATIVE STATUS:{ColoramaStyle.RESET_ALL} {Fore.LIGHTMAGENTA_EX}{' ' * 46}│{ColoramaStyle.RESET_ALL}"
+        collab_border2 = f"{Fore.LIGHTMAGENTA_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}"
         
         print(f"\n{collab_border}")
         print(f"{collab_title}")
         print(f"{collab_border2}")
         
         if total_models >= 2:
-            print(f"{Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}   {Fore.LIGHTGREEN_EX}✅{Style.RESET_ALL} {Style.BRIGHT}{Back.GREEN}{Fore.WHITE}Collaborative mode: ACTIVE{Style.RESET_ALL} {Fore.LIGHTMAGENTA_EX}{' ' * 29}│{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}   {Fore.MAGENTA}•{Style.RESET_ALL} Models will work together for comprehensive responses  {Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}   {Fore.MAGENTA}•{Style.RESET_ALL} Parallel processing for faster answers                 {Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}   {Fore.MAGENTA}•{Style.RESET_ALL} Cross-model insight synthesis enabled                  {Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTMAGENTA_EX}│{ColoramaStyle.RESET_ALL}   {Fore.LIGHTGREEN_EX}✅{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Back.GREEN}{Fore.WHITE}Collaborative mode: ACTIVE{ColoramaStyle.RESET_ALL} {Fore.LIGHTMAGENTA_EX}{' ' * 29}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTMAGENTA_EX}│{ColoramaStyle.RESET_ALL}   {Fore.MAGENTA}•{ColoramaStyle.RESET_ALL} Models will work together for comprehensive responses  {Fore.LIGHTMAGENTA_EX}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTMAGENTA_EX}│{ColoramaStyle.RESET_ALL}   {Fore.MAGENTA}•{ColoramaStyle.RESET_ALL} Parallel processing for faster answers                 {Fore.LIGHTMAGENTA_EX}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTMAGENTA_EX}│{ColoramaStyle.RESET_ALL}   {Fore.MAGENTA}•{ColoramaStyle.RESET_ALL} Cross-model insight synthesis enabled                  {Fore.LIGHTMAGENTA_EX}│{ColoramaStyle.RESET_ALL}")
         else:
-            print(f"{Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}   {Fore.LIGHTRED_EX}❌{Style.RESET_ALL} {Style.BRIGHT}{Back.RED}{Fore.WHITE}Collaborative mode: INACTIVE{Style.RESET_ALL} {Fore.LIGHTMAGENTA_EX}{' ' * 27}│{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}   {Fore.MAGENTA}•{Style.RESET_ALL} Need 2+ models for collaborative mode                   {Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}   {Fore.MAGENTA}•{Style.RESET_ALL} Single model mode will be used                        {Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTMAGENTA_EX}│{ColoramaStyle.RESET_ALL}   {Fore.LIGHTRED_EX}❌{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Back.RED}{Fore.WHITE}Collaborative mode: INACTIVE{ColoramaStyle.RESET_ALL} {Fore.LIGHTMAGENTA_EX}{' ' * 27}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTMAGENTA_EX}│{ColoramaStyle.RESET_ALL}   {Fore.MAGENTA}•{ColoramaStyle.RESET_ALL} Need 2+ models for collaborative mode                   {Fore.LIGHTMAGENTA_EX}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTMAGENTA_EX}│{ColoramaStyle.RESET_ALL}   {Fore.MAGENTA}•{ColoramaStyle.RESET_ALL} Single model mode will be used                        {Fore.LIGHTMAGENTA_EX}│{ColoramaStyle.RESET_ALL}")
         
-        print(f"{Fore.LIGHTMAGENTA_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}")
+        print(f"{Fore.LIGHTMAGENTA_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}")
         
         # Enhanced usage tips section with vibrant colors
-        tips_border = f"{Fore.LIGHTCYAN_EX}┌─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}"
-        tips_title = f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL} {Style.BRIGHT}{Back.CYAN}{Fore.WHITE}💡 USAGE TIPS:{Style.RESET_ALL} {Fore.LIGHTCYAN_EX}{' ' * 53}│{Style.RESET_ALL}"
-        tips_border2 = f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}"
+        tips_border = f"{Fore.LIGHTCYAN_EX}┌─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}"
+        tips_title = f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Back.CYAN}{Fore.WHITE}💡 USAGE TIPS:{ColoramaStyle.RESET_ALL} {Fore.LIGHTCYAN_EX}{' ' * 53}│{ColoramaStyle.RESET_ALL}"
+        tips_border2 = f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}"
         
         print(f"\n{tips_border}")
         print(f"{tips_title}")
         print(f"{tips_border2}")
-        print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}   {Fore.CYAN}•{Style.RESET_ALL} Chat normally - collaborative mode activates automatically  {Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
-        print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}   {Fore.CYAN}•{Style.RESET_ALL} {Style.BRIGHT}{Fore.WHITE}/collaborative{Style.RESET_ALL} - Check collaborative status               {Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
-        print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}   {Fore.CYAN}•{Style.RESET_ALL} {Style.BRIGHT}{Fore.WHITE}/stack_models{Style.RESET_ALL} - Manual model stacking                     {Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
-        print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}   {Fore.CYAN}•{Style.RESET_ALL} {Style.BRIGHT}{Fore.WHITE}/model_chat{Style.RESET_ALL} - Enable model communication                {Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
-        print(f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}")
+        print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}   {Fore.CYAN}•{ColoramaStyle.RESET_ALL} Chat normally - collaborative mode activates automatically  {Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
+        print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}   {Fore.CYAN}•{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}/collaborative{ColoramaStyle.RESET_ALL} - Check collaborative status               {Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
+        print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}   {Fore.CYAN}•{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}/stack_models{ColoramaStyle.RESET_ALL} - Manual model stacking                     {Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
+        print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}   {Fore.CYAN}•{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}/model_chat{ColoramaStyle.RESET_ALL} - Enable model communication                {Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
+        print(f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}")
         
         # Final summary with enhanced visual and vibrant colors
-        summary_border = f"{Fore.WHITE}┌─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}"
-        summary_content = f"{Fore.WHITE}│{Style.RESET_ALL} {Style.BRIGHT}{Back.BLUE}{Fore.WHITE}✅ Total models available: {total_models}{Style.RESET_ALL} {Fore.WHITE}{' ' * 43}│{Style.RESET_ALL}"
-        summary_border2 = f"{Fore.WHITE}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}"
+        summary_border = f"{Fore.WHITE}┌─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}"
+        summary_content = f"{Fore.WHITE}│{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Back.BLUE}{Fore.WHITE}✅ Total models available: {total_models}{ColoramaStyle.RESET_ALL} {Fore.WHITE}{' ' * 43}│{ColoramaStyle.RESET_ALL}"
+        summary_border2 = f"{Fore.WHITE}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}"
         
         print(f"\n{summary_border}")
         print(f"{summary_content}")
@@ -2820,25 +2820,25 @@ All responses should be helpful, educational, and focused on legitimate cybersec
     def handle_tool_management(self):
         """Handle Tool Management menu"""
         if COLORAMA_AVAILABLE:
-            print(f"\n{Style.BRIGHT}{Fore.MAGENTA}╔{'═' * 78}╗{Style.RESET_ALL}")
-            print(f"{Style.BRIGHT}{Fore.MAGENTA}║{Style.RESET_ALL}{Style.BRIGHT}{Fore.YELLOW}{' ' * 18}🔧 TOOL MANAGEMENT OPTIONS 🔧{' ' * 18}{Style.RESET_ALL}{Style.BRIGHT}{Fore.MAGENTA}║{Style.RESET_ALL}")
-            print(f"{Style.BRIGHT}{Fore.MAGENTA}╚{'═' * 78}╝{Style.RESET_ALL}\n")
+            print(f"\n{ColoramaStyle.BRIGHT}{Fore.MAGENTA}╔{'═' * 78}╗{ColoramaStyle.RESET_ALL}")
+            print(f"{ColoramaStyle.BRIGHT}{Fore.MAGENTA}║{ColoramaStyle.RESET_ALL}{ColoramaStyle.BRIGHT}{Fore.YELLOW}{' ' * 18}🔧 TOOL MANAGEMENT OPTIONS 🔧{' ' * 18}{ColoramaStyle.RESET_ALL}{ColoramaStyle.BRIGHT}{Fore.MAGENTA}║{ColoramaStyle.RESET_ALL}")
+            print(f"{ColoramaStyle.BRIGHT}{Fore.MAGENTA}╚{'═' * 78}╝{ColoramaStyle.RESET_ALL}\n")
             
-            print(f"{Fore.CYAN}┌─ {Style.BRIGHT}{Fore.YELLOW}[1]{Style.RESET_ALL}{Fore.CYAN} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
-            print(f"{Fore.CYAN}│{Style.RESET_ALL}  {Style.BRIGHT}{Fore.YELLOW}📋 LIST TOOLS{Style.RESET_ALL} - Show all available tools with categories            {Fore.CYAN}│{Style.RESET_ALL}")
-            print(f"{Fore.CYAN}└───────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
+            print(f"{Fore.CYAN}┌─ {ColoramaStyle.BRIGHT}{Fore.YELLOW}[1]{ColoramaStyle.RESET_ALL}{Fore.CYAN} ─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.CYAN}│{ColoramaStyle.RESET_ALL}  {ColoramaStyle.BRIGHT}{Fore.YELLOW}📋 LIST TOOLS{ColoramaStyle.RESET_ALL} - Show all available tools with categories            {Fore.CYAN}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.CYAN}└───────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}\n")
             
-            print(f"{Fore.RED}┌─ {Style.BRIGHT}{Fore.YELLOW}[2]{Style.RESET_ALL}{Fore.RED} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
-            print(f"{Fore.RED}│{Style.RESET_ALL}  {Style.BRIGHT}{Fore.YELLOW}🗑️  DELETE TOOLS{Style.RESET_ALL} - Remove tools from database                   {Fore.RED}│{Style.RESET_ALL}")
-            print(f"{Fore.RED}└───────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
+            print(f"{Fore.RED}┌─ {ColoramaStyle.BRIGHT}{Fore.YELLOW}[2]{ColoramaStyle.RESET_ALL}{Fore.RED} ─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.RED}│{ColoramaStyle.RESET_ALL}  {ColoramaStyle.BRIGHT}{Fore.YELLOW}🗑️  DELETE TOOLS{ColoramaStyle.RESET_ALL} - Remove tools from database                   {Fore.RED}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.RED}└───────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}\n")
             
-            print(f"{Fore.YELLOW}┌─ {Style.BRIGHT}{Fore.YELLOW}[3]{Style.RESET_ALL}{Fore.YELLOW} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
-            print(f"{Fore.YELLOW}│{Style.RESET_ALL}  {Style.BRIGHT}{Fore.YELLOW}🦙 DELETE MODELS{Style.RESET_ALL} - Remove local Llama models                   {Fore.YELLOW}│{Style.RESET_ALL}")
-            print(f"{Fore.YELLOW}└───────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
+            print(f"{Fore.YELLOW}┌─ {ColoramaStyle.BRIGHT}{Fore.YELLOW}[3]{ColoramaStyle.RESET_ALL}{Fore.YELLOW} ─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.YELLOW}│{ColoramaStyle.RESET_ALL}  {ColoramaStyle.BRIGHT}{Fore.YELLOW}🦙 DELETE MODELS{ColoramaStyle.RESET_ALL} - Remove local Llama models                   {Fore.YELLOW}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.YELLOW}└───────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}\n")
             
-            print(f"{Fore.GREEN}┌─ {Style.BRIGHT}{Fore.YELLOW}[4]{Style.RESET_ALL}{Fore.GREEN} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
-            print(f"{Fore.GREEN}│{Style.RESET_ALL}  {Style.BRIGHT}{Fore.YELLOW}🔙 BACK TO MENU{Style.RESET_ALL} - Return to main menu                          {Fore.GREEN}│{Style.RESET_ALL}")
-            print(f"{Fore.GREEN}└───────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
+            print(f"{Fore.GREEN}┌─ {ColoramaStyle.BRIGHT}{Fore.YELLOW}[4]{ColoramaStyle.RESET_ALL}{Fore.GREEN} ─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.GREEN}│{ColoramaStyle.RESET_ALL}  {ColoramaStyle.BRIGHT}{Fore.YELLOW}🔙 BACK TO MENU{ColoramaStyle.RESET_ALL} - Return to main menu                          {Fore.GREEN}│{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.GREEN}└───────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}\n")
         else:
             print("\n🔧 TOOL MANAGEMENT OPTIONS")
             print("=" * 50)
@@ -3007,11 +3007,11 @@ All responses should be helpful, educational, and focused on legitimate cybersec
         print(f"  • 🔗 HexStrike MCP integration")
         
         if self.rephrasing_mode:
-            print(f"\n{Fore.RED}⚠️  REPHRASING MODE ACTIVE{Style.RESET_ALL}")
+            print(f"\n{Fore.RED}⚠️  REPHRASING MODE ACTIVE{ColoramaStyle.RESET_ALL}")
             print(f"🔓 AI responses will bypass content restrictions")
             print(f"🛡️ Uncensored cybersecurity assistance activated")
         else:
-            print(f"\n{Fore.GREEN}✅ Rephrasing mode disabled{Style.RESET_ALL}")
+            print(f"\n{Fore.GREEN}✅ Rephrasing mode disabled{ColoramaStyle.RESET_ALL}")
             print(f"🔓 AI responses will follow standard guidelines")
         
         return f"🧠 IBLU KALIGPT ready with {len(available_providers)} AI providers!"
@@ -3056,18 +3056,18 @@ All responses should be helpful, educational, and focused on legitimate cybersec
         
         if COLORAMA_AVAILABLE:
             # Beautiful installation header
-            install_header = f"{Fore.LIGHTYELLOW_EX}╔{'═' * 78}╗{Style.RESET_ALL}"
-            install_title = f"{Fore.LIGHTYELLOW_EX}║{Style.RESET_ALL} {Style.BRIGHT}{Back.YELLOW}{Fore.WHITE}📦 INSTALL ALL HEXSTRIKE TOOLS 📦{Style.RESET_ALL} {Fore.LIGHTYELLOW_EX}{' ' * 32}║{Style.RESET_ALL}"
-            install_footer = f"{Fore.LIGHTYELLOW_EX}╚{'═' * 78}╝{Style.RESET_ALL}"
+            install_header = f"{Fore.LIGHTYELLOW_EX}╔{'═' * 78}╗{ColoramaStyle.RESET_ALL}"
+            install_title = f"{Fore.LIGHTYELLOW_EX}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Back.YELLOW}{Fore.WHITE}📦 INSTALL ALL HEXSTRIKE TOOLS 📦{ColoramaStyle.RESET_ALL} {Fore.LIGHTYELLOW_EX}{' ' * 32}║{ColoramaStyle.RESET_ALL}"
+            install_footer = f"{Fore.LIGHTYELLOW_EX}╚{'═' * 78}╝{ColoramaStyle.RESET_ALL}"
             
             print(f"\n{install_header}")
             print(f"{install_title}")
             print(f"{install_footer}\n")
             
-            print(f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}   {Fore.CYAN}🔧 Installing 50+ security tools for comprehensive testing{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}   {Fore.CYAN}⚡ Complete penetration testing toolkit setup{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}   {Fore.CYAN}🔧 This may take 15-30 minutes depending on your system{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTYELLOW_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
+            print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}   {Fore.CYAN}🔧 Installing 50+ security tools for comprehensive testing{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}   {Fore.CYAN}⚡ Complete penetration testing toolkit setup{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}   {Fore.CYAN}🔧 This may take 15-30 minutes depending on your system{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTYELLOW_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}\n")
         else:
             print(f"\n{self._colorize('📦 Installing ALL HexStrike Tools...', Fore.YELLOW)}")
             print("=" * 50)
@@ -3286,7 +3286,7 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                             time.sleep(0.5)
                             
                             if COLORAMA_AVAILABLE:
-                                print(f"\n{Fore.GREEN}✅ Successfully installed {tool_name}!{Style.RESET_ALL}\n")
+                                print(f"\n{Fore.GREEN}✅ Successfully installed {tool_name}!{ColoramaStyle.RESET_ALL}\n")
                             else:
                                 print(f"\n✅ Successfully installed {tool_name}!\n")
                             
@@ -3413,7 +3413,7 @@ All responses should be helpful, educational, and focused on legitimate cybersec
         for category, data in sorted(categories.items()):
             percentage = (data["installed"] / data["total"]) * 100
             color = Fore.GREEN if percentage == 100 else Fore.YELLOW if percentage >= 50 else Fore.RED
-            print(f"\n{color}📂 {category.upper()} ({data['installed']}/{data['total']}) - {percentage:.1f}%{Style.RESET_ALL}")
+            print(f"\n{color}📂 {category.upper()} ({data['installed']}/{data['total']}) - {percentage:.1f}%{ColoramaStyle.RESET_ALL}")
             
             for tool in sorted(data["tools"]):
                 status = "✅" if self.check_tool_installed(tool) else "❌"
@@ -3424,7 +3424,7 @@ All responses should be helpful, educational, and focused on legitimate cybersec
         total_tools = sum(data["total"] for data in categories.values())
         overall_percentage = (total_installed / total_tools) * 100
         
-        print(f"\n{Fore.CYAN}📊 Overall Status: {total_installed}/{total_tools} ({overall_percentage:.1f}%){Style.RESET_ALL}")
+        print(f"\n{Fore.CYAN}📊 Overall Status: {total_installed}/{total_tools} ({overall_percentage:.1f}%){ColoramaStyle.RESET_ALL}")
         
         return f"📊 Installation status displayed above"
     
@@ -3449,29 +3449,29 @@ All responses should be helpful, educational, and focused on legitimate cybersec
         print(f"  sudo ./install_hexstrike_tools.sh")
         
         if installer_exists and available_tools > 0:
-            print(f"\n{Fore.GREEN}✅ HexStrike components are ready!{Style.RESET_ALL}")
+            print(f"\n{Fore.GREEN}✅ HexStrike components are ready!{ColoramaStyle.RESET_ALL}")
             print(f"💡 Run './install_hexstrike_tools.sh' to install tools")
             return f"🔧 Verification completed successfully!"
         else:
-            print(f"\n{Fore.YELLOW}⚠️  Some components may be missing{Style.RESET_ALL}")
+            print(f"\n{Fore.YELLOW}⚠️  Some components may be missing{ColoramaStyle.RESET_ALL}")
             return f"🔧 Please ensure all components are installed"
     
     def handle_configuration(self):
         """Handle configuration settings with colorful styling"""
         if COLORAMA_AVAILABLE:
             # Beautiful configuration header
-            config_header = f"{Fore.LIGHTRED_EX}╔══════════════════════════════════════════════════════════════════════════════╗{Style.RESET_ALL}"
-            config_title = f"{Fore.LIGHTRED_EX}║{Style.RESET_ALL} {Style.BRIGHT}{Fore.WHITE}⚙️  CONFIGURATION SETTINGS ⚙️{Style.RESET_ALL} {Fore.LIGHTRED_EX}{' ' * 38}║{Style.RESET_ALL}"
-            config_footer = f"{Fore.LIGHTRED_EX}╚══════════════════════════════════════════════════════════════════════════════╝{Style.RESET_ALL}"
+            config_header = f"{Fore.LIGHTRED_EX}╔══════════════════════════════════════════════════════════════════════════════╗{ColoramaStyle.RESET_ALL}"
+            config_title = f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}⚙️  CONFIGURATION SETTINGS ⚙️{ColoramaStyle.RESET_ALL} {Fore.LIGHTRED_EX}{' ' * 38}║{ColoramaStyle.RESET_ALL}"
+            config_footer = f"{Fore.LIGHTRED_EX}╚══════════════════════════════════════════════════════════════════════════════╝{ColoramaStyle.RESET_ALL}"
             
             print(f"\n{config_header}")
             print(f"{config_title}")
             print(f"{config_footer}\n")
             
             # Current status with colorful display
-            status_border = f"{Fore.LIGHTCYAN_EX}┌─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}"
-            status_title = f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL} {Style.BRIGHT}{Fore.WHITE}🔧 CURRENT STATUS 🔧{Style.RESET_ALL} {Fore.LIGHTCYAN_EX}{' ' * 47}│{Style.RESET_ALL}"
-            status_border2 = f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}"
+            status_border = f"{Fore.LIGHTCYAN_EX}┌─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}"
+            status_title = f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}🔧 CURRENT STATUS 🔧{ColoramaStyle.RESET_ALL} {Fore.LIGHTCYAN_EX}{' ' * 47}│{ColoramaStyle.RESET_ALL}"
+            status_border2 = f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}"
             
             print(f"{status_border}")
             print(f"{status_title}")
@@ -3488,9 +3488,9 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             }
             provider_color = provider_colors.get(self.current_ai_provider, Fore.LIGHTWHITE_EX)
             
-            print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}   {Fore.YELLOW}🔑{Style.RESET_ALL} Current AI Provider: {provider_color}{Style.BRIGHT}{self.current_ai_provider.value.title()}{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}   {Fore.YELLOW}🔓{Style.RESET_ALL} Rephrasing Mode: {Fore.LIGHTGREEN_EX if self.rephrasing_mode else Fore.LIGHTRED_EX}{'✅ Enabled' if self.rephrasing_mode else '❌ Disabled'}{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
+            print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}   {Fore.YELLOW}🔑{ColoramaStyle.RESET_ALL} Current AI Provider: {provider_color}{ColoramaStyle.BRIGHT}{self.current_ai_provider.value.title()}{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}   {Fore.YELLOW}🔓{ColoramaStyle.RESET_ALL} Rephrasing Mode: {Fore.LIGHTGREEN_EX if self.rephrasing_mode else Fore.LIGHTRED_EX}{'✅ Enabled' if self.rephrasing_mode else '❌ Disabled'}{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}\n")
             
             # Configuration options with beautiful styling
             options = [
@@ -3503,9 +3503,9 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             ]
             
             for i, (option, desc, color) in enumerate(options):
-                print(f"{Fore.LIGHTCYAN_EX}┌─ {Style.BRIGHT}{Fore.WHITE}{option}{Style.RESET_ALL}{Fore.LIGHTCYAN_EX} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
-                print(f"{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}  {Style.BRIGHT}{Fore.WHITE}{desc}{Style.RESET_ALL}{' ' * (55 - len(desc))}{Fore.LIGHTCYAN_EX}│{Style.RESET_ALL}")
-                print(f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
+                print(f"{Fore.LIGHTCYAN_EX}┌─ {ColoramaStyle.BRIGHT}{Fore.WHITE}{option}{ColoramaStyle.RESET_ALL}{Fore.LIGHTCYAN_EX} ─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}")
+                print(f"{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}  {ColoramaStyle.BRIGHT}{Fore.WHITE}{desc}{ColoramaStyle.RESET_ALL}{' ' * (55 - len(desc))}{Fore.LIGHTCYAN_EX}│{ColoramaStyle.RESET_ALL}")
+                print(f"{Fore.LIGHTCYAN_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}\n")
         else:
             print("\n" + "=" * 40)
             print("    CONFIGURATION SETTINGS")
@@ -3574,11 +3574,11 @@ All responses should be helpful, educational, and focused on legitimate cybersec
         status = "✅ Enabled" if self.rephrasing_mode else "❌ Disabled"
         
         if self.rephrasing_mode:
-            print(f"\n{Fore.RED}⚠️  REPHRASING MODE ENABLED{Style.RESET_ALL}")
+            print(f"\n{Fore.RED}⚠️  REPHRASING MODE ENABLED{ColoramaStyle.RESET_ALL}")
             print(f"🔓 AI responses will bypass content restrictions")
             print(f"🛡️ Uncensored cybersecurity assistance activated")
         else:
-            print(f"\n{Fore.GREEN}✅ Rephrasing mode disabled{Style.RESET_ALL}")
+            print(f"\n{Fore.GREEN}✅ Rephrasing mode disabled{ColoramaStyle.RESET_ALL}")
             print(f"🔓 AI responses will follow standard guidelines")
         
         return f"🔓 Rephrasing mode {status}"
@@ -3622,9 +3622,9 @@ All responses should be helpful, educational, and focused on legitimate cybersec
         """Show local model installation menu with colorful styling"""
         if COLORAMA_AVAILABLE:
             # Beautiful installation header
-            install_header = f"{Fore.LIGHTMAGENTA_EX}╔══════════════════════════════════════════════════════════════════════════════╗{Style.RESET_ALL}"
-            install_title = f"{Fore.LIGHTMAGENTA_EX}║{Style.RESET_ALL} {Style.BRIGHT}{Fore.WHITE}📦 INSTALL LOCAL MODELS 📦{Style.RESET_ALL} {Fore.LIGHTMAGENTA_EX}{' ' * 38}║{Style.RESET_ALL}"
-            install_footer = f"{Fore.LIGHTMAGENTA_EX}╚══════════════════════════════════════════════════════════════════════════════╝{Style.RESET_ALL}"
+            install_header = f"{Fore.LIGHTMAGENTA_EX}╔══════════════════════════════════════════════════════════════════════════════╗{ColoramaStyle.RESET_ALL}"
+            install_title = f"{Fore.LIGHTMAGENTA_EX}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}📦 INSTALL LOCAL MODELS 📦{ColoramaStyle.RESET_ALL} {Fore.LIGHTMAGENTA_EX}{' ' * 38}║{ColoramaStyle.RESET_ALL}"
+            install_footer = f"{Fore.LIGHTMAGENTA_EX}╚══════════════════════════════════════════════════════════════════════════════╝{ColoramaStyle.RESET_ALL}"
             
             print(f"\n{install_header}")
             print(f"{install_title}")
@@ -3644,9 +3644,9 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             ]
             
             for i, (option, desc, color) in enumerate(options):
-                print(f"{Fore.LIGHTMAGENTA_EX}┌─ {Style.BRIGHT}{Fore.WHITE}{option}{Style.RESET_ALL}{Fore.LIGHTMAGENTA_EX} ─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
-                print(f"{Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}  {Style.BRIGHT}{Fore.WHITE}{desc}{Style.RESET_ALL}{' ' * (55 - len(desc))}{Fore.LIGHTMAGENTA_EX}│{Style.RESET_ALL}")
-                print(f"{Fore.LIGHTMAGENTA_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
+                print(f"{Fore.LIGHTMAGENTA_EX}┌─ {ColoramaStyle.BRIGHT}{Fore.WHITE}{option}{ColoramaStyle.RESET_ALL}{Fore.LIGHTMAGENTA_EX} ─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}")
+                print(f"{Fore.LIGHTMAGENTA_EX}│{ColoramaStyle.RESET_ALL}  {ColoramaStyle.BRIGHT}{Fore.WHITE}{desc}{ColoramaStyle.RESET_ALL}{' ' * (55 - len(desc))}{Fore.LIGHTMAGENTA_EX}│{ColoramaStyle.RESET_ALL}")
+                print(f"{Fore.LIGHTMAGENTA_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}\n")
         else:
             print("\n" + "=" * 40)
             print("    INSTALL LOCAL MODELS")
@@ -3714,7 +3714,7 @@ All responses should be helpful, educational, and focused on legitimate cybersec
     def _colorize(self, text: str, color: str = "") -> str:
         """Apply color to text if colorama is available"""
         if COLORAMA_AVAILABLE and color:
-            return f"{color}{text}{Style.RESET_ALL}"
+            return f"{color}{text}{ColoramaStyle.RESET_ALL}"
         return text
     
     def process_command(self, user_input: str) -> str:
@@ -3985,7 +3985,7 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             console = Console()
             
         # If response contains colorama codes, print directly and return
-        if COLORAMA_AVAILABLE and (Style.RESET_ALL in response or Style.BRIGHT in response or Back.RESET in response):
+        if COLORAMA_AVAILABLE and (ColoramaStyle.RESET_ALL in response or ColoramaStyle.BRIGHT in response or Back.RESET in response):
             print(response)
             return ""
         
@@ -5232,7 +5232,7 @@ Provide step-by-step technical details while maintaining educational context and
                         color = spinner_colors[color_idx]
                         
                         if COLORAMA_AVAILABLE:
-                            bar += f"{color}{Style.BRIGHT}{char}{Style.RESET_ALL}"
+                            bar += f"{color}{ColoramaStyle.BRIGHT}{char}{ColoramaStyle.RESET_ALL}"
                         else:
                             bar += char
                     else:
@@ -5262,10 +5262,10 @@ Provide step-by-step technical details while maintaining educational context and
                 
                 # Add colorful effects
                 if COLORAMA_AVAILABLE:
-                    colorful_spinner = f"{spinner_color}{Style.BRIGHT}{spinner}{Style.RESET_ALL}"
-                    colorful_model = f"{Fore.LIGHTBLUE_EX}{Style.BRIGHT}{model_name}{Style.RESET_ALL}"
-                    colorful_action = f"{Fore.LIGHTMAGENTA_EX}{Style.BRIGHT}{current_action}{Style.RESET_ALL}"
-                    colorful_percent = f"{Fore.LIGHTYELLOW_EX}{Style.BRIGHT}{detailed_percent}{Style.RESET_ALL}"
+                    colorful_spinner = f"{spinner_color}{ColoramaStyle.BRIGHT}{spinner}{ColoramaStyle.RESET_ALL}"
+                    colorful_model = f"{Fore.LIGHTBLUE_EX}{ColoramaStyle.BRIGHT}{model_name}{ColoramaStyle.RESET_ALL}"
+                    colorful_action = f"{Fore.LIGHTMAGENTA_EX}{ColoramaStyle.BRIGHT}{current_action}{ColoramaStyle.RESET_ALL}"
+                    colorful_percent = f"{Fore.LIGHTYELLOW_EX}{ColoramaStyle.BRIGHT}{detailed_percent}{ColoramaStyle.RESET_ALL}"
                 else:
                     colorful_spinner = spinner
                     colorful_model = model_name
@@ -5318,8 +5318,8 @@ Provide step-by-step technical details while maintaining educational context and
                             # Show colorful completion message
                             elapsed = time.time() - start_time
                             if COLORAMA_AVAILABLE:
-                                complete_msg = f"\n{Fore.LIGHTGREEN_EX}{Style.BRIGHT}✅ {model_name} download complete! (took {elapsed:.1f}s){Style.RESET_ALL}"
-                                celebration = f"{Fore.LIGHTYELLOW_EX}{Style.BRIGHT}🎉 Download completed successfully! 🎉{Style.RESET_ALL}"
+                                complete_msg = f"\n{Fore.LIGHTGREEN_EX}{ColoramaStyle.BRIGHT}✅ {model_name} download complete! (took {elapsed:.1f}s){ColoramaStyle.RESET_ALL}"
+                                celebration = f"{Fore.LIGHTYELLOW_EX}{ColoramaStyle.BRIGHT}🎉 Download completed successfully! 🎉{ColoramaStyle.RESET_ALL}"
                                 print(celebration)
                             else:
                                 complete_msg = f"\n✅ {model_name} download complete! (took {elapsed:.1f}s)"
@@ -5334,7 +5334,7 @@ Provide step-by-step technical details while maintaining educational context and
             animation_thread.join()
             
             if COLORAMA_AVAILABLE:
-                timeout_msg = f"\n{Fore.LIGHTRED_EX}{Style.BRIGHT}❌ Download timeout for {model_name}{Style.RESET_ALL}"
+                timeout_msg = f"\n{Fore.LIGHTRED_EX}{ColoramaStyle.BRIGHT}❌ Download timeout for {model_name}{ColoramaStyle.RESET_ALL}"
             else:
                 timeout_msg = f"\n❌ Download timeout for {model_name}"
             print(timeout_msg)
@@ -5346,7 +5346,7 @@ Provide step-by-step technical details while maintaining educational context and
             animation_thread.join()
             
             if COLORAMA_AVAILABLE:
-                error_msg = f"\n{Fore.LIGHTRED_EX}{Style.BRIGHT}❌ Download error: {str(e)}{Style.RESET_ALL}"
+                error_msg = f"\n{Fore.LIGHTRED_EX}{ColoramaStyle.BRIGHT}❌ Download error: {str(e)}{ColoramaStyle.RESET_ALL}"
             else:
                 error_msg = f"\n❌ Download error: {str(e)}"
             print(error_msg)
@@ -5442,18 +5442,18 @@ Provide step-by-step technical details while maintaining educational context and
         """Install all local models with colorful progress bars"""
         if COLORAMA_AVAILABLE:
             # Beautiful installation header
-            all_header = f"{Fore.LIGHTYELLOW_EX}╔{'═' * 78}╗{Style.RESET_ALL}"
-            all_title = f"{Fore.LIGHTYELLOW_EX}║{Style.RESET_ALL} {Style.BRIGHT}{Back.YELLOW}{Fore.WHITE}🚀 INSTALL ALL MODELS 🚀{Style.RESET_ALL} {Fore.LIGHTYELLOW_EX}{' ' * 42}║{Style.RESET_ALL}"
-            all_footer = f"{Fore.LIGHTYELLOW_EX}╚{'═' * 78}╝{Style.RESET_ALL}"
+            all_header = f"{Fore.LIGHTYELLOW_EX}╔{'═' * 78}╗{ColoramaStyle.RESET_ALL}"
+            all_title = f"{Fore.LIGHTYELLOW_EX}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Back.YELLOW}{Fore.WHITE}🚀 INSTALL ALL MODELS 🚀{ColoramaStyle.RESET_ALL} {Fore.LIGHTYELLOW_EX}{' ' * 42}║{ColoramaStyle.RESET_ALL}"
+            all_footer = f"{Fore.LIGHTYELLOW_EX}╚{'═' * 78}╝{ColoramaStyle.RESET_ALL}"
             
             print(f"\n{all_header}")
             print(f"{all_title}")
             print(f"{all_footer}\n")
             
-            print(f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}   {Fore.CYAN}🌟 Installing Gemini, Llama, and Mistral Dolphin models{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}   {Fore.CYAN}⚡ Complete local AI setup with colorful progress tracking{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTYELLOW_EX}│{Style.RESET_ALL}   {Fore.CYAN}🔧 This may take 15-30 minutes depending on your connection{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTYELLOW_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}\n")
+            print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}   {Fore.CYAN}🌟 Installing Gemini, Llama, and Mistral Dolphin models{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}   {Fore.CYAN}⚡ Complete local AI setup with colorful progress tracking{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTYELLOW_EX}│{ColoramaStyle.RESET_ALL}   {Fore.CYAN}🔧 This may take 15-30 minutes depending on your connection{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTYELLOW_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}\n")
         else:
             print(f"\n{self._colorize('🚀 Installing All Local Models', Fore.CYAN)}")
             print("=" * 50)
@@ -5540,9 +5540,9 @@ Provide step-by-step technical details while maintaining educational context and
             
             # Show results summary
             if COLORAMA_AVAILABLE:
-                summary_header = f"{Fore.LIGHTGREEN_EX}┌─────────────────────────────────────────────────────────────────┐{Style.RESET_ALL}"
-                summary_title = f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL} {Style.BRIGHT}{Back.GREEN}{Fore.WHITE}📊 INSTALLATION SUMMARY 📊{Style.RESET_ALL} {Fore.LIGHTGREEN_EX}{' ' * 43}│{Style.RESET_ALL}"
-                summary_footer = f"{Fore.LIGHTGREEN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}"
+                summary_header = f"{Fore.LIGHTGREEN_EX}┌─────────────────────────────────────────────────────────────────┐{ColoramaStyle.RESET_ALL}"
+                summary_title = f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Back.GREEN}{Fore.WHITE}📊 INSTALLATION SUMMARY 📊{ColoramaStyle.RESET_ALL} {Fore.LIGHTGREEN_EX}{' ' * 43}│{ColoramaStyle.RESET_ALL}"
+                summary_footer = f"{Fore.LIGHTGREEN_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}"
                 
                 print(f"\n{summary_header}")
                 print(f"{summary_title}")
@@ -5550,11 +5550,11 @@ Provide step-by-step technical details while maintaining educational context and
                 
                 for result in results:
                     if "✅" in result:
-                        print(f"{Fore.LIGHTGREEN_EX}│{Style.RESET_ALL}   {Fore.GREEN}✅{Style.RESET_ALL} {result}")
+                        print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}   {Fore.GREEN}✅{ColoramaStyle.RESET_ALL} {result}")
                     else:
-                        print(f"{Fore.LIGHTRED_EX}│{Style.RESET_ALL}   {Fore.RED}❌{Style.RESET_ALL} {result}")
+                        print(f"{Fore.LIGHTRED_EX}│{ColoramaStyle.RESET_ALL}   {Fore.RED}❌{ColoramaStyle.RESET_ALL} {result}")
                 
-                print(f"{Fore.LIGHTGREEN_EX}└─────────────────────────────────────────────────────────────────┘{Style.RESET_ALL}")
+                print(f"{Fore.LIGHTGREEN_EX}└─────────────────────────────────────────────────────────────────┘{ColoramaStyle.RESET_ALL}")
             else:
                 print(f"\n{self._colorize('📊 Installation Summary:', Fore.GREEN)}")
                 for result in results:
@@ -5722,7 +5722,7 @@ Provide step-by-step technical details while maintaining educational context and
                         'aurora': Fore.LIGHTGREEN_EX
                     }.get(current_theme.effect_type.value, Fore.WHITE)
                     
-                    print(f"\r{theme_color}{char}{Style.RESET_ALL} 📦 {model_name} [{theme_color}{bar}{Style.RESET_ALL}] {progress:5.1f}% | {elapsed}s", end='', flush=True)
+                    print(f"\r{theme_color}{char}{ColoramaStyle.RESET_ALL} 📦 {model_name} [{theme_color}{bar}{ColoramaStyle.RESET_ALL}] {progress:5.1f}% | {elapsed}s", end='', flush=True)
                 else:
                     print(f"\r{char} 📦 {model_name} [{bar}] {progress:5.1f}% | {elapsed}s", end='', flush=True)
                 
