@@ -4352,7 +4352,7 @@ Provide step-by-step technical details while maintaining educational context and
                 return f"❌ Failed to pull any base image. Docker setup may need manual configuration."
             
             self.show_loading_animation("Configuring local AI environment...")
-            if pull_cmd.returncode == 0:
+            if pull_success:
                 print("✅ Base Docker environment ready!")
                 print(f"\n{self._colorize('🚀 Docker setup completed!', Fore.GREEN)}")
                 print(f"\n{self._colorize('💡 For local Gemini, try:', Fore.YELLOW)}")
@@ -4361,13 +4361,14 @@ Provide step-by-step technical details while maintaining educational context and
                 print("3. Configure cloud API keys in config.json")
                 return "✅ Docker environment ready for local AI setup!"
             else:
-                return f"❌ Failed to pull base image: {pull_cmd.stderr}"
+                return f"❌ Failed to pull base image"
         
         except Exception as e:
             return f"❌ Installation error: {e}"
     
     def show_loading_animation(self, message: str):
         """Show a beautiful loading animation with spinner or alive-progress"""
+        timer = None
         if ALIVE_PROGRESS_AVAILABLE:
             import time
             from alive_progress import alive_bar
