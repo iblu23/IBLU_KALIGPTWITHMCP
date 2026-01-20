@@ -2353,10 +2353,13 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             
             # Display the main banner - Full Screen (144 chars) with glitch effect
             def glitch(text):
+                if not text or len(text) == 0:
+                    return text
                 chars = list(text)
                 for _ in range(10):
-                    i = random.randint(0, len(chars)-1)
-                    chars[i] = random.choice("@#$%&*")
+                    if len(chars) > 0:
+                        i = random.randint(0, len(chars)-1)
+                        chars[i] = random.choice("@#$%&*")
                 return "".join(chars)
             
             banner_lines = banner_content.plain.splitlines()
@@ -2378,10 +2381,13 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             
             # Display the main banner with glitch effect (fallback)
             def glitch(text):
+                if not text or len(text) == 0:
+                    return text
                 chars = list(text)
                 for _ in range(10):
-                    i = random.randint(0, len(chars)-1)
-                    chars[i] = random.choice("@#$%&*")
+                    if len(chars) > 0:
+                        i = random.randint(0, len(chars)-1)
+                        chars[i] = random.choice("@#$%&*")
                 return "".join(chars)
             
             banner_lines = [
