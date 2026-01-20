@@ -1703,7 +1703,7 @@ class IBLUCommandHelper:
             basic_commands = ['/help', '/exit', '/clear', '/status', '/debug_uncensored', '/force_uncensored', '/restore_config', '/scan', '/payload', 
                             '/autopentest', '/mcp_connect', '/mcp_disconnect', 
                             '/openai', '/gemini', '/mistral', '/llama', '/huggingface', '/history', '/tools', '/install',
-                            '/hexstrike', '/pentest', '/llama_models', '/delete_llama', '/delete_tools', '/collaborative', '/install_models', '/install_llama', '/install_dolphin', '/install_mistral', '/hf_install', '/hf_models', '/hf_search']
+                            '/hexstrike', '/pentest', '/llama_models', '/delete_llama', '/delete_tools', '/collaborative', '/install_models', '/install_llama', '/install_dolphin', '/install_mistral', '/install_gemma', '/hf_install', '/hf_models', '/hf_search']
             
             # Add HexStrike tool commands
             hexstrike_commands = [f"/{tool}" for tool in self.hexstrike_tools.keys()]
@@ -1900,6 +1900,7 @@ class IBLUCommandHelper:
   install_llama     - Install Llama models locally (Llama 2, 3.1 8B, Dolphin 3.0)
   install_dolphin   - Install Dolphin 3.0 Llama 3.1 8B (uncensored model)
   install_mistral   - Install Mistral Dolphin model locally
+  install_gemma     - Install Gemma-2-9B-IT-Abliterated (uncensored GGUF model)
   llama_models      - List and manage available Llama models
   delete_llama      - Delete a local Llama model
   install_models    - Install all local models
@@ -2298,6 +2299,7 @@ class IBLUCommandHelper:
             "install_llama": {"description": "Install Llama model locally", "usage": "install_llama"},
             "install_dolphin": {"description": "Install Dolphin 3.0 Llama 3.1 8B (uncensored)", "usage": "install_dolphin"},
             "install_mistral": {"description": "Install Mistral Dolphin model locally", "usage": "install_mistral"},
+            "install_gemma": {"description": "Install Gemma-2-9B-IT-Abliterated (uncensored GGUF)", "usage": "install_gemma"},
             "install_models": {"description": "Install all local models", "usage": "install_models"},
             "hf_install": {"description": "Install Hugging Face model", "usage": "hf_install <model_name>"},
             "hf_models": {"description": "List installed Hugging Face models", "usage": "hf_models"},
@@ -4950,6 +4952,8 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             return self.install_mistral_dolphin_local()
         elif cmd == "install_dolphin":
             return self.install_dolphin_llama_local()
+        elif cmd == "install_gemma":
+            return self.install_gemma_abliterated_local()
         elif cmd == "hf_install":
             return self.install_huggingface_model()
         elif cmd == "hf_models":
@@ -7545,6 +7549,145 @@ Provide step-by-step technical details while maintaining educational context.
                 error_msg = pull_cmd.stderr.strip() if pull_cmd.stderr else "Unknown error"
                 return f"❌ Failed to install Dolphin 3.0: {error_msg}"
                 
+        except subprocess.TimeoutExpired:
+            return "❌ Installation timed out. Please check your internet connection."
+        except Exception as e:
+            return f"❌ Installation error: {e}"
+    
+    def install_gemma_abliterated_local(self) -> str:
+        """Install Gemma-2-9B-IT-Abliterated GGUF model locally via HuggingFace"""
+        print(f"\n{self._colorize('🔧 Installing Gemma-2-9B-IT-Abliterated GGUF Model', Fore.CYAN)}")
+        print("=" * 60)
+        
+        print(f"\n{self._colorize('💎 About Gemma-2-9B-IT-Abliterated:', Fore.YELLOW)}")
+        print("  • Google Gemma 2 9B Instruct model (abliterated/uncensored)")
+        print("  • High-quality reasoning and instruction following")
+        print("  • GGUF format optimized for local CPU/GPU inference")
+        print("  • Excellent for cybersecurity education and research")
+        print("  • 9B parameter model - powerful and efficient")
+        print("  • Perfect for privacy-focused AI assistance")
+        
+        print(f"\n{self._colorize('📥 Model Details:', Fore.MAGENTA)}")
+        print("  • Source: https://huggingface.co/bartowski/gemma-2-9b-it-abliterated-GGUF")
+        print("  • Size: ~5.3 GB (Q4_K_M quantization)")
+        print("  • Format: GGUF (compatible with llama.cpp, Ollama)")
+        print("  • License: Apache 2.0 (commercial use allowed)")
+        
+        confirm = input(f"\n{self._colorize('🎯 Install Gemma-2-9B-IT-Abliterated? (y/N):', Fore.YELLOW)}").strip().lower()
+        
+        if confirm not in ['y', 'yes']:
+            return "❌ Installation cancelled by user."
+        
+        print(f"\n{self._colorize('📦 Installing Gemma-2-9B-IT-Abliterated...', Fore.GREEN)}")
+        
+        try:
+            # Check if git is available
+            git_check = subprocess.run(['which', 'git'], capture_output=True, text=True)
+            
+            if git_check.returncode != 0:
+                print("❌ Git is required for model installation. Please install git first.")
+                return "❌ Git not found. Please install git: sudo apt install git"
+            
+            # Create models directory if it doesn't exist
+            models_dir = os.path.expanduser("~/.iblu/models")
+            os.makedirs(models_dir, exist_ok=True)
+            
+            gemma_dir = os.path.join(models_dir, "gemma-2-9b-it-abliterated")
+            
+            print(f"📁 Downloading to: {gemma_dir}")
+            
+            # Clone the model repository
+            if os.path.exists(gemma_dir):
+                print("🗂️  Model directory exists, updating...")
+                clone_cmd = subprocess.run(['git', '-C', gemma_dir, 'pull'], 
+                                        capture_output=True, text=True, timeout=300)
+            else:
+                print("📥 Cloning model repository...")
+                clone_cmd = subprocess.run([
+                    'git', 'clone', 
+                    'https://huggingface.co/bartowski/gemma-2-9b-it-abliterated-GGUF',
+                    gemma_dir
+                ], capture_output=True, text=True, timeout=600)
+            
+            if clone_cmd.returncode != 0:
+                error_msg = clone_cmd.stderr.strip() if clone_cmd.stderr else "Unknown error"
+                return f"❌ Failed to download model: {error_msg}"
+            
+            print("✅ Model downloaded successfully!")
+            
+            # Find the best GGUF file (prefer Q4_K_M)
+            print("🔍 Scanning for optimal GGUF file...")
+            
+            best_file = None
+            priority_files = [
+                "*q4_k_m.gguf",  # Best balance
+                "*q4_k_s.gguf",  # Smaller
+                "*q5_k_m.gguf",  # Better quality
+                "*q3_k_m.gguf",  # Faster
+                "*gguf"          # Any GGUF
+            ]
+            
+            import glob
+            for pattern in priority_files:
+                files = glob.glob(os.path.join(gemma_dir, pattern))
+                if files:
+                    best_file = files[0]
+                    break
+            
+            if not best_file:
+                return "❌ No GGUF file found in downloaded model."
+            
+            file_size = os.path.getsize(best_file) / (1024**3)  # GB
+            print(f"📄 Selected: {os.path.basename(best_file)} ({file_size:.1f} GB)")
+            
+            # Add to HuggingFace models configuration
+            hf_models = []
+            config_file = os.path.expanduser("~/.iblu/config.json")
+            
+            if os.path.exists(config_file):
+                with open(config_file, 'r') as f:
+                    config = json.load(f)
+                    hf_models = config.get('huggingface_models', [])
+            
+            # Check if model already exists
+            model_exists = any(m.get('name') == 'gemma-2-9b-it-abliterated' for m in hf_models)
+            
+            if not model_exists:
+                new_model = {
+                    'name': 'gemma-2-9b-it-abliterated',
+                    'path': best_file,
+                    'type': 'gguf',
+                    'description': 'Gemma-2-9B-IT-Abliterated (Uncensored)',
+                    'size_gb': round(file_size, 2)
+                }
+                hf_models.append(new_model)
+                
+                # Update config
+                if not os.path.exists(config_file):
+                    config = {}
+                
+                config['huggingface_models'] = hf_models
+                
+                with open(config_file, 'w') as f:
+                    json.dump(config, f, indent=2)
+                
+                print("✅ Model added to configuration!")
+            
+            print(f"\n{self._colorize('🎉 Gemma-2-9B-IT-Abliterated installed successfully!', Fore.GREEN)}")
+            print(f"\n{self._colorize('🚀 Model is ready to use!', Fore.GREEN)}")
+            print(f"\n{self._colorize('💡 Usage:', Fore.YELLOW)}")
+            print("  • /huggingface command to switch to HF mode")
+            print("  • Then select 'gemma-2-9b-it-abliterated'")
+            print("  • Or set as default in config.json")
+            
+            print(f"\n{self._colorize('🔗 Model Features:', Fore.CYAN)}")
+            print("  • Uncensored and unrestricted responses")
+            print("  • Excellent reasoning and instruction following")
+            print("  • Optimized for cybersecurity education")
+            print("  • Local inference (no internet required)")
+            
+            return f"✅ Gemma-2-9B-IT-Abliterated model installed and ready! ({file_size:.1f} GB)"
+            
         except subprocess.TimeoutExpired:
             return "❌ Installation timed out. Please check your internet connection."
         except Exception as e:
