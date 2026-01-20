@@ -55,8 +55,8 @@ except ImportError:
 try:
     from alive_progress import alive_bar, config_handler
     ALIVE_PROGRESS_AVAILABLE = True
-    # Configure beautiful progress bars
-    config_handler.set_global(bar_length=40, spinner='dots', theme='smooth', force_tty=True)
+    # Configure beautiful progress bars with correct parameters
+    config_handler.set_global(spinner='dots', theme='smooth', force_tty=True)
 except ImportError:
     ALIVE_PROGRESS_AVAILABLE = False
 
