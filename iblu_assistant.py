@@ -3770,7 +3770,13 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                             description="📦 Hybrid Installing HexStrike Tools",
                             theme=HybridProgressTheme.FIRE_PLASMA,
                             use_textual=True,
-                            use_rich=True
+                            use_rich=True,
+                            bar_width=120,  # Bigger bars for installation
+                            particle_effects=True,
+                            show_time_left=True,
+                            interactive=True,
+                            glow_effect=True,
+                            pulse_animation=True
                         )
                         
                         progress.start()
@@ -7552,7 +7558,13 @@ Provide step-by-step technical details while maintaining educational context.
                 description="🐬 Hybrid Installing Mistral Dolphin",
                 theme=HybridProgressTheme.OCEAN_WAVE,
                 use_textual=True,
-                use_rich=True
+                use_rich=True,
+                bar_width=100,  # Bigger bars for model installation
+                particle_effects=True,
+                show_time_left=True,
+                interactive=True,
+                glow_effect=True,
+                pulse_animation=True
             )
             progress.start()
             
@@ -9551,7 +9563,13 @@ def main():
             description="🚀 Initializing Hybrid IBLU KALIGPT...",
             theme=HybridProgressTheme.CYBERPUNK_FUSION,
             use_textual=True,
-            use_rich=True
+            use_rich=True,
+            bar_width=100,  # Even bigger bars for startup
+            particle_effects=True,
+            show_time_left=True,
+            interactive=True,
+            glow_effect=True,
+            pulse_animation=True
         )
         
         progress.start()

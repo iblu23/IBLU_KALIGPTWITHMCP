@@ -172,11 +172,15 @@ class HybridProgressConfig:
     show_percentage: bool = True
     show_time: bool = True
     show_spinner: bool = True
-    bar_width: int = 40
+    bar_width: int = 80  # Increased from 40 for bigger bars
     animated: bool = True
     use_textual: bool = True
     use_rich: bool = True
     particle_effects: bool = True
+    show_time_left: bool = True  # New: show estimated time remaining
+    interactive: bool = True  # New: interactive features
+    glow_effect: bool = True  # New: glow effects
+    pulse_animation: bool = True  # New: pulse animations
 
 class HybridRichProgressBar:
     """Rich component of hybrid progress bar"""
@@ -186,40 +190,79 @@ class HybridRichProgressBar:
         self.console = Console() if RICH_AVAILABLE else None
         self.progress = None
         self.task_id = None
+        self.start_time = None
+        self.particle_chars = ['✨', '⭐', '💫', '🌟', '✦', '✧', '⚡', '🔥', '💥', '🎆']
         
     def create_rich_progress(self):
-        """Create Rich progress bar component"""
+        """Create enhanced Rich progress bar component"""
         if not RICH_AVAILABLE or not self.config.use_rich:
             return None
             
         theme = self.config.theme.value
         
-        # Custom spinner
+        # Enhanced spinner with more animation
         spinner = SpinnerColumn(
             spinner_name=theme['rich_spinner'],
-            style=f"bold {theme['rich_text_color']}"
+            style=f"bold {theme['rich_text_color']}",
+            speed=1.5 if self.config.animated else 1.0
         ) if self.config.show_spinner else None
         
-        # Text column
+        # Enhanced text with glow effect
+        text_style = f"bold {theme['rich_text_color']}"
+        if self.config.glow_effect:
+            text_style += " underline"
+        
         text = TextColumn(
-            f"[bold {theme['rich_text_color']}]{self.config.description}[/bold {theme['rich_text_color']}]",
+            f"[{text_style}]{self.config.description}[/{text_style}]",
             style=Style(color=theme['rich_text_color'], bold=True)
         )
         
-        # Custom bar
+        # Enhanced bar with glow and pulse effects
+        bar_style = Style(color=theme['rich_bar_color'], bold=True)
+        if self.config.glow_effect:
+            bar_style = Style(color=theme['rich_bar_color'], bold=True, blink=True)
+        
         bar = BarColumn(
-            bar_width=self.config.bar_width,
-            style=Style(color=theme['rich_bar_color'], bold=True),
-            complete_style=Style(color=theme['rich_bar_color'], bold=True),
-            finished_style=Style(color=theme['rich_bar_color'], bold=True),
-            pulse_style=Style(color=theme['rich_bar_color'], dim=True)
+            bar_width=self.config.bar_width,  # Bigger bars
+            style=bar_style,
+            complete_style=Style(color=theme['rich_bar_color'], bold=True, blink=self.config.pulse_animation),
+            finished_style=Style(color=theme['rich_bar_color'], bold=True, reverse=True),
+            pulse_style=Style(color=theme['rich_bar_color'], dim=True, italic=True)
         )
         
-        # Additional columns
-        percentage = TextColumn("[progress.percentage]{task.percentage:>3.0f}%") if self.config.show_percentage else None
-        time_elapsed = TimeElapsedColumn() if self.config.show_time else None
+        # Enhanced percentage with better formatting
+        percentage = TextColumn(
+            "[progress.percentage]{task.percentage:>6.1f}%",
+            style=Style(color=theme['rich_text_color'], bold=True)
+        ) if self.config.show_percentage else None
         
-        # Build columns list
+        # Enhanced time tracking
+        time_columns = []
+        if self.config.show_time:
+            time_columns.append(TimeElapsedColumn())
+        
+        if self.config.show_time_left:
+            # Custom time remaining column
+            class TimeRemainingColumn(TextColumn):
+                def __init__(self):
+                    super().__init__("", style="cyan")  # Provide required text_format
+                
+                def render(self, task):
+                    if task.completed > 0 and task.total > 0:
+                        elapsed = task.finished_time or task.elapsed
+                        if elapsed > 0:
+                            rate = task.completed / elapsed
+                            remaining = (task.total - task.completed) / rate if rate > 0 else 0
+                            minutes, seconds = divmod(int(remaining), 60)
+                            if minutes > 0:
+                                return Text(f"ETA: {minutes:02d}:{seconds:02d}", style="cyan")
+                            else:
+                                return Text(f"ETA: {seconds:02d}s", style="cyan")
+                    return Text("ETA: --:--", style="dim cyan")
+            
+            time_columns.append(TimeRemainingColumn())
+        
+        # Build columns list with enhanced layout
         columns = []
         if spinner:
             columns.append(spinner)
@@ -227,15 +270,36 @@ class HybridRichProgressBar:
         columns.append(bar)
         if percentage:
             columns.append(percentage)
-        if time_elapsed:
-            columns.append(time_elapsed)
+        columns.extend(time_columns)
         
-        # Create progress object
+        # Add particle effects column
+        if self.config.particle_effects:
+            class ParticleColumn(TextColumn):
+                def __init__(self):
+                    super().__init__("", style="bright_yellow")  # Provide required text_format
+                
+                def render(self, task):
+                    import random
+                    particle = random.choice(['✨', '⭐', '💫', '🌟'])
+                    progress_pct = task.completed / task.total if task.total > 0 else 0
+                    if progress_pct > 0.8:
+                        return Text(particle, style="bright_yellow")
+                    elif progress_pct > 0.5:
+                        return Text(particle, style="bright_cyan")
+                    elif progress_pct > 0.2:
+                        return Text(particle, style="bright_blue")
+                    else:
+                        return Text(particle, style="dim white")
+            
+            columns.append(ParticleColumn())
+        
+        # Create enhanced progress object
         progress = Progress(
             *columns,
             console=self.console,
             transient=False,
-            refresh_per_second=10 if self.config.animated else 1
+            refresh_per_second=20 if self.config.animated else 4,  # Higher refresh rate
+            expand=True  # Make it expand to full width
         )
         
         return progress
@@ -289,53 +353,161 @@ class HybridRichProgressBar:
             self.progress.stop()
 
 class HybridTextualProgressBar(Widget):
-    """Textual component of hybrid progress bar"""
+    """Enhanced Textual component of hybrid progress bar"""
     
     def __init__(self, config: HybridProgressConfig):
         super().__init__()
         self.config = config
         self.current_progress = 0
         self.theme = config.theme.value
+        self.start_time = None
+        self.particle_chars = ['✨', '⭐', '💫', '🌟', '✦', '✧', '⚡', '🔥', '💥', '🎆']
+        self.current_particle = 0
         
     def compose(self) -> ComposeResult:
-        """Compose Textual widget"""
-        yield Static(f"[{self.theme['textual_style']}] {self.config.description} [/{self.theme['textual_style']}]", id="description")
-        yield ProgressBar(total=self.config.total, show_percentage=self.config.show_percentage, id="progress")
-        if self.config.show_time:
-            yield Static("00:00:00", id="timer")
+        """Compose enhanced Textual widget"""
+        theme = self.config.theme.value
+        
+        # Enhanced header with glow effect
+        header_style = f"{theme['textual_style']} bold"
+        if self.config.glow_effect:
+            header_style += " underline"
+        
+        yield Static(f"[{header_style}] {self.config.description} [/{header_style}]", id="description")
+        
+        # Enhanced progress bar with bigger size
+        yield ProgressBar(
+            total=self.config.total, 
+            show_percentage=self.config.show_percentage,
+            id="progress",
+            style=f"bold {theme['textual_style']}"
+        )
+        
+        # Enhanced time tracking section
+        with Container(id="time_container"):
+            if self.config.show_time:
+                yield Static("00:00:00", id="timer")
+            if self.config.show_time_left:
+                yield Static("ETA: --:--", id="eta")
+        
+        # Particle effects section
+        if self.config.particle_effects:
+            yield Static("✨", id="particles")
+        
+        # Interactive controls
+        if self.config.interactive:
+            with Container(id="controls"):
+                yield Static("[Space] Pause | [R] Resume | [Q] Quit", id="controls_text")
     
     def on_mount(self) -> None:
         """Called when widget is mounted"""
         self.progress_bar = self.query_one("#progress", ProgressBar)
-        if self.config.show_time:
-            self.timer = self.query_one("#timer", Static)
         self.start_time = time.time()
+        
+        # Set up timer updates
         self.set_interval(0.1, self.update_timer)
+        
+        # Set up particle animation
+        if self.config.particle_effects:
+            self.set_interval(0.5, self.update_particles)
+        
+        # Set up interactive controls
+        if self.config.interactive:
+            self.set_interval(0.1, self.check_interactive_input)
     
     def update_timer(self) -> None:
-        """Update timer display"""
-        if self.config.show_time and hasattr(self, 'timer'):
-            elapsed = int(time.time() - self.start_time)
-            hours, remainder = divmod(elapsed, 3600)
-            minutes, seconds = divmod(remainder, 60)
-            self.timer.update(f"{hours:02d}:{minutes:02d}:{seconds:02d}")
+        """Update timer displays with enhanced formatting"""
+        elapsed = int(time.time() - self.start_time)
+        hours, remainder = divmod(elapsed, 3600)
+        minutes, seconds = divmod(remainder, 60)
+        
+        if self.config.show_time:
+            try:
+                timer = self.query_one("#timer", Static)
+                timer.update(f"⏱️ {hours:02d}:{minutes:02d}:{seconds:02d}")
+            except:
+                pass
+        
+        if self.config.show_time_left:
+            try:
+                eta = self.query_one("#eta", Static)
+                if self.current_progress > 0 and self.config.total > 0:
+                    rate = self.current_progress / elapsed if elapsed > 0 else 0
+                    remaining = (self.config.total - self.current_progress) / rate if rate > 0 else 0
+                    eta_minutes, eta_seconds = divmod(int(remaining), 60)
+                    if eta_minutes > 0:
+                        eta.update(f"⏳ ETA: {eta_minutes:02d}:{eta_seconds:02d}")
+                    else:
+                        eta.update(f"⏳ ETA: {eta_seconds:02d}s")
+                else:
+                    eta.update("⏳ ETA: --:--")
+            except:
+                pass
+    
+    def update_particles(self) -> None:
+        """Update particle effects"""
+        if self.config.particle_effects:
+            try:
+                particles = self.query_one("#particles", Static)
+                particle = self.particle_chars[self.current_particle % len(self.particle_chars)]
+                
+                # Change particle color based on progress
+                progress_pct = self.current_progress / self.config.total if self.config.total > 0 else 0
+                if progress_pct > 0.8:
+                    particle_style = f"bright_yellow {particle}"
+                elif progress_pct > 0.5:
+                    particle_style = f"bright_cyan {particle}"
+                elif progress_pct > 0.2:
+                    particle_style = f"bright_blue {particle}"
+                else:
+                    particle_style = f"dim white {particle}"
+                
+                particles.update(particle_style)
+                self.current_particle += 1
+            except:
+                pass
+    
+    def check_interactive_input(self) -> None:
+        """Check for interactive input (placeholder for future enhancement)"""
+        # This would be enhanced with actual input handling
+        pass
     
     def update_progress(self, current: int, description: str = None):
-        """Update progress"""
+        """Update progress with enhanced visual feedback"""
         self.current_progress = current
         self.progress_bar.progress = current
         
         if description:
-            self.description = self.query_one("#description", Static)
-            theme = self.config.theme.value
-            self.description.update(f"[{theme['textual_style']}] {description} [/{theme['textual_style']}]")
+            try:
+                desc = self.query_one("#description", Static)
+                theme = self.config.theme.value
+                header_style = f"{theme['textual_style']} bold"
+                if self.config.glow_effect:
+                    header_style += " underline"
+                desc.update(f"[{header_style}] {description} [/{header_style}]")
+            except:
+                pass
     
     def finish(self, message: str = "✅ Complete!"):
-        """Finish progress"""
+        """Finish progress with celebration effects"""
         self.progress_bar.progress = self.config.total
-        theme = self.config.theme.value
-        self.description = self.query_one("#description", Static)
-        self.description.update(f"[{theme['textual_style']}] {message} [/{theme['textual_style']}]")
+        
+        # Update description with celebration
+        try:
+            desc = self.query_one("#description", Static)
+            theme = self.config.theme.value
+            celebration_style = f"{theme['textual_style']} bold blink"
+            desc.update(f"[{celebration_style}] {message} [/{celebration_style}]")
+        except:
+            pass
+        
+        # Update particles with celebration
+        if self.config.particle_effects:
+            try:
+                particles = self.query_one("#particles", Static)
+                particles.update("🎉🎊🎉🎊🎉")  # Celebration particles
+            except:
+                pass
 
 class HybridProgressApp(App):
     """Hybrid Textual app for progress display"""
@@ -528,8 +700,11 @@ def create_hybrid_progress(total: int = 100, description: str = "Processing...",
                          theme: HybridProgressTheme = HybridProgressTheme.CYBERPUNK_FUSION,
                          use_textual: bool = True, use_rich: bool = True,
                          show_percentage: bool = True, show_time: bool = True, 
-                         show_spinner: bool = True) -> HybridStunningProgressBar:
-    """Create a hybrid Rich+Textual progress bar"""
+                         show_spinner: bool = True, bar_width: int = 80,
+                         particle_effects: bool = True, show_time_left: bool = True,
+                         interactive: bool = True, glow_effect: bool = True,
+                         pulse_animation: bool = True) -> HybridStunningProgressBar:
+    """Create an enhanced hybrid Rich+Textual progress bar"""
     config = HybridProgressConfig(
         total=total, 
         description=description, 
@@ -538,7 +713,13 @@ def create_hybrid_progress(total: int = 100, description: str = "Processing...",
         use_rich=use_rich,
         show_percentage=show_percentage,
         show_time=show_time,
-        show_spinner=show_spinner
+        show_spinner=show_spinner,
+        bar_width=bar_width,
+        particle_effects=particle_effects,
+        show_time_left=show_time_left,
+        interactive=interactive,
+        glow_effect=glow_effect,
+        pulse_animation=pulse_animation
     )
     return HybridStunningProgressBar(config)
 
