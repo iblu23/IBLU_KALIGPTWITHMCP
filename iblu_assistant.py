@@ -2695,19 +2695,18 @@ All responses should be helpful, educational, and focused on legitimate cybersec
         """Display all 34 options in visual style matching current main menu"""
         
         if COLORAMA_AVAILABLE:
-            header_width = 115
+            banner_width = 78
             
             # HACK THE WORLD banner
-            w = 78
-            print(f"{Fore.LIGHTRED_EX}╔" + "═"*w + f"╗{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}" + " "*w + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}╔" + "═"*banner_width + f"╗{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}" + " "*banner_width + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.LIGHTYELLOW_EX}{Back.BLACK}██╗  ██╗ █████╗  ██████╗██╗  ██╗    ████████╗██╗  ██╗███████╗{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.LIGHTYELLOW_EX}{Back.BLACK}██║  ██║██╔══██╗██╔════╝██║ ██╔╝    ╚██╔══╝██║  ██║██╔════╝{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.LIGHTYELLOW_EX}{Back.BLACK}███████║███████║██║     █████╔╝        ██║   ███████║█████╗{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.LIGHTYELLOW_EX}{Back.BLACK}██╔══██║██╔══██║██║     ██╔═██╗        ██║   ██╔══██║██╔══╝{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.LIGHTYELLOW_EX}{Back.BLACK}██║  ██║██║  ██║╚██████╗██║  ██╗       ██║   ██║  ██║███████╗{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.LIGHTYELLOW_EX}{Back.BLACK}╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝       ╚═╝   ╚═╝  ╚═╝╚══════╝{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}" + " "*w + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}" + " "*banner_width + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
             # WORLD section (blue, positioned below HACK THE)
             print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.BLUE}{Back.BLACK}{' '*20}██╗    ██╗ ██████╗ ██████╗ ██╗     ██████╗{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.BLUE}{Back.BLACK}{' '*20}██║    ██║██╔═══██╗██╔══██╗██║     ██╔══██╗{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
@@ -2715,18 +2714,18 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.BLUE}{Back.BLACK}{' '*20}██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.BLUE}{Back.BLACK}{' '*20}╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL} {Fore.BLUE}{Back.BLACK}{' '*20} ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝{ColoramaStyle.RESET_ALL} " + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}" + " "*w + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}" + " "*banner_width + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
             # Tagline section - purple/magenta
             print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}{' '*21}{Fore.MAGENTA}{Back.BLACK}┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓{ColoramaStyle.RESET_ALL}{' '*22}{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}{' '*21}{Fore.MAGENTA}{Back.BLACK}┃  🔥🔥🔥    WITH IBLU    🔥🔥🔥  ┃{ColoramaStyle.RESET_ALL}{' '*22}{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}{' '*21}{Fore.MAGENTA}{Back.BLACK}┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛{ColoramaStyle.RESET_ALL}{' '*22}{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}" + " "*w + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTRED_EX}╚" + "═"*w + f"╝{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}" + " "*banner_width + f"{Fore.LIGHTRED_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTRED_EX}╚" + "═"*banner_width + f"╝{ColoramaStyle.RESET_ALL}")
             
             # Main header
-            print(f"\n{Fore.LIGHTCYAN_EX}╔{'═'*header_width}╗{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}🧠 COMPLETE MENU OPTIONS (1-34) 🧠{ColoramaStyle.RESET_ALL}{' ' * (header_width - 35)}{Fore.LIGHTCYAN_EX}║{ColoramaStyle.RESET_ALL}")
-            print(f"{Fore.LIGHTCYAN_EX}╚{'═'*header_width}╝{ColoramaStyle.RESET_ALL}\n")
+            print(f"\n{Fore.LIGHTCYAN_EX}╔{'═'*banner_width}╗{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}🧠 COMPLETE MENU OPTIONS (1-34) 🧠{ColoramaStyle.RESET_ALL}{' ' * (banner_width - 35)}{Fore.LIGHTCYAN_EX}║{ColoramaStyle.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}╚{'═'*banner_width}╝{ColoramaStyle.RESET_ALL}\n")
             
             # All 34 options in visual style
             options = [
@@ -2813,25 +2812,25 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             
             for i, (option, title, color, desc1, desc2, icon) in enumerate(options):
                 # Enhanced top border
-                print(f"{color}╔{'═'*header_width}╗{ColoramaStyle.RESET_ALL}")
+                print(f"{color}╔{'═'*banner_width}╗{ColoramaStyle.RESET_ALL}")
                 
                 # Option title line with icon
-                title_spacing = header_width - len(option) - len(title) - len(icon) - 8
+                title_spacing = banner_width - len(option) - len(title) - len(icon) - 8
                 print(f"{color}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Back.BLACK}{color}{icon} {Fore.WHITE}{option}{ColoramaStyle.RESET_ALL}: {ColoramaStyle.BRIGHT}{Fore.WHITE}{title}{ColoramaStyle.RESET_ALL}{' ' * title_spacing}{color}║{ColoramaStyle.RESET_ALL}")
                 
                 # Description lines
                 if desc1:
-                    desc_spacing = header_width - len(desc1) - 6
+                    desc_spacing = banner_width - len(desc1) - 6
                     print(f"{color}║{ColoramaStyle.RESET_ALL} {Fore.LIGHTWHITE_EX}▸{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.LIGHTBLUE_EX}{desc1}{ColoramaStyle.RESET_ALL}{' ' * desc_spacing}{color}║{ColoramaStyle.RESET_ALL}")
                 if desc2:
-                    desc_spacing = header_width - len(desc2) - 6
+                    desc_spacing = banner_width - len(desc2) - 6
                     print(f"{color}║{ColoramaStyle.RESET_ALL} {Fore.LIGHTWHITE_EX}▸{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.LIGHTBLUE_EX}{desc2}{ColoramaStyle.RESET_ALL}{' ' * desc_spacing}{color}║{ColoramaStyle.RESET_ALL}")
                 
                 # Bottom border
-                print(f"{color}╚{'═'*header_width}╝{ColoramaStyle.RESET_ALL}")
+                print(f"{color}╚{'═'*banner_width}╝{ColoramaStyle.RESET_ALL}")
             
             # Footer
-            footer_width = 75
+            footer_width = 78
             print(f"{Fore.LIGHTGREEN_EX}┌{'─'*footer_width}┐{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}💡 Type a number (1-34) to navigate directly{ColoramaStyle.RESET_ALL}{' ' * (footer_width - 40)}{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.YELLOW}🛑 Use 'menu' to return to previous menu{ColoramaStyle.RESET_ALL}{' ' * (footer_width - 38)}{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}")
