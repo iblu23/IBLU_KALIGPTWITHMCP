@@ -8773,31 +8773,14 @@ Focus on creating the best possible response that combines the strengths of all 
                 print(f"{Fore.LIGHTGREEN_EX}✅ Gemini synthesis completed successfully{ColoramaStyle.RESET_ALL}")
                 
             else:
-                # Fallback to fastest local model
+                # Fallback to fastest local model's actual response
                 synthesis_model = fastest_model[0]
-                print(f"{Fore.LIGHTYELLOW_EX}🔄 Gemini not available, using {synthesis_model} for synthesis{ColoramaStyle.RESET_ALL}")
+                print(f"{Fore.LIGHTYELLOW_EX}🔄 Gemini not available, using {synthesis_model} response for synthesis{ColoramaStyle.RESET_ALL}")
                 
-                # Use fastest local model for synthesis
-                if synthesis_model == "Llama":
-                    enhanced_response = self.call_llama_api(
-                        self.get_system_prompt_for_provider(Provider.LLAMA, "local"),
-                        local_insights,
-                        "local"
-                    )
-                elif synthesis_model == "Mistral":
-                    enhanced_response = self.call_mistral_api(
-                        self.get_system_prompt_for_provider(Provider.MISTRAL, "local"),
-                        local_insights,
-                        "local"
-                    )
-                elif synthesis_model == "Gemma":
-                    enhanced_response = self.call_gemini_api(
-                        self.get_system_prompt_for_provider(Provider.GEMINI, "local"),
-                        local_insights,
-                        "local"
-                    )
+                # Use the actual response from the fastest model instead of calling API again
+                enhanced_response = responses.get(synthesis_model, "No response available")
                 synthesis_model_used = synthesis_model
-                print(f"{Fore.LIGHTGREEN_EX}✅ {synthesis_model} synthesis completed{ColoramaStyle.RESET_ALL}")
+                print(f"{Fore.LIGHTGREEN_EX}✅ {synthesis_model} response used for final answer{ColoramaStyle.RESET_ALL}")
                 
         except Exception as e:
             enhanced_response = f"Synthesis failed: {str(e)}"
