@@ -5488,7 +5488,7 @@ All responses should be helpful, educational, and focused on legitimate cybersec
         return self.show_main_menu()
 
     def handle_chat_message(self, user_message: str) -> str:
-        """Handle regular chat messages with AI"""
+        """Handle regular chat messages with enhanced collaborative AI and full statistics"""
         # Add to conversation history
         self.conversation_history.append({
             "role": "user",
@@ -5496,11 +5496,24 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             "timestamp": datetime.now().isoformat()
         })
         
-        # Get AI response
-        response = self.get_ai_response(user_message)
+        # Check if collaborative mode is available (2+ models)
+        available_providers = []
+        for provider in [Provider.OPENAI, Provider.GEMINI, Provider.MISTRAL, Provider.LLAMA]:
+            provider_keys = self.get_provider_keys(provider)
+            if provider_keys:
+                available_providers.append((provider, provider_keys[0]))
         
-        # Format response with colors if rich is available
-        formatted_response = self.format_ai_response(response)
+        # Use enhanced collaborative mode if multiple models are available
+        if len(available_providers) >= 2:
+            print(f"{Fore.LIGHTYELLOW_EX}🤖 Engaging collaborative mode with {len(available_providers)} models...{ColoramaStyle.RESET_ALL}")
+            response = self.enhanced_collaborative_response_with_statistics(user_message)
+        else:
+            # Fallback to single model mode
+            print(f"{Fore.LIGHTCYAN_EX}🤖 Single model mode: {available_providers[0][0].value.title() if available_providers else 'No models available'}{ColoramaStyle.RESET_ALL}")
+            response = self.get_ai_response(user_message)
+            
+            # Format response with colors if rich is available
+            response = self.format_ai_response(response)
         
         # Add AI response to history
         self.conversation_history.append({
@@ -5513,7 +5526,7 @@ All responses should be helpful, educational, and focused on legitimate cybersec
         if len(self.conversation_history) % 5 == 0:
             self.command_helper.save_chat_history()
         
-        return formatted_response
+        return response
     
     def format_ai_response(self, response: str) -> str:
         """Enhanced AI response formatting with beautiful colors and rich effects"""
@@ -8468,7 +8481,7 @@ Provide step-by-step technical details while maintaining educational context.
         return f"✅ Collaborative mode is {'ACTIVE' if len(available_providers) >= 2 else 'INACTIVE'}"
     
     def enhanced_collaborative_response_with_statistics(self, user_message: str) -> str:
-        """Enhanced collaborative AI response with comprehensive statistics tracking"""
+        """Enhanced collaborative AI response with comprehensive statistics tracking and full thinking process display"""
         import time
         import threading
         from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -8490,13 +8503,22 @@ Provide step-by-step technical details while maintaining educational context.
         if len(available_providers) < 2:
             return f"❌ Need at least 2 configured providers for collaborative mode. Available: {len(available_providers)}"
         
+        # Display collaborative mode activation with active models
+        active_models = [provider.value.title() for provider, _ in available_providers]
+        print(f"{Fore.LIGHTYELLOW_EX}🤖 Engaging collaborative mode with {len(available_providers)} models: {', '.join(active_models)}{ColoramaStyle.RESET_ALL}")
+        print(f"{Fore.LIGHTGREEN_EX}✅ Active models during thinking process: {', '.join(active_models)}{ColoramaStyle.RESET_ALL}")
+        
         # Track model performance
         model_stats = {}
         responses = {}
+        thinking_status = {}
         
         def call_model_with_timing(provider_name: str, provider: Provider, api_key: str, message: str):
-            """Call model with timing statistics"""
+            """Call model with timing statistics and thinking status"""
             start_time = time.time()
+            print(f"{Fore.LIGHTCYAN_EX}🧠 {provider_name} is thinking...{ColoramaStyle.RESET_ALL}")
+            thinking_status[provider_name] = "processing"
+            
             try:
                 if provider == Provider.OPENAI:
                     response = self.call_openai_api(self.get_system_prompt_for_provider(provider, api_key), message, api_key)
@@ -8511,6 +8533,9 @@ Provide step-by-step technical details while maintaining educational context.
                 
                 end_time = time.time()
                 response_time = end_time - start_time
+                thinking_status[provider_name] = "completed"
+                
+                print(f"{Fore.LIGHTGREEN_EX}✅ {provider_name} completed thinking ({response_time:.2f}s){ColoramaStyle.RESET_ALL}")
                 
                 return {
                     'provider': provider_name,
@@ -8522,6 +8547,9 @@ Provide step-by-step technical details while maintaining educational context.
             except Exception as e:
                 end_time = time.time()
                 response_time = end_time - start_time
+                thinking_status[provider_name] = "failed"
+                print(f"{Fore.LIGHTRED_EX}❌ {provider_name} failed thinking ({response_time:.2f}s): {str(e)}{ColoramaStyle.RESET_ALL}")
+                
                 return {
                     'provider': provider_name,
                     'response': f"Error: {str(e)}",
@@ -8530,8 +8558,9 @@ Provide step-by-step technical details while maintaining educational context.
                     'success': False
                 }
         
-        # Phase 1: Execute parallel analysis
+        # Phase 1: Execute parallel analysis with enhanced status display
         print(f"{Fore.LIGHTYELLOW_EX}🔄 Initiating parallel model analysis...{ColoramaStyle.RESET_ALL}")
+        print(f"{Fore.LIGHTBLUE_EX}📊 Real-time thinking status:{ColoramaStyle.RESET_ALL}")
         
         with ThreadPoolExecutor(max_workers=len(available_providers)) as executor:
             # Submit all model calls
@@ -8539,6 +8568,10 @@ Provide step-by-step technical details while maintaining educational context.
             for provider, api_key in available_providers:
                 future = executor.submit(call_model_with_timing, provider.value.title(), provider, api_key, user_message)
                 future_to_provider[future] = provider.value.title()
+            
+            # Display ongoing status while models are thinking
+            completed_count = 0
+            total_count = len(available_providers)
             
             # Collect results as they complete
             for future in as_completed(future_to_provider):
@@ -8552,12 +8585,17 @@ Provide step-by-step technical details while maintaining educational context.
                     }
                     responses[provider_name] = result['response']
                     
-                    # Display individual model completion
-                    status = "✅" if result['success'] else "❌"
-                    print(f"{Fore.LIGHTGREEN_EX}{status} {provider_name}: {result['response_time']:.2f}s{ColoramaStyle.RESET_ALL}")
+                    completed_count += 1
+                    print(f"{Fore.LIGHTGREEN_EX}📈 Progress: {completed_count}/{total_count} models completed{ColoramaStyle.RESET_ALL}")
+                    
+                    # Display current thinking status
+                    still_thinking = [name for name, status in thinking_status.items() if status == "processing"]
+                    if still_thinking:
+                        print(f"{Fore.LIGHTYELLOW_EX}🤔 Still thinking: {', '.join(still_thinking)}{ColoramaStyle.RESET_ALL}")
                     
                 except Exception as exc:
                     print(f"{Fore.LIGHTRED_EX}❌ {provider_name} generated an exception: {exc}{ColoramaStyle.RESET_ALL}")
+                    thinking_status[provider_name] = "failed"
         
         phase1_end = time.time()
         phase1_duration = phase1_end - phase1_start
@@ -8578,13 +8616,16 @@ Provide step-by-step technical details while maintaining educational context.
         
         # Use fastest model for synthesis
         synthesis_model = fastest_model[0]
-        print(f"{Fore.LIGHTYELLOW_EX}🧠 Using {synthesis_model} for synthesis...{ColoramaStyle.RESET_ALL}")
+        print(f"{Fore.LIGHTYELLOW_EX}🧠 Using {synthesis_model} to summarize insights from {len([r for r in model_stats.values() if r['success']])} models...{ColoramaStyle.RESET_ALL}")
+        print(f"{Fore.LIGHTGREEN_EX}📝 Synthesis process: {synthesis_model} is analyzing all model responses{ColoramaStyle.RESET_ALL}")
         
         # Combine all successful responses
         combined_input = user_message + "\n\nAdditional insights from other models:\n"
         for provider, response in responses.items():
             if provider != synthesis_model and model_stats[provider]['success']:
-                combined_input += f"\n{provider}: {response[:500]}..."  # Limit to prevent token overflow
+                combined_input += f"\n{provider}: {response[:1000]}..."  # Increased limit for better synthesis
+        
+        print(f"{Fore.LIGHTBLUE_EX}🔄 Cross-model analysis in progress...{ColoramaStyle.RESET_ALL}")
         
         # Get enhanced response from fastest model
         try:
@@ -8614,8 +8655,12 @@ Provide step-by-step technical details while maintaining educational context.
                 )
             else:
                 enhanced_response = responses.get(synthesis_model, "Enhancement failed")
+                
+            print(f"{Fore.LIGHTGREEN_EX}✅ {synthesis_model} synthesis completed{ColoramaStyle.RESET_ALL}")
+            
         except Exception as e:
             enhanced_response = f"Enhancement failed: {str(e)}"
+            print(f"{Fore.LIGHTRED_EX}❌ Synthesis failed: {str(e)}{ColoramaStyle.RESET_ALL}")
         
         phase2_end = time.time()
         phase2_duration = phase2_end - phase2_start
@@ -8624,7 +8669,7 @@ Provide step-by-step technical details while maintaining educational context.
         print(f"   Enhancement Time: {phase2_duration:.2f}s")
         print(f"   Synthesis Model: {synthesis_model}")
         
-        # Phase 3: Collaborative Summary
+        # Phase 3: Collaborative Summary with Full Statistics
         phase3_start = time.time()
         total_response_time = phase1_duration + phase2_duration
         
@@ -8652,12 +8697,12 @@ Provide step-by-step technical details while maintaining educational context.
         phase3_end = time.time()
         phase3_duration = phase3_end - phase3_start
         
-        # Return the enhanced response with statistics
+        # Return the enhanced response with full statistics (no length barriers)
         final_response = f"""
 {Fore.LIGHTGREEN_EX}╔{'═'*80}╗{ColoramaStyle.RESET_ALL}
 {Fore.LIGHTGREEN_EX}║{ColoramaStyle.RESET_ALL} {Back.GREEN}{Fore.WHITE}🤖 COLLABORATIVE AI RESPONSE 🤖{ColoramaStyle.RESET_ALL}{' ' * 38}{Fore.LIGHTCYAN_EX}║{ColoramaStyle.RESET_ALL}
 {Fore.LIGHTGREEN_EX}╠{'═'*80}╣{ColoramaStyle.RESET_ALL}
-{Fore.LIGHTGREEN_EX}║{ColoramaStyle.RESET_ALL} {Fore.LIGHTWHITE_EX}{enhanced_response}{ColoramaStyle.RESET_ALL}{' ' * (80 - len(enhanced_response) % 78)}{Fore.LIGHTGREEN_EX}║{ColoramaStyle.RESET_ALL}
+{Fore.LIGHTGREEN_EX}║{ColoramaStyle.RESET_ALL} {Fore.LIGHTWHITE_EX}{enhanced_response}{ColoramaStyle.RESET_ALL}
 {Fore.LIGHTGREEN_EX}╚{'═'*80}╝{ColoramaStyle.RESET_ALL}
 
 {Fore.LIGHTCYAN_EX}📊 FINAL STATISTICS:{ColoramaStyle.RESET_ALL}
@@ -8665,6 +8710,8 @@ Provide step-by-step technical details while maintaining educational context.
 {Fore.LIGHTYELLOW_EX}• Fastest Model: {fastest_model[0]} ({fastest_model[1]['response_time']:.2f}s){ColoramaStyle.RESET_ALL}
 {Fore.LIGHTYELLOW_EX}• Lead Contributor: {lead_contributor[0]} ({lead_contributor[1]['contribution_length']} chars){ColoramaStyle.RESET_ALL}
 {Fore.LIGHTYELLOW_EX}• Models Successfully Collaborated: {len([r for r in model_stats.values() if r['success']])}/{len(model_stats)}{ColoramaStyle.RESET_ALL}
+{Fore.LIGHTYELLOW_EX}• Active Models During Process: {', '.join(active_models)}{ColoramaStyle.RESET_ALL}
+{Fore.LIGHTYELLOW_EX}• Synthesis Model: {synthesis_model}{ColoramaStyle.RESET_ALL}
 """
         
         return final_response.strip()
