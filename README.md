@@ -13,6 +13,12 @@
   learn and practice at the same time
 - 🔧 **Automated Setup** - One-click installation of all security tools
 
+  <img width="559" height="965" alt="image" src="https://github.com/user-attachments/assets/191e9cc5-c38a-44c8-8f27-4746dc5187ac" />
+<img width="359" height="271" alt="image" src="https://github.com/user-attachments/assets/7ca42893-b06c-4e2a-a36d-29a38759f56a" />
+<img width="500" height="331" alt="image" src="https://github.com/user-attachments/assets/0bf886ec-1665-480d-969c-b34258e2a6ef" />
+<img width="653" height="894" alt="image" src="https://github.com/user-attachments/assets/e5ebb09c-73fc-4bcd-8c10-d600dc65febb" />
+
+
 ---
 
 ## 🚀 **Quick Start (3 Minutes)**
