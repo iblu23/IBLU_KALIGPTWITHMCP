@@ -5548,7 +5548,12 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             cloud_providers = []
             for provider in [Provider.OPENAI, Provider.GEMINI, Provider.MISTRAL]:
                 provider_keys = self.get_provider_keys(provider)
-                if provider_keys and provider.value.title() not in local_models:
+                # Check if this provider type is already available locally (case-insensitive)
+                local_provider_available = any(
+                    provider.value.title().lower() == local_model.lower() 
+                    for local_model in local_models
+                )
+                if provider_keys and not local_provider_available:
                     available_providers.append((provider, provider_keys[0]))
                     cloud_providers.append(provider.value.title())
             
@@ -5556,6 +5561,9 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                 print(f"{Fore.LIGHTYELLOW_EX}📡 Adding cloud providers: {', '.join(cloud_providers)}{ColoramaStyle.RESET_ALL}")
         
         print(f"{Fore.LIGHTGREEN_EX}🏠 Using local models: {', '.join(local_models) if local_models else 'None'}{ColoramaStyle.RESET_ALL}")
+        
+        # Debug: Show all available providers
+        print(f"{Fore.LIGHTBLUE_EX}🔍 Debug - Available providers: {[p[0].value.title() for p in available_providers]}{ColoramaStyle.RESET_ALL}")
         
         # Use enhanced collaborative mode if multiple models are available
         if len(available_providers) >= 2:
@@ -8577,7 +8585,12 @@ Provide step-by-step technical details while maintaining educational context.
             cloud_providers = []
             for provider in [Provider.OPENAI, Provider.GEMINI, Provider.MISTRAL]:
                 provider_keys = self.get_provider_keys(provider)
-                if provider_keys and provider.value.title() not in local_models:
+                # Check if this provider type is already available locally (case-insensitive)
+                local_provider_available = any(
+                    provider.value.title().lower() == local_model.lower() 
+                    for local_model in local_models
+                )
+                if provider_keys and not local_provider_available:
                     available_providers.append((provider, provider_keys[0]))
                     cloud_providers.append(provider.value.title())
             
@@ -8585,6 +8598,9 @@ Provide step-by-step technical details while maintaining educational context.
                 print(f"{Fore.LIGHTYELLOW_EX}📡 Adding cloud providers: {', '.join(cloud_providers)}{ColoramaStyle.RESET_ALL}")
         
         print(f"{Fore.LIGHTGREEN_EX}🏠 Local models detected: {', '.join(local_models) if local_models else 'None'}{ColoramaStyle.RESET_ALL}")
+        
+        # Debug: Show all available providers
+        print(f"{Fore.LIGHTBLUE_EX}🔍 Debug - Available providers: {[p[0].value.title() for p in available_providers]}{ColoramaStyle.RESET_ALL}")
         
         if len(available_providers) < 2:
             return f"❌ Need at least 2 configured providers for collaborative mode. Available: {len(available_providers)}"
