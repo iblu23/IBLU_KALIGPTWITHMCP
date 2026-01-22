@@ -5518,16 +5518,11 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             "timestamp": datetime.now().isoformat()
         })
         
-        # Check if collaborative mode is available (2+ models)
+        # Check if collaborative mode is available (2+ models) - prioritize local models
         available_providers = []
         
-        # Check cloud providers
-        for provider in [Provider.OPENAI, Provider.GEMINI, Provider.MISTRAL]:
-            provider_keys = self.get_provider_keys(provider)
-            if provider_keys:
-                available_providers.append((provider, provider_keys[0]))
-        
-        # Check for local models
+        # Check for local models first (highest priority)
+        local_models = []
         try:
             import requests
             url = "http://localhost:11434/api/tags"
@@ -5538,12 +5533,29 @@ All responses should be helpful, educational, and focused on legitimate cybersec
                     model_name = model.get('name', '').lower()
                     if 'llama' in model_name:
                         available_providers.append((Provider.LLAMA, "local"))
+                        local_models.append("Llama")
                     elif 'dolphin' in model_name or 'mistral' in model_name:
                         available_providers.append((Provider.MISTRAL, "local"))
+                        local_models.append("Mistral")
                     elif 'gemma' in model_name:
                         available_providers.append((Provider.GEMINI, "local"))
+                        local_models.append("Gemma")
         except:
             pass
+        
+        # Only add cloud providers if we have fewer than 2 local models
+        if len(available_providers) < 2:
+            cloud_providers = []
+            for provider in [Provider.OPENAI, Provider.GEMINI, Provider.MISTRAL]:
+                provider_keys = self.get_provider_keys(provider)
+                if provider_keys and provider.value.title() not in local_models:
+                    available_providers.append((provider, provider_keys[0]))
+                    cloud_providers.append(provider.value.title())
+            
+            if cloud_providers:
+                print(f"{Fore.LIGHTYELLOW_EX}📡 Adding cloud providers: {', '.join(cloud_providers)}{ColoramaStyle.RESET_ALL}")
+        
+        print(f"{Fore.LIGHTGREEN_EX}🏠 Using local models: {', '.join(local_models) if local_models else 'None'}{ColoramaStyle.RESET_ALL}")
         
         # Use enhanced collaborative mode if multiple models are available
         if len(available_providers) >= 2:
@@ -8535,16 +8547,11 @@ Provide step-by-step technical details while maintaining educational context.
         print(f"{Fore.LIGHTCYAN_EX}║{ColoramaStyle.RESET_ALL} {Back.BLUE}{Fore.WHITE}🚀 PHASE 1: PARALLEL ANALYSIS 🚀{ColoramaStyle.RESET_ALL}{' ' * 35}{Fore.LIGHTCYAN_EX}║{ColoramaStyle.RESET_ALL}")
         print(f"{Fore.LIGHTCYAN_EX}╚{'═'*80}╝{ColoramaStyle.RESET_ALL}")
         
-        # Get available providers
+        # Get available providers (prioritize local models)
         available_providers = []
         
-        # Check cloud providers
-        for provider in [Provider.OPENAI, Provider.GEMINI, Provider.MISTRAL]:
-            provider_keys = self.get_provider_keys(provider)
-            if provider_keys:
-                available_providers.append((provider, provider_keys[0]))
-        
-        # Check for local models
+        # Check for local models first (highest priority)
+        local_models = []
         try:
             import requests
             url = "http://localhost:11434/api/tags"
@@ -8555,12 +8562,29 @@ Provide step-by-step technical details while maintaining educational context.
                     model_name = model.get('name', '').lower()
                     if 'llama' in model_name:
                         available_providers.append((Provider.LLAMA, "local"))
+                        local_models.append("Llama")
                     elif 'dolphin' in model_name or 'mistral' in model_name:
                         available_providers.append((Provider.MISTRAL, "local"))
+                        local_models.append("Mistral")
                     elif 'gemma' in model_name:
                         available_providers.append((Provider.GEMINI, "local"))
+                        local_models.append("Gemma")
         except:
             pass
+        
+        # Only add cloud providers if we have fewer than 2 local models
+        if len(available_providers) < 2:
+            cloud_providers = []
+            for provider in [Provider.OPENAI, Provider.GEMINI, Provider.MISTRAL]:
+                provider_keys = self.get_provider_keys(provider)
+                if provider_keys and provider.value.title() not in local_models:
+                    available_providers.append((provider, provider_keys[0]))
+                    cloud_providers.append(provider.value.title())
+            
+            if cloud_providers:
+                print(f"{Fore.LIGHTYELLOW_EX}📡 Adding cloud providers: {', '.join(cloud_providers)}{ColoramaStyle.RESET_ALL}")
+        
+        print(f"{Fore.LIGHTGREEN_EX}🏠 Local models detected: {', '.join(local_models) if local_models else 'None'}{ColoramaStyle.RESET_ALL}")
         
         if len(available_providers) < 2:
             return f"❌ Need at least 2 configured providers for collaborative mode. Available: {len(available_providers)}"
@@ -8670,58 +8694,92 @@ Provide step-by-step technical details while maintaining educational context.
         print(f"   Fastest Model: {fastest_model[0]} ({fastest_model[1]['response_time']:.2f}s)")
         print(f"   Models Collaborated: {len([r for r in model_stats.values() if r['success']])}")
         
-        # Phase 2: Cross-Model Enhancement
+        # Phase 2: Cross-Model Enhancement with Gemini Summarization
         phase2_start = time.time()
         print(f"\n{Fore.LIGHTMAGENTA_EX}╔{'═'*80}╗{ColoramaStyle.RESET_ALL}")
-        print(f"{Fore.LIGHTMAGENTA_EX}║{ColoramaStyle.RESET_ALL} {Back.MAGENTA}{Fore.WHITE}🔄 PHASE 2: CROSS-MODEL ENHANCEMENT 🔄{ColoramaStyle.RESET_ALL}{' ' * 30}{Fore.LIGHTCYAN_EX}║{ColoramaStyle.RESET_ALL}")
+        print(f"{Fore.LIGHTMAGENTA_EX}║{ColoramaStyle.RESET_ALL} {Back.MAGENTA}{Fore.WHITE}🔄 PHASE 2: GEMINI-ENHANCED SYNTHESIS 🔄{ColoramaStyle.RESET_ALL}{' ' * 28}{Fore.LIGHTCYAN_EX}║{ColoramaStyle.RESET_ALL}")
         print(f"{Fore.LIGHTMAGENTA_EX}╚{'═'*80}╝{ColoramaStyle.RESET_ALL}")
         
-        # Use fastest model for synthesis
-        synthesis_model = fastest_model[0]
-        print(f"{Fore.LIGHTYELLOW_EX}🧠 Using {synthesis_model} to summarize insights from {len([r for r in model_stats.values() if r['success']])} models...{ColoramaStyle.RESET_ALL}")
-        print(f"{Fore.LIGHTGREEN_EX}📝 Synthesis process: {synthesis_model} is analyzing all model responses{ColoramaStyle.RESET_ALL}")
+        # Check if Gemini API is available for enhanced summarization
+        gemini_available = False
+        gemini_key = None
+        if self.config.gemini_keys:
+            gemini_key = self.config.gemini_keys[0]
+            gemini_available = True
         
-        # Combine all successful responses
-        combined_input = user_message + "\n\nAdditional insights from other models:\n"
+        # Prepare local model insights for Gemini summarization
+        local_insights = user_message + "\n\nLOCAL MODEL INSIGHTS TO SUMMARIZE:\n"
+        local_model_count = 0
+        
         for provider, response in responses.items():
-            if provider != synthesis_model and model_stats[provider]['success']:
-                combined_input += f"\n{provider}: {response[:1000]}..."  # Increased limit for better synthesis
+            if model_stats[provider]['success']:
+                local_insights += f"\n=== {provider} Analysis ===\n{response}\n"
+                local_model_count += 1
         
-        print(f"{Fore.LIGHTBLUE_EX}🔄 Cross-model analysis in progress...{ColoramaStyle.RESET_ALL}")
+        print(f"{Fore.LIGHTYELLOW_EX}🧠 Gemini summarizing insights from {local_model_count} local models...{ColoramaStyle.RESET_ALL}")
+        print(f"{Fore.LIGHTGREEN_EX}📝 Gemini synthesis: Analyzing and enhancing local model thinking{ColoramaStyle.RESET_ALL}")
         
-        # Get enhanced response from fastest model
+        # Use Gemini for enhanced summarization if available
+        enhanced_response = ""
+        synthesis_model_used = "Unknown"
+        
         try:
-            if synthesis_model == "Openai":
-                enhanced_response = self.call_openai_api(
-                    self.get_system_prompt_for_provider(Provider.OPENAI, available_providers[[p[0] for p in available_providers].index(Provider.OPENAI)][1]),
-                    combined_input,
-                    available_providers[[p[0] for p in available_providers].index(Provider.OPENAI)][1]
-                )
-            elif synthesis_model == "Gemini":
-                enhanced_response = self.call_gemini_api(
-                    self.get_system_prompt_for_provider(Provider.GEMINI, available_providers[[p[0] for p in available_providers].index(Provider.GEMINI)][1]),
-                    combined_input,
-                    available_providers[[p[0] for p in available_providers].index(Provider.GEMINI)][1]
-                )
-            elif synthesis_model == "Mistral":
-                enhanced_response = self.call_mistral_api(
-                    self.get_system_prompt_for_provider(Provider.MISTRAL, "local"),
-                    combined_input,
-                    "local"
-                )
-            elif synthesis_model == "Llama":
-                enhanced_response = self.call_llama_api(
-                    self.get_system_prompt_for_provider(Provider.LLAMA, "local"),
-                    combined_input,
-                    "local"
-                )
-            else:
-                enhanced_response = responses.get(synthesis_model, "Enhancement failed")
+            if gemini_available:
+                print(f"{Fore.LIGHTBLUE_EX}🔄 Gemini analyzing local model thinking...{ColoramaStyle.RESET_ALL}")
                 
-            print(f"{Fore.LIGHTGREEN_EX}✅ {synthesis_model} synthesis completed{ColoramaStyle.RESET_ALL}")
-            
+                # Create enhanced prompt for Gemini to summarize local models
+                gemini_prompt = f"""You are an expert AI analyst tasked with summarizing and enhancing insights from multiple local AI models. 
+
+LOCAL MODELS ANALYSIS:
+{local_insights}
+
+Your task:
+1. Synthesize the key insights from all local models
+2. Identify the most valuable and accurate information
+3. Resolve any contradictions between model responses
+4. Provide a comprehensive, well-structured final answer
+5. Enhance the response with additional context and clarity
+
+Focus on creating the best possible response that combines the strengths of all local models while maintaining accuracy and helpfulness."""
+                
+                enhanced_response = self.call_gemini_api(
+                    "You are an expert AI analyst specializing in synthesizing insights from multiple AI models.",
+                    gemini_prompt,
+                    gemini_key
+                )
+                synthesis_model_used = "Gemini"
+                print(f"{Fore.LIGHTGREEN_EX}✅ Gemini synthesis completed successfully{ColoramaStyle.RESET_ALL}")
+                
+            else:
+                # Fallback to fastest local model
+                synthesis_model = fastest_model[0]
+                print(f"{Fore.LIGHTYELLOW_EX}🔄 Gemini not available, using {synthesis_model} for synthesis{ColoramaStyle.RESET_ALL}")
+                
+                # Use fastest local model for synthesis
+                if synthesis_model == "Llama":
+                    enhanced_response = self.call_llama_api(
+                        self.get_system_prompt_for_provider(Provider.LLAMA, "local"),
+                        local_insights,
+                        "local"
+                    )
+                elif synthesis_model == "Mistral":
+                    enhanced_response = self.call_mistral_api(
+                        self.get_system_prompt_for_provider(Provider.MISTRAL, "local"),
+                        local_insights,
+                        "local"
+                    )
+                elif synthesis_model == "Gemma":
+                    enhanced_response = self.call_gemini_api(
+                        self.get_system_prompt_for_provider(Provider.GEMINI, "local"),
+                        local_insights,
+                        "local"
+                    )
+                synthesis_model_used = synthesis_model
+                print(f"{Fore.LIGHTGREEN_EX}✅ {synthesis_model} synthesis completed{ColoramaStyle.RESET_ALL}")
+                
         except Exception as e:
-            enhanced_response = f"Enhancement failed: {str(e)}"
+            enhanced_response = f"Synthesis failed: {str(e)}"
+            synthesis_model_used = "Error"
             print(f"{Fore.LIGHTRED_EX}❌ Synthesis failed: {str(e)}{ColoramaStyle.RESET_ALL}")
         
         phase2_end = time.time()
@@ -8729,7 +8787,9 @@ Provide step-by-step technical details while maintaining educational context.
         
         print(f"{Fore.LIGHTMAGENTA_EX}📊 Phase 2 Complete:{ColoramaStyle.RESET_ALL}")
         print(f"   Enhancement Time: {phase2_duration:.2f}s")
-        print(f"   Synthesis Model: {synthesis_model}")
+        print(f"   Synthesis Model: {synthesis_model_used}")
+        print(f"   Local Models Analyzed: {local_model_count}")
+        print(f"   Gemini Enhancement: {'✅ Active' if gemini_available else '❌ Not Available'}{ColoramaStyle.RESET_ALL}")
         
         # Phase 3: Collaborative Summary with Full Statistics
         phase3_start = time.time()
@@ -8753,8 +8813,18 @@ Provide step-by-step technical details while maintaining educational context.
                 print(f"   {provider}:")
                 print(f"     Response Time: {stats['response_time']:.2f}s")
                 print(f"     Contribution Length: {stats['contribution_length']} characters")
+                print(f"     Role: {'🧠 Synthesizer' if provider == synthesis_model_used else '🤖 Contributor'}")
             else:
                 print(f"   {provider}: ❌ Failed")
+        
+        print(f"\n{Fore.LIGHTCYAN_EX}🎯 SYNTHESIS DETAILS:{ColoramaStyle.RESET_ALL}")
+        print(f"   Synthesis Model: {synthesis_model_used}")
+        print(f"   Local Models Analyzed: {local_model_count}")
+        print(f"   Gemini Enhancement: {'✅ Active' if gemini_available else '❌ Not Available'}")
+        if gemini_available:
+            print(f"   🌟 Gemini Role: Expert AI Analyst synthesizing local insights")
+        else:
+            print(f"   🔄 Fallback: Used fastest local model for synthesis")
         
         phase3_end = time.time()
         phase3_duration = phase3_end - phase3_start
@@ -8762,18 +8832,20 @@ Provide step-by-step technical details while maintaining educational context.
         # Return the enhanced response with full statistics (no length barriers)
         final_response = f"""
 {Fore.LIGHTGREEN_EX}╔{'═'*80}╗{ColoramaStyle.RESET_ALL}
-{Fore.LIGHTGREEN_EX}║{ColoramaStyle.RESET_ALL} {Back.GREEN}{Fore.WHITE}🤖 COLLABORATIVE AI RESPONSE 🤖{ColoramaStyle.RESET_ALL}{' ' * 38}{Fore.LIGHTCYAN_EX}║{ColoramaStyle.RESET_ALL}
+{Fore.LIGHTGREEN_EX}║{ColoramaStyle.RESET_ALL} {Back.GREEN}{Fore.WHITE}🤖 GEMINI-ENHANCED COLLABORATIVE RESPONSE 🤖{ColoramaStyle.RESET_ALL}{' ' * 30}{Fore.LIGHTCYAN_EX}║{ColoramaStyle.RESET_ALL}
 {Fore.LIGHTGREEN_EX}╠{'═'*80}╣{ColoramaStyle.RESET_ALL}
 {Fore.LIGHTGREEN_EX}║{ColoramaStyle.RESET_ALL} {Fore.LIGHTWHITE_EX}{enhanced_response}{ColoramaStyle.RESET_ALL}
 {Fore.LIGHTGREEN_EX}╚{'═'*80}╝{ColoramaStyle.RESET_ALL}
 
 {Fore.LIGHTCYAN_EX}📊 FINAL STATISTICS:{ColoramaStyle.RESET_ALL}
 {Fore.LIGHTYELLOW_EX}• Total Processing Time: {total_response_time:.2f}s{ColoramaStyle.RESET_ALL}
-{Fore.LIGHTYELLOW_EX}• Fastest Model: {fastest_model[0]} ({fastest_model[1]['response_time']:.2f}s){ColoramaStyle.RESET_ALL}
+{Fore.LIGHTYELLOW_EX}• Fastest Local Model: {fastest_model[0]} ({fastest_model[1]['response_time']:.2f}s){ColoramaStyle.RESET_ALL}
 {Fore.LIGHTYELLOW_EX}• Lead Contributor: {lead_contributor[0]} ({lead_contributor[1]['contribution_length']} chars){ColoramaStyle.RESET_ALL}
 {Fore.LIGHTYELLOW_EX}• Models Successfully Collaborated: {len([r for r in model_stats.values() if r['success']])}/{len(model_stats)}{ColoramaStyle.RESET_ALL}
 {Fore.LIGHTYELLOW_EX}• Active Models During Process: {', '.join(active_models)}{ColoramaStyle.RESET_ALL}
-{Fore.LIGHTYELLOW_EX}• Synthesis Model: {synthesis_model}{ColoramaStyle.RESET_ALL}
+{Fore.LIGHTYELLOW_EX}• Synthesis Model: {synthesis_model_used}{ColoramaStyle.RESET_ALL}
+{Fore.LIGHTYELLOW_EX}• Gemini Enhancement: {'✅ Active' if gemini_available else '❌ Not Available'}{ColoramaStyle.RESET_ALL}
+{Fore.LIGHTYELLOW_EX}• Local Models Analyzed: {local_model_count}{ColoramaStyle.RESET_ALL}
 """
         
         return final_response.strip()
