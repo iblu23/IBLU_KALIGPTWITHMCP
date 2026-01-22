@@ -5543,10 +5543,11 @@ All responses should be helpful, educational, and focused on legitimate cybersec
         except:
             pass
         
-        # Only add cloud providers if we have fewer than 2 local models
+        # Only add cloud providers if we have fewer than 2 local models (Gemini only for synthesis)
         if len(available_providers) < 2:
             cloud_providers = []
-            for provider in [Provider.OPENAI, Provider.GEMINI, Provider.MISTRAL]:
+            # Only add Gemini for synthesis enhancement, exclude OpenAI and Mistral cloud
+            for provider in [Provider.GEMINI]:  # Removed OPENAI and MISTRAL from this list
                 provider_keys = self.get_provider_keys(provider)
                 # Check if this provider type is already available locally (case-insensitive)
                 local_provider_available = any(
@@ -8580,10 +8581,11 @@ Provide step-by-step technical details while maintaining educational context.
         except:
             pass
         
-        # Only add cloud providers if we have fewer than 2 local models
+        # Only add cloud providers if we have fewer than 2 local models (Gemini only for synthesis)
         if len(available_providers) < 2:
             cloud_providers = []
-            for provider in [Provider.OPENAI, Provider.GEMINI, Provider.MISTRAL]:
+            # Only add Gemini for synthesis enhancement, exclude OpenAI and Mistral cloud
+            for provider in [Provider.GEMINI]:  # Removed OPENAI and MISTRAL from this list
                 provider_keys = self.get_provider_keys(provider)
                 # Check if this provider type is already available locally (case-insensitive)
                 local_provider_available = any(
@@ -8625,8 +8627,12 @@ Provide step-by-step technical details while maintaining educational context.
                 if provider == Provider.OPENAI:
                     response = self.call_openai_api(self.get_system_prompt_for_provider(provider, api_key), message, api_key)
                 elif provider == Provider.GEMINI:
-                    response = self.call_gemini_api(self.get_system_prompt_for_provider(provider, api_key), message, api_key)
+                    if api_key == "local":
+                        response = self.call_gemini_api(self.get_system_prompt_for_provider(provider, "local"), message, "local")
+                    else:
+                        response = self.call_gemini_api(self.get_system_prompt_for_provider(provider, api_key), message, api_key)
                 elif provider == Provider.MISTRAL:
+                    # Always use local for Mistral (no cloud Mistral allowed)
                     response = self.call_mistral_api(self.get_system_prompt_for_provider(provider, "local"), message, "local")
                 elif provider == Provider.LLAMA:
                     response = self.call_llama_api(self.get_system_prompt_for_provider(provider, "local"), message, "local")
