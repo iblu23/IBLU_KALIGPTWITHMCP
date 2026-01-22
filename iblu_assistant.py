@@ -3004,6 +3004,20 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             print(f"{Fore.LIGHTCYAN_EX}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}🎮 HACK THE WORLD - CYBERSECURITY AI ASSISTANT 🎮{ColoramaStyle.RESET_ALL}{' ' * 20}{Fore.LIGHTCYAN_EX}║{ColoramaStyle.RESET_ALL}")
             print(f"{Fore.LIGHTCYAN_EX}╚{'═'*banner_width}╝{ColoramaStyle.RESET_ALL}\n")
             
+            # Cyberpunk Terminal Art
+            cyberpunk_terminal = f"""
+{Fore.LIGHTGREEN_EX}┌────────────────────────────────┐{ColoramaStyle.RESET_ALL}
+{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL} {Fore.LIGHTWHITE_EX}▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓{ColoramaStyle.RESET_ALL} {Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}
+{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL} {Fore.LIGHTCYAN_EX} > connect --neural --unstable{ColoramaStyle.RESET_ALL} {Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}
+{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL} {Fore.LIGHTMAGENTA_EX} > inject neon_protocol.dll{ColoramaStyle.RESET_ALL}   {Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}
+{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL} {Fore.LIGHTYELLOW_EX} > ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒{ColoramaStyle.RESET_ALL}  {Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}
+{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL} {Fore.LIGHTRED_EX} > ERROR::REALITY_DESYNC{ColoramaStyle.RESET_ALL}      {Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}
+{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL} {Fore.LIGHTRED_EX} > retry? y/y/y/y/y/y/y/y{ColoramaStyle.RESET_ALL}     {Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}
+{Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL} {Fore.LIGHTWHITE_EX}▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓{ColoramaStyle.RESET_ALL} {Fore.LIGHTGREEN_EX}│{ColoramaStyle.RESET_ALL}
+{Fore.LIGHTGREEN_EX}└────────────────────────────────┘{ColoramaStyle.RESET_ALL}
+"""
+            print(cyberpunk_terminal)
+            
             # Define options for the menu
             options = [
                 # CORE OPTIONS (1-4)
