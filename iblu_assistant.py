@@ -3545,16 +3545,38 @@ All responses should be helpful, educational, and focused on legitimate cybersec
         if self.config.mistral_keys:
             available_providers.append("Mistral")
         
+        # Check for local models (Llama, Mistral Dolphin, etc.)
+        local_models = []
+        try:
+            import requests
+            url = "http://localhost:11434/api/tags"
+            response = requests.get(url, timeout=5)
+            if response.status_code == 200:
+                models_data = response.json()
+                for model in models_data.get('models', []):
+                    model_name = model.get('name', '').lower()
+                    if 'llama' in model_name:
+                        local_models.append("Llama")
+                    elif 'dolphin' in model_name or 'mistral' in model_name:
+                        local_models.append("Mistral")
+                    elif 'gemma' in model_name:
+                        local_models.append("Gemma")
+        except:
+            pass
+        
+        # Combine cloud and local providers
+        all_providers = available_providers + local_models
+        
         # Display status information in panel format
         if COLORAMA_AVAILABLE:
             # Status panel
             print(f"{Fore.CYAN}╔{'═'*header_width}╗{ColoramaStyle.RESET_ALL}")
             
-            status_line1 = f"✅ Available AI Providers: {', '.join(available_providers) if available_providers else 'None'}"
+            status_line1 = f"✅ Available AI Providers: {', '.join(all_providers) if all_providers else 'None'}"
             status_spacing1 = header_width - len(status_line1) - 4
             print(f"{Fore.CYAN}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}{status_line1}{ColoramaStyle.RESET_ALL}{' ' * status_spacing1}{Fore.CYAN}║{ColoramaStyle.RESET_ALL}")
             
-            status_line2 = f"🔄 Current Provider: {self.current_ai_provider if available_providers else 'None'}"
+            status_line2 = f"🔄 Current Provider: {self.current_ai_provider if all_providers else 'None'}"
             status_spacing2 = header_width - len(status_line2) - 4
             print(f"{Fore.CYAN}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}{status_line2}{ColoramaStyle.RESET_ALL}{' ' * status_spacing2}{Fore.CYAN}║{ColoramaStyle.RESET_ALL}")
             
@@ -3564,24 +3586,24 @@ All responses should be helpful, educational, and focused on legitimate cybersec
             
             print(f"{Fore.CYAN}╚{'═'*header_width}╝{ColoramaStyle.RESET_ALL}")
         else:
-            print(f"✅ Available AI Providers: {', '.join(available_providers) if available_providers else 'None'}")
-            print(f"🔄 Current Provider: {self.current_ai_provider if available_providers else 'None'}")
+            print(f"✅ Available AI Providers: {', '.join(all_providers) if all_providers else 'None'}")
+            print(f"🔄 Current Provider: {self.current_ai_provider if all_providers else 'None'}")
             print(f"🔓 Rephrasing Mode: {'✅ Enabled' if self.rephrasing_mode else '❌ Disabled'}")
         
-        if not available_providers:
+        if not all_providers:
             if COLORAMA_AVAILABLE:
                 # Warning panel
                 print(f"{Fore.YELLOW}╔{'═'*header_width}╗{ColoramaStyle.RESET_ALL}")
                 
-                warning_line1 = f"⚠️  No API keys configured!"
+                warning_line1 = f"⚠️  No AI providers configured!"
                 warning_spacing1 = header_width - len(warning_line1) - 4
                 print(f"{Fore.YELLOW}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.RED}{warning_line1}{ColoramaStyle.RESET_ALL}{' ' * warning_spacing1}{Fore.YELLOW}║{ColoramaStyle.RESET_ALL}")
                 
-                warning_line2 = f"💡 Please add API keys to config.json"
+                warning_line2 = f"💡 Add API keys to config.json or install local models"
                 warning_spacing2 = header_width - len(warning_line2) - 4
                 print(f"{Fore.YELLOW}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}{warning_line2}{ColoramaStyle.RESET_ALL}{' ' * warning_spacing2}{Fore.YELLOW}║{ColoramaStyle.RESET_ALL}")
                 
-                warning_line3 = f"📝 Example: {{'openai_keys': ['your-key']}}"
+                warning_line3 = f"📝 Example: {{'openai_keys': ['your-key']}} or run 'ollama pull llama3'"
                 warning_spacing3 = header_width - len(warning_line3) - 4
                 print(f"{Fore.YELLOW}║{ColoramaStyle.RESET_ALL} {ColoramaStyle.BRIGHT}{Fore.WHITE}{warning_line3}{ColoramaStyle.RESET_ALL}{' ' * warning_spacing3}{Fore.YELLOW}║{ColoramaStyle.RESET_ALL}")
                 
@@ -5498,10 +5520,30 @@ All responses should be helpful, educational, and focused on legitimate cybersec
         
         # Check if collaborative mode is available (2+ models)
         available_providers = []
-        for provider in [Provider.OPENAI, Provider.GEMINI, Provider.MISTRAL, Provider.LLAMA]:
+        
+        # Check cloud providers
+        for provider in [Provider.OPENAI, Provider.GEMINI, Provider.MISTRAL]:
             provider_keys = self.get_provider_keys(provider)
             if provider_keys:
                 available_providers.append((provider, provider_keys[0]))
+        
+        # Check for local models
+        try:
+            import requests
+            url = "http://localhost:11434/api/tags"
+            response = requests.get(url, timeout=5)
+            if response.status_code == 200:
+                models_data = response.json()
+                for model in models_data.get('models', []):
+                    model_name = model.get('name', '').lower()
+                    if 'llama' in model_name:
+                        available_providers.append((Provider.LLAMA, "local"))
+                    elif 'dolphin' in model_name or 'mistral' in model_name:
+                        available_providers.append((Provider.MISTRAL, "local"))
+                    elif 'gemma' in model_name:
+                        available_providers.append((Provider.GEMINI, "local"))
+        except:
+            pass
         
         # Use enhanced collaborative mode if multiple models are available
         if len(available_providers) >= 2:
@@ -8495,10 +8537,30 @@ Provide step-by-step technical details while maintaining educational context.
         
         # Get available providers
         available_providers = []
-        for provider in [Provider.OPENAI, Provider.GEMINI, Provider.MISTRAL, Provider.LLAMA]:
+        
+        # Check cloud providers
+        for provider in [Provider.OPENAI, Provider.GEMINI, Provider.MISTRAL]:
             provider_keys = self.get_provider_keys(provider)
             if provider_keys:
                 available_providers.append((provider, provider_keys[0]))
+        
+        # Check for local models
+        try:
+            import requests
+            url = "http://localhost:11434/api/tags"
+            response = requests.get(url, timeout=5)
+            if response.status_code == 200:
+                models_data = response.json()
+                for model in models_data.get('models', []):
+                    model_name = model.get('name', '').lower()
+                    if 'llama' in model_name:
+                        available_providers.append((Provider.LLAMA, "local"))
+                    elif 'dolphin' in model_name or 'mistral' in model_name:
+                        available_providers.append((Provider.MISTRAL, "local"))
+                    elif 'gemma' in model_name:
+                        available_providers.append((Provider.GEMINI, "local"))
+        except:
+            pass
         
         if len(available_providers) < 2:
             return f"❌ Need at least 2 configured providers for collaborative mode. Available: {len(available_providers)}"
