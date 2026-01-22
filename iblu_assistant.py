@@ -6531,33 +6531,55 @@ Provide step-by-step technical details while maintaining educational context.
             return f"❌ Gemini CLI Error: {e}\n\n💡 Install Gemini CLI: pip install google-generativeai[cli]"
 
     def call_mistral_api(self, system_prompt: str, user_message: str, api_key: str) -> str:
-        """Call Mistral API"""
+        """Call Mistral API (local or cloud)"""
         try:
             import requests
             
-            url = "https://api.mistral.ai/v1/chat/completions"
-            headers = {
-                "Authorization": f"Bearer {api_key}",
-                "Content-Type": "application/json"
-            }
-            
-            payload = {
-                "model": "mistral-large-latest",
-                "messages": [
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_message}
-                ],
-                "temperature": 0.7,
-                "max_tokens": 2000
-            }
-            
-            response = requests.post(url, json=payload, headers=headers, timeout=30)
-            response.raise_for_status()
-            
-            result = response.json()
-            ai_response = result['choices'][0]['message']['content']
-            
-            return f"🤖 IBLU (Mistral Large):\n\n{ai_response}"
+            if api_key == "local":
+                # Use local Ollama API
+                url = "http://localhost:11434/api/generate"
+                payload = {
+                    "model": "mistral:latest",
+                    "prompt": f"System: {system_prompt}\n\nUser: {user_message}\n\nAssistant:",
+                    "stream": False,
+                    "options": {
+                        "temperature": 0.7,
+                        "num_predict": 2000
+                    }
+                }
+                
+                response = requests.post(url, json=payload, timeout=30)
+                response.raise_for_status()
+                
+                result = response.json()
+                ai_response = result.get('response', 'No response generated')
+                
+                return f"🤖 IBLU (Local Mistral):\n\n{ai_response}"
+            else:
+                # Use cloud Mistral API
+                url = "https://api.mistral.ai/v1/chat/completions"
+                headers = {
+                    "Authorization": f"Bearer {api_key}",
+                    "Content-Type": "application/json"
+                }
+                
+                payload = {
+                    "model": "mistral-large-latest",
+                    "messages": [
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user_message}
+                    ],
+                    "temperature": 0.7,
+                    "max_tokens": 2000
+                }
+                
+                response = requests.post(url, json=payload, headers=headers, timeout=30)
+                response.raise_for_status()
+                
+                result = response.json()
+                ai_response = result['choices'][0]['message']['content']
+                
+                return f"🤖 IBLU (Mistral Large):\n\n{ai_response}"
             
         except requests.exceptions.HTTPError as e:
             return f"❌ Mistral API Error: {e}\n\n💡 Response: {e.response.text if hasattr(e, 'response') else 'No details'}\n\n🔑 Check your API key at https://console.mistral.ai/api-keys"
